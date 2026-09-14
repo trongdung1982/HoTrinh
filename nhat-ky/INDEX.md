@@ -68,6 +68,7 @@ thường, không phải thiếu sót.
 | 111 | 10/09/2026 | Bảng phẳng TRƯỚC/SAU khi mở rộng dòng chờ duyệt; đã dán SQL, chưa bấm thử thật | `b111-bang-phang-truoc-sau.md` |
 | 111b | 10/09/2026 | Ô chọn cây thay chỗ khoá cứng; cột Người được gắn bấm được cả hai tấm; `20` đã dán | `b111b-nguoi-duoc-gan-va-o-chon-cay.md` |
 | 111c | 14/09/2026 | Đơn ĐỀ XUẤT gắn mã người, cửa thứ TÁM (`21` đã dán); vá nút Nhận lời mời bị quyền xem che | `b111c-don-de-xuat-gan-nguoi.md` |
+| 112 | 14/09/2026 | Ngữ cảnh đầu phiên 212 KB → 81 KB (−62%); `KE-HOACH.md` có trần 250 dòng; hòm thư AI một chiều | `b112-chong-phinh-ngu-canh.md` |
 
 *Cột "Nội dung một dòng": **một câu, tối đa 110 ký tự**. Nói bước ấy làm được
 cái gì, không nói vì sao. Đây là dòng để người đọc quyết định có mở file bước
