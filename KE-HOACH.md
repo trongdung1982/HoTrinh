@@ -1,7 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 14/09/2026 22:10 · Bước gần nhất: **b111c** (mã xong, đẩy
-`810fd50`, **`21` CHƯA DÁN**) · Việc kế tiếp: **b112 — chống phình ngữ cảnh**.
+*Cập nhật 14/09/2026 22:06 · Bước gần nhất: **b111c** — mã xong, **`21` ĐÃ
+DÁN 14/09/2026, bảng tự kiểm đạt hết**; điểm dừng **hoãn tới sau quantri3**
+theo ý chủ dự án · Việc kế tiếp: **b112 — chống phình ngữ cảnh**.
 ⚠ Chủ dự án chốt 14/09/2026 một THỨ TỰ mới, xem mục "Thứ tự làm" ngay dưới*
 
 ---
@@ -29,10 +30,16 @@ chủ dự án chèn ba việc mới vào đầu hàng. Chưa bước nào trong
 bắt tay làm nên đổi số không cắt lịch sử của ai; `KE-HOACH.md` là nguồn đúng
 cho số bước (`THIET-KE-NHIEU-CAY.md` mục 12 ghi sẵn luật ấy).
 
-⚠ **Việc KHÔNG nằm trong hàng đợi trên, vì nó là việc của chủ dự án:** dán
-`luoc-do/21-de-xuat-gan-nguoi.sql` rồi bấm thử điểm dừng b111c. Mã đã xong và
-đã đo 67/67; nó chỉ chờ một lần dán. Đừng gộp việc ấy vào một bước — nó không
-tốn một phiên nào.
+✓ **`21-de-xuat-gan-nguoi.sql` ĐÃ DÁN 14/09/2026**, chủ dự án xác nhận bảng
+tự kiểm đạt hết. Máy chủ thật nay có bảng `de_xuat_gan_nguoi` và sáu hàm.
+
+⚠ **Điểm dừng b111c CHƯA BẤM THỬ, và đó là quyết định chứ không phải quên.**
+Chủ dự án chốt 14/09/2026: *"tôi chưa thử trên app vì đợi chỉnh lại giao diện
+trang quantri"*. Nên nó **đi cùng b117** — bước chuyển khu Tài khoản sang giao
+diện mới — chứ không đứng riêng. Ba việc phải bấm ở đó:
+① nút **Nhận** lời mời bằng tài khoản Quản trị hệ thống *(vá 14/09)*;
+② nộp đề xuất cho chính mình, **tự bấm duyệt bị máy chủ từ chối**;
+③ một Quản trị hệ thống KHÁC duyệt được.
 
 ⚠ **Còn một việc treo không có số, và nó phải đi cùng máy chứ không cùng
 bước:** commit `render 1.9.1` của repo `giapha/` (`44768d9`) **chưa đẩy được**

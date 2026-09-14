@@ -8,7 +8,8 @@
 
 1. `luoc-do/21-de-xuat-gan-nguoi.sql` (file mới, 661 dòng) — bảng
    `de_xuat_gan_nguoi` + sáu hàm. **Đo 67/67 trên bàn thử SQL**, gồm ba phép
-   kiểm chứng ngược. **CHƯA DÁN** lên máy chủ thật.
+   kiểm chứng ngược. **Đã dán lên máy chủ thật cuối ngày 14/09/2026**, bảng
+   tự kiểm của chính file ấy đạt hết.
 2. `services/sb.js` 0.18.0 — sáu cửa. `kiem-thu/sb-gia.mjs` 0.8.0 bù đủ sáu
    tên, cộng ba dòng đơn giả là ba ca thật.
 3. `pages/quan-tri/khu-thanh-vien.js` 0.11.0 — dòng của chính mình đổi từ
@@ -127,7 +128,12 @@ trước khi kết luận.
 
 ## Còn treo
 
-- **`21` chưa dán.** Điểm dừng thật của bước này chỉ đóng được sau khi dán.
+- ✓ **`21` ĐÃ DÁN 14/09/2026 tối**, chủ dự án xác nhận bảng tự kiểm đạt hết.
+- **Điểm dừng vẫn chưa bấm, và đó là quyết định.** Chủ dự án: *"tôi chưa thử
+  trên app vì đợi chỉnh lại giao diện trang quantri"*. Ba việc phải bấm nay đi
+  cùng **b117**. Đáng ghi vì nó đổi ý nghĩa của cụm *"chưa bấm thử"*: hàng rào
+  máy chủ đã đo 67/67 và đã nằm trên máy chủ thật; thứ còn thiếu là **một
+  ngón tay trên màn hình sắp bị vẽ lại**, không phải một hàng rào chưa xong.
 - **Thành viên thường không có đường nộp đơn.** `ds_thanh_vien()` gác bằng
   `co_the_kiem_duyet()`, nên khu Tài khoản chỉ quản trị mở được — đúng đối
   tượng của b111c (người bị luật khoá tay là người CÓ quyền), nhưng một Thành
