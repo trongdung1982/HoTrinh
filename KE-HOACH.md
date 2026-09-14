@@ -1,8 +1,46 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 10/09/2026 17:03 · Bước gần nhất: **b111b** (mã xong, **`20` đã
-dán**, chưa bấm thử điểm dừng) · Việc kế tiếp: **b111c** — đơn ĐỀ XUẤT gắn mã
-người cho chính mình, người khác duyệt; xem bảng bên dưới*
+*Cập nhật 14/09/2026 22:10 · Bước gần nhất: **b111c** (mã xong, đẩy
+`810fd50`, **`21` CHƯA DÁN**) · Việc kế tiếp: **b112 — chống phình ngữ cảnh**.
+⚠ Chủ dự án chốt 14/09/2026 một THỨ TỰ mới, xem mục "Thứ tự làm" ngay dưới*
+
+---
+
+## Thứ tự làm — chốt 14/09/2026
+
+Chủ dự án ra thứ tự, nguyên văn: *"thứ tự làm sẽ là rà soát chống phình ngữ
+cảnh (nạp thông tin không cần thiết), tham khảo ý kiến agy đề xuất. chuyển đổi
+quantri3 vào app chính sau đó mới làm việc khác."*
+
+| Làm thứ | Bước | Việc | Mô hình |
+|---|---|---|---|
+| 1 | **b112** | Chống phình ngữ cảnh đầu phiên | Opus |
+| 2 | **b113** | Rà lại việc Antigravity làm 12/09 | Sonnet |
+| 3 | **b114** | quantri3 — bản đồ và chốt thiết kế *(không sửa mã)* | Opus |
+| 4 | **b115** | quantri3 — khung + điều hướng | Opus |
+| 5 | **b116** | quantri3 — khu Gia phả | Sonnet |
+| 6 | **b117** | quantri3 — khu Tài khoản *(gồm chuyển khối b111c sang)* | Opus |
+| 7 | **b118** | quantri3 — khu Kiểm duyệt + Quản trị hệ thống | Sonnet |
+| 8 | **b119** | Khu Sao lưu + Số đếm đối chiếu *(số cũ: b112)* | Sonnet |
+| 9 | **b120** | Mã người xuyên cây *(số cũ: b113)* | Sonnet |
+
+⚠ **Hai mục cuối đã ĐỔI SỐ.** Chúng vốn mang số b112 và b113, đặt trước khi
+chủ dự án chèn ba việc mới vào đầu hàng. Chưa bước nào trong hai mục ấy được
+bắt tay làm nên đổi số không cắt lịch sử của ai; `KE-HOACH.md` là nguồn đúng
+cho số bước (`THIET-KE-NHIEU-CAY.md` mục 12 ghi sẵn luật ấy).
+
+⚠ **Việc KHÔNG nằm trong hàng đợi trên, vì nó là việc của chủ dự án:** dán
+`luoc-do/21-de-xuat-gan-nguoi.sql` rồi bấm thử điểm dừng b111c. Mã đã xong và
+đã đo 67/67; nó chỉ chờ một lần dán. Đừng gộp việc ấy vào một bước — nó không
+tốn một phiên nào.
+
+⚠ **Còn một việc treo không có số, và nó phải đi cùng máy chứ không cùng
+bước:** commit `render 1.9.1` của repo `giapha/` (`44768d9`) **chưa đẩy được**
+— trên LapAMD `git push` đi bằng `trongdung1982`, mà repo ấy thuộc
+`ntdungsnotion`, nên nhận `403`. Sang LapASUS thì đẩy một lệnh là xong. Bản
+`supabase/` đã đẩy (`0485a2b`).
+
+---
 
 > ✓ **b109 XONG, chạy thật.** Tấm lọc *Toàn hệ thống* + bảng sâu + bốn việc
 > — chủ dự án đã bấm thử trên máy chủ thật, đạt: đúng số cây, cả bốn việc
@@ -362,7 +400,7 @@ Làm đúng chữ của b103 thì từ hôm nay tới b106 không còn đường
 
 ---
 
-## Việc kế tiếp — b100 → b113, MỘT PHIÊN MỘT BƯỚC
+## Việc kế tiếp — b100 → b120, MỘT PHIÊN MỘT BƯỚC
 
 ⚠ **Chuỗi này viết lại 05/09/2026** sau khi chủ dự án chốt ba câu về **nhiều
 gia phả**. Chuỗi cũ (b100→b105, chỉ nói trang Quản trị) vẫn còn nguyên trong
@@ -1041,7 +1079,82 @@ Quản trị hệ thống tự gắn cho mình, và **không** dừng ở một 
 | **Điểm dừng** | Chủ dự án nộp một đề xuất cho chính tài khoản mình, **thấy máy chủ từ chối khi tự bấm duyệt**, rồi đăng nhập bằng một tài khoản Quản trị hệ thống khác và duyệt được. Đo bằng `ban-thu-sql/do-b111c.mjs` trước khi đưa SQL đi dán |
 | **⚠ Hôm nay chỉ có MỘT Quản trị hệ thống** | Nên đường duyệt sẽ chưa bấm thử hết được nếu không cấp cờ ấy cho một email thứ hai. Nói thẳng chuyện này với chủ dự án trước khi bắt đầu, đừng để lộ ra ở phút cuối |
 
-### b112 — Khu Sao lưu + Số đếm đối chiếu
+### b112 — Chống phình ngữ cảnh đầu phiên
+
+⚠ Antigravity đo và nêu 13/09/2026; chủ dự án xếp nó lên đầu hàng 14/09/2026.
+Việc này đi TRƯỚC quantri3 là có lý do đo được: b114–b118 sẽ đọc một prototype
+**191 KB / 2619 dòng**, và mỗi phiên của chúng bắt đầu bằng đúng cái đầu phiên
+đang phình.
+
+| | |
+|---|---|
+| **ĐO TRƯỚC, ĐỪNG CẮT TRƯỚC** | Đếm byte thật sự nạp ở đầu một phiên: `CLAUDE.md` + `supabase/CHI-DAN.md` + `KE-HOACH.md` + `nhat-ky/INDEX.md` + `PHOI-HOP-AI.md` + `MEMORY.md`. Ghi con số ấy xuống trước khi sửa một dòng nào — không có số trước thì không chứng minh được số sau |
+| **Thủ phạm đã biết** | `KE-HOACH.md` **137 KB** — lớn hơn cả `CHI-DAN.md` 80 dòng nó sinh ra để tránh. Phần lớn là các khối *"đã xong, giữ làm chứng"*, mà chứng cứ ấy **đã có đủ trong `nhat-ky/bXX-*.md`** |
+| **Làm** | ① `KE-HOACH.md` giữ đúng ba thứ: *đang ở đâu* · *việc kế tiếp* · *mọi dòng ⚠*. Khối nào đã có file nhật ký riêng thì **xoá, git giữ lịch sử** — đúng luật của khung tài liệu này. ② `PHOI-HOP-AI.md` giữ dưới 50 dòng. ③ Dọn lệnh thử một lần trong `.claude/settings.local.json`. ④ Đặt **trần cứng** cho `KE-HOACH.md` như `CHI-DAN.md` đã có — đề xuất **250 dòng**, và viết thẳng vào đầu file |
+| **⚠ Cái bẫy của chính bước này** | Cắt tài liệu là việc **không lùi lại được bằng trí nhớ**. Mọi dòng bắt đầu bằng ⚠ đều là một lỗi ai đó đã trả giá để biết. Cách giữ: liệt kê MỌI dòng ⚠ ra một file tạm TRƯỚC khi cắt, đối chiếu lại SAU khi cắt, số phải bằng nhau |
+| **Điểm dừng** | Chạy lại `/khoi-tao`, đo được số byte nạp **giảm ít nhất 60%**, và bảng đối chiếu dòng ⚠ trước/sau khớp từng dòng |
+
+### b113 — Rà lại việc Antigravity làm 12/09/2026
+
+⚠ Luật 3 của `PHOI-HOP-AI.md`: *"Antigravity làm gì thì Claude Code rà lại;
+việc chưa rà không được coi là đã tích hợp."* Ba thay đổi dưới đây đã nằm
+trong `main` từ 12/09 mà chưa ai rà.
+
+| | |
+|---|---|
+| **Rà cái gì** | ① `ee7e894` — `js/pages/chon-gia-pha.js` + `js/pages/settings.js`: trả lại ô chọn nhanh cây gia phả vào Cài đặt. ② `0a80e26` + `377ae8b` + `9cb4ef7` — `.github/workflows/dong-bo-sang-levantrac.yml`: tự động đồng bộ sang **ba repo khác** (`LeVanTrac`, `HoTrinh`, `NguyenQuang`) |
+| **⚠ Việc ② đáng đọc kỹ nhất** | Một workflow tự đẩy mã sang repo khác là thứ chạy **khi không ai nhìn**. Phải trả lời bằng phép đo, không bằng đọc lướt: nó đẩy **những file nào**, sang **repo nào**, bằng **khoá của ai**, và nó có mang theo `js/cau-hinh.js` — file chứa khoá Supabase của cây này — hay không |
+| **Rà bằng gì** | `/kiem-tra` · `kiem-thu/kiem-trang-quan-tri.mjs` · và **nhìn bằng mắt** màn hình Cài đặt. AGY khai *"chưa sửa mã hay cấu hình"* ở lượt 13/09 nhưng lượt 12/09 thì CÓ — khai của AGY không thay được phép đo |
+| **Điểm dừng** | Mỗi thay đổi một dòng kết luận: giữ · sửa · gỡ. Và với ②, một câu trả lời dứt khoát cho câu hỏi *"nó có đẩy khoá đi đâu không"* |
+
+### b114 — quantri3: bản đồ và chốt thiết kế · KHÔNG SỬA MÃ
+
+⚠ Sản phẩm chốt: `../codex/dua_claude.ai/quantri3.html` (**ngoài `Claude_Code`**,
+ở thư mục cha `Gia_pha/` — đừng tìm trong repo, nó không có ở đó). Prototype
+tĩnh, chủ dự án đã duyệt, dữ liệu và JavaScript trong đó là **mô phỏng**.
+
+| | |
+|---|---|
+| **Vì sao một bước riêng chỉ để đọc** | Prototype đổi **khung điều hướng** — bốn tab NGANG + trang chi tiết theo ngữ cảnh, thay thanh dọc bốn khu hiện nay. Bắt tay sửa mã trước khi có bản đồ là vẽ lại bốn khu bằng cách đoán, và đoán sai ở khu thứ ba thì hai khu đầu phải làm lại |
+| **Làm** | Lập **bảng đối chiếu**: mỗi `data-route`, mỗi chip, mỗi nút của prototype → hàm `sb.js` thật đã có / chưa có / không cần. Không nút nào được để trống ô ấy — *"chưa biết gọi gì"* là câu phải trả lời ở bước này, không phải ở bước đang gõ mã |
+| **Chốt ba câu** | ① Khung hiện tại giữ lại những gì *(bốn khu đã chạy thật, `quan-tri.css` là chỗ DUY NHẤT biết bề ngang màn hình)*. ② Khối **b111c** — nộp đề xuất và xét đơn — cắm vào chỗ nào của giao diện mới; prototype viết trước b111c nên **nó không có khái niệm ấy**, chỗ gần nhất là bảng *Các gia phả liên quan* cột *Mã người* trong trang chi tiết tài khoản. ③ Bộ ảnh `xem-khung-quan-tri.mjs` 25 cảnh đi theo đường nào |
+| **⚠ Không bê nguyên** | *"Không bê dữ liệu mẫu, mã giả hoặc các đoạn thử nghiệm vào repo chính"* — `PHOI-HOP-AI.md`, bàn giao 13/09 |
+| **Sản phẩm** | `THIET-KE-QUAN-TRI.md` bản cập nhật + bảng đối chiếu. **Không một dòng mã nào đổi** |
+| **Điểm dừng** | Chủ dự án đọc bảng và xác nhận: đúng cái họ đã duyệt với AGY |
+
+### b115 — quantri3: khung + điều hướng
+
+| | |
+|---|---|
+| **Làm** | Bốn tab ngang + `data-route` → `QuanTri.html` và `js/pages/quan-tri.js`. `quan-tri.css` vẫn là chỗ duy nhất biết bề ngang màn hình |
+| **⚠ Bẫy đã biết** | Ba luật của khung điều hướng ở `THIET-KE-QUAN-TRI.md` mục 3, và *"# lạ bị sửa bằng cách gán lại `location.hash`"* — bộ bất biến có phép canh đúng chỗ ấy |
+| **Điểm dừng** | Bốn tab mở đúng bốn khu cũ, chưa đổi ruột khu nào; 237 phép bất biến vẫn đạt |
+
+### b116 — quantri3: khu Gia phả
+
+| | |
+|---|---|
+| **Làm** | Bốn chip *(Tôi quản lý · Tôi là thành viên · Có thể xin vào · Tạo gia phả mới)* + trang chi tiết theo ngữ cảnh cây |
+| **⚠ Giữ nguyên** | Vá 14/09/2026 ở `veOThaoTac()` — **lời mời đứng trước quyền xem**. Chuyển khung mà đánh rơi thứ tự ấy là trả lại đúng lỗi chủ dự án vừa báo |
+| **Điểm dừng** | Nhận / Từ chối lời mời vẫn bấm được bằng tài khoản Quản trị hệ thống |
+
+### b117 — quantri3: khu Tài khoản, và chuyển khối b111c sang
+
+| | |
+|---|---|
+| **Làm** | Bảng tài khoản + trang chi tiết + bảng *Các gia phả liên quan*; chuyển **nút Đề xuất mã người** và **khối xét đơn** của b111c sang đúng chỗ đã chốt ở b114 |
+| **⚠ Giữ nguyên ba thứ** | ① nút Duyệt **mờ sẵn kèm lý do** trên đơn của chính mình — cửa thứ TÁM; ② ô chọn cây riêng, KHÔNG dính cây đang mở của app; ③ cột xuyên cây không bao giờ là chỗ sửa |
+| **Điểm dừng** | Nộp đề xuất · tự duyệt bị từ chối · quản trị khác duyệt được — cả ba trên giao diện mới |
+
+### b118 — quantri3: khu Kiểm duyệt + Quản trị hệ thống, ảnh, `/kiem-tra`
+
+| | |
+|---|---|
+| **Làm** | Hai khu còn lại; `xem-khung-quan-tri.mjs` chụp lại **toàn bộ** theo khung mới |
+| **⚠⚠ Nhớ `sb-gia.mjs`** | Thêm cửa vào `sb.js` thì thêm cả ở đó — thiếu một tên là `SyntaxError` lúc nạp, **cả bộ ảnh ra nền trơn**. Đã xảy ra hai lần (b110b, b111) |
+| **Điểm dừng** | Nhìn bằng mắt cả bộ ảnh ở 1280px và 390px; `/kiem-tra` đạt cả 9 |
+
+### b119 — Khu Sao lưu + Số đếm đối chiếu
 
 | | |
 |---|---|
@@ -1050,7 +1163,7 @@ Quản trị hệ thống tự gắn cho mình, và **không** dừng ở một 
 | **Điểm dừng** | Số trên màn hình khớp với số đếm được trong file sao lưu đêm gần nhất |
 | **⚠ Không làm** | **Không vẽ nút Khôi phục.** Máy chủ chưa khôi phục được, vẽ nút là giả vờ giải quyết bằng giao diện |
 
-### b113 — Mã người xuyên cây
+### b120 — Mã người xuyên cây
 
 | | |
 |---|---|
@@ -1060,7 +1173,7 @@ Quản trị hệ thống tự gắn cho mình, và **không** dừng ở một 
 | **⚠ Bẫy** | Cột không có tên trong `TEN_PERSON` thì mỗi lần lưu ghi `null` đè lên, **và không có gì báo lỗi** — `DU-LIEU.md` mục 3 điều 7 |
 | **Đứng cuối vì** | Chưa ai dựng cây thứ ba. Cột này chỉ có việc khi có người dựng cây cho bên nhà họ |
 
-### Sau b113 — chưa đặt số, chưa chốt
+### Sau b120 — chưa đặt số, chưa chốt
 
 Nhập GEDCOM/Excel qua máy chủ · **khôi phục thật** *(việc nguy hiểm nhất, và
 phải kiểm chứng bằng vòng `sao lưu → đổi dữ liệu → khôi phục → dữ liệu quay
