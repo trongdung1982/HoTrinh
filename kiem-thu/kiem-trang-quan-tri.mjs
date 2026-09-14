@@ -1172,8 +1172,22 @@ console.log('\nPHẦN G — kiểm chứng ngược (bẻ gãy có chủ ý)');
 }
 
 // G19 — màn hình quay lại vẽ nút Xét đơn lên dòng lời mời.
+//
+// ⚠⚠ PHÉP NÀY TỪNG VÔ DỤNG MÀ VẪN BÁO XANH — bắt được 14/09/2026 (b111c), và
+//    nó đã mục từ b111b. Bản cũ gieo lỗi bằng `replace(/\|\| trangThai ===
+//    'duocmoi'/, '')`, mà `String.replace` với một regex KHÔNG cờ `g` chỉ thay
+//    **lần khớp đầu tiên** — và từ b111b chuỗi ấy có HAI chỗ trong file, chỗ
+//    đầu là `khoa:` của `veONguoiGan()`, đứng trước `khoaMo` chừng 60 dòng.
+//    Nên phép gieo đi cắt một câu KHÁC, `khoaMo` còn nguyên, regex vẫn khớp,
+//    và phép kiểm chứng ngược báo "không bắt được".
+//
+//    Bài học chung, đắt hơn chính phép này: **một phép gieo lỗi bằng `replace`
+//    không cờ `g` là một phép đo neo vào THỨ TỰ các dòng trong file.** Thêm một
+//    dòng ở trên là phép đo lặng lẽ đổi chỗ nó đang đo. Gieo đúng chỗ bằng cách
+//    neo vào tên biến, đừng neo vào "lần xuất hiện đầu tiên".
 {
-  const hong19 = JS_TK.replace(/\|\| trangThai === 'duocmoi'/, '');
+  const hong19 = JS_TK.replace(
+    /(const khoaMo\s*=[^;]*?)\s*\|\| trangThai === 'duocmoi'/, '$1');
   kiem('bắt được việc mở lại nút trên dòng lời mời',
        !/khoaMo\s*=[^;]*trangThai === 'duocmoi'/.test(boGhiChuJs(hong19)),
        'không bắt được — phép ở PHẦN K vô dụng');

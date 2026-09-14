@@ -7,7 +7,12 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, config, quan-tri/o-goi-y,
 //            pages/quan-tri/khu-tai-khoan-he-thong (nạp động)
-// Phiên bản: 0.10.0 · Cập nhật: 10/09/2026 (b111b)
+// Phiên bản: 0.11.0 · Cập nhật: 14/09/2026 21:40 (b111c)
+//            0.11.0 (b111c) ĐƠN ĐỀ XUẤT gắn mã người. Dòng của chính
+//            mình đổi từ **khoá câm** sang **khoá kèm nút Đề xuất**, và
+//            khu mọc thêm khối XÉT ĐƠN theo cây đang chọn. ⚠ Luật "không
+//            ai đặt quyền cho chính mình" KHÔNG đổi một chữ — đơn đi
+//            đường hai chữ ký, `duyet_de_xuat_gan()` là cửa thứ TÁM.
 //            0.10.0 hai việc chủ dự án chốt 10/09/2026, cùng một gốc: **khu
 //            này thôi ngầm định cây đang mở, và cột *Người được gắn* thôi chỉ
 //            để đọc.**
@@ -148,6 +153,8 @@ import {
   doiVaiThanhVien, ganNguoiChoThanhVien, datTinCayThanhVien,
   goThanhVien, doiChuCay, duyetThanhVien, tuChoiThanhVien,
   timNguoiTrongCay, dsCayCuaTaiKhoan, layDanhSachGiaPha,
+  nopDeXuatGan, rutDeXuatGan, deXuatGanCuaToi,
+  dsDeXuatGan, duyetDeXuatGan, tuChoiDeXuatGan,
 } from '../../services/sb.js';
 import { vaiTroBangChu } from '../../config.js';
 import { ganGoiY, dongNguoi } from './o-goi-y.js';
@@ -518,6 +525,18 @@ async function nap(than, phien) {
   }
 
   than.append(oViec);
+
+  // ⚠ KHỐI ĐỀ XUẤT ĐỨNG SAU BẢNG VIỆC, và nó tự ẩn khi không có đơn nào
+  //   (`veKhoiDeXuatGan()` trả `null`). Nạp sau khi bảng đã nằm trên màn hình:
+  //   nó là một vòng máy chủ nữa, và bắt cả cái bảng chờ nó là trả tiền mạng
+  //   cho một khối mà phần lớn lần mở khu sẽ không có gì để vẽ.
+  //
+  // ⚠ Đây cũng là chỗ DUY NHẤT xét được đơn. Đơn đi theo TỪNG cây, nên nó phải
+  //   đứng trong khu đã có ô chọn cây — dựng một khu riêng là dựng chỗ thứ hai
+  //   để hỏi "cây nào", tức chỗ thứ hai để lệch.
+  veKhoiDeXuatGan(cay, duocDoiQuyen, napLai).then((k) => {
+    if (k) than.append(k);
+  });
 }
 
 /**
@@ -933,7 +952,8 @@ function veMotDong(ruot, t, phien, cay, duocDoiQuyen, napLai, bo) {
     bMo.style.opacity = '0.45';
     bMo.style.cursor = 'not-allowed';
     bMo.title = t.laChinhToi
-      ? 'Dòng của chính bạn — không ai đặt quyền cho chính mình được.'
+      ? 'Dòng của chính bạn — không ai đặt quyền cho chính mình được. '
+        + 'Muốn nhận mã người cho mình thì bấm Đề xuất mã người.'
       : trangThai === 'duocmoi'
       ? 'Đây là lời mời đang chờ chính người ấy bấm Nhận. Không ai nhận hộ '
         + 'được — vào gia phả luôn cần hai chữ ký. Muốn đổi ý thì gỡ lời mời '
@@ -951,6 +971,26 @@ function veMotDong(ruot, t, phien, cay, duocDoiQuyen, napLai, bo) {
   }
 
   oThao.append(bMo);
+
+  // ⚠ NÚT THỨ HAI, CHỈ TRÊN DÒNG CỦA CHÍNH MÌNH (b111c) — *khoá kèm nút Đề
+  //   xuất* thay cho *khoá câm*. Nút "Sửa quyền" bên trên vẫn xám, và luật
+  //   *"không ai đặt quyền cho chính mình"* không đổi một chữ: nút này không
+  //   gắn gì cả, nó nộp một lá đơn để **một quản trị khác** xét.
+  //
+  // ⚠ Chỉ hiện khi dòng ấy ĐÃ DUYỆT. Một người còn đang chờ duyệt (hay còn là
+  //   lời mời chưa nhận) thì `nop_de_xuat_gan()` từ chối — họ chưa có chân
+  //   trong cây (đo: Q4, Q5, cùng họ lỗ hổng b110c). Vẽ một cái nút chắc chắn
+  //   bị từ chối là mời người ta bấm để nghe từ chối.
+  if (t.laChinhToi && t.daDuyet) {
+    const bDx = nut('Đề xuất mã người', false);
+    bDx.dataset.chuDong = 'Đề xuất mã người';
+    bDx.style.marginTop = '6px';
+    bo.nut.push(bDx);
+    bDx.addEventListener('click', () => moBangViec(
+      bo, t, bDx, cay, () => bangDeXuatCuaToi(t, cay, napLai),
+      'Đề xuất mã người của '));
+    oThao.append(bDx);
+  }
 }
 
 /**
@@ -1042,7 +1082,7 @@ function veOVaiTro(t, phien, cay, duocDoiQuyen, napLai, bo) {
  *   `kiem-trang-quan-tri.mjs` đều xanh trong khi màn hình không dùng được.
  *   Phải nhìn bằng mắt, hoặc chụp ảnh ở đúng bề ngang thật.
  */
-function moBangViec(bo, t, bMo, cay, veNoiDung) {
+function moBangViec(bo, t, bMo, cay, veNoiDung, tieuChu) {
   const dangMoDongNay = bo.dangMo === 'viec:' + t.userId;
 
   dongHet(bo);
@@ -1065,7 +1105,13 @@ function moBangViec(bo, t, bMo, cay, veNoiDung) {
   // họ là chuyện thường.
   const tieu = document.createElement('div');
   tieu.style.cssText = 'padding:12px 0 0;font-size:13px;color:#2a2622';
-  tieu.append(document.createTextNode(t.daDuyet ? 'Sửa quyền của ' : 'Xét đơn của '));
+  // ⚠ `tieuChu` không phải chỗ cho đẹp: từ b111c cùng một chỗ đứng chung mở ra
+  //   được HAI loại khung khác hẳn nhau — sửa quyền của người khác, và nộp một
+  //   lá đơn cho chính mình. Để mặc tiêu đề cũ thì khung đề xuất tự giới thiệu
+  //   là *"Sửa quyền của <chính bạn>"*, tức nói ngược đúng cái luật cả bước này
+  //   dựng ra để giữ. Thấy ở ảnh `kq-23.png` trước khi ai kịp bấm thật.
+  tieu.append(document.createTextNode(
+    tieuChu || (t.daDuyet ? 'Sửa quyền của ' : 'Xét đơn của ')));
 
   const ai = document.createElement('span');
   ai.textContent = t.email || '(không rõ email)';
@@ -1847,6 +1893,344 @@ export function veXetDon(t, cay, duocDoiQuyen, napLai) {
  *   cây nào, không được thò tay vào `phien.vaiTro` để tự dựng phân quyền
  *   trong trình duyệt (`THIET-KE-QUAN-TRI.md` mục 7 điều 5).
  */
+// ============================================================
+// b111c — ĐƠN ĐỀ XUẤT GẮN MÃ NGƯỜI (`luoc-do/21-de-xuat-gan-nguoi.sql`)
+// ============================================================
+//
+// ⚠⚠ KHỐI NÀY KHÔNG MỞ KHOÁ LUẬT "KHÔNG AI ĐẶT QUYỀN CHO CHÍNH MÌNH".
+//
+// Đọc khối *"HAI NHỊP, VÀ VÌ SAO MỜ SẴN NÚT TRÊN DÒNG CỦA CHÍNH MÌNH"* ở đầu
+// file trước. Luật ấy giữ nguyên từng chữ: `viecGanNguoi()` vẫn khoá, năm cửa
+// của `13` vẫn từ chối, `gan_nguoi_cho_thanh_vien()` của `18` vẫn là hàng rào.
+//
+// Nhưng luật ấy để lại một người **không có đường nào** nói ra câu *"tôi chính
+// là người này trong sơ đồ"* — kể cả Quản trị hệ thống, kể cả chủ cây. Trước
+// b111c dòng của họ **khoá câm**: một cái nút xám kèm `title` giải thích vì sao
+// không bấm được, và hết. Nay nó là **khoá kèm một nút Đề xuất**, và cái nút ấy
+// đi đường hai chữ ký như mọi việc khác trong app này: người nộp ký một, một
+// quản trị KHÁC ký hai.
+//
+// ⚠ `duyetDeXuatGan()` là **cửa thứ TÁM** của luật ấy, và nó nằm ở MÁY CHỦ.
+//   Chỗ này làm mờ nút Duyệt trên đơn của chính mình chỉ để không mời người ta
+//   bấm một thứ chắc chắn bị từ chối — `THIET-KE-QUAN-TRI.md` mục 5 câu cuối.
+//   `do-b111c.mjs` phép KC1 đo bằng cách GỠ hàng rào máy chủ ra: gỡ cả hai lớp
+//   thì tự duyệt chạy được và `person_id` bị ghi thật. Cửa ấy có thật, và nó
+//   không nằm ở file này.
+//
+// ⚠ AI VÀO ĐƯỢC KHU NÀY: `ds_thanh_vien()` gác bằng `co_the_kiem_duyet()`, nên
+//   **thành viên thường không mở được khu này** và không có đường nộp đơn ở
+//   đây. Đó là đúng đối tượng của b111c — người bị luật khoá tay là người CÓ
+//   quyền — nhưng nó cũng nghĩa là một Thành viên thường muốn tự nhận mã người
+//   thì vẫn phải nhắn cho quản trị. Việc ấy còn treo, xem `KE-HOACH.md`.
+
+/**
+ * Hàng việc **Đề xuất gắn mã người cho chính mình**.
+ *
+ * ⚠ Hàng này KHÔNG dùng lại `viecGanNguoi()`, và đó là chủ ý chứ không phải
+ *   quên: hai việc trông giống nhau (cùng một ô nhập mã người) mà đi hai cửa
+ *   máy chủ khác nhau, và hậu quả khác hẳn — một cái gắn NGAY, một cái nộp đơn
+ *   rồi chờ. Gộp lại là để một cái nút nói sai việc nó làm.
+ *
+ * ⚠ Nạp đơn hiện có bằng một vòng máy chủ RIÊNG (`deXuatGanCuaToi`), sau khi
+ *   khối đã nằm trên màn hình. Không chờ nó rồi mới vẽ: người bấm nút đang
+ *   nhìn một khung vừa mở ra, và một khung trắng chờ mạng thì trông như hỏng.
+ */
+export function viecDeXuatGan(t, cay, napLai) {
+  const treeId = cay.treeId;
+
+  const oNhap = document.createElement('input');
+  oNhap.type = 'text';
+  oNhap.placeholder = 'gõ tên hoặc mã người — ví dụ P0012';
+  oNhap.autocomplete = 'off';
+  oNhap.style.cssText =
+    'padding:6px 9px;border:1px solid #dcd5cb;border-radius:7px;background:#fff;' +
+    'font:inherit;font-size:13px;font-family:ui-monospace,monospace;min-width:190px';
+
+  // Cùng ô gợi ý của `viecGanNguoi()`, cùng lý do: máy chủ lọc, trần 10 dòng,
+  // trang này không giữ danh sách người nào trong bộ nhớ (cây thật 681 người).
+  ganGoiY(oNhap, {
+    tim: async (chuoi) => (await timNguoiTrongCay(treeId, chuoi)).ds,
+    ve: dongNguoi,
+    giaTri: (m) => m.maNguoi,
+  });
+
+  const oLyDo = document.createElement('input');
+  oLyDo.type = 'text';
+  oLyDo.placeholder = 'vì sao bạn là người này (không bắt buộc)';
+  oLyDo.autocomplete = 'off';
+  oLyDo.style.cssText =
+    'padding:6px 9px;border:1px solid #dcd5cb;border-radius:7px;background:#fff;' +
+    'font:inherit;font-size:13px;min-width:260px;flex:1';
+
+  const bao = dongBao();
+
+  // ⚠ Hai nhịp, như mọi việc đụng tới quyền. Nộp đơn thì lùi lại được (có nút
+  //   Rút), nhưng nó gửi một việc sang bàn người khác — và một cú bấm lỡ tay
+  //   gửi đi thì người kia đã đọc rồi.
+  const b = nutHaiNhip('Nộp đề xuất', 'Bấm lần nữa để nộp', false, async () => {
+    const kq = await nopDeXuatGan(treeId, oNhap.value, oLyDo.value);
+    return xong(kq, bao, napLai, 'Không nộp được đề xuất.');
+  });
+
+  const hop = hangViec('Đề xuất mã người cho chính bạn', [oNhap, oLyDo, b],
+    'Bạn KHÔNG tự gắn mã người cho mình được — luật này không có ngoại lệ, kể ' +
+    'cả Quản trị hệ thống, vì tự trỏ mình vào một cụ tổ là mở quyền sửa ra cả ' +
+    'một nhánh. Đường đi là nộp đề xuất ở đây, rồi MỘT QUẢN TRỊ KHÁC xét. ' +
+    'Đơn chỉ có hiệu lực trong ' + cumCay(cay) + '.', bao);
+
+  // Đơn đang chờ + lần bị từ chối gần nhất, nạp sau và vẽ vào đúng chỗ này.
+  const oDon = document.createElement('div');
+  oDon.style.cssText = 'margin-top:10px';
+  hop.append(oDon);
+
+  deXuatGanCuaToi(treeId).then((d) => {
+    if (d && d.coDon) {
+      oDon.append(veDonCuaToi(d, napLai));
+      // Máy chủ coi nộp lần hai là SỬA đơn cũ, không đẻ đơn thứ hai — nói
+      // thẳng điều đó trên nút, đừng để người ta sợ nộp trùng.
+      b.dataset.chuDong = 'Sửa đề xuất';
+      b.textContent = 'Sửa đề xuất';
+      if (!oNhap.value) oNhap.value = d.maNguoi || '';
+      if (!oLyDo.value) oLyDo.value = d.lyDo || '';
+    }
+    if (d && d.lanTuChoi) oDon.append(veLanTuChoi(d.lanTuChoi));
+  });
+
+  return hop;
+}
+
+/** Đơn của chính mình đang chờ xét — kèm nút Rút. */
+function veDonCuaToi(d, napLai) {
+  const hop = document.createElement('div');
+  hop.style.cssText =
+    'padding:10px 12px;border:1px solid #e0d8cc;border-radius:9px;background:#fffdf9';
+
+  const dong = document.createElement('div');
+  dong.style.cssText = 'font-size:13px;color:#2a2622';
+  dong.append(document.createTextNode('Đang chờ xét: '));
+
+  const ma = document.createElement('span');
+  ma.textContent = d.maNguoi || '';
+  ma.style.cssText = 'font-family:ui-monospace,monospace;font-weight:600';
+  dong.append(ma);
+
+  if (d.tenNguoi && d.tenNguoi !== d.maNguoi) {
+    dong.append(document.createTextNode(' — ' + d.tenNguoi));
+  }
+  hop.append(dong);
+
+  if (d.taoLuc) {
+    const g = document.createElement('div');
+    g.textContent = 'Nộp lúc ' + gioVietNam(d.taoLuc);
+    g.style.cssText = 'margin-top:3px;font-size:12px;color:#8a8078';
+    hop.append(g);
+  }
+
+  const bao = dongBao();
+  const b = nutHaiNhip('Rút đơn', 'Bấm lần nữa để rút', false, async () => {
+    const kq = await rutDeXuatGan(d.id);
+    return xong(kq, bao, napLai, 'Không rút được đơn.');
+  });
+
+  const hang = document.createElement('div');
+  hang.style.cssText = 'margin-top:8px';
+  hang.append(b);
+  hop.append(hang, bao);
+  return hop;
+}
+
+/**
+ * Lần bị từ chối gần nhất, **kèm lý do người xét đã ghi**.
+ *
+ * ⚠ Đây là nửa thứ hai của việc bắt buộc ghi lý do ở máy chủ (`21` mục 7, đo:
+ *   Q14a). Máy chủ giữ câu trả lời mà màn hình không đọc ra thì luật ấy chỉ
+ *   làm khó người xét chứ chẳng giúp ai: người nộp thấy đơn biến mất, không
+ *   biết vì sao, và nộp lại y nguyên.
+ */
+function veLanTuChoi(l) {
+  const hop = document.createElement('div');
+  hop.style.cssText =
+    'margin-top:8px;padding:9px 12px;border:1px solid #e6cfc6;border-radius:9px;' +
+    'background:#fdf6f3';
+
+  const d = document.createElement('div');
+  d.style.cssText = 'font-size:12px;color:#8a3a2a;line-height:1.5';
+  d.textContent = 'Lần trước bị từ chối'
+    + (l.maNguoi ? ' (xin mã ' + l.maNguoi + ')' : '')
+    + (l.xetLuc ? ' lúc ' + gioVietNam(l.xetLuc) : '') + ': ' + (l.loiXet || '');
+  hop.append(d);
+  return hop;
+}
+
+/**
+ * Khung mở ra khi bấm nút **Đề xuất mã người** ở dòng của chính mình: đúng
+ * MỘT việc, không phải cả năm — chép nếp `bangGanNguoi()` của b111b.
+ */
+export function bangDeXuatCuaToi(t, cay, napLai) {
+  const hop = document.createElement('div');
+  hop.style.cssText =
+    'display:flex;flex-direction:column;gap:12px;padding:12px 0 2px;' +
+    'border-top:1px solid #ece6dd';
+  hop.append(dongCay(cay));
+  hop.append(viecDeXuatGan(t, cay, napLai));
+  return hop;
+}
+
+/**
+ * Khối **duyệt đơn** của cây đang xét. Trả `null` khi không có đơn nào — một
+ * khung rỗng mang tiêu đề *"Đơn đề xuất"* nói sai một câu: rằng đây là chỗ
+ * thường có việc phải làm.
+ *
+ * ⚠ HỎI THEO `cay` NGƯỜI DÙNG ĐANG XÉT, không theo `phien.treeId` — luật 5a
+ *   của `THIET-KE-QUAN-TRI.md`, và ô chọn cây của b111b là chỗ nó tới từ.
+ */
+export async function veKhoiDeXuatGan(cay, duocDoiQuyen, napLai) {
+  const ds = await dsDeXuatGan(cay.treeId);
+  if (!ds.length) return null;
+
+  const hop = document.createElement('div');
+  hop.style.cssText =
+    'margin-top:18px;padding:0 14px 14px;border:1px solid #e6e0d8;' +
+    'border-radius:10px;background:#faf8f5';
+
+  const tieu = document.createElement('div');
+  tieu.style.cssText = 'padding:13px 0 2px;font-size:13px;font-weight:600;color:#2a2622';
+  tieu.textContent = 'Đơn đề xuất gắn mã người — ' + cumCay(cay)
+    + ' (' + ds.length + ')';
+  hop.append(tieu);
+
+  const dan = document.createElement('div');
+  dan.style.cssText = 'font-size:12px;color:#8a8078;line-height:1.5;max-width:720px';
+  dan.textContent =
+    'Mỗi đơn là một người tự nhận mình là ai trong sơ đồ. Duyệt là gắn mã ấy ' +
+    'cho tài khoản họ, tức mở quyền sửa bản thân, tổ tiên đường thẳng và toàn ' +
+    'bộ con cháu của người ấy. Đơn của chính bạn thì bạn không xét được — luật ' +
+    'hai chữ ký, và máy chủ gác chứ không phải màn hình.';
+  hop.append(dan);
+
+  for (const d of ds) hop.append(veMotDon(d, duocDoiQuyen, napLai));
+  return hop;
+}
+
+/** Một đơn: ai · tự nhận là ai · lý do · và hai (hoặc ba) cái nút. */
+function veMotDon(d, duocDoiQuyen, napLai) {
+  const hop = document.createElement('div');
+  hop.style.cssText =
+    'margin-top:10px;padding:11px 12px;border:1px solid #e0d8cc;' +
+    'border-radius:9px;background:#fffdf9';
+
+  const ai = document.createElement('div');
+  ai.style.cssText = 'font-size:13px;color:#2a2622';
+  const em = document.createElement('span');
+  em.textContent = d.email || '(không rõ email)';
+  em.style.cssText = 'font-weight:600;word-break:break-all';
+  ai.append(em);
+  if (d.maNgan) {
+    const m = document.createElement('span');
+    m.textContent = ' · ' + d.maNgan;
+    m.style.cssText = 'font-family:ui-monospace,monospace;font-size:12px;color:#5b4533';
+    ai.append(m);
+  }
+  if (d.laCuaToi) ai.append(huyHieu('Đơn của bạn', false));
+  hop.append(ai);
+
+  const nhan = document.createElement('div');
+  nhan.style.cssText = 'margin-top:4px;font-size:13px;color:#2a2622';
+  nhan.append(document.createTextNode('Tự nhận là '));
+  const ma = document.createElement('span');
+  ma.textContent = d.maNguoi || '';
+  ma.style.cssText = 'font-family:ui-monospace,monospace;font-weight:600';
+  nhan.append(ma);
+  if (d.tenNguoi && d.tenNguoi !== d.maNguoi) {
+    nhan.append(document.createTextNode(' — ' + d.tenNguoi));
+  }
+  hop.append(nhan);
+
+  // Trường trống thì KHÔNG vẽ hàng đó (`CLAUDE.md` mục 7).
+  if (d.lyDo) {
+    const l = document.createElement('div');
+    l.textContent = '“' + d.lyDo + '”';
+    l.style.cssText =
+      'margin-top:4px;font-size:12px;color:#6a625a;line-height:1.5;max-width:720px';
+    hop.append(l);
+  }
+
+  if (d.taoLuc) {
+    const g = document.createElement('div');
+    g.textContent = 'Nộp lúc ' + gioVietNam(d.taoLuc);
+    g.style.cssText = 'margin-top:3px;font-size:12px;color:#8a8078';
+    hop.append(g);
+  }
+
+  // ⚠ NÓI TRƯỚC KHI AI BẤM: mã này đang gắn cho người khác thì máy chủ sẽ từ
+  //   chối ở `gan_nguoi_cho_thanh_vien()` (một mã chỉ gắn cho MỘT tài khoản,
+  //   đo: Q18). Để người xét bấm rồi mới đọc câu từ chối là bắt họ đoán xem
+  //   mình vừa làm sai gì.
+  if (d.maDangCo) {
+    const c = document.createElement('div');
+    c.textContent = 'Mã này hiện đang gắn cho ' + d.maDangCo
+      + '. Duyệt sẽ bị máy chủ từ chối — gỡ mã ở tài khoản kia trước, hoặc từ '
+      + 'chối đơn này kèm lý do.';
+    c.style.cssText =
+      'margin-top:6px;padding:7px 9px;border-radius:7px;background:#fdf6f3;' +
+      'font-size:12px;color:#8a3a2a;line-height:1.5;max-width:720px';
+    hop.append(c);
+  }
+
+  const bao = dongBao();
+
+  // ⚠ KHOÁ SẴN KÈM LÝ DO, không mở ra rồi mới giải thích (chủ dự án,
+  //   08/09/2026). Hai lý do khoá, và chúng khác hẳn nhau:
+  //     · `laCuaToi` — **cửa thứ TÁM**, và đây là cả điểm của b111c;
+  //     · `!duocDoiQuyen` — quản trị gia phả xem được đơn (máy chủ cho đọc) mà
+  //       không xét được, vì xét đơn này là đổi quyền.
+  const khoa = d.laCuaToi || !duocDoiQuyen;
+
+  const bDuyet = nutHaiNhip('Duyệt', 'Bấm lần nữa để duyệt', khoa, async () => {
+    const kq = await duyetDeXuatGan(d.id);
+    return xong(kq, bao, napLai, 'Không duyệt được đơn này.');
+  });
+  if (khoa) {
+    bDuyet.title = d.laCuaToi
+      ? 'Đơn của chính bạn — người nộp không ký luôn chữ thứ hai. Nhờ một quản '
+        + 'trị khác xét, hoặc rút đơn.'
+      : 'Bạn xem được đơn này nhưng không xét được — việc ấy thuộc chủ gia phả '
+        + 'và Quản trị hệ thống.';
+  }
+
+  const oLyDo = document.createElement('input');
+  oLyDo.type = 'text';
+  oLyDo.placeholder = 'lý do từ chối — bắt buộc';
+  oLyDo.autocomplete = 'off';
+  oLyDo.disabled = khoa;
+  oLyDo.style.cssText =
+    'padding:6px 9px;border:1px solid #dcd5cb;border-radius:7px;background:#fff;' +
+    'font:inherit;font-size:13px;min-width:220px;flex:1';
+
+  const bTuChoi = nutHaiNhip('Từ chối', 'Bấm lần nữa để từ chối', khoa, async () => {
+    const kq = await tuChoiDeXuatGan(d.id, oLyDo.value);
+    return xong(kq, bao, napLai, 'Không từ chối được đơn này.');
+  }, true);
+
+  const hang = document.createElement('div');
+  hang.style.cssText =
+    'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:9px';
+  hang.append(bDuyet, oLyDo, bTuChoi);
+
+  // Người nộp KHÔNG xét được đơn mình, nhưng vẫn rút được — và đó là đường
+  // duy nhất họ tự đóng được đơn của mình.
+  if (d.laCuaToi) {
+    const bRut = nutHaiNhip('Rút đơn', 'Bấm lần nữa để rút', false, async () => {
+      const kq = await rutDeXuatGan(d.id);
+      return xong(kq, bao, napLai, 'Không rút được đơn.');
+    });
+    hang.append(bRut);
+  }
+
+  hop.append(hang, bao);
+  return hop;
+}
+
 export function cayCuaPhien(phien) {
   return {
     treeId: (phien && phien.treeId) || null,

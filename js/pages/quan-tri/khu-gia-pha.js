@@ -5,7 +5,12 @@
 //            người lạ thấy tên", và ô đặt cây mặc định của hệ thống.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, config, utils/id, quan-tri/o-goi-y
-// Phiên bản: 0.7.1 · Cập nhật: 09/09/2026 (b110b)
+// Phiên bản: 0.7.2 · Cập nhật: 14/09/2026 21:10 (b111c)
+//            0.7.2 ⚠ VÁ lỗi chủ dự án báo 14/09/2026: cột *Cây làm việc*
+//            hỏi `duocMoi` **trước** `coTheXem`. Bản cũ không bao giờ vẽ
+//            nút Nhận cho Quản trị hệ thống (xem được mọi cây nhờ cờ) hay
+//            cho lời mời vào cây mặc định (mọi người xem được). Máy chủ
+//            không sai một chữ nào — xem khối chú thích ở `veOThaoTac()`.
 //            0.7.1 chỉ đổi CHỮ trong hộp *Dựng gia phả mới*: nói rõ quyền
 //            dựng cây là cờ riêng của tài khoản (`tai_khoan.duoc_tao_cay`,
 //            `luoc-do/17-quyen-tao-cay.sql`), **tách hẳn** khỏi vai Quản trị
@@ -325,16 +330,40 @@ function veOCongTac(c, phien) {
 function veOThaoTac(c, phien, napLai) {
   const td = o('', 'padding:10px;text-align:center');
 
-  if (c.coTheXem) {
-    td.append(veDauTich(c, phien));
-    return td;
-  }
-
-  // ⚠ ĐỨNG TRƯỚC `daNopDon` — một dòng chưa duyệt là ĐƠN XIN VÀO hoặc LỜI
+  // ⚠⚠ LỜI MỜI ĐỨNG TRƯỚC QUYỀN XEM — vá 14/09/2026, chủ dự án báo
+  //   *"tài khoản hệ thống bấm chấp nhận không được"*. Bản cũ hỏi `coTheXem`
+  //   trước, nên **nút Nhận không bao giờ được vẽ ra** cho ai đã xem được cây
+  //   bằng một đường khác — và có hai đường như thế, cả hai đều thật:
+  //     · **Quản trị hệ thống** — `co_the_xem_cay()` trả `true` ở MỌI cây nhờ
+  //       cờ hệ thống (`16` mục 3), nên người có quyền cao nhất lại là người
+  //       DUY NHẤT không nhận được một lời mời nào;
+  //     · **cây mặc định** — nhánh `cay_mac_dinh()` của cùng hàm ấy mở cây ấy
+  //       cho mọi người đăng nhập, nên lời mời vào đúng cây đó bị che với TẤT CẢ.
+  //
+  //   Máy chủ không hề sai: `ds_gia_pha()` vẫn trả `duoc_moi` + `moi_vai` đầy
+  //   đủ cho cả hai hạng người ấy, và `nhan_loi_moi()` vẫn nhận. Đây là một
+  //   câu `if` đứng sai thứ tự ở trình duyệt, không phải một hàng rào thiếu.
+  //
+  // ⚠ **XEM ĐƯỢC KHÔNG PHẢI LÀ CÓ CHÂN TRONG CÂY.** Một Quản trị hệ thống đọc
+  //   được mọi cây vẫn cần bấm Nhận để có một dòng `tree_members` mang
+  //   `approved` — thứ `vai_tro()` đọc, thứ quyền trực hệ và ô gắn mã người
+  //   neo vào. Bỏ qua nó là để một lời mời treo mãi: không ai nhận được mà
+  //   cũng không ai từ chối được.
+  //
+  //   Nên khi cả hai cờ cùng đúng thì vẽ **cả hai** thứ: dấu tích (họ đã xem
+  //   được, lấy làm cây làm việc được ngay) và khối Nhận / Từ chối.
+  //
+  // ⚠ Vẫn đứng TRƯỚC `daNopDon` — một dòng chưa duyệt là ĐƠN XIN VÀO hoặc LỜI
   //   MỜI (b107), và `ds_gia_pha()` đã tách rõ hai cờ. Xem cùng lý lẽ ở
   //   `khoi-dong.js` nhánh `duocmoi`.
   if (c.duocMoi) {
+    if (c.coTheXem) td.append(veDauTich(c, phien));
     td.append(veKhoiNhanTuChoi(c, td, napLai));
+    return td;
+  }
+
+  if (c.coTheXem) {
+    td.append(veDauTich(c, phien));
     return td;
   }
 

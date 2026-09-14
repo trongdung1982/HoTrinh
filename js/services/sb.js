@@ -5,7 +5,15 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.17.0 · Cập nhật: 10/09/2026 (b111b)
+// Phiên bản: 0.18.0 · Cập nhật: 14/09/2026 21:40 (b111c)
+//            0.18.0 sáu cửa **ĐƠN ĐỀ XUẤT GẮN MÃ NGƯỜI**
+//            (`luoc-do/21-de-xuat-gan-nguoi.sql`): `nopDeXuatGan()` ·
+//            `rutDeXuatGan()` · `deXuatGanCuaToi()` · `dsDeXuatGan()` ·
+//            `duyetDeXuatGan()` · `tuChoiDeXuatGan()`.
+//            ⚠ Chúng KHÔNG mở khoá việc tự gắn mã người cho mình — luật ấy
+//            giữ nguyên. Chúng mở một đường thứ hai đi qua **hai chữ ký**:
+//            người nộp ký một, một quản trị KHÁC ký hai. `duyet_de_xuat_gan()`
+//            là **cửa thứ TÁM** của luật không-tự-đặt-quyền-cho-mình.
 //            0.17.0 `dsTaiKhoanHeThong()` đọc thêm **`soCayGan` · `nguoiGan`**
 //            (`luoc-do/20-nguoi-duoc-gan.sql`) — cột *Người được gắn* của tấm
 //            *Toàn hệ thống*. Câu hỏi ấy XUYÊN CÂY, mà `dsCayCuaTaiKhoan()`
@@ -1688,6 +1696,139 @@ export async function datHoTenTaiKhoan(userId, hoTen) {
     return { ok: false, loi: noiTuChoi(data, 'Không đặt được họ tên.') };
   }
   return { ok: true, loi: null, hoTen: data.hoTen || '' };
+}
+
+// ============================================================
+// Đơn ĐỀ XUẤT gắn mã người — `luoc-do/21-de-xuat-gan-nguoi.sql`
+// ============================================================
+//
+// ⚠⚠ SÁU CỬA NÀY KHÔNG MỞ KHOÁ VIỆC TỰ GẮN MÃ NGƯỜI CHO MÌNH.
+//
+// Luật *"không ai đặt quyền cho chính mình"* (`THIET-KE-NHIEU-CAY.md` mục
+// 11.3) giữ nguyên từng chữ: `gan_nguoi_cho_thanh_vien()` của `18` vẫn từ
+// chối khi người gắn là chính người được gắn. Sáu cửa dưới đây mở một đường
+// **thứ hai**, và nó đi qua đúng hai chữ ký như đường vào cây: **người nộp ký
+// một, một quản trị KHÁC ký hai.**
+//
+// `duyetDeXuatGan()` là **cửa thứ TÁM** của luật ấy. Bảy cửa trước đã trả giá
+// để có nó — `18` vá bốn cửa thủng ngày 10/09/2026 — nên đừng nghĩ "duyệt thì
+// chắc máy chủ lo rồi": máy chủ có lo, và `do-b111c.mjs` phép KC1 đo bằng
+// cách GỠ từng lớp ra để chứng minh nó lo thật (gỡ cả hai lớp thì tự duyệt
+// chạy được và `person_id` bị ghi — cảnh nguy hiểm có thật).
+//
+// ⚠ Và đây là lý do màn hình KHÔNG được tự đoán: một người vừa đủ quyền duyệt
+//   vừa là người nộp thì nút Duyệt phải mờ và chỉ sang nút **Rút đơn**, chứ
+//   không phải bấm rồi mới nghe máy chủ từ chối.
+
+/**
+ * Nộp (hoặc SỬA) đơn đề xuất gắn mã người cho **chính tài khoản đang đăng
+ * nhập**. Nộp lần hai là sửa đơn cũ, không đẻ đơn thứ hai — máy chủ lo, hàm
+ * này không hỏi trước.
+ *
+ * @param {string} treeId
+ * @param {string} maNguoi mã người trong sơ đồ, ví dụ `P0012`
+ * @param {string} [lyDo] câu người nộp tự viết, có thể bỏ trống
+ */
+export async function nopDeXuatGan(treeId, maNguoi, lyDo = '') {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('nop_de_xuat_gan', {
+    p_tree: treeId, p_person: String(maNguoi || ''), p_ly_do: String(lyDo || ''),
+  });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/** Người nộp tự rút đơn của mình. Người khác KHÔNG rút hộ được, kể cả chủ cây. */
+export async function rutDeXuatGan(id) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('rut_de_xuat_gan', { p_id: id });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/**
+ * Đơn ĐANG CHỜ của chính mình trong một cây, cộng **lần bị từ chối gần nhất**
+ * kèm lý do.
+ *
+ * ⚠ Lấy cả lần bị từ chối là việc thật chứ không phải trang trí: một người
+ *   nộp đơn rồi thấy nó biến mất mà không biết vì sao sẽ nộp lại y nguyên.
+ *   Máy chủ giữ câu trả lời ấy (`loi_xet`), màn hình phải đọc ra.
+ *
+ * @returns {Promise<{coDon:boolean, id?:string, maNguoi?:string,
+ *   tenNguoi?:string, lyDo?:string, taoLuc?:string,
+ *   lanTuChoi?:{maNguoi:string, loiXet:string, xetLuc:string}|null}>}
+ */
+export async function deXuatGanCuaToi(treeId) {
+  const k = layKhach();
+  if (!k) return { coDon: false };
+  const { data, error } = await k.rpc('de_xuat_gan_cua_toi', { p_tree: treeId });
+  if (error || !data) return { coDon: false };
+  return data;
+}
+
+/**
+ * Danh sách đơn đang chờ của MỘT CÂY — chỉ quản trị đọc được. Thành viên
+ * thường đọc ra mảng rỗng, **kể cả đơn của chính họ** (đo: Q13c) — đơn của
+ * mình thì xem bằng `deXuatGanCuaToi()`.
+ *
+ * `laCuaToi` và `maDangCo` là hai thứ màn hình cần mà không tự suy được:
+ * cái đầu để làm mờ nút Duyệt cho đúng cửa thứ tám, cái sau để nói *"mã này
+ * hiện đang gắn cho ai"* trước khi ai bấm.
+ *
+ * @returns {Promise<Array<{id:string, userId:string, email:string,
+ *   maNgan:string, maNguoi:string, tenNguoi:string, lyDo:string,
+ *   taoLuc:string, laCuaToi:boolean, maDangCo:string}>>}
+ */
+export async function dsDeXuatGan(treeId) {
+  const k = layKhach();
+  if (!k) return [];
+  const { data, error } = await k.rpc('ds_de_xuat_gan', { p_tree: treeId });
+  if (error || !Array.isArray(data)) return [];
+  return data.map((d) => ({
+    id: d.id,
+    userId: d.user_id,
+    email: d.email || '',
+    maNgan: d.ma_ngan || '',
+    maNguoi: d.person_id || '',
+    tenNguoi: d.ten_nguoi || '',
+    lyDo: d.ly_do || '',
+    taoLuc: d.tao_luc || '',
+    laCuaToi: d.la_cua_toi === true,
+    maDangCo: d.ma_dang_co || '',
+  }));
+}
+
+/**
+ * ⚠⚠ CỬA THỨ TÁM — ký chữ thứ hai lên một đơn.
+ *
+ * Máy chủ từ chối khi người bấm là chính người nộp, và nó từ chối **trước**
+ * khi chạm vào `tree_members`. Duyệt xong thì việc gắn đi qua đúng
+ * `gan_nguoi_cho_thanh_vien()` của `18`, không ghi thẳng — hai đường ghi là
+ * hai chỗ để lệch nhau (đo: Q18, mã bị người khác chiếm giữa chừng thì đơn
+ * KHÔNG bị đánh dấu đã duyệt).
+ */
+export async function duyetDeXuatGan(id) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('duyet_de_xuat_gan', { p_id: id });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/**
+ * Từ chối một đơn, **bắt buộc kèm lý do** — máy chủ từ chối chính lệnh từ
+ * chối nếu lý do trống (đo: Q14a). Người nộp đọc lại được câu ấy.
+ */
+export async function tuChoiDeXuatGan(id, lyDo) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('tu_choi_de_xuat_gan', {
+    p_id: id, p_ly_do: String(lyDo || ''),
+  });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
 }
 
 // ============================================================
