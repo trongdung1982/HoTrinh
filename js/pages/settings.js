@@ -4,8 +4,13 @@
 //            đường sang Chọn gia phả · Sao lưu & khôi phục · Xuất/Nhập GEDCOM
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, services/tuong-thich, services/sb, utils/text, pages/export-image
-// Phiên bản: 1.32.0 · Cập nhật: 12/09/2026 12:45
-//            1.32.0: thêm lại khối Chọn gia phả để đổi nhanh cây gia phả
+// Phiên bản: 1.32.2 · Cập nhật: 14/09/2026 (b113)
+//            1.32.0 (AGY, 12/09) thêm lại khối Chọn gia phả · 1.32.1 (b113,
+//            cùng phiên) gỡ vì đoán đó là tái sinh một quyết định b103 đã bỏ
+//            có chủ ý · 1.32.2 (b113, chủ dự án xác nhận cùng ngày): khối này
+//            CẦN có trong Cài đặt — lối tắt đổi cây, khác khu 1 QuanTri.html
+//            (quản lý đầy đủ: xin quyền, công tắc chủ cây). Phục hồi nguyên
+//            văn bản 1.32.0, không đổi `quantri.html`/khu 1.
 // ============================================================
 //
 // Màn hình này tồn tại vì MỘT việc: đặt và bỏ người trung tâm mặc định của
@@ -143,10 +148,9 @@ export function openSettings(xuLy = {}) {
   tieuDe.style.cssText = 'font-size:19px;font-weight:600';
   hop.append(tieuDe);
 
-  // ⚠ BA KHỐI ĐÃ DỜI SANG TRANG QUẢN TRỊ, và thứ tự dời KHÔNG theo thứ tự
-  //   trong kế hoạch — nó theo *khu bên kia đã viết xong chưa*:
+  // ⚠ HAI KHỐI ĐÃ DỜI HẲN SANG TRANG QUẢN TRỊ, và thứ tự dời KHÔNG theo thứ
+  //   tự trong kế hoạch — nó theo *khu bên kia đã viết xong chưa*:
   //
-  //     · **Gia phả**        → khu 1 `#gia-pha`,    viết xong b103. Dời.
   //     · **Đơn chờ duyệt**  → khu 2 `#thanh-vien`, viết xong b106. Dời.
   //     · **Duyệt nội dung** → khu 3 `#kiem-duyet`, viết xong b98.  Dời.
   //
@@ -154,6 +158,13 @@ export function openSettings(xuLy = {}) {
   //   rút ra từ chính việc *Đơn chờ duyệt* phải nằm lại ba bước liền: **khối
   //   chỉ được gỡ khi khu bên kia đã viết xong, không phải khi kế hoạch nói
   //   tới nó.** Gỡ sớm là cắt một chức năng đang có mà không mở gì thay thế.
+  //
+  //   ⚠ **Khối Gia phả KHÔNG theo luật trên — nó ở lại có chủ ý (b113,
+  //   14/09/2026), dù khu 1 `#gia-pha` đã viết xong từ b103.** Từng bị gỡ
+  //   đúng một phiên (suy đoán là tái sinh một quyết định cũ), chủ dự án xác
+  //   nhận ngay sau đó: khối này là LỐI TẮT đổi cây bạn ĐÃ có chân, đứng cạnh
+  //   khu 1 chứ không thay thế nó — khu 1 còn làm được ba việc khối này không
+  //   làm: thấy cây CHƯA có chân, bấm Xin quyền, bật công tắc chủ cây.
   veKhoiQuanLy(hop);
   veKhoiMacDinh(hop);
   veKhoiHienThi(hop);
@@ -370,7 +381,9 @@ function veKhoiHienThi(vao) {
 // ============================================================
 //
 // Mở màn hình Chọn gia phả để đổi nhanh sang cây gia phả khác ngay từ Cài đặt
-// của index.html mà không cần phải chuyển sang trang Quản trị.
+// của index.html mà không cần phải chuyển sang trang Quản trị. Đứng CẠNH khu 1
+// `QuanTri.html#gia-pha`, không thay thế — xem lý do ở khối comment "HAI KHỐI
+// ĐÃ DỜI" phía trên `openSettings()`.
 
 function veKhoiChonGiaPha(vao) {
   if (!xuLyNgoai.onMoChonGiaPha) return null;
@@ -395,7 +408,6 @@ function veKhoiChonGiaPha(vao) {
   vao.append(khoi);
   return khoi;
 }
-
 
 // ============================================================
 // Khối "Sao lưu & khôi phục" — việc 7

@@ -249,8 +249,17 @@ console.log('\nPHẦN E — đường vào trang (settings.js)');
 kiem('Cài đặt KHÔNG còn khối Duyệt nội dung (đã dời sang khu 3)',
      !/veKhoiKiemDuyet/.test(JS_ST), 'khối cũ còn nằm lại — nay có hai đường vào');
 
-kiem('  và cũng không còn khối Gia phả (đã dời sang khu 1)',
-     !/function veKhoiGiaPha/.test(JS_ST), 'khối cũ còn nằm lại');
+// ⚠ PHẦN NÀY ĐỔI CHIỀU LẦN THỨ HAI, cùng ngày 14/09/2026 (b113). Khối Gia phả
+//   từng bị gỡ ở b103 (08/09) rồi phép ở đây canh *"đã gỡ chưa"* — đúng một
+//   phiên sau, chủ dự án xác nhận khối này CẦN CÓ (lối tắt đổi cây, đứng CẠNH
+//   khu 1 chứ không thay thế). Nên chiều đúng từ nay là NGƯỢC LẠI: khối phải
+//   CÒN. Phép cũ (canh *"đã gỡ"*) từng bị AGY 12/09 lách qua bằng cách đổi tên
+//   hàm (`veKhoiGiaPha` → `veKhoiChonGiaPha`) mà không ai biết — bài học giữ
+//   lại bằng cách canh CẢ tên hàm LẪN chữ trên nút, không chỉ một trong hai.
+kiem('Cài đặt CÒN khối Gia phả — lối tắt đổi cây, cạnh khu 1 (b113)',
+     /function veKhoiChonGiaPha/.test(JS_ST) && /'Chọn gia phả khác'/.test(JS_ST) &&
+     /veKhoiChonGiaPha\(hop\)/.test(JS_ST),
+     'khối bị gỡ, hoặc còn hàm mà quên gọi trong openSettings()');
 
 // ⚠ PHÉP NÀY ĐỔI CHIỀU LẦN THỨ HAI 08/09/2026 (b106). Tới b105 nó canh *"khối
 //   Đơn chờ duyệt PHẢI CÒN"* — gỡ trước khi có chỗ nhận là cắt đứt đường duyệt

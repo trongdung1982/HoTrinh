@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 14/09/2026 22:51 · Bước gần nhất: **b112** — ngữ cảnh đầu phiên
-212 KB → 81 KB · Việc kế tiếp: **b113 — rà lại việc Antigravity làm 12/09***
+*Cập nhật 14/09/2026 · Bước gần nhất: **b113** — rà việc Antigravity làm 12/09
+· Việc kế tiếp: **b114 — quantri3: bản đồ và chốt thiết kế**
 
 ⚠ **TRẦN CỨNG 250 DÒNG.** File này nạp ở đầu MỌI phiên, nên mỗi dòng thừa ở
 đây là dòng thừa nhân với số phiên còn lại. Vượt trần là dấu hiệu có thứ đứng
@@ -26,7 +26,7 @@ quantri3 vào app chính sau đó mới làm việc khác."*
 | Làm thứ | Bước | Việc | Mô hình |
 |---|---|---|---|
 | ~~1~~ | ~~b112~~ | ✓ **XONG 14/09/2026** — 212 KB → 81 KB, giảm 61,8% | Opus |
-| 2 | **b113** | Rà lại việc Antigravity làm 12/09 | Sonnet |
+| ~~2~~ | ~~b113~~ | ✓ **XONG 14/09/2026** — khối Gia phả ở lại Cài đặt (xác nhận, cạnh khu 1) + vá phép đo mù; workflow 3 repo vệ tinh giữ, dùng chung backend là cố ý | Sonnet |
 | 3 | **b114** | quantri3 — bản đồ và chốt thiết kế *(không sửa mã)* | Opus |
 | 4 | **b115** | quantri3 — khung + điều hướng | Opus |
 | 5 | **b116** | quantri3 — khu Gia phả | Sonnet |
@@ -48,7 +48,7 @@ bước (`THIET-KE-NHIEU-CAY.md` mục 12 ghi sẵn luật ấy).
 Let's Encrypt hạn 02/12/2026; địa chỉ cũ `301` về đây)*. Máy chủ thật có **hai
 cây** — NTB 59 người và Nguyễn Phúc Giáo 681 người — mã cây **3 chữ số**. Trang
 `QuanTri.html` là khung **bốn khu**. Phân quyền đã đo bằng REST, 5/5 hàng rào
-đạt (b94, b96). Chặng đã đóng: **b87 → b111c** — mỗi bước một file `nhat-ky/`.
+đạt (b94, b96). Chặng đã đóng: **b87 → b113** — mỗi bước một file `nhat-ky/`.
 
 ⚠ **`domains/` chưa sửa một dòng nào** trong cả mười file, suốt cả cuộc chuyển
 nhà từ Drive sang Supabase. Đó là nghiệm thu của luật phân lớp, giữ nguyên.
@@ -104,19 +104,6 @@ cây → **`THIET-KE-NHIEU-CAY.md`**; bốn khu của `QuanTri.html` →
 **`THIET-KE-QUAN-TRI.md`**. Thứ tự theo **"đau nhất trước"**, cộng một luật thứ
 hai: **việc nào đụng `vai_tro()` thì đứng sau việc không đụng** — sai ở nền
 móng thì mọi thứ xây bên trên sai theo, và không có gì báo lỗi.
-
-### b113 — Rà lại việc Antigravity làm 12/09/2026
-
-⚠ Luật 3 của `PHOI-HOP-AI.md`: *"Antigravity làm gì thì Claude Code rà lại;
-việc chưa rà không được coi là đã tích hợp."* Ba thay đổi dưới đây đã nằm
-trong `main` từ 12/09 mà chưa ai rà.
-
-| | |
-|---|---|
-| **Rà cái gì** | ① `ee7e894` — `js/pages/chon-gia-pha.js` + `js/pages/settings.js`: trả lại ô chọn nhanh cây gia phả vào Cài đặt. ② `0a80e26` + `377ae8b` + `9cb4ef7` — `.github/workflows/dong-bo-sang-levantrac.yml`: tự động đồng bộ sang **ba repo khác** (`LeVanTrac`, `HoTrinh`, `NguyenQuang`) |
-| **⚠ Việc ② đáng đọc kỹ nhất** | Một workflow tự đẩy mã sang repo khác là thứ chạy **khi không ai nhìn**. Trả lời bằng phép đo: nó đẩy **những file nào**, sang **repo nào**, bằng **khoá của ai**, và có mang theo `js/cau-hinh.js` — file chứa khoá Supabase — hay không |
-| **Rà bằng gì** | `/kiem-tra` · `kiem-thu/kiem-trang-quan-tri.mjs` · **nhìn bằng mắt** màn Cài đặt. AGY khai *"chưa sửa mã hay cấu hình"* ở lượt 13/09 nhưng lượt 12/09 thì CÓ — khai của AGY không thay được phép đo |
-| **Điểm dừng** | Mỗi thay đổi một dòng kết luận: giữ · sửa · gỡ. Và với ②, một câu dứt khoát cho *"nó có đẩy khoá đi đâu không"* |
 
 ### b114 — quantri3: bản đồ và chốt thiết kế · KHÔNG SỬA MÃ
 
