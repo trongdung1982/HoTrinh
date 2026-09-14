@@ -1,6 +1,6 @@
 # THIẾT KẾ — Trang Quản trị (`QuanTri.html`)
 
-*Cập nhật 09/09/2026 (b110b) · Chốt trước khi viết dòng mã đầu tiên*
+*Cập nhật 15/09/2026 (b114) · Mục 9 thêm bản đồ đối chiếu quantri3.html — chốt trước khi viết dòng mã đầu tiên của b115*
 
 > **Tên file cố định, không có `_Vxx`** — lịch sử để git giữ.
 >
@@ -501,3 +501,247 @@ tới 1429 dòng vì đi đường ngược lại, và chính điều đó đẻ
 ⚠ **`quan-tri.js` hiện nay ĐỔI TÊN thành `khu-kiem-duyet.js`** — đây là **đổi
 tên file mã**, việc phải hỏi chủ dự án trước (`CLAUDE.md` mục 9). Hỏi ở bước
 b100, đừng tự làm.
+
+---
+
+## 9. Bản đồ quantri3.html → mã hiện có (b114, 15/09/2026)
+
+> Nguồn: `../codex/dua_claude.ai/quantri3.html` (2620 dòng, NGOÀI repo),
+> prototype tĩnh chủ dự án đã duyệt 13/09/2026. Dữ liệu mẫu và JavaScript
+> trong đó là mô phỏng — bảng dưới đây chỉ giữ lại **hành vi**, không chép
+> HTML/JS mẫu. **Không dòng mã nào trong repo đổi ở bước này.**
+
+### 9.1 Bốn khu cũ vẫn đúng, đổi khung điều hướng
+
+Prototype giữ đúng bốn khu (Gia phả · Tài khoản · Kiểm duyệt · Quản trị hệ
+thống) nhưng **mỗi khu nay có trang chi tiết riêng** thay vì một bảng phẳng:
+
+| Route/section prototype | Khu cũ tương ứng | Ghi chú |
+|---|---|---|
+| `#gia-pha` (4 chip: manage/member/available/create) | Khu 1 | To hơn hẳn thiết kế cũ — xem 9.3 |
+| `#tree-members`, `#tree-invite`, `#tree-requests`, `#tree-detail` | Khu 2 (một cây) | Trang chi tiết theo `data-tree`, mở từ dòng trong `#gia-pha` |
+| `#tai-khoan`, `#account-detail` | Cài đặt *(tài khoản của tôi)* + Khu 2 (bảng *Toàn hệ thống* cột *Người được gắn*) | `#account-detail` chính là nơi cắm khối b111c — xem 9.2② |
+| `#kiem-duyet`, `#kiem-duyet-chitiet` | Khu 3 | Gần như y nguyên `khu-kiem-duyet.js`, thêm bộ lọc cây/người |
+| `#quan-tri-he-thong` (7 tab: tong-quan/so-tai-khoan/tao-tai-khoan/cay-mac-dinh/sao-luu/thung-rac/nhat-ky) | Khu 4 + phần *Toàn hệ thống* của Khu 2 | To hơn hẳn — gộp cả `khu-tai-khoan-he-thong.js` và Khu 4 (Sao lưu) vào một khu, thêm ba tab mới: Tạo tài khoản, Cây mặc định, Nhật ký |
+| `#sys-account-trees`, `#public-info-detail`, `#sys-default-tree-selector` | *(mới)* | Trang chi tiết của `#quan-tri-he-thong` |
+
+### 9.2 Trả lời chốt ba câu (`KE-HOACH.md` b114)
+
+**① Khung hiện tại giữ lại gì?** Bốn khu cốt lõi giữ nguyên tên và ranh giới
+`import` (mục 1: `QuanTri.html` vẫn không nạp cây). Đổi là **cách đi lại**:
+thanh dọc sticky (mục 3 hiện tại) → thanh dọc **vẫn đúng cho danh sách bốn
+khu chính** — và prototype cũng vẽ đúng thế: CSS của nó là thanh trái
+245px, dưới 850px mới thành hàng thẻ ngang (`@media(max-width:850px)`), khớp
+từng chữ mục 3. Câu *"bốn tab NGANG"* ở `KE-HOACH.md` b114 là đọc nhầm
+*(đính chính 15/09)*. Cái thật sự mới là **lớp thứ hai**: mỗi khu có thêm trang
+chi tiết con (`tree-detail`, `account-detail`, `sys-account-trees`…), điều
+hướng bằng nút "← Quay lại", KHÔNG có trong thiết kế mục 3. `quan-tri.css`
+vẫn là nơi DUY NHẤT biết bề ngang — layout `.layout` (subnav 205px + 1fr) của
+trang chi tiết cũng phải khai báo ở đó, không rải sang file khác. Hai con số
+cạnh mục điều hướng (luật 1 mục 3) giữ nguyên, cộng thêm huy hiệu đếm trong
+subnav của trang chi tiết (ví dụ *Đơn xin vào ①* ở `#tree-detail`).
+
+**② Khối b111c cắm vào đâu?** Xác nhận đúng gợi ý của `KE-HOACH.md`: nút
+**Đề xuất mã người** đứng ở khu Tài khoản, cạnh cột *"Tôi được gắn với ai
+trong sơ đồ?"* trong bảng *Các gia phả tôi đang tham gia* (`#tai-khoan`) —
+prototype đã có sẵn cột này, chỉ cần thêm nút khi ô đang là "Chưa gắn người".
+Khối **xét đơn** (`dsDeXuatGan`/`duyetDeXuatGan`/`tuChoiDeXuatGan`) cắm vào
+`#tree-detail` (trang chi tiết một cây), là một mục con cạnh *"Đơn xin vào"*
+trong thanh subnav — không phải một tab riêng ở `#quan-tri-he-thong`, vì đề
+xuất gắn mã người là việc của TỪNG CÂY, đúng luật 5a *"gọi tên cây"*.
+
+**③ Bộ ảnh `xem-khung-quan-tri.mjs` đi đường nào?** Viết lại kịch bản ở
+b118 theo route mới, **giữ nguyên cấu trúc** (mở app → đăng nhập → `#route`
+→ chụp) chỉ đổi danh sách route/selector cần chụp — từ 4 khu phẳng thành
+4 khu + khoảng 8 trang chi tiết, ước lượng ảnh tăng từ 25 lên ~35-40. Không
+sửa file `.mjs` ở b114.
+
+### 9.3 Bảng đối chiếu — mỗi route/chip/nút → hàm `sb.js`
+
+**Khu 1 — Gia phả (`#gia-pha`)**
+
+| Prototype | Hàm `sb.js` | Trạng thái |
+|---|---|---|
+| Chip *Tôi quản lý* — bảng 9 cột | `layDanhSachGiaPha()` | ✓ đã có |
+| Cột *Thành viên và quyền* → mở `#tree-members` | `dsThanhVien(treeId)` | ✓ đã có |
+| Cột *Thông tin công khai* → mở `#public-info-detail` | *(mới)* | ✗ THIẾU — xem 9.4 |
+| Cột *Cho thấy tên* (checkbox) | `datChoNguoiLaThayTen(treeId, cho)` | ✓ đã có |
+| Cột *Cây hiển thị tại sơ đồ* (cây mở ra khi vào sơ đồ, của riêng tôi) | `chonGiaPha(treeId)` → `dat_cay_dang_mo` | ✓ đã có. ⚠ **KHÔNG phải `datCayMacDinh`** — hàm ấy là cây mặc định CẤP HỆ THỐNG cho người lạ *(đính chính 15/09, xem 9.5)* |
+| Cột *Mời gia nhập* → `#tree-invite` | `moiVaoCay(treeId, email, vai, maNguoi)`, gợi ý bằng `timTaiKhoan` | ✓ đã có |
+| Cột *Đơn xin gia nhập* → `#tree-requests` | `dsChoDuyet(treeId)`, `duyetThanhVien`, `tuChoiThanhVien` | ✓ đã có |
+| Cột *Xóa cây* (chỉ chủ cây) | *(mới, khác hẳn `xinXoaCay` hiện có)* | ✗ THIẾU — xem 9.4, mâu thuẫn với luật thùng rác hiện hành |
+| Chip *Tôi là thành viên* — *Thoát khỏi gia phả* | *(mới)* `roi_cay(p_tree)` | ✗ THIẾU, đã kiểm: `tree_members` không có luật RLS xoá, và `go_thanh_vien()` **cố ý** chặn tự gỡ *("việc khác, có tên khác, chưa ai xin")*. Hàm mới phải chặn chủ cây *(bàn giao trước)* |
+| Chip *Tôi là thành viên* — *Xin đổi quyền* | *(mới)* | ✗ THIẾU, và **không chỉ là một hàm**: lá đơn phải nằm ở đâu đó để chủ cây duyệt — cần cột (vd `tree_members.xin_vai`) + hàm nộp/rút/duyệt. Ô duyệt nằm ở `#tree-requests` |
+| Chip *Có thể xin vào* — *Nộp đơn*/*Rút đơn* | `xinVaoCay(loiNhan, treeId)` | ✓ nộp đã có. **Rút đơn THIẾU**, đã kiểm: `tu_choi_loi_moi()` chỉ xoá dòng có `moi_luc` *(lời mời)*, không xoá đơn. Hàm mới `rut_don_xin_vao(p_tree)`: xoá dòng của CHÍNH MÌNH, `approved = false`, `moi_luc is null` |
+| Chip *Tạo gia phả mới* (Tên + Ghi chú) | `taoGiaPhaMoi(ten, maCay, note)` | ✓ đã có, kiểm tra form prototype không cho gõ `maCay` tay — đúng, vì `THIET-KE-QUAN-TRI.md` mục 6 ghi "mã cây do hệ thống sinh" |
+
+**`#tree-members`, `#tree-invite`, `#tree-requests`, `#tree-detail`**
+
+| Prototype | Hàm `sb.js` | Trạng thái |
+|---|---|---|
+| Bảng thành viên + đổi vai | `dsThanhVien`, `doiVaiThanhVien` | ✓ đã có |
+| *Bàn giao chủ sở hữu* (chỉ chủ cây) | `doiChuCay(treeId, userIdMoi)` | ✓ đã có |
+| *Xóa khỏi gia phả* | `goThanhVien(treeId, userId)` | ✓ đã có |
+| Form Mời + ba ô lọc gộp (tên/email/mã) | `moiVaoCay`, gợi ý bằng `timTaiKhoan` — ba ô lọc đồng thời là ĐÚNG hành vi `o-goi-y.js` đã có (`ganGoiY`, `dongTaiKhoan`) | ✓ đã có, chỉ cần nối lại UI ba ô thay vì một ô tìm |
+| *Thu hồi lời mời* | `goThanhVien(treeId, userId)` | ✓ **đã có** *(đính chính 15/09)*: hàm xoá dòng bất kể `approved`, gác bằng `co_the_quan_tri()`, và `18` KHÔNG thêm rào lời mời vào hàm này. ⚠ Nhãn nút phải là *Thu hồi lời mời*, không phải *Xoá khỏi gia phả* — người ta chưa từng ở trong |
+| `#tree-requests` — Duyệt/Từ chối đơn | `duyetThanhVien`, `tuChoiThanhVien` | ✓ đã có |
+| `#tree-detail` — subnav *Tổng quan/Thành viên/Lời mời/Đơn xin vào/Vòng đời* | Bốn mục đầu dùng lại hàm trên; **"Vòng đời"** không rõ nghĩa trong prototype (không có nội dung mẫu) | ⚠ HỎI chủ dự án nghĩa của tab *Vòng đời* trước khi viết mã |
+
+**`#tai-khoan`, `#account-detail`**
+
+| Prototype | Hàm `sb.js` | Trạng thái |
+|---|---|---|
+| Hồ sơ cá nhân (tên, email, ngày đăng ký) | `nguoiDangNhap()`, `layPhien()` | ✓ đã có |
+| Ô *Quyền cấp hệ thống* — hiện cờ QTHT/duoc_tao_cay của chính mình | `layPhien().laQuanTriHeThong` · máy chủ có `duoc_tao_cay()` | ⚠ cờ QTHT **đã có**; cờ dựng cây máy chủ có hàm nhưng `sb.js` **chưa bọc** — thêm vào `layPhien()`, không đẻ lời gọi thứ năm. Lời mời QTHT đang chờ: THIẾU, theo luật 2 ở 9.5 |
+| Nút *Chấp nhận*/*Từ chối* lời mời QTHT | *(mới)* | ✗ THIẾU HẲN — xem 9.4, đây là điểm cần chủ dự án chốt trước |
+| Bảng *Các gia phả tôi đang tham gia* (+ *Xem thêm*) | `dsCayCuaTaiKhoan(userId)` gọi cho chính mình, hoặc hàm tương đương "cây của tôi" | ⚠ kiểm tra: `dsCayCuaTaiKhoan` hiện chỉ thấy dùng ở khu Thành viên/Quản trị hệ thống (xem cây của NGƯỜI KHÁC) — cần xác nhận nó cũng gọi được cho `userId = chính mình`, hoặc cần bọc lại |
+| Nút *Đề xuất mã người* (b111c, xem 9.2②) | `nopDeXuatGan`, `rutDeXuatGan`, `deXuatGanCuaToi` | ✓ đã có — chỉ cần cắm vào UI |
+| Đổi mật khẩu, Đăng xuất | `dangXuat()` (đổi mật khẩu qua Supabase Auth, không thấy hàm riêng trong 56 hàm) | ⚠ Đổi mật khẩu THIẾU hàm `sb.js` — cần bọc `supabase.auth.updateUser({password})` |
+| `#account-detail` (mở từ khu 4/`#sys-account-trees`) | `dsCayCuaTaiKhoan(userId)` cho tài khoản ĐANG XEM | ✓ đã có |
+
+**`#kiem-duyet`, `#kiem-duyet-chitiet`**
+
+| Prototype | Hàm `sb.js` | Trạng thái |
+|---|---|---|
+| Ba tấm lọc + bảng | `dsKiemDuyet`, `demChoKiemDuyet`, `coTheKiemDuyet` | ✓ đã có, khớp `khu-kiem-duyet.js` hiện nay |
+| Bộ lọc `kd-filter-tree`/`kd-filter-author` | *(không cần RPC riêng)* | ✓ lọc phía trình duyệt trên kết quả `dsKiemDuyet` đã tải — không gọi thêm máy chủ |
+| Mở chi tiết, bảng TRƯỚC/SAU | `chiTietKiemDuyet(treeId, id)` | ✓ đã có |
+| Duyệt / Từ chối và hoàn tác | `duyetThayDoi`, `tuChoiThayDoi` | ✓ đã có |
+
+**`#quan-tri-he-thong` (7 tab)**
+
+| Tab | Hàm `sb.js` | Trạng thái |
+|---|---|---|
+| *Tổng quan* — 5 thẻ số | `dsTaiKhoanHeThong()` (đếm), `dem_du_lieu` cho sao lưu | ⚠ `dem_du_lieu(p_tree)` đã ghi THIẾU ở mục 6 cũ, vẫn thiếu |
+| *Sổ tài khoản* — bảng 8 cột + hành động | `dsTaiKhoanHeThong`, `datQuanTriHeThong`, `datDuocTaoCay` | ✓ ba cột đầu đã có |
+| — cột *Trạng thái* (Khóa/Mở khóa tài khoản) | *(mới)* | ✗ THIẾU HẲN — không có khái niệm "khoá tài khoản" trong 56 hàm, xem 9.4 |
+| — nút *Xóa tài khoản* (khóa 60 ngày rồi xoá vĩnh viễn) | `xoaTaiKhoan(userId, emailXacNhan, chuMoi)` | ✗ KHÔNG KHỚP — hàm hiện có xoá NGAY LẬP TỨC kèm chuyển chủ cây, prototype tả một luồng khoá-mềm 60 ngày hoàn toàn khác. Đây là mâu thuẫn thiết kế, không phải chỗ thiếu hàm — xem 9.4 |
+| — nút *Bổ nhiệm QTHT* / *Hủy quyền* | `datQuanTriHeThong(userId, bat)` | ⚠ hàm hiện có là SET TRỰC TIẾP một chữ ký; prototype tả hai chữ ký (mời + `chap_nhan_moi_qtht`) — xem 9.4 |
+| — nút *Cấp quyền*/*Thu hồi* Tạo gia phả | `datDuocTaoCay(userId, bat)` | ✓ đã có, khớp đúng |
+| *+ Tạo tài khoản mới* (form) | *(mới)* | ✗ THIẾU HẲN — cần RPC/Edge Function tạo user trong `auth.users` + hồ sơ, không có trong 56 hàm |
+| *Cây mặc định* — chọn cây công khai làm mặc định cho khách | `layCayMacDinh()` · `datCayMacDinh(treeId)` → `cau_hinh.cay_mac_dinh` | ✓ **đã có** *(đính chính 15/09 — bản b114 đầu ghi THIẾU là đọc ngược: chính `sb.js` ghi *"công tắc CẤP HỆ THỐNG"*)*. ⚠ Đây là cửa DUY NHẤT cho người không có chân đọc được một cây — `THIET-KE-NHIEU-CAY.md` mục 11.8 cuối |
+| — bảng trường công khai của cây mặc định | *(mới)* | ✗ THIẾU — liên quan tới `#public-info-detail`, xem dưới |
+| *Sao lưu & khôi phục* | *(đã có tại Apps Script)* | ⚠ Khu 4 cũ ghi rõ "chỉ hiện trạng thái, không có nút Khôi phục" — prototype khớp đúng (nút Khôi phục `disabled`). Bảng đối chiếu 5 số cần `dem_du_lieu(p_tree)` — THIẾU. Nút *Tải về* file sao lưu — cần đọc từ nơi Apps Script ghi, kiểm tra cơ chế hiện có (`sao-luu/SaoLuu.gs`) trả URL thế nào |
+| *Thùng rác* (cây + đơn xin xóa của chủ cây) | `xinXoaCay`, `huyXinXoaCay`, `duyetXoaCay`, `phucHoiCay`, `donThungRac` | ⚠ Có sẵn nhưng **thời hạn lưu giữ khác nhau**: `THIET-KE-NHIEU-CAY.md` mục 11.6 nói 30 ngày, prototype nói **120 ngày** cho cả cây lẫn nhật ký — cần chủ dự án chốt lại một số, xem 9.4 |
+| — *Nhật ký hệ thống trong thùng rác* | *(mới)* | ✗ THIẾU HẲN — không có khái niệm "nhật ký vào thùng rác 120 ngày" ở đâu trong thiết kế cũ |
+| *Nhật ký* — lọc + xoá thủ công (chọn dòng/chọn theo >30 ngày) | *(mới)* | ✗ THIẾU HẲN — không có bảng nhật ký hệ thống nào trong 56 hàm hay trong thiết kế cũ (mục 7 điều 2 nói *"`change_log` đã là nhật ký kiểm toán"* — nhưng nhật ký ở đây rõ ràng là một khái niệm KHÁC, gồm cả đăng nhập/khoá tài khoản/sao lưu, không chỉ sửa dữ liệu cây) |
+
+**`#sys-account-trees`, `#public-info-detail`, `#sys-default-tree-selector`**
+
+| Prototype | Hàm `sb.js` | Trạng thái |
+|---|---|---|
+| `#sys-account-trees` — các cây của MỘT tài khoản, đổi vai/gỡ | `dsCayCuaTaiKhoan(userId)`, `doiVaiThanhVien`, `goThanhVien` | ✓ đã có, đúng luật 5b② *"cột xuyên cây mở ra bảng theo từng cây"* |
+| `#public-info-detail` — bật/tắt từng trường công khai theo cây | *(mới)* | ✗ THIẾU HẲN — không có bảng cấu hình "trường nào công khai theo từng cây" trong lược đồ hiện có; đây là tính năng RIÊNG TƯ CẤP TRƯỜNG, khác hẳn cờ `cho_nguoi_la_thay_ten` (chỉ bật/tắt cả tên) |
+| `#sys-default-tree-selector` | `datCayMacDinh(treeId)` · danh sách cây từ `layDanhSachGiaPha()` | ✓ đã có — xem dòng *Cây mặc định* ở bảng trên |
+
+### 9.4 Tính năng prototype có mà thiết kế cũ (mục 1-8) chưa nói tới
+
+*Bản ghi lúc đối chiếu, TRƯỚC khi hỏi chủ dự án.* ⚠ **Bốn mục ⚠⚠ đã chốt, và
+mục 9 đã đính chính — đọc 9.5 trước, danh sách này chỉ còn làm chứng.**
+
+1. **⚠⚠ "Khoá tài khoản" và "xoá tài khoản 60 ngày"** — hoàn toàn mới, và nút
+   *Xóa tài khoản* của prototype (khoá mềm, giữ 60 ngày, bảo tồn `persons`)
+   **khác hẳn** `xoaTaiKhoan()` hiện có (xoá cứng ngay, chuyển chủ cây bắt
+   buộc). Hai luồng không ghép được — phải chọn một. Gợi ý: đổi `xoaTaiKhoan`
+   thành luồng mềm theo prototype, thêm cột `tai_khoan.khoa_luc`/`xoa_luc`.
+2. **⚠⚠ Bổ nhiệm QTHT hai chữ ký** — `datQuanTriHeThong()` hiện có là **một
+   chữ ký** (QTHT gán thẳng). Prototype thêm bước mời + tự chấp nhận
+   (`chap_nhan_moi_qtht`). `THIET-KE-NHIEU-CAY.md` mục 11 (dòng 692) mô tả
+   `dat_quan_tri_he_thong()` chỉ có luật "không tắt người cuối cùng", KHÔNG
+   nhắc hai chữ ký — nghĩa là tính năng này chưa từng được chốt, prototype tự
+   thêm. Cần hỏi thẳng: có áp hai chữ ký cho QTHT giống hệt lời mời vào cây
+   không, hay giữ nguyên một chữ ký cho gọn?
+3. **⚠⚠ Thời hạn thùng rác 120 ngày** — `THIET-KE-NHIEU-CAY.md` mục 11.6 (qua
+   `CHI-DAN.md`) chốt **30 ngày**; prototype ghi **120 ngày** cho cả cây và
+   nhật ký. Một trong hai sai — hỏi chủ dự án số nào đúng trước khi đụng
+   `16-thung-rac-cay.sql`.
+4. **⚠⚠ Xóa cây tức thời bởi chủ cây** (khu Gia phả, chip *Tôi quản lý*, nút
+   *Xóa cây* dòng 31 — trong prototype nút này KHÔNG có `data-*`/`id` nào,
+   tức chưa được nối dây, chỉ là hình vẽ) — ghi chú dòng 585 nói thẳng
+   *"cây mất luôn ngay lập tức… không phải hành động làm đơn xin xóa"*, và
+   bảng *"Cây gia phả chủ cây đã xóa"* ở `#quan-tri-he-thong` (dòng 603-637)
+   vẽ đúng một hàng rào KHÁC: QTHT thấy cây đã bị ẩn NGAY rồi mới chọn
+   *Duyệt đưa vào thùng rác* hoặc *Khôi phục lại cho chủ cây*. Nghĩa là
+   prototype đổi hẳn thứ tự: **ẩn khỏi chủ cây trước, QTHT xử lý sau** — khác
+   luồng hiện có là **chủ cây XIN, QTHT duyệt rồi mới ẩn** (`xinXoaCay` →
+   `duyetXoaCay`). Đây là mâu thuẫn thật với `THIET-KE-NHIEU-CAY.md` mục
+   11.6, không phải lỗi ghi chú — phải hỏi chủ dự án trước khi viết mã.
+5. **Nút *Xin đổi quyền* / *Thoát khỏi gia phả*** (chip *Tôi là thành viên*) —
+   hai hàm mới hoàn toàn thiếu: tự thành viên xin đổi vai (khác `doiVaiThanhVien`
+   là QTHT đổi cho người khác) và tự rời cây (khác `goThanhVien` là QTHT gỡ).
+6. **Rút đơn xin vào cây** (chip *Có thể xin vào*) — thiếu hàm đối xứng với
+   `xinVaoCay`.
+7. **Thu hồi lời mời đã gửi** (`#tree-invite`) — thiếu, khác `tuChoiLoiMoi`
+   (người được mời tự chối).
+8. **Tạo tài khoản trực tiếp từ Quản trị hệ thống** — thiếu hẳn, cần đụng
+   `auth.users`, có thể phải qua Edge Function chứ không phải RPC thường
+   (`security definer` không tạo được user trong Supabase Auth).
+9. ~~**Cây mặc định CẤP HỆ THỐNG** — thiếu bảng và hai hàm~~ — **SAI, đã có**
+   (`datCayMacDinh` chính là nó). Xem 9.5.
+10. **Thông tin công khai theo TỪNG TRƯỜNG** (`#public-info-detail`) —
+    thiết kế cũ (mục 7 điều 9) chỉ nói *"giấu người còn sống"* là bài toán
+    CHƯA GIẢI; prototype đã vẽ sẵn UI cho nó (8-11 trường, bật/tắt từng ô).
+    Đây là tính năng lớn, cần một lược đồ riêng (`luoc-do/22-...`), không
+    làm trong b115-b118 — nên tách thành bước riêng SAU b120, đừng cố nhét.
+11. **Nhật ký hệ thống** (đăng nhập, khoá tài khoản, bổ nhiệm QTHT, sao lưu…)
+    — khác hẳn `change_log` (chỉ ghi thay đổi dữ liệu cây). Cần bảng mới
+    (`system_log` hay tương tự) + cơ chế ghi ở mọi hàm liên quan + thùng rác
+    nhật ký riêng. Việc lớn, đề nghị tách khỏi b115-b118.
+12. **Form Mời — ba ô lọc đồng thời** (tên/email/mã, bấm một kết quả điền cả
+    ba) — không phải hàm mới, chỉ là đổi UI của `o-goi-y.js` hiện có (đã đúng
+    hành vi, chỉ cần nối dây ba ô thay vì một ô).
+
+### 9.5 ✓ CHỐT 15/09/2026 — bốn câu đã hỏi, bảng đã đính chính, việc phải viết
+
+**Bốn câu — chủ dự án chọn bản prototype cả bốn.** Nguồn đúng là
+`THIET-KE-NHIEU-CAY.md` mục **11.9**; ghi lại gọn ở đây để người làm giao diện
+không phải lật sang: ① xoá tài khoản = **khoá mềm 60 ngày** · ② bổ nhiệm QTHT
+= **hai chữ ký** · ③ thùng rác cây **120 ngày** · ④ chủ xoá cây thì cây **ẩn
+ngay**, QTHT duyệt vào thùng rác hoặc trả lại.
+
+**Đính chính bảng 9.3** — bản đầu do agent con dựng, rà lại từng ô "THIẾU"
+bằng cách đọc thẳng `sb.js` và `luoc-do/`:
+
+| Ô | Bản đầu ghi | Thật ra |
+|---|---|---|
+| Cây mặc định hệ thống | THIẾU | **Đã có** — `datCayMacDinh` |
+| *Cây hiển thị tại sơ đồ* | `datCayMacDinh` | **`chonGiaPha`** — đọc ngược hai khái niệm |
+| Thu hồi lời mời | THIẾU | **Đã có** — `goThanhVien` |
+| Rút đơn · thoát cây · xin đổi quyền | THIẾU | Đúng thiếu, nay kèm lý do đã kiểm |
+
+⚠ **Bài học:** danh sách 56 hàm của `sb.js` **không phải** danh sách hàm máy
+chủ — `luoc-do/` định nghĩa hơn 70 hàm, nhiều hàm chưa bọc. Nói *"thiếu"* thì
+grep `luoc-do/` trước.
+
+**Việc phải viết, chia theo chỗ nó đụng:**
+
+| Nhóm | Việc | Đụng |
+|---|---|---|
+| **A · chỉ giao diện** | khung + bốn khu + trang chi tiết; ba ô lọc form Mời; nút *Thu hồi lời mời*; ô cây mặc định; khối b111c *(9.2②)* | `QuanTri.html` · `pages/quan-tri/` · `quan-tri.css` |
+| **B · `sb.js` không SQL** | `doiMatKhau(moi)` → `auth.updateUser`; thêm cờ *dựng cây* vào `layPhien()` | `sb.js` + ⚠⚠ `kiem-thu/sb-gia.mjs` |
+| **C · SQL nhỏ, không đụng vai** | `rut_don_xin_vao` · `roi_cay` | file `luoc-do/22` mới |
+| **D · SQL theo bốn quyết định** | QTHT hai chữ ký · khoá mềm tài khoản · `16` sửa ẩn-ngay + 120 ngày · xin đổi quyền *(cột + ba hàm)* | `14` · `16` · `18` — ⚠ **đụng `la_quan_tri_he_thong()` và `co_the_xem_cay()`**, nền móng quyền |
+| **E · tách sau b120** | tạo tài khoản mới · công khai theo từng trường · nhật ký hệ thống | lược đồ mới mỗi việc |
+
+⚠ **Nhóm D đứng SAU nhóm A** theo đúng luật thứ tự của `KE-HOACH.md` — *việc
+đụng vai đứng sau việc không đụng*. Giao diện của bốn quyết định vẽ trước,
+nút gọi hàm chưa có thì **mờ sẵn kèm lý do** *("máy chủ chưa hỗ trợ")*, không
+giả vờ chạy.
+
+⚠⚠ **Tạo tài khoản mới cần khoá `service_role`** — `auth.admin.createUser`
+không gọi được bằng khoá công khai. Khoá ấy **tuyệt đối không vào repo**:
+repo Public, và lịch sử git giữ cả bản đã xoá. Đường duy nhất là Edge Function
+đọc khoá từ biến bí mật của Supabase — việc riêng, nhóm E.
+
+**Còn một câu chưa hỏi:** tab *Vòng đời* ở `#tree-detail` prototype để trống.
+Đoán: chỗ đặt *Bàn giao chủ* + *Xoá cây*. Hỏi lúc làm khu Gia phả, không chặn
+khung.
+
+⚠ **Khuyến nghị cũ, viết trước khi hỏi** *(9.5 thay thế)*: mục 5, 6, 7, 12 và khung điều hướng
+(9.1/9.2①) là **vừa sức bốn bước đã định**, không đụng luật đã chốt ở đâu.
+Mười mục còn lại (1, 2, 3, 4, 8, 9, 10, 11 và câu hỏi *"Vòng đời"* ở
+`#tree-detail`) đều cần **chủ dự án chốt một câu trả lời cụ thể trước khi
+viết mã**, vì bốn mục đánh dấu ⚠⚠ (1, 2, 3, 4) mâu thuẫn thẳng với luật đã
+có (không phải chỗ thiếu hàm mà là chọn lại luật), và ba mục 9, 10, 11 nên
+tách thành bước riêng sau b120 vì mỗi mục là một lược đồ bảng mới, không
+phải một hàm lẻ.

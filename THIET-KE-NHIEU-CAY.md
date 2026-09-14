@@ -568,6 +568,9 @@ họ, và hàm nhận từ chối đúng chỗ ấy.
 
 ### 5. ✓ CHỐT 08/09/2026 (b107) — CỜ QUẢN TRỊ HỆ THỐNG BẬT ĐƯỢC TRÊN MÀN HÌNH
 
+> ⚠ **ĐỔI 15/09/2026 — mục 11.9 luật 2:** bật cờ nay là **hai chữ ký** (mời →
+> tự chấp nhận). Mọi luật dưới đây vẫn đúng; chỉ bước "bật thẳng" là bỏ.
+
 Chủ dự án chốt: **có nút bật/tắt cờ `tai_khoan.la_quan_tri_he_thong`, nhưng
 không ai trỏ vào chính mình.** Trước b107 cột ấy không có hàm nào đặt — cố ý,
 vì đó đúng là lỗ hổng b102 bắt được (*ai cũng tự đặt mình thành Quản trị hệ
@@ -585,6 +588,11 @@ người thì tắt lẫn nhau về không được. Phép đo b107 phải có m
 từ chối. Khoá cả nhà rồi vứt chìa là hỏng theo kiểu chỉ sửa được bằng SQL tay.
 
 ### 6. ✓ CHỐT 09/09/2026 (b110) — XOÁ GIA PHẢ: HAI CHỮ KÝ + THÙNG RÁC 30 NGÀY
+
+> ⚠ **ĐỔI 15/09/2026 — mục 11.9 luật 3 và 4:** thùng rác **120 ngày**, và cây
+> **ẩn ngay** khi chủ bấm xoá — dòng ⚠ *"lá đơn không được khoá cây"* bên dưới
+> đã bị lật. Hai chữ ký và *"thùng rác không đóng cửa với máy sao lưu"* giữ
+> nguyên. Mục này để lại làm chứng vì sao luật cũ từng đúng.
 
 <!-- ⚠ Nhãn bước sửa 09/09 (ket-thuc b108): mục này viết ra khi "xoá gia phả"
      còn mang số b108, trước khi b108 đổi nghĩa thành "mời vào gia phả" và
@@ -822,3 +830,37 @@ thứ dễ quên nhất khi trả lời câu *"ai đọc được cây này?"*. 
 Ngoài ba thứ ấy: người ngoài đọc **0 người**, **0 dòng** `tree_members`,
 `vai_tro()` trả `null`, cả ba hàm `co_the_*()` trả `false` (Q1–Q6). Và vai
 `quan_tri` của cây A **không** mang sang cây B (Q12·Q13).
+
+### 9. ✓ CHỐT 15/09/2026 (b114) — BỐN LUẬT ĐỔI THEO PROTOTYPE `quantri3`
+
+Chủ dự án duyệt `quantri3.html` ngày 13/09; b114 đối chiếu nó với luật đã có
+và tìm ra bốn chỗ **nói ngược** chứ không phải chỗ thiếu. Hỏi thẳng từng câu
+ngày 15/09/2026, và **cả bốn câu chủ dự án đều chọn bản prototype.** Mục này
+đứng trên mục 11.5, 11.6 và phần xoá tài khoản ở `14-loi-moi.sql` — chỗ nào
+nói khác thì mục này đúng.
+
+| # | Luật cũ | Luật mới | Đụng SQL nào |
+|---|---|---|---|
+| 1 | Xoá tài khoản là xoá **ngay**, gõ lại email | **Khoá mềm 60 ngày**, hết hạn mới xoá hẳn | `xoa_tai_khoan()` ở `14` |
+| 2 | Bật cờ QTHT là **một** chữ ký | **Hai chữ ký**: QTHT mời → người được mời tự bấm *Chấp nhận* | `dat_quan_tri_he_thong()` ở `14` |
+| 3 | Thùng rác cây giữ **30** ngày | Giữ **120** ngày | `don_thung_rac()` ở `16` |
+| 4 | Chủ **xin** xoá → cây vẫn chạy → QTHT duyệt mới ẩn | Chủ **xoá** → cây **ẩn ngay** → QTHT duyệt vào thùng rác, hoặc trả lại cho chủ | `xin_xoa_cay()` · `co_the_xem_cay()` ở `16` |
+
+⚠ **Luật 2 là hàm hai chữ ký thứ hai, và cái bẫy của mục 11.8 áp nguyên.**
+Lời mời QTHT chưa nhận KHÔNG được mang một mẩu quyền nào — cửa `la_quan_tri_he_thong()`
+phải hỏi *"đã nhận chưa"*, không chỉ *"có dòng chưa"*. Và luật *không ai tự đặt
+quyền cho mình* vẫn đúng: người mời không bấm *Chấp nhận* hộ được.
+
+⚠ **Luật 4 lật ngược một dòng ⚠ đã viết ở mục 11.6** — *"một lá đơn xin xoá
+không được khoá cây lại"*. Chủ dự án chọn thế khi đã đọc đúng cái giá ấy trong
+câu hỏi *(xoá nhầm thì cây bị ẩn suốt lúc chờ QTHT)*. Hai điều của 11.6 **vẫn
+giữ nguyên**: vẫn hai chữ ký cho bước vào thùng rác; và **thùng rác đóng cửa
+với người, không đóng cửa với máy sao lưu** — cây đang ẩn chờ duyệt cũng phải
+có trong bản sao lưu đêm. Đọc khối đầu `16` trước khi sửa `co_the_xem_cay()`.
+
+⚠ **Ba câu nhỏ chưa hỏi, chốt lúc viết SQL**, không chặn giao diện:
+① 120 ngày tính từ lúc chủ bấm xoá hay từ lúc QTHT duyệt; ② trong 60 ngày
+khoá, tài khoản có đăng nhập được không *(prototype ngầm định không)* — chặn
+đăng nhập phải đụng `auth.users`, cân nhắc giống việc tạo tài khoản ở
+`THIET-KE-QUAN-TRI.md` mục 9.5; ③ QTHT cuối cùng có bị khoá được không *(luật
+"không tắt người cuối cùng" của 11.5 nên áp sang)*.

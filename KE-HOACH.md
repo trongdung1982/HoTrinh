@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 14/09/2026 · Bước gần nhất: **b113** — rà việc Antigravity làm 12/09
-· Việc kế tiếp: **b114 — quantri3: bản đồ và chốt thiết kế**
+*Cập nhật 15/09/2026 · Bước gần nhất: **b114** — quantri3: bản đồ và chốt thiết kế
+· Việc kế tiếp: **b115 — quantri3: khung + điều hướng**
 
 ⚠ **TRẦN CỨNG 250 DÒNG.** File này nạp ở đầu MỌI phiên, nên mỗi dòng thừa ở
 đây là dòng thừa nhân với số phiên còn lại. Vượt trần là dấu hiệu có thứ đứng
@@ -27,11 +27,12 @@ quantri3 vào app chính sau đó mới làm việc khác."*
 |---|---|---|---|
 | ~~1~~ | ~~b112~~ | ✓ **XONG 14/09/2026** — 212 KB → 81 KB, giảm 61,8% | Opus |
 | ~~2~~ | ~~b113~~ | ✓ **XONG 14/09/2026** — khối Gia phả ở lại Cài đặt (xác nhận, cạnh khu 1) + vá phép đo mù; workflow 3 repo vệ tinh giữ, dùng chung backend là cố ý | Sonnet |
-| 3 | **b114** | quantri3 — bản đồ và chốt thiết kế *(không sửa mã)* | Opus |
+| ~~3~~ | ~~b114~~ | ✓ **XONG 15/09/2026** — bản đồ + 4 luật đổi theo prototype (`THIET-KE-NHIEU-CAY.md` 11.9) | Opus |
 | 4 | **b115** | quantri3 — khung + điều hướng | Opus |
 | 5 | **b116** | quantri3 — khu Gia phả | Sonnet |
 | 6 | **b117** | quantri3 — khu Tài khoản *(gồm chuyển khối b111c sang)* | Opus |
 | 7 | **b118** | quantri3 — khu Kiểm duyệt + Quản trị hệ thống | Sonnet |
+| 7b | **b118b** | SQL cho bốn luật mới *(nhóm D)* — đụng nền móng quyền | Opus |
 | 8 | **b119** | Khu Sao lưu + Số đếm đối chiếu *(số cũ: b112)* | Sonnet |
 | 9 | **b120** | Mã người xuyên cây *(số cũ: b113)* | Sonnet |
 
@@ -48,7 +49,7 @@ bước (`THIET-KE-NHIEU-CAY.md` mục 12 ghi sẵn luật ấy).
 Let's Encrypt hạn 02/12/2026; địa chỉ cũ `301` về đây)*. Máy chủ thật có **hai
 cây** — NTB 59 người và Nguyễn Phúc Giáo 681 người — mã cây **3 chữ số**. Trang
 `QuanTri.html` là khung **bốn khu**. Phân quyền đã đo bằng REST, 5/5 hàng rào
-đạt (b94, b96). Chặng đã đóng: **b87 → b113** — mỗi bước một file `nhat-ky/`.
+đạt (b94, b96). Chặng đã đóng: **b87 → b114** — mỗi bước một file `nhat-ky/`.
 
 ⚠ **`domains/` chưa sửa một dòng nào** trong cả mười file, suốt cả cuộc chuyển
 nhà từ Drive sang Supabase. Đó là nghiệm thu của luật phân lớp, giữ nguyên.
@@ -105,25 +106,25 @@ cây → **`THIET-KE-NHIEU-CAY.md`**; bốn khu của `QuanTri.html` →
 hai: **việc nào đụng `vai_tro()` thì đứng sau việc không đụng** — sai ở nền
 móng thì mọi thứ xây bên trên sai theo, và không có gì báo lỗi.
 
-### b114 — quantri3: bản đồ và chốt thiết kế · KHÔNG SỬA MÃ
+### Dùng chung cho b115 → b118b — quantri3 vào app
 
-⚠ Sản phẩm chốt: `../codex/dua_claude.ai/quantri3.html` (**ngoài
-`Claude_Code`**, ở thư mục cha `Gia_pha/` — đừng tìm trong repo). Prototype
-tĩnh, chủ dự án đã duyệt; dữ liệu và JavaScript trong đó là **mô phỏng**.
+⚠ Prototype: `../codex/dua_claude.ai/quantri3.html` (**ngoài `Claude_Code`**,
+ở thư mục cha `Gia_pha/` — đừng tìm trong repo). Dữ liệu và JavaScript trong
+đó là **mô phỏng**: *"Không bê dữ liệu mẫu, mã giả hoặc các đoạn thử nghiệm vào
+repo chính"* — bàn giao AGY 13/09. Trước khi báo xong mỗi khu: mọi route có
+handler, mọi tab mở đúng, mọi nút thành lời gọi dịch vụ thật *(hoặc mờ kèm lý do)*.
 
-| | |
-|---|---|
-| **Vì sao một bước riêng chỉ để đọc** | Prototype đổi **khung điều hướng** — bốn tab NGANG + trang chi tiết theo ngữ cảnh, thay thanh dọc bốn khu hiện nay. Sửa mã trước khi có bản đồ là vẽ lại bốn khu bằng cách đoán, và đoán sai ở khu thứ ba thì hai khu đầu phải làm lại |
-| **Làm** | Bảng đối chiếu: mỗi `data-route`, mỗi chip, mỗi nút → hàm `sb.js` đã có / chưa có / không cần. Không ô nào để trống — *"chưa biết gọi gì"* phải trả lời ở đây, không phải lúc đang gõ mã |
-| **Chốt ba câu** | ① Khung hiện tại giữ lại gì *(bốn khu đã chạy thật; `quan-tri.css` là chỗ DUY NHẤT biết bề ngang màn hình)*. ② Khối **b111c** cắm vào đâu — prototype viết trước b111c nên **không có khái niệm ấy**; chỗ gần nhất là bảng *Các gia phả liên quan* cột *Mã người*. ③ Bộ ảnh `xem-khung-quan-tri.mjs` 25 cảnh đi đường nào |
-| **⚠ Không bê nguyên** | *"Không bê dữ liệu mẫu, mã giả hoặc các đoạn thử nghiệm vào repo chính"* — `PHOI-HOP-AI.md`, bàn giao 13/09 |
-| **Điểm dừng** | `THIET-KE-QUAN-TRI.md` cập nhật + bảng đối chiếu; **không một dòng mã nào đổi**; chủ dự án xác nhận đúng cái họ đã duyệt với AGY |
+⚠ **Bản đồ đã chốt ở b114 — `THIET-KE-QUAN-TRI.md` mục 9, đọc 9.5 TRƯỚC.**
+Bảng 9.3 bản đầu sai ba ô, đã đính chính. Nói *"hàm này thiếu"* thì grep
+`luoc-do/` trước — 56 hàm `export` của `sb.js` không phải danh sách hàm máy chủ.
+⚠ Khung **KHÔNG đổi sang tab ngang**: prototype vẫn là thanh trái, dưới 850px
+mới thành hàng thẻ, đúng mục 3 cũ *(đính chính b114)*.
 
 ### b115 — quantri3: khung + điều hướng
 
 | | |
 |---|---|
-| **Làm** | Bốn tab ngang + `data-route` → `QuanTri.html` và `js/pages/quan-tri.js`. `quan-tri.css` vẫn là chỗ duy nhất biết bề ngang |
+| **Làm** | Giữ thanh trái bốn khu + `#khu` (mục 3); thêm lớp **trang chi tiết** con có nút *← Quay lại* và `#` riêng (`#tree-detail`…) → `QuanTri.html` · `pages/quan-tri/khung.js`. `quan-tri.css` vẫn là chỗ duy nhất biết bề ngang, kể cả `.layout` của trang chi tiết |
 | **⚠ Bẫy đã biết** | Ba luật khung điều hướng ở `THIET-KE-QUAN-TRI.md` mục 3, và *"`#` lạ bị sửa bằng cách gán lại `location.hash`"* — bộ bất biến có phép canh đúng chỗ ấy |
 | **Điểm dừng** | Bốn tab mở đúng bốn khu cũ, chưa đổi ruột khu nào; 237 phép bất biến vẫn đạt |
 
@@ -131,7 +132,7 @@ tĩnh, chủ dự án đã duyệt; dữ liệu và JavaScript trong đó là **
 
 | | |
 |---|---|
-| **Làm** | Bốn chip *(Tôi quản lý · Tôi là thành viên · Có thể xin vào · Tạo gia phả mới)* + trang chi tiết theo ngữ cảnh cây |
+| **Làm** | Bốn chip *(Tôi quản lý · Tôi là thành viên · Có thể xin vào · Tạo gia phả mới)* + trang chi tiết theo ngữ cảnh cây · nhóm C `luoc-do/22`: `rut_don_xin_vao` · `roi_cay` *(không đụng vai — chạy bàn thử 5433 trước)* · hỏi nghĩa tab *Vòng đời* |
 | **⚠ Giữ nguyên** | Vá 14/09/2026 ở `veOThaoTac()` — **lời mời đứng trước quyền xem**. Chuyển khung mà đánh rơi thứ tự ấy là trả lại đúng lỗi chủ dự án vừa báo |
 | **Điểm dừng** | Nhận / Từ chối lời mời vẫn bấm được bằng tài khoản Quản trị hệ thống |
 
@@ -139,7 +140,7 @@ tĩnh, chủ dự án đã duyệt; dữ liệu và JavaScript trong đó là **
 
 | | |
 |---|---|
-| **Làm** | Bảng tài khoản + trang chi tiết + bảng *Các gia phả liên quan*; chuyển **nút Đề xuất mã người** và **khối xét đơn** của b111c sang đúng chỗ đã chốt ở b114 |
+| **Làm** | Bảng tài khoản + trang chi tiết + bảng *Các gia phả liên quan*; chuyển **nút Đề xuất mã người** và **khối xét đơn** của b111c sang đúng chỗ đã chốt ở b114 *(9.2②: nút ở `#tai-khoan` cạnh cột gắn người · xét đơn ở `#tree-detail`)* · nhóm B: `doiMatKhau` + cờ dựng cây vào `layPhien()` — ⚠ thêm cả ở `sb-gia.mjs` |
 | **⚠ Giữ nguyên ba thứ** | ① nút Duyệt **mờ sẵn kèm lý do** trên đơn của chính mình — cửa thứ TÁM của luật *"không ai tự đặt quyền cho mình"*; ② ô chọn cây riêng, KHÔNG dính cây đang mở của app; ③ cột xuyên cây không bao giờ là chỗ sửa — nó là dòng TÓM TẮT, bấm vào mở bảng theo từng cây |
 | **Điểm dừng** | Nộp đề xuất · tự duyệt bị từ chối · quản trị khác duyệt được — cả ba trên giao diện mới |
 
@@ -150,6 +151,19 @@ tĩnh, chủ dự án đã duyệt; dữ liệu và JavaScript trong đó là **
 | **Làm** | Hai khu còn lại; `xem-khung-quan-tri.mjs` chụp lại **toàn bộ** theo khung mới |
 | **⚠⚠ Nhớ `sb-gia.mjs`** | Thêm cửa vào `sb.js` thì thêm cả ở đó — thiếu một tên là `SyntaxError` lúc nạp, **cả bộ ảnh ra nền trơn**. Đã xảy ra hai lần (b110b, b111) |
 | **Điểm dừng** | Nhìn bằng mắt cả bộ ảnh ở 1280px và 390px; `/kiem-tra` đạt cả 9 |
+
+### b118b — SQL cho bốn luật mới *(nhóm D)* · đụng nền móng quyền
+
+⚠ **Tới bước này tài liệu đi TRƯỚC máy chủ**: `THIET-KE-NHIEU-CAY.md` 11.9 đã
+ghi luật mới, SQL đang chạy vẫn là luật cũ *(30 ngày · xin rồi mới ẩn · một
+chữ ký · xoá cứng)*. Thử trên app trước b118b sẽ thấy lệch — đó không phải lỗi.
+
+| | |
+|---|---|
+| **Làm** | QTHT hai chữ ký · khoá mềm tài khoản 60 ngày · `16`: cây ẩn ngay khi chủ xoá + thùng rác 120 ngày · xin đổi quyền *(cột + nộp/rút/duyệt)* |
+| **Vì sao đứng sau giao diện** | Đụng `la_quan_tri_he_thong()` và `co_the_xem_cay()` — luật *việc đụng vai đứng sau việc không đụng*. Giao diện vẽ trước, nút chưa có máy chủ thì mờ kèm lý do |
+| **⚠ Bẫy đã biết** | Lời mời QTHT chưa nhận KHÔNG mang quyền *(11.8 áp nguyên)* · `co_the_xem_cay()` phải chừa lối vai `sao_luu` *(khối đầu `16`)* · `drop function` xoá cả `grant` · chuỗi dán lại `14`→`16`→`18` |
+| **Điểm dừng** | Phép đo mượn danh nghĩa trên bàn thử 5433 đạt; ba câu nhỏ cuối 11.9 đã hỏi; rồi mới đưa SQL cho chủ dự án dán |
 
 ### b119 — Khu Sao lưu + Số đếm đối chiếu
 
@@ -171,6 +185,9 @@ tĩnh, chủ dự án đã duyệt; dữ liệu và JavaScript trong đó là **
 
 ### Sau b120 — chưa đặt số, chưa chốt
 
+**Nhóm E của quantri3** *(tạo tài khoản mới — ⚠ cần khoá `service_role`, chỉ
+qua Edge Function, khoá **không bao giờ** vào repo Public · công khai theo
+từng trường · nhật ký hệ thống — `THIET-KE-QUAN-TRI.md` 9.5)* ·
 Nhập GEDCOM/Excel qua máy chủ · **khôi phục thật** *(việc nguy hiểm nhất, phải
 kiểm chứng bằng vòng `sao lưu → đổi dữ liệu → khôi phục → dữ liệu quay đúng
 trạng thái cũ`, không phải bằng việc có file JSON)* · nối **quan hệ** bắc qua
