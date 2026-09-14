@@ -3,7 +3,7 @@
 // Vai trò  : Vẽ SVG từ kết quả layout. Chỉ vẽ, không tính toạ độ sơ đồ.
 // Lớp      : domains — được gọi bởi: pages · được phép gọi: utils, config
 // Phụ thuộc: config (LAYOUT, PHOTO), utils/text, utils/image, utils/avatar
-// Phiên bản: 1.9.0 · Cập nhật: 02/09/2026 (bước 83 — nốt cụt đã né vẽ bằng đường gấp khúc)
+// Phiên bản: 1.9.1 · Cập nhật: 10/09/2026 18:45 (bỏ làm mờ/trong suốt cho ảnh đại diện nút biên vợ/chồng)
 // ============================================================
 //
 // Đây là file sẽ sửa nhiều nhất khi chỉnh giao diện. Giữ nó chỉ chứa việc vẽ,
@@ -62,10 +62,10 @@
 //    Nay hai hàng ấy vẽ bằng `chuDuoiBang()`, có nền đặc.
 //
 //    ⚠ **VÀ CÁI THỨ BA, khó thấy nhất: NỀN ĐẶC KHÔNG CHỈ LÀ THỨ TỰ VẼ, NÓ LÀ
-//    ĐỘ ĐỤC.** Ảnh của nút biên vẽ với `opacity 0.7` cho nhạt đi — nên dù nó
-//    nằm ở lượt 2, tức TRÊN mọi đường nối, nét bên dưới vẫn lộ qua 30% và chạy
-//    ngang mặt người (ca Trần Thị Hoài, `kiem-thu/nd-truoc-a.png`). Vẽ sau
-//    KHÔNG cứu được một hình trong suốt. Nay có một đĩa nền đặc lót dưới.
+//    ĐỘ ĐỤC.** Trước đây ảnh nút biên vẽ với `opacity 0.7` làm nét bên dưới lộ qua
+//    và chạy ngang mặt người (ca Trần Thị Hoài, `kiem-thu/nd-truoc-a.png`).
+//    Từ 10/09/2026, ảnh đại diện vợ/chồng không làm mờ/trong suốt nữa (opacity 1),
+//    và đĩa nền đặc lót dưới vẫn được giữ để chặn đường nối không lộ qua.
 //
 // 3. BA LOẠI NÉT CỐ ĐỊNH (QUY-TAC-VE §8), đọc từ `kind` + `relation`. Không
 //    đổi nét theo mật độ: cùng một nốt mà lúc nét này lúc nét kia thì người
@@ -415,21 +415,17 @@ function renderAnhTrongO(node, person, laBien, laTrungTam) {
   g.append(cat);
 
   // ⚠ **ĐĨA NỀN ĐẶC LÓT DƯỚI, và nó là việc thật chứ không phải trang trí.**
-  // Ảnh nút biên vẽ với `opacity 0.7` cho nhạt đi. Vẽ ở lượt 2 nên nó nằm TRÊN
-  // mọi đường nối — nhưng *trên* mà *trong suốt* thì nét vẫn lộ qua 30%, và với
-  // người có nhiều bạn đời thì nét vợ chồng của bà thứ hai chạy thẳng ngang MẶT
-  // bà thứ nhất (ca Trần Thị Hoài, ảnh `kiem-thu/nd-truoc-a.png`).
-  //
-  // Lót đĩa màu NỀN TRANG thì phần nhạt của ảnh hoà với nền trang đúng như
-  // trước, mà nét bên dưới bị chặn hẳn. Chỉ lót cho nút biên: ảnh của nút
-  // thường đã đục hoàn toàn.
+  // Trước đây ảnh nút biên vẽ với `opacity 0.7` cho nhạt đi. Từ 10/09/2026,
+  // ảnh đại diện của vợ/chồng không làm mờ/trong suốt nữa mà vẽ rõ nét (opacity 1).
+  // Đĩa nền đặc màu NỀN TRANG lót dưới vẫn được giữ để chặn hẳn các đường nối
+  // chạy bên dưới vòng ảnh (ca Trần Thị Hoài, ảnh `kiem-thu/nd-truoc-a.png`).
   if (laBien) g.append(tao('circle', { cx, cy, r: R, fill: VE.nenTrang }));
 
   const oAnh = {
     x: cx - R, y: cy - R, width: 2 * R, height: 2 * R,
     'clip-path': 'url(#' + ma + ')',
     preserveAspectRatio: 'xMidYMid slice',
-    opacity: laBien ? 0.7 : 1,
+    opacity: 1,
   };
 
   g.append(tao('image', Object.assign({
