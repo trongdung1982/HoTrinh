@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 15/09/2026 · Bước gần nhất: **b117** — quantri3: khu Tài khoản
-· Việc kế tiếp: **b118 — quantri3: khu Kiểm duyệt + Quản trị hệ thống**
+*Cập nhật 15/09/2026 · Bước gần nhất: **b118** — quantri3: khu Quản trị hệ thống
+· Việc kế tiếp: **b118b — SQL cho bốn luật mới (nhóm D)**
 
 ⚠ **TRẦN CỨNG 250 DÒNG.** File này nạp ở đầu MỌI phiên, nên mỗi dòng thừa ở
 đây là dòng thừa nhân với số phiên còn lại. Vượt trần là dấu hiệu có thứ đứng
@@ -31,7 +31,7 @@ quantri3 vào app chính sau đó mới làm việc khác."*
 | ~~4~~ | ~~b115~~ | ✓ **XONG 15/09/2026** — lớp trang chi tiết `#<khu>/<trang>/<mã>[/<mục>]` + trang một cây (Tổng quan đọc thật); bốn khu cũ không đổi | Opus |
 | ~~5~~ | ~~b116~~ | ✓ **XONG 15/09/2026** — bốn chip khu Gia phả, tên cây bấm sang trang chi tiết; ba mục trang cây điền thật + Vòng đời mới; `rut_don_xin_vao`/`roi_cay` (`22`, chưa dán lên Supabase thật) | Sonnet |
 | ~~6~~ | ~~b117~~ | ✓ **XONG 15/09/2026** — khu 2 = *Tài khoản của tôi* (mở cho MỌI người) + chip *Toàn hệ thống*; trang `#thanh-vien/tai-khoan/<mã>`; nút Đề xuất ở bảng các gia phả, xét đơn ở trang cây; `doiMatKhau` · `chanCuaToi` | Opus |
-| 7 | **b118** | quantri3 — khu Kiểm duyệt + Quản trị hệ thống | Sonnet |
+| ~~7~~ | ~~b118~~ | ✓ **XONG 15/09/2026** — khu thứ tư đổi *Sao lưu* → *Quản trị hệ thống*; sổ tài khoản dời từ chip khu Tài khoản sang đó; trang chi tiết tài khoản đổi khu cha theo; Kiểm duyệt không đổi (đã nối sẵn); 298 phép, 43 ảnh | Sonnet |
 | 7b | **b118b** | SQL cho bốn luật mới *(nhóm D)* — đụng nền móng quyền | Opus |
 | 8 | **b119** | Khu Sao lưu + Số đếm đối chiếu *(số cũ: b112)* | Sonnet |
 | 9 | **b120** | Mã người xuyên cây *(số cũ: b113)* | Sonnet |
@@ -48,9 +48,11 @@ bước (`THIET-KE-NHIEU-CAY.md` mục 12 ghi sẵn luật ấy).
 **App chạy thật tại `https://nguyentrongbac.io.vn`** từ 03/09/2026 *(chứng chỉ
 Let's Encrypt hạn 02/12/2026; địa chỉ cũ `301` về đây)*. Máy chủ thật có **hai
 cây** — NTB 59 người và Nguyễn Phúc Giáo 681 người — mã cây **3 chữ số**. Trang
-`QuanTri.html` là khung **bốn khu**, cộng lớp **trang chi tiết** từ b115 — khu Gia phả (b116) và Tài khoản (b117) đã nối
-vào, hai khu kia còn lại (b118). Phân quyền đã đo bằng REST, 5/5 hàng rào
-đạt (b94, b96). Chặng đã đóng: **b87 → b117** — mỗi bước một file `nhat-ky/`.
+`QuanTri.html` là khung **bốn khu**, cộng lớp **trang chi tiết** từ b115 —
+Gia phả (b116) · Tài khoản (b117) · Kiểm duyệt (đã có từ trước) · Quản trị hệ
+thống (b118) đều đã nối, mỗi khu ít nhất một việc thật. Phân quyền đã đo bằng
+REST, 5/5 hàng rào đạt (b94, b96). Chặng đã đóng: **b87 → b118** — mỗi bước
+một file `nhat-ky/`.
 
 ⚠ **`domains/` chưa sửa một dòng nào** trong cả mười file, suốt cả cuộc chuyển
 nhà từ Drive sang Supabase. Đó là nghiệm thu của luật phân lớp, giữ nguyên.
