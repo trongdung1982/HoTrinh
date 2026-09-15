@@ -99,6 +99,21 @@ qua ngay, và sáu ảnh mới khớp điều định vẽ.
 cuộn ngang dưới hàng thẻ mục; điện thoại thật dùng thanh cuộn nổi nên sẽ không
 thấy — chưa nhìn trên điện thoại thật.
 
+## Còn treo
+
+- Chưa có đường BẤM từ khu Gia phả sang trang cây — b116.
+- Bốn mục của trang cây còn `hienNay` (chưa chuyển) — b116 · b117.
+- Huy hiệu đếm trong thanh mục (*Đơn xin vào ①*) — b116.
+- Hỏi nghĩa mục *Vòng đời* — b116.
+- Trang chi tiết một tài khoản (b117) và một lần sửa (b118) chưa đăng ký vào `TRANG`.
+- Chưa mở trên máy chủ thật, chưa nhìn trên điện thoại thật.
+
+## File đã đụng
+
+- **Mới:** `js/pages/quan-tri/trang-chi-tiet.js` · `js/pages/quan-tri/trang-cay.js` · `nhat-ky/b115-khung-trang-chi-tiet.md`
+- **Sửa:** `js/pages/quan-tri/khung.js` · `quan-tri.css` · `kiem-thu/kiem-trang-quan-tri.mjs` · `KE-HOACH.md` · `CHI-DAN.md` · `THIET-KE-QUAN-TRI.md` · `nhat-ky/INDEX.md` · ngoài repo: `../kiem-thu/xem-khung-quan-tri.mjs`
+- **Chép nguyên / xoá:** không có
+
 ## Đính chính
 
 `KE-HOACH.md` b115 ghi điểm dừng *"237 phép bất biến vẫn đạt"* và địa chỉ
