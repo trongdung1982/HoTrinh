@@ -6,7 +6,7 @@
 //            node supabase/kiem-thu/do-gon.mjs --tat-ca    (in hết nợ cũ)
 //            node supabase/kiem-thu/do-gon.mjs --ha-moc    (nợ đã giảm → khoá mức mới)
 //            node supabase/kiem-thu/do-gon.mjs --lap-moc   (chỉ chạy được khi chưa có sổ)
-// Phiên bản: 0.1.0 · Cập nhật: 15/09/2026 21:54
+// Phiên bản: 0.1.1 · Cập nhật: 15/09/2026 22:10 — đếm byte bỏ `\r` (CRLF không thành nợ tăng)
 // ============================================================
 //
 // LỖI    — vượt trần mà không có trong sổ nợ, hoặc nợ cũ TĂNG. Thoát mã 1.
@@ -92,7 +92,10 @@ for (const [rel, tDong, tByte, tDai] of DAU_PHIEN) {
   const dong = cacDong(chu);
   const dai = Math.max(...dong.map((d) => d.length));
   doDuoc.push({ khoa: `${rel}:dong`, nhan: `${rel} — số dòng`, gt: dong.length, tran: tDong, dv: 'dòng' });
-  doDuoc.push({ khoa: `${rel}:byte`, nhan: `${rel} — cỡ file`, gt: Buffer.byteLength(chu), tran: tByte, dv: 'byte' });
+  // Bỏ `\r` trước khi đếm: git trên Windows đổi LF ↔ CRLF lúc checkout, nội
+  // dung không đổi mà mỗi dòng nặng thêm 1 byte — không được thành "nợ tăng".
+  const byte = Buffer.byteLength(chu.replace(/\r/g, ''));
+  doDuoc.push({ khoa: `${rel}:byte`, nhan: `${rel} — cỡ file`, gt: byte, tran: tByte, dv: 'byte' });
   doDuoc.push({ khoa: `${rel}:dai`, nhan: `${rel} — dòng dài nhất`, gt: dai, tran: tDai, dv: 'ký tự' });
 }
 
