@@ -4,34 +4,35 @@
 //            `#quan-tri-he-thong` của prototype quantri3 (7 tab) và trang
 //            `#sys-default-tree-selector`.
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang ·
-//            khu-thanh-vien (mẩu `veLoi`), khu-tai-khoan-he-thong (nạp động)
-// Phiên bản: 1.0.0 · Cập nhật: 15/09/2026 (b118c)
-//            1.0.0 (b118c) Bảy tab của quantri3. Gắn thật: *Tổng quan* ·
-//            *Cây mặc định* (+ trang chọn cây) · *Thùng rác* (dời từ khu Gia
-//            phả). Tab *Sổ tài khoản* TẠM vẽ bằng `khu-tai-khoan-he-thong.js`
-//            như b118. Ba tab máy chủ chưa có gì để đọc — *Tạo tài khoản* ·
-//            *Sao lưu* · *Nhật ký* — vẽ đúng HTML quantri3 nhưng mờ, kèm câu
-//            nói thẳng việc ấy làm ở bước nào.
-//            0.1.0 (b118) vỏ khu, nạp động sổ tài khoản.
+// Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang
+// Phiên bản: 1.1.0 · Cập nhật: 16/09/2026 (b118d)
+// Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
 // ⚠ **Không gác trước bằng cờ `phien.laQuanTriHeThong`.** App không tự lọc,
 //   máy chủ lọc: người không có cờ gõ thẳng `#quan-tri-he-thong` thì mọi hàm
 //   ở đây trả rỗng, và màn hình nói đúng thế.
 //
-// ⚠ Nạp ĐỘNG sổ tài khoản — ai không phải Quản trị hệ thống thì không cần tải
-//   1.300 dòng mã họ không có cửa dùng. Và chỉ nạp khi mở đúng tab ấy.
+// ⚠ Gắn thật: *Tổng quan* · *Sổ tài khoản* (bảng quantri3, b118d) · *Cây mặc
+//   định* (+ trang chọn cây) · *Thùng rác*. Ba tab máy chủ chưa có gì —
+//   *Tạo tài khoản* · *Sao lưu* · *Nhật ký* — vẽ đúng HTML quantri3 nhưng mờ,
+//   kèm câu nói thẳng việc ấy làm ở bước nào.
+//
+// ⚠ Sổ tài khoản: cột *Bổ nhiệm QTHT* của quantri3 là LỜI MỜI hai chữ ký, máy
+//   chủ hôm nay BẬT THẲNG một chữ ký · *Khóa tài khoản* và *chờ xoá 60 ngày*
+//   chưa có (b118b) · *Xóa tài khoản* hôm nay là XOÁ HẲN. Hộp hỏi nói đúng
+//   máy chủ hôm nay, không nói trước.
 
 import {
   layDanhSachGiaPha, layCayMacDinh, datCayMacDinh, dsTaiKhoanHeThong, dsThanhVien,
   duyetXoaCay, huyXinXoaCay, phucHoiCay, donThungRac, xoaAnhThat,
+  datQuanTriHeThong, datDuocTaoCay, xoaTaiKhoan,
 } from '../../services/sb.js';
-import { veLoi } from './khu-thanh-vien.js';
 import { duongDan } from './trang-chi-tiet.js';
 import { hoi, bao } from './hop-thoai.js';
 import {
-  td, span, huyHieu, nut, nutMo, hangNut, dongTrong, ngay, ngayGio,
+  td, span, tenVaPhu, huyHieu, nut, nutNho, nutMo, lienKet, hangNut, dongTrong,
+  chepKieu, ngay, ngayGio,
 } from './o-bang.js';
 
 /**
@@ -42,8 +43,13 @@ import {
  */
 const NGAY_THUNG_RAC = 30;
 
-/** Tab đang mở — giữ qua các lần nạp lại và khi đi sang trang chọn cây rồi về. */
+/** Tab đang mở — giữ qua các lần nạp lại và khi đi sang trang con rồi về. */
 let tabDangMo = 'tong-quan';
+
+/** Trang con gọi trước khi mở, để nút "← …" về đúng tab của nó. */
+export function datTabQuanTriHeThong(ten) {
+  tabDangMo = ten;
+}
 
 /**
  * @param {HTMLElement} sec  `section#quan-tri-he-thong`
@@ -52,12 +58,9 @@ let tabDangMo = 'tong-quan';
 export async function mountKhuQuanTriHeThong(sec, phien) {
   const napLai = () => mountKhuQuanTriHeThong(sec, phien);
 
-  const oTam = sec.querySelector('[data-sys-pane="so-tai-khoan"] [data-tam]');
-  oTam.innerHTML = '';
-  delete oTam.dataset.daNap;
-
-  ganTab(sec, oTam);
+  ganTab(sec);
   veChuaCo(sec);
+  dongTrong(sec.querySelector('#stk-tbody'), 8, 'Đang đọc sổ tài khoản…');
 
   const hashLuc = window.location.hash;
   const [kq, cmd, tk] = await Promise.all([
@@ -67,6 +70,7 @@ export async function mountKhuQuanTriHeThong(sec, phien) {
 
   const ds = kq.ok ? (kq.ds || []) : [];
   veTongQuan(sec, ds, cmd, tk);
+  veSoTaiKhoan(sec, tk, napLai);
   veCayMacDinh(sec, ds.filter((c) => !c.daXoaLuc), cmd, napLai);
   veThungRac(sec, kq, napLai);
 }
@@ -75,40 +79,21 @@ export async function mountKhuQuanTriHeThong(sec, phien) {
 // Tab
 // ============================================================
 
-function ganTab(sec, oTam) {
-  const chon = (ten) => { tabDangMo = ten; toTab(sec, oTam); };
+function ganTab(sec) {
+  const chon = (ten) => { tabDangMo = ten; toTab(sec); };
   for (const b of sec.querySelectorAll('[data-sys-tab]')) b.onclick = () => chon(b.dataset.sysTab);
   for (const b of sec.querySelectorAll('[data-sys-goto]')) b.onclick = () => chon(b.dataset.sysGoto);
-  toTab(sec, oTam);
+  sec.querySelector('#btn-goto-tao-tai-khoan').onclick = () => chon('tao-tai-khoan');
+  toTab(sec);
 }
 
-function toTab(sec, oTam) {
+function toTab(sec) {
   for (const b of sec.querySelectorAll('[data-sys-tab]')) {
     b.classList.toggle('active', b.dataset.sysTab === tabDangMo);
   }
   for (const p of sec.querySelectorAll('[data-sys-pane]')) {
     p.hidden = p.dataset.sysPane !== tabDangMo;
   }
-  if (tabDangMo === 'so-tai-khoan' && !oTam.dataset.daNap) napSoTaiKhoan(oTam);
-}
-
-/** TẠM (b118c) — sổ tài khoản chưa chuyển sang bảng quantri3. */
-async function napSoTaiKhoan(oTam) {
-  oTam.dataset.daNap = '1';
-  oTam.textContent = 'Đang đọc sổ tài khoản…';
-  const napLai = () => { oTam.innerHTML = ''; napSoTaiKhoan(oTam); };
-
-  let mo;
-  try {
-    mo = await import('./khu-tai-khoan-he-thong.js');
-  } catch (e) {
-    oTam.innerHTML = '';
-    oTam.append(veLoi('Không nạp được sổ tài khoản: ' +
-      (e && e.message ? e.message : 'lỗi không rõ'), napLai));
-    return;
-  }
-  oTam.innerHTML = '';
-  await mo.mountToanHeThong(oTam, napLai);
 }
 
 // ============================================================
@@ -117,16 +102,28 @@ async function napSoTaiKhoan(oTam) {
 
 function veChuaCo(sec) {
   const dat = (id, chu) => { sec.querySelector('#' + id).textContent = chu; };
+  const mo = (chon, lyDo) => {
+    for (const el of sec.querySelectorAll(chon)) { el.disabled = true; el.title = lyDo; }
+  };
 
-  dat('ttk-chua-co',
-    'Chưa làm được: tạo tài khoản cần khoá service_role của Supabase, và khoá ấy chỉ ' +
-    'được sống trong một Edge Function — hạ tầng dự án chưa có. Việc riêng, làm sau b120.');
-  dat('sl-chua-co',
-    'Chưa làm: lịch sử sao lưu và bảng đối chiếu 5 số đếm là bước b119. Màn hình này ' +
-    'chưa đọc được kết quả các lần sao lưu đêm.');
-  dat('nk-chua-co',
-    'Chưa làm: nhật ký hệ thống cần một bảng mới ở máy chủ — việc riêng, làm sau b120. ' +
-    'Lịch sử sửa dữ liệu cây vẫn xem ở khu Kiểm duyệt.');
+  const LY_TAO = 'Chưa làm được: tạo tài khoản cần khoá service_role của Supabase, và khoá ấy chỉ ' +
+    'được sống trong một Edge Function — hạ tầng dự án chưa có. Việc riêng, làm sau b120.';
+  dat('ttk-chua-co', LY_TAO);
+  mo('#form-tao-tai-khoan input, #form-tao-tai-khoan select, #btn-reset-form-tao-tk, #btn-submit-tao-tk', LY_TAO);
+
+  const LY_SL = 'Chưa làm: lịch sử sao lưu và bảng đối chiếu 5 số đếm là bước b119. Màn hình này ' +
+    'chưa đọc được kết quả các lần sao lưu đêm.';
+  dat('sl-chua-co', LY_SL);
+  mo('#btn-sao-luu-ngay', LY_SL);
+
+  const LY_NK = 'Chưa làm: nhật ký hệ thống cần một bảng mới ở máy chủ — việc riêng, làm sau b120. ' +
+    'Lịch sử sửa dữ liệu cây vẫn xem ở khu Kiểm duyệt.';
+  dat('nk-chua-co', LY_NK);
+  mo('#sys-log-filter-type, #sys-log-filter-time, #btn-select-old-logs, #btn-export-logs, ' +
+    '#btn-delete-selected-logs, #sys-log-check-all, #btn-don-nhat-ky-thung-rac', LY_NK);
+
+  mo('#btn-don-tai-khoan-60ngay', 'Xoá mềm 60 ngày chưa có ở máy chủ — làm ở b118b.');
+  mo('#btn-save-default-tree-fields', 'Công khai theo từng trường chưa có ở máy chủ — làm sau b120.');
 
   dongTrong(sec.querySelector('#sl-lich-su-tbody'), 5, 'Chưa đọc được lịch sử sao lưu (b119).');
   dongTrong(sec.querySelector('#sl-doi-chieu-tbody'), 5, 'Chưa có số đếm đối chiếu (b119).');
@@ -134,6 +131,9 @@ function veChuaCo(sec) {
   dongTrong(sec.querySelector('#trash-logs-tbody'), 6, 'Chưa có nhật ký hệ thống ở máy chủ.');
   dongTrong(sec.querySelector('#default-tree-fields-tbody'), 4,
     'Công khai theo từng trường chưa có ở máy chủ — làm sau b120.');
+  dongTrong(sec.querySelector('#stk-cho-xoa-tbody'), 7,
+    'Chưa có ở máy chủ — xoá mềm 60 ngày làm ở b118b. Hôm nay Xóa tài khoản là xoá hẳn.');
+  dat('stk-cho-xoa-dem', '');
 }
 
 // ============================================================
@@ -175,6 +175,173 @@ function veTongQuan(sec, ds, cmd, tk) {
 
   dat('tq-nk-so', 'Chưa có');
   dat('tq-nk-mo-ta', 'Cần bảng nhật ký mới ở máy chủ — làm sau b120.');
+}
+
+// ============================================================
+// Sổ tài khoản — bảng quantri3 (b118d)
+// ============================================================
+//
+// ⚠ `style=` trong ô bảng dưới đây là CHÉP NGUYÊN VĂN mẫu dòng của quantri3
+//   (`chepKieu`) — không tự nghĩ ra.
+//
+// ⚠ Dòng của chính mình: không nút cờ nào, không khoá/xoá — luật *không ai
+//   đặt quyền cho chính mình* (cửa 6, 7), đúng chữ quantri3 *"Chính bạn
+//   (không tự gỡ)"* · *"Không tự khóa/xóa"*.
+
+function veSoTaiKhoan(sec, tk, napLai) {
+  const tb = sec.querySelector('#stk-tbody');
+  const dem = sec.querySelector('#stk-dem');
+  if (!tk.ok) { dem.textContent = ''; dongTrong(tb, 8, tk.loi || 'Không đọc được sổ tài khoản.', napLai); return; }
+
+  // ⚠ Rỗng gần như luôn nghĩa là *"máy chủ không cho bạn đọc"* — chính bạn
+  //   đang là một tài khoản.
+  if (!tk.ds.length) {
+    dem.textContent = '';
+    dongTrong(tb, 8, 'Máy chủ không trả về tài khoản nào. Danh sách này chỉ Quản trị hệ thống đọc ' +
+      'được — nếu bạn vừa được cấp cờ ấy thì đăng xuất rồi đăng nhập lại một lần.');
+    return;
+  }
+
+  dem.textContent = tk.ds.length + ' tài khoản · Bấm vào cột Số cây để xem các gia phả của tài khoản đó';
+  tb.innerHTML = '';
+  for (const t of tk.ds) tb.append(dongTaiKhoan(t, tk.ds, napLai));
+}
+
+function dongTaiKhoan(t, ds, napLai) {
+  const tr = document.createElement('tr');
+
+  const oTen = td(tenVaPhu(t.hoTen || t.email, [t.maNgan, t.laChinhToi ? 'Bạn' : ''].filter(Boolean).join(' · ')));
+
+  const email = chepKieu(span('name', t.email), 'font-weight:400');
+  const xn = chepKieu(huyHieu(t.daXacNhanEmail ? 'Đã xác nhận' : 'Chưa xác nhận',
+    t.daXacNhanEmail ? 'ok' : 'wait'), 'font-size:11px;padding:2px 7px');
+  const oEmail = td(boc(email), chepKieu(boc(xn), 'margin-top:4px'));
+
+  // — Quản trị hệ thống —
+  const oQT = td();
+  if (t.laQuanTriHeThong) {
+    oQT.append(huyHieu('Là QTHT', 'ok'));
+    if (t.laChinhToi) {
+      oQT.append(chepKieu(span('sub', 'Chính bạn (không tự gỡ)'), 'display:block;margin-top:2px;font-size:11px'));
+    } else {
+      const b = nutNho('Hủy quyền', 'danger');
+      b.addEventListener('click', () => hoiCoQT(t, false, napLai));
+      oQT.append(chepKieu(boc(b), 'margin-top:4px'));
+    }
+  } else {
+    oQT.append(chepKieu(span('sub', 'Chưa có'), 'display:block;margin-bottom:3px'));
+    if (!t.laChinhToi) {
+      const b = nutNho('Bổ nhiệm QTHT', 'warm');
+      b.addEventListener('click', () => hoiCoQT(t, true, napLai));
+      oQT.append(b);
+    }
+  }
+
+  // — Tạo gia phả —
+  const oTao = td();
+  if (t.duocTaoCay) {
+    oTao.append(huyHieu('Được phép', 'ok'));
+    if (!t.laChinhToi) {
+      const b = nutNho('Thu hồi');
+      b.addEventListener('click', () => hoiTaoCay(t, false, napLai));
+      oTao.append(chepKieu(boc(b), 'margin-top:4px'));
+    }
+  } else {
+    oTao.append(chepKieu(span('sub', t.laChinhToi ? 'Không' : 'Chưa có'), 'display:block;margin-bottom:3px'));
+    if (!t.laChinhToi) {
+      const b = nutNho('Cấp quyền');
+      b.addEventListener('click', () => hoiTaoCay(t, true, napLai));
+      oTao.append(b);
+    }
+  }
+
+  // — Số cây: dòng TÓM TẮT xuyên cây, bấm ra trang theo từng cây (5b②) —
+  const oSo = td(lienKet(t.soCay + ' cây →', duongDan('quan-tri-he-thong', 'tai-khoan', t.maNgan)));
+  const treo = [t.soCho ? t.soCho + ' chờ' : '', t.soMoi ? t.soMoi + ' mời' : ''].filter(Boolean).join(' · ');
+  if (treo) oSo.append(span('sub', treo));
+
+  const oDn = td(t.dangNhapGanNhat ? ngayGio(t.dangNhapGanNhat) : span('muted', 'Chưa đăng nhập'));
+
+  // — Hành động —
+  let oViec;
+  if (t.laChinhToi) {
+    oViec = td(chepKieu(span('muted', 'Không tự khóa/xóa'), 'font-size:12px'));
+  } else {
+    const bKhoa = chepKieu(nutMo('Khóa tài khoản', 'Khoá mềm tài khoản chưa có ở máy chủ — làm ở b118b.', 'danger'),
+      'font-size:11px;padding:2px 7px');
+    const bXoa = nutNho('Xóa tài khoản', 'danger');
+    bXoa.addEventListener('click', () => hoiXoaTaiKhoan(t, ds, napLai));
+    const cot = document.createElement('div');
+    chepKieu(cot, 'display:flex;flex-direction:column;gap:4px;align-items:flex-start');
+    cot.append(bKhoa, bXoa);
+    oViec = td(cot);
+  }
+
+  tr.append(oTen, oEmail, oQT, oTao, td(huyHieu('Hoạt động')), oSo, oDn, oViec);
+  return tr;
+}
+
+function boc(el) {
+  const d = document.createElement('div');
+  d.append(el);
+  return d;
+}
+
+/** Cửa thứ SÁU (`14` mục 7) — máy chủ không cho tắt người cuối cùng. */
+async function hoiCoQT(t, bat, napLai) {
+  const kq = await hoi({
+    tua: bat ? 'Bổ nhiệm Quản trị hệ thống' : 'Hủy quyền Quản trị hệ thống',
+    // ⚠ Cờ của TÀI KHOẢN — một trong hai chỗ duy nhất không hỏi cây (luật 5a),
+    //   nên câu phải tự khai điều ấy.
+    chu: 'Cờ của tài khoản — cả hệ thống, không chọn cây. ' + (bat
+      ? 'Cấp cờ Quản trị hệ thống cho ' + t.email + '. Máy chủ hôm nay BẬT NGAY (một chữ ký) — lời ' +
+        'mời để người ấy tự bấm Chấp nhận (hai chữ ký) làm ở b118b. Cờ này cho tài khoản đọc và sửa ' +
+        'MỌI gia phả, đổi quyền ở mọi cây, và bật/tắt cờ này cho người khác.'
+      : 'Bạn có chắc chắn muốn hủy quyền Quản trị hệ thống của ' + t.email + '? Máy chủ không cho ' +
+        'tắt người cuối cùng.'),
+    nutOk: bat ? 'Bổ nhiệm' : 'Hủy quyền',
+    nutHuy: bat ? 'Hủy' : 'Giữ lại',
+    kieuOk: bat ? 'warm' : 'danger',
+    lam: () => datQuanTriHeThong(t.userId, bat),
+  });
+  if (kq) napLai();
+}
+
+/** Cửa thứ BẢY (`17`) — cờ của TÀI KHOẢN, không hỏi cây nào. */
+async function hoiTaoCay(t, bat, napLai) {
+  const kq = await hoi({
+    tua: bat ? 'Cấp quyền tạo cây' : 'Thu hồi quyền tạo cây',
+    chu: 'Cờ của tài khoản — cả hệ thống, không riêng cây nào. ' + (bat
+      ? 'Cấp quyền Tạo gia phả mới cho tài khoản ' + t.email + '? Cây họ dựng ra là cây của họ. ' +
+        'Quyền này TÁCH HẲN khỏi vai Quản trị gia phả.'
+      : 'Thu hồi quyền Tạo gia phả của tài khoản ' + t.email + '? Khi thu hồi, người này không thể ' +
+        'tạo thêm cây mới, nhưng các cây đã tạo trước đó vẫn giữ nguyên.'),
+    nutOk: bat ? 'Cấp quyền' : 'Thu hồi',
+    nutHuy: bat ? 'Hủy' : 'Giữ lại',
+    lam: () => datDuocTaoCay(t.userId, bat),
+  });
+  if (kq) napLai();
+}
+
+/**
+ * Xoá HẲN — việc duy nhất phá huỷ một lối đăng nhập. Phép so email gõ lại
+ * nằm ở MÁY CHỦ (hỏi chính hàng sắp xoá), không so ở đây.
+ */
+async function hoiXoaTaiKhoan(t, ds, napLai) {
+  const truong = [{ ma: 'email', nhan: 'Gõ lại email của tài khoản này', goiY: t.email }];
+  if (t.soCayLamChu > 0) {
+    truong.push({ ma: 'chuMoi', nhan: 'Ai nhận ' + t.soCayLamChu + ' gia phả tài khoản này đang làm chủ',
+      chon: [['', 'Bạn nhận (mặc định)'], ...ds.filter((k) => k.userId !== t.userId).map((k) => [k.userId, k.email])] });
+  }
+  const kq = await hoi({
+    tua: 'Xóa tài khoản',
+    chu: '⚠️ Xoá HẲN tài khoản ' + t.email + ' — mất lối đăng nhập, KHÔNG hoàn tác được. (Danh sách ' +
+      'chờ xoá 60 ngày chưa có ở máy chủ — làm ở b118b.) Nhật ký ai sửa gì vẫn còn nguyên.',
+    truong,
+    nutOk: 'Xác nhận xóa', nutHuy: 'Hủy', kieuOk: 'danger',
+    lam: (v) => xoaTaiKhoan(t.userId, v.email.trim(), v.chuMoi || ''),
+  });
+  if (kq) napLai();
 }
 
 // ============================================================
@@ -296,9 +463,7 @@ export async function mountChonCayMacDinh(sec, ctx) {
 
     let oViec;
     if (laMacDinh) {
-      const s = span('muted', 'Cây hiện tại');
-      s.style.fontSize = '12px';
-      oViec = s;
+      oViec = chepKieu(span('muted', 'Cây hiện tại'), 'font-size:12px');
     } else if (!c.choNguoiLaThayTen) {
       oViec = nutMo('Cần bật công khai trước',
         'Cần bật Cho thấy tên (công khai sơ đồ) trước khi chọn làm mặc định');

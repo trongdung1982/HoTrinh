@@ -39,8 +39,9 @@ const SQL_07 = doc('../luoc-do/07-duyet-dang-ky.sql');
 const JS_SB = doc('../js/services/sb.js');
 const JS_KD = doc('../js/pages/khoi-dong.js');
 const JS_ST = doc('../js/pages/settings.js');
-// b106: màn hình duyệt đơn dời sang khu 2 của trang Quản trị.
-const JS_TK = doc('../js/pages/quan-tri/khu-thanh-vien.js');
+// b106: màn hình duyệt đơn dời sang khu 2 của trang Quản trị · b118d: sang
+// trang một cây (`#gia-pha/cay/<mã>/don-xin-vao`), `khu-thanh-vien.js` đã xoá.
+const JS_TK = doc('../js/pages/quan-tri/trang-cay.js');
 
 let dat = 0, hong = 0;
 
@@ -209,7 +210,7 @@ kiem("khoi-dong.js phân biệt 'đang chờ' với 'chưa nộp đơn'",
 //   đơn ở đâu đó. Dời một cửa đi mà quên mở cửa mới là mất hẳn chức năng, và
 //   không có gì báo lỗi — chính vì thế phép này không được xoá đi, chỉ đổi
 //   chỗ nó nhìn.
-kiem('có đúng một màn hình duyệt đơn, và nó nằm ở khu Tài khoản',
+kiem('có đúng một màn hình duyệt đơn, và nó nằm ở trang một cây (b118d)',
      /dsThanhVien/.test(JS_TK) && /duyetThanhVien/.test(JS_TK) &&
      /tuChoiThanhVien/.test(JS_TK) && !/veKhoiChoDuyet/.test(JS_ST),
      'thiếu màn hình duyệt đơn, hoặc còn hai màn hình cùng làm một việc');

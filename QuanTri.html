@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <!-- ============================================================
      giapha-supabase · QuanTri.html
-     Vai trò  : Trang QUẢN TRỊ — HTML của prototype `quantri3.html` chủ dự án
-                đã chốt 13/09/2026, bỏ dữ liệu giả, gắn chức năng thật.
-     Phiên bản: 1.0.0 · Cập nhật: 15/09/2026 (b118c)
-                1.0.0 (b118c) Thân trang là HTML của quantri3. Đã bỏ: mọi dòng
-                dữ liệu mẫu, khối "Ghi chú cho Claude Code", các nút "mô phỏng",
-                và khối `<script>` giả lập. Đã giữ nguyên: thẻ, class, `style=`,
-                thứ tự cột, chữ trên nút.
+     Vai trò  : Trang QUẢN TRỊ — NGUYÊN FILE prototype `quantri3.html` chủ dự
+                án đã chốt 13/09/2026, bỏ dữ liệu giả, gắn chức năng thật.
+     Phiên bản: 2.0.0 · Cập nhật: 16/09/2026 (b118d)
 
-     ⚠⚠ ĐỪNG VẼ LẠI GIAO DIỆN Ở ĐÂY. Muốn đổi thì đổi ở prototype
-       (`../codex/dua_claude.ai/quantri3.html`) trước rồi chép sang. b114–b118
-       đã vẽ lại theo kiểu cũ và chủ dự án phải hỏi *"tại sao bạn không copy
-       nguyên giao diện của quantri3.html về và gắn chức năng vào?"*.
+     ⚠⚠ DỰNG BẰNG MÁY TỪ CẢ FILE PROTOTYPE, KHÔNG CHÉP TỪNG KHU. Thân trang là
+       mọi `section` của quantri3 theo đúng thứ tự; chỉ bỏ: dòng dữ liệu mẫu
+       trong `tbody`, khối "Ghi chú cho Claude Code", `datalist` mẫu, nút
+       "mô phỏng", `<script>` giả lập — và thay chữ mẫu bằng ô trống có `id`.
+       Kịch bản dựng và các phép thay: `so-tay/trang-quan-tri.md`.
 
-     ⚠ JavaScript chỉ ĐỔ DỮ LIỆU vào các `tbody` / ô có `id` sẵn ở đây và gắn
-       việc vào nút. Khu nào chưa chuyển xong thì vẽ tạm vào `#khu-tam` bằng mã
-       cũ — `js/pages/quan-tri/khung.js` ghi rõ khu nào.
+     ⚠ ĐỪNG VẼ LẠI GIAO DIỆN Ở ĐÂY. Muốn đổi thì đổi ở prototype
+       (`../codex/dua_claude.ai/quantri3.html`) trước rồi dựng lại.
+
+     ⚠ JavaScript chỉ ĐỔ DỮ LIỆU vào các ô có `id` sẵn ở đây và gắn việc vào
+       nút — `js/pages/quan-tri/khung.js` ghi khu/trang nào vẽ vào section nào.
 
      ⚠ TÊN FILE CÓ CHỮ HOA, và GitHub Pages phân biệt hoa với thường.
-       `quantri.html` hay `Quantri.html` đều ra trang 404.
 
      Không sửa file này để đổi cấu hình. Mọi giá trị phải điền nằm ở
      `js/cau-hinh.js`.
@@ -35,9 +33,8 @@
 
   <title>Quản trị gia phả</title>
 
-  <!-- CSS nguyên văn của quantri3. File riêng chứ không nhúng: bản giả để nhìn
-       bằng mắt (`kiem-thu/trang-quan-tri-gia.html`, ngoài repo) nạp đúng file
-       này, nên hai chỗ không thể lệch nhau. -->
+  <!-- CSS nguyên văn của quantri3. File riêng: bản giả để nhìn bằng mắt
+       (`kiem-thu/trang-quan-tri-gia.html`, ngoài repo) nạp đúng file này. -->
   <link rel="stylesheet" href="quan-tri.css">
 
   <style>
@@ -85,17 +82,23 @@
 <section id="tree-members" class="view" hidden>
 <div class="detailbar"><button class="backbtn" data-back="gia-pha">← Gia phả</button><span class="muted">/ Thành viên và quyền</span></div>
 <div class="head"><div><h1>Thành viên và quyền</h1><p class="lead">Cây gia phả đang xem xét: <span data-tree-context></span></p></div></div>
+<div class="notice" id="tm-chi-xem" hidden></div>
 <div class="panel"><div class="panel-head"><h3>Danh sách tài khoản đang có quyền</h3><span id="tm-dem"></span></div>
 <table><thead><tr><th>Tên tài khoản</th><th>Email</th><th>Tên người trong cây gia phả</th><th>Quyền</th><th>Hành động</th></tr></thead>
 <tbody id="tm-tbody"></tbody></table></div>
 </section>
 
 <section id="tree-invite" class="view" hidden>
-<div class="detailbar"><button class="backbtn" data-back="gia-pha">← Gia phả</button><span class="muted">/ Mời gia nhập</span></div><div class="head"><div><h1>Mời gia nhập</h1><p class="lead"><span data-tree-context></span> · tìm tài khoản ở máy chủ rồi gửi lời mời.</p></div></div><div class="panel"><div class="panel-head"><h3>Mời tham gia</h3><span><span data-tree-context></span></span></div><div style="padding:17px"><div class="invite-grid"><label class="sub">Tên<input id="invite-name" data-account-filter="name" autocomplete="off" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;margin-top:5px" placeholder="Gõ hoặc chọn tên"></label><label class="sub">Email<input id="invite-email" data-account-filter="email" autocomplete="off" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;margin-top:5px" placeholder="Gõ hoặc chọn email"></label><label class="sub">ID tài khoản<input id="invite-code" data-account-filter="code" autocomplete="off" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;margin-top:5px" placeholder="Gõ hoặc chọn ID tài khoản"></label></div><div style="max-width:360px;margin-top:16px"><label class="sub">Quyền khi tham gia<select class="role-select" id="invite-vai" style="display:block;width:100%;margin-top:5px"><option value="quan_tri">Quản trị gia phả</option><option value="sua" selected>Thành viên</option><option value="xem">Khách</option></select></label><button class="btn warm" id="invite-gui" style="margin-top:12px">Gửi lời mời</button><span class="loi-dong" id="invite-loi" hidden></span></div></div></div><div class="panel" style="margin-top:14px"><div class="panel-head"><h3>Lời mời đã gửi</h3></div><table><thead><tr><th>Tên tài khoản</th><th>Email</th><th>Mã tài khoản</th><th>Quyền dự kiến</th><th>Hành động</th></tr></thead><tbody id="invite-tbody"></tbody></table></div>
+<div class="detailbar"><button class="backbtn" data-back="gia-pha">← Gia phả</button><span class="muted">/ Mời gia nhập</span></div><div class="head"><div><h1>Mời gia nhập</h1><p class="lead"><span data-tree-context></span> · tìm tài khoản ở máy chủ rồi gửi lời mời.</p></div></div><div class="panel"><div class="panel-head"><h3>Mời tham gia</h3><span><span data-tree-context></span></span></div><div style="padding:17px"><div class="invite-grid"><label class="sub">Tên<input id="invite-name" autocomplete="off" data-account-filter="name" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;margin-top:5px" placeholder="Gõ hoặc chọn tên"></label><label class="sub">Email<input id="invite-email" autocomplete="off" data-account-filter="email" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;margin-top:5px" placeholder="Gõ hoặc chọn email"></label><label class="sub">ID tài khoản<input id="invite-code" autocomplete="off" data-account-filter="code" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;margin-top:5px" placeholder="Gõ hoặc chọn ID tài khoản"></label></div><div style="max-width:360px;margin-top:16px"><label class="sub">Quyền khi tham gia<select class="role-select" id="invite-vai" style="display:block;width:100%;margin-top:5px"><option value="quan_tri">Quản trị gia phả</option><option value="sua" selected>Thành viên</option><option value="xem">Khách</option></select></label><button class="btn warm" id="invite-gui" style="margin-top:12px">Gửi lời mời</button><span class="loi-dong" id="invite-loi" hidden></span></div></div></div><div class="panel" style="margin-top:14px"><div class="panel-head"><h3>Lời mời đã gửi</h3></div><table><thead><tr><th>Tên tài khoản</th><th>Email</th><th>Mã tài khoản</th><th>Quyền dự kiến</th><th>Hành động</th></tr></thead><tbody id="invite-tbody"></tbody></table></div>
 </section>
 
 <section id="tree-requests" class="view" hidden>
 <div class="detailbar"><button class="backbtn" data-back="gia-pha">← Gia phả</button><span class="muted">/ Đơn xin gia nhập</span></div><div class="head"><div><h1>Đơn xin gia nhập</h1><p class="lead"><span data-tree-context></span> · người dùng đã chủ động xin vào cây.</p></div></div><div class="panel"><div class="panel-head"><h3>Đơn đang chờ</h3><span id="tr-dem"></span></div><table><thead><tr><th>Tên tài khoản</th><th>Email</th><th>Mã tài khoản</th><th>ID người</th><th>Quyền đề nghị</th><th>Thời gian</th><th>Hành động</th></tr></thead><tbody id="tr-tbody"></tbody></table></div>
+</section>
+
+<section id="tree-detail" class="view" hidden>
+<div class="detailbar"><button class="backbtn" data-back="gia-pha">← Gia phả</button><span class="muted" id="td-vi-tri"></span></div><div class="head"><div><h1 id="td-ten"></h1><p class="lead" id="td-phu"></p></div><span class="badge" id="td-trang-thai"></span></div>
+<div class="layout"><div class="subnav"><button data-td-muc="tong-quan">Tổng quan</button><button data-td-muc="thanh-vien">Thành viên & quyền</button><button data-td-muc="loi-moi">Lời mời</button><button data-td-muc="don-xin-vao">Đơn xin vào <b id="td-so-don"></b></button><button data-td-muc="vong-doi">Vòng đời</button><button data-td-muc="de-xuat-gan">Đề xuất gắn người</button></div><div><div id="td-tong-quan"><div class="panel"><div class="panel-head"><h3>Tổng quan cây</h3><span id="td-ma"></span></div><ul class="list"><li><span>Tên cây</span><strong id="td-l-ten"></strong></li><li><span>Người lạ thấy tên</span><span class="badge" id="td-l-la"></span></li><li><span>Cây mặc định của tôi</span><span class="badge" id="td-l-mac-dinh"></span></li><li><span>Thành viên đã duyệt</span><strong id="td-l-tv"></strong></li></ul></div><div class="split" style="margin-top:14px"><div class="card"><h3>Thành viên & quyền</h3><p id="td-c-tv"></p><button class="btn" data-td-muc="thanh-vien">Mở danh sách</button></div><div class="card"><h3>Đơn xin vào</h3><p id="td-c-don"></p><button class="btn warm" data-td-muc="don-xin-vao">Xử lý đơn</button></div></div></div><div id="td-muc" hidden></div></div></div>
 </section>
 
 <section id="tai-khoan" class="view" hidden>
@@ -112,9 +115,15 @@
 <div class="panel"><div class="panel-head"><h3>Bảo mật & Đổi mật khẩu</h3><span class="muted">Khuyến nghị mật khẩu tối thiểu 8 ký tự</span></div><div style="padding:20px;max-width:520px"><label class="sub">Mật khẩu hiện tại<input type="password" id="pass-current" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;margin:5px 0 12px" placeholder="Nhập mật khẩu đang dùng"></label><label class="sub">Mật khẩu mới<input type="password" id="pass-new" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;margin:5px 0 12px" placeholder="Nhập mật khẩu mới"></label><label class="sub">Xác nhận mật khẩu mới<input type="password" id="pass-confirm" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;margin:5px 0 15px" placeholder="Gõ lại mật khẩu mới"></label><div style="display:flex;gap:12px;align-items:center"><button class="btn primary" id="btn-doi-mat-khau">Cập nhật mật khẩu</button><button class="btn danger" id="btn-dang-xuat">Đăng xuất tài khoản</button></div></div></div>
 </section>
 
+<section id="account-detail" class="view" hidden>
+<div class="detailbar"><button class="backbtn" data-back="thanh-vien">← Tài khoản</button><span class="muted">/ Chi tiết tài khoản</span></div><div class="head"><div><h1 id="account-name"></h1><p class="lead" id="account-email"></p></div><span class="badge" id="account-trang-thai"></span></div>
+<div class="split"><div class="panel"><div class="panel-head"><h3>Quyền cấp hệ thống</h3><span>Không chọn cây</span></div><ul class="list"><li><span>Quản trị hệ thống</span><strong></strong></li><li><span>Được phép tạo gia phả</span><strong></strong></li></ul></div><div class="panel"><div class="panel-head"><h3>Tài khoản</h3></div><ul class="list"><li><span>Mã tài khoản</span><strong id="account-code"></strong></li><li><span>Đăng nhập gần nhất</span><strong></strong></li></ul></div></div><div class="panel" style="margin-top:14px"><div class="panel-head"><h3>Các gia phả liên quan</h3><span>Luôn gọi rõ cây</span></div><table><thead><tr><th>Gia phả</th><th>Vai trò</th><th>Mã người</th><th>Trạng thái</th><th></th></tr></thead><tbody></tbody></table></div>
+</section>
+
 <section id="kiem-duyet" class="view" hidden>
 <div class="head"><div><h1>Kiểm duyệt nội dung</h1><p class="lead">Xét duyệt các lần lưu dữ liệu từ thành viên họ tộc. Đơn vị duyệt là một lần bấm Lưu.</p></div><div class="scope"><small>Phạm vi quản trị</small><strong>Tất cả gia phả bạn quản lý</strong></div></div>
 
+<!-- Khối thống kê tổng quan -->
 <div class="cards" style="grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
 <div class="card" style="margin-bottom:0;padding:16px 18px">
 <span class="sub" style="font-size:12px;text-transform:uppercase;letter-spacing:.04em">Gia phả có thay đổi</span>
@@ -133,6 +142,8 @@
 </div>
 </div>
 
+
+<!-- Bộ lọc chọn Cây và Người sửa -->
 <div class="panel" style="margin-bottom:16px;padding:13px 18px;background:#faf8f5">
 <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between">
 <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">
@@ -151,22 +162,19 @@
 <div class="panel" data-kd-pane="cho">
 <div class="panel-head"><h3>Thay đổi đang chờ duyệt</h3><span id="kd-pane-cho-sub"></span></div>
 <table><thead><tr><th style="width:140px">Gia phả</th><th style="width:125px">Thời điểm</th><th style="width:185px">Người thực hiện</th><th>Nội dung thao tác</th><th style="width:115px">Đụng chạm</th><th style="width:225px">Hành động</th></tr></thead>
-<tbody id="kd-table-cho">
-</tbody></table>
+<tbody id="kd-table-cho"></tbody></table>
 </div>
 
 <div class="panel" data-kd-pane="duyet" hidden>
 <div class="panel-head"><h3>Lịch sử thay đổi đã nhận</h3><span>Đã ghi nhận chính thức vào gia phả</span></div>
 <table><thead><tr><th style="width:140px">Gia phả</th><th>Thời điểm lưu</th><th>Người sửa</th><th>Nội dung thao tác</th><th>Người duyệt</th><th>Thời điểm duyệt</th></tr></thead>
-<tbody id="kd-table-duyet">
-</tbody></table>
+<tbody id="kd-table-duyet"></tbody></table>
 </div>
 
 <div class="panel" data-kd-pane="tu_choi" hidden>
 <div class="panel-head"><h3>Lịch sử thay đổi đã từ chối &amp; hoàn tác</h3><span>Dữ liệu đã được hệ thống tự động khôi phục về trạng thái trước đó</span></div>
 <table><thead><tr><th style="width:140px">Gia phả</th><th>Thời điểm lưu</th><th>Người sửa</th><th>Nội dung</th><th>Người từ chối</th><th>Lý do từ chối</th></tr></thead>
-<tbody id="kd-table-tuchoi">
-</tbody></table>
+<tbody id="kd-table-tuchoi"></tbody></table>
 </div>
 </section>
 
@@ -179,8 +187,7 @@
 <div class="panel" style="margin-bottom:20px">
 <div class="panel-head"><h3>Bảng đối chiếu TRƯỚC / SAU (Chỉ hiển thị các ô thật sự thay đổi)</h3><span class="muted">Đơn vị: 1 lần bấm Lưu</span></div>
 <table><thead><tr><th style="width:110px">Thực thể</th><th style="width:220px">Nhân vật / Cặp liên quan</th><th style="width:160px">Trường thay đổi</th><th>Trước (Giá trị cũ)</th><th>Sau (Giá trị mới)</th></tr></thead>
-<tbody id="kd-diff-tbody">
-</tbody></table>
+<tbody id="kd-diff-tbody"></tbody></table>
 </div>
 
 <div class="panel">
@@ -241,11 +248,7 @@
 </div>
 
 <div data-sys-pane="so-tai-khoan" hidden>
-<!-- TẠM (b118c): sổ tài khoản vẫn vẽ bằng `khu-tai-khoan-he-thong.js` vào ô
-     `data-tam` dưới đây. Bảng quantri3 nằm sẵn trong `data-ban-mau`, chờ
-     bước chuyển khu này thì đổ dữ liệu vào và bỏ ô tạm. -->
-<div data-tam></div>
-<div data-ban-mau hidden>
+
 <div class="panel" style="margin-bottom:18px">
 <div class="panel-head">
 <div><h3>Sổ tài khoản toàn hệ thống</h3><span id="stk-dem"></span></div>
@@ -270,6 +273,7 @@
 </table>
 </div>
 
+<!-- Bảng Danh sách tài khoản chờ xóa (Lưu giữ 60 ngày) -->
 <div class="panel" style="margin-bottom:18px">
 <div class="panel-head">
 <div><h3>Danh sách tài khoản chờ xóa (Lưu giữ 60 ngày)</h3><span id="stk-cho-xoa-dem"></span></div>
@@ -278,10 +282,11 @@
 <table><thead><tr><th>Tên tài khoản</th><th>Email</th><th>Mã tài khoản</th><th>Ngày đưa vào danh sách</th><th>Người thực hiện</th><th>Thời hạn còn lại</th><th>Hành động</th></tr></thead><tbody id="stk-cho-xoa-tbody"></tbody></table>
 </div>
 </div>
-</div>
 
+<!-- TAB RIÊNG: TẠO TÀI KHOẢN MỚI -->
 <div data-sys-pane="tao-tai-khoan" hidden>
 <div class="notice" style="margin-bottom:16px" id="ttk-chua-co"></div>
+
 <div class="panel" style="max-width:760px;margin:0 auto">
 <div class="panel-head">
 <div><h3>Tạo tài khoản người dùng mới</h3><span class="muted">Khởi tạo hồ sơ tài khoản trên toàn hệ thống</span></div>
@@ -291,40 +296,42 @@
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
     <div>
       <label class="sub" style="font-weight:700;display:block;margin-bottom:6px">Họ và tên người dùng <span style="color:var(--danger)">*</span></label>
-      <input type="text" id="new-acc-name" class="role-select" style="width:100%" placeholder="Ví dụ: Hoàng Văn Giang" disabled>
+      <input type="text" id="new-acc-name" class="role-select" style="width:100%" placeholder="Ví dụ: Hoàng Văn Giang">
     </div>
     <div>
       <label class="sub" style="font-weight:700;display:block;margin-bottom:6px">Địa chỉ Email <span style="color:var(--danger)">*</span></label>
-      <input type="email" id="new-acc-email" class="role-select" style="width:100%" placeholder="Ví dụ: giang@email.vn" disabled>
+      <input type="email" id="new-acc-email" class="role-select" style="width:100%" placeholder="Ví dụ: giang@email.vn">
     </div>
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
     <div>
       <label class="sub" style="font-weight:700;display:block;margin-bottom:6px">Mã tài khoản (Hệ thống luôn tự sinh)</label>
-      <input type="text" id="new-acc-code" class="role-select" style="width:100%;background:var(--bg)" readonly disabled>
+      <input type="text" id="new-acc-code" class="role-select" style="width:100%;background:var(--bg)" readonly>
     </div>
     <div>
       <label class="sub" style="font-weight:700;display:block;margin-bottom:6px">Phương thức thiết lập mật khẩu</label>
-      <select id="new-acc-pass-type" class="role-select" style="width:100%" disabled>
+      <select id="new-acc-pass-type" class="role-select" style="width:100%">
         <option value="invite_link" selected>Gửi liên kết tạo mật khẩu qua email (Khuyên dùng)</option>
         <option value="temp_pass">Đặt mật khẩu khởi tạo tạm thời</option>
       </select>
     </div>
   </div>
 
+
+
   <div style="margin-bottom:24px;padding:14px 16px;border:1px solid var(--line);border-radius:8px;background:var(--paper)">
     <div class="sub" style="font-weight:700;margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em">Quyền hạn cấp hệ thống ban đầu</div>
     <div style="display:grid;gap:12px">
       <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer">
-        <input type="checkbox" id="new-acc-perm-create-tree" style="margin-top:3px" disabled>
+        <input type="checkbox" id="new-acc-perm-create-tree" style="margin-top:3px">
         <div>
           <strong>Cấp quyền Tạo gia phả mới (can_create_tree)</strong>
           <p style="margin:2px 0 0;font-size:12px;color:var(--muted)">Tài khoản được quyền tạo gia phả mới và trở thành Chủ cây của gia phả đó.</p>
         </div>
       </label>
       <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer">
-        <input type="checkbox" id="new-acc-perm-qtht" style="margin-top:3px" disabled>
+        <input type="checkbox" id="new-acc-perm-qtht" style="margin-top:3px">
         <div>
           <strong>Bổ nhiệm làm Quản trị hệ thống (Chữ ký 1)</strong>
           <p style="margin:2px 0 0;font-size:12px;color:var(--muted)">Hệ thống gửi lời mời bổ nhiệm QTHT. Người dùng đăng nhập sẽ bấm "Chấp nhận" (Chữ ký 2 qua hàm chap_nhan_moi_qtht) để hoàn tất nhận quyền.</p>
@@ -334,8 +341,8 @@
   </div>
 
   <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end">
-    <button class="btn" id="btn-reset-form-tao-tk" type="button" disabled>Đặt lại</button>
-    <button class="btn warm" id="btn-submit-tao-tk" type="button" style="font-weight:700" disabled>+ Tạo tài khoản ngay</button>
+    <button class="btn" id="btn-reset-form-tao-tk" type="button">Đặt lại</button>
+    <button class="btn warm" id="btn-submit-tao-tk" type="button" style="font-weight:700">+ Tạo tài khoản ngay</button>
   </div>
 </form>
 </div>
@@ -359,6 +366,7 @@
 </li>
 </ul>
 
+<!-- Bảng tóm tắt các trường thông tin cá nhân công khai của cây mặc định -->
 <div style="margin-bottom:20px;border:1px solid var(--line);border-radius:10px;background:var(--paper);overflow:hidden">
   <div style="padding:10px 14px;background:#fcfaf7;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
     <strong style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)">Các trường dữ liệu cá nhân khách nhìn thấy khi xem cây mặc định</strong>
@@ -377,7 +385,7 @@
   </table>
   <div style="padding:10px 14px;background:#fcfaf7;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
     <span class="muted" style="font-size:12px">Thay đổi sẽ áp dụng trực tiếp cho khách xem sơ đồ cây mặc định này.</span>
-    <button class="btn warm" id="btn-save-default-tree-fields" style="font-weight:700;font-size:12px;padding:5px 12px" disabled>Lưu thiết lập hiển thị cây mặc định</button>
+    <button class="btn warm" id="btn-save-default-tree-fields" style="font-weight:700;font-size:12px;padding:5px 12px">Lưu thiết lập hiển thị cây mặc định</button>
   </div>
 </div>
 <label class="sub" style="font-weight:700">Chọn cây mặc định mới
@@ -397,7 +405,7 @@
 <div class="panel" style="margin-bottom:16px">
 <div class="panel-head">
 <div><h3>Lịch sử sao lưu hệ thống</h3><span class="badge" id="sl-lan-gan" hidden></span></div>
-<button class="btn warm" id="btn-sao-luu-ngay" disabled>+ Sao lưu ngay (Thủ công)</button>
+<button class="btn warm" id="btn-sao-luu-ngay">+ Sao lưu ngay (Thủ công)</button>
 </div>
 <table><thead><tr><th>Thời điểm sao lưu</th><th>Kết quả</th><th>Tên file</th><th>Dung lượng</th><th>Hành động</th></tr></thead><tbody id="sl-lich-su-tbody"></tbody></table>
 </div>
@@ -443,13 +451,14 @@
 </table>
 </div>
 
+<!-- BẢNG NHẬT KÝ HỆ THỐNG TRONG THÙNG RÁC (LƯU GIỮ 120 NGÀY) -->
 <div class="panel" style="margin-top:18px">
 <div class="panel-head">
   <div>
     <h3>Nhật ký hệ thống trong thùng rác</h3>
     <span id="rac-nk-dem"></span>
   </div>
-  <button class="btn danger" id="btn-don-nhat-ky-thung-rac" style="font-size:12px;padding:6px 12px" disabled>Dọn dẹp nhật ký &gt; 120 ngày</button>
+  <button class="btn danger" id="btn-don-nhat-ky-thung-rac" style="font-size:12px;padding:6px 12px">Dọn dẹp nhật ký &gt; 120 ngày</button>
 </div>
 <table>
   <thead>
@@ -469,11 +478,13 @@
 
 <div data-sys-pane="nhat-ky" hidden>
 <div class="notice" style="margin-bottom:16px" id="nk-chua-co"></div>
+
+<!-- Thanh công cụ lọc và dọn dẹp thủ công -->
 <div class="panel" style="margin-bottom:14px;padding:12px 16px;background:#faf8f5">
 <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between">
 <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
 <div style="display:flex;align-items:center;gap:6px"><span class="sub" style="font-weight:700">Loại:</span>
-<select id="sys-log-filter-type" class="role-select" style="min-width:160px" disabled>
+<select id="sys-log-filter-type" class="role-select" style="min-width:160px">
 <option value="all">Tất cả loại sự kiện</option>
 <option value="auth">Đăng nhập &amp; Bảo mật</option>
 <option value="qtht">Phân quyền QTHT</option>
@@ -482,17 +493,17 @@
 </select>
 </div>
 <div style="display:flex;align-items:center;gap:6px"><span class="sub" style="font-weight:700">Thời gian:</span>
-<select id="sys-log-filter-time" class="role-select" style="min-width:150px" disabled>
+<select id="sys-log-filter-time" class="role-select" style="min-width:150px">
 <option value="all">Tất cả thời gian</option>
 <option value="7d">7 ngày qua</option>
 <option value="30d">30 ngày qua</option>
 <option value="old">Cũ hơn 30 ngày</option>
 </select>
 </div>
-<button class="btn" id="btn-select-old-logs" style="font-size:12px;padding:7px 11px" disabled>Chọn nhanh các dòng > 30 ngày</button>
+<button class="btn" id="btn-select-old-logs" style="font-size:12px;padding:7px 11px">Chọn nhanh các dòng > 30 ngày</button>
 </div>
 <div style="display:flex;gap:8px;align-items:center">
-<button class="btn" id="btn-export-logs" style="font-size:12px;padding:7px 11px" disabled>Tải file JSON nhật ký</button>
+<button class="btn" id="btn-export-logs" style="font-size:12px;padding:7px 11px">Tải file JSON nhật ký</button>
 <button class="btn danger" id="btn-delete-selected-logs" disabled style="font-size:12px;padding:7px 12px">Xóa các dòng đã chọn &rarr; Chuyển thùng rác (0)</button>
 </div>
 </div>
@@ -506,7 +517,7 @@
 <table>
 <thead>
 <tr>
-<th style="width:40px;text-align:center"><input type="checkbox" id="sys-log-check-all" title="Chọn tất cả các dòng" disabled></th>
+<th style="width:40px;text-align:center"><input type="checkbox" id="sys-log-check-all" title="Chọn tất cả các dòng"></th>
 <th style="width:135px">Thời điểm</th>
 <th style="width:145px">Loại sự kiện</th>
 <th style="width:175px">Tài khoản thực hiện</th>
@@ -519,6 +530,95 @@
 </div>
 </section>
 
+<section id="sys-account-trees" class="view" hidden>
+<div class="detailbar"><button class="backbtn" id="sat-back-btn" data-back="quan-tri-he-thong">← Sổ tài khoản</button><span class="muted">/ Các gia phả của tài khoản</span></div>
+<div class="head">
+<div>
+<h1 id="sat-acc-name"></h1>
+<p class="lead" id="sat-acc-meta"></p>
+</div>
+<div class="scope">
+<small>Tài khoản đang xem xét</small>
+<strong id="sat-acc-code"></strong>
+</div>
+</div>
+
+
+<div class="panel">
+<div class="panel-head">
+<div><h3>Các gia phả tài khoản đang tham gia</h3><span id="sat-tree-count"></span></div>
+<div class="row-actions"><button class="btn" id="btn-sat-ho-ten">Đổi họ tên</button><button class="btn warm" id="btn-sat-add-to-tree">+ Thêm tài khoản vào gia phả khác...</button></div>
+</div>
+<table>
+<thead>
+<tr>
+<th>Tên gia phả</th>
+<th>Mã cây</th>
+<th>Vai trò trong cây</th>
+<th>Nhân vật được gắn trong sơ đồ</th>
+<th>Thông tin công khai</th>
+<th>Trạng thái thành viên</th>
+<th>Chọn</th>
+</tr>
+</thead>
+<tbody id="sat-trees-tbody"></tbody>
+</table>
+</div>
+</section>
+
+<!-- TRANG CON: THÔNG TIN CÔNG KHAI TRONG GIA PHẢ -->
+<section id="public-info-detail" class="view" hidden>
+<div class="detailbar">
+  <button class="backbtn" id="pid-back-btn">← Quay lại</button>
+  <span class="muted" id="pid-breadcrumb">/ Thông tin công khai trong gia phả</span>
+</div>
+<div class="head">
+  <div>
+    <h1 id="pid-title"></h1>
+    <p class="lead" id="pid-meta"></p>
+  </div>
+  <div class="scope">
+    <small>Trạng thái công khai</small>
+    <strong id="pid-count-badge"></strong>
+  </div>
+</div>
+
+
+<div class="panel">
+  <div class="panel-head">
+    <div>
+      <h3>Danh mục các trường thông tin hiển thị trên sơ đồ</h3>
+      <span>Người ngoài chỉ đọc được những thông tin có trạng thái Công khai</span>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn" id="pid-btn-check-all">Bật tất cả</button>
+      <button class="btn" id="pid-btn-uncheck-all">Tắt tất cả (Riêng tư)</button>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Trường thông tin</th>
+        <th>Thông tin đã nhập</th>
+        <th>Trạng thái</th>
+        <th>Người ngoài / Khách nhìn thấy</th>
+        <th style="width:140px;text-align:center">Công khai</th>
+      </tr>
+    </thead>
+    <tbody id="pid-fields-tbody"></tbody>
+  </table>
+  <div style="padding:16px 20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:var(--paper)">
+    <span class="muted" id="pid-save-hint">Các thay đổi sẽ áp dụng ngay khi khách xem sơ đồ gia phả này.</span>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="btn" id="pid-btn-back-bottom" type="button">← Quay về trang trước</button>
+      <button class="btn" id="pid-btn-cancel">Hủy bỏ</button>
+      <button class="btn warm" id="pid-btn-save" style="font-weight:700">Lưu thiết lập công khai</button>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- TRANG CON: CHỌN CÂY GIA PHẢ MẶC ĐỊNH CHO HỆ THỐNG -->
 <section id="sys-default-tree-selector" class="view" hidden>
 <div class="detailbar">
   <button class="backbtn" id="dts-back-btn" data-back="quan-tri-he-thong">&larr; Cây mặc định</button>
@@ -534,6 +634,7 @@
     <strong id="dts-current-badge"></strong>
   </div>
 </div>
+
 
 <div class="panel">
 <div class="panel-head">
@@ -559,11 +660,6 @@
 </table>
 </div>
 </section>
-
-<!-- Chỗ vẽ TẠM cho khu và trang chi tiết chưa chuyển sang giao diện quantri3
-     (Tài khoản · Kiểm duyệt · trang một cây · trang một tài khoản). Vỏ trang
-     chi tiết (`trang-chi-tiet.js`) đã dùng đúng class của quantri3. -->
-<section id="khu-tam" class="view" hidden></section>
 
 </main>
 </div>

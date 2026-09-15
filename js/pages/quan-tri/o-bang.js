@@ -4,12 +4,15 @@
 //            `.name` · `.sub` · `.badge` · `.btn` · `.link` · `.action-menu`
 // Lớp      : pages — được gọi bởi: pages/quan-tri/* · được phép gọi: (không)
 // Phụ thuộc: (không)
-// Phiên bản: 0.1.0 · Cập nhật: 15/09/2026 (b118c)
+// Phiên bản: 0.2.0 · Cập nhật: 16/09/2026 (b118d)
+// Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
-// ⚠ File này KHÔNG đặt màu, cỡ chữ hay khoảng cách nào. Mọi thứ nhìn thấy đến
-//   từ class của quantri3 trong `quan-tri.css`. Thêm `style=` ở đây là bắt
-//   đầu vẽ lại giao diện — đúng thứ b118c sinh ra để chấm dứt.
+// ⚠ File này KHÔNG tự đặt màu, cỡ chữ hay khoảng cách nào. Mọi thứ nhìn thấy
+//   đến từ class của quantri3 trong `quan-tri.css`. Chỗ duy nhất có `style` là
+//   `chepKieu()` — CHÉP NGUYÊN VĂN `style=` đã nằm sẵn trong mẫu dòng của
+//   quantri3 (nút nhỏ 11px của sổ tài khoản…). Tự nghĩ ra `style` mới ở đây
+//   là bắt đầu vẽ lại giao diện — đúng thứ b118c sinh ra để chấm dứt.
 
 /** Tên vai theo CHỮ của prototype quantri3 (khác `config.vaiTroBangChu` ở sơ đồ). */
 export const TEN_VAI = {
@@ -18,6 +21,9 @@ export const TEN_VAI = {
   xem: 'Khách',
   sao_luu: 'Tài khoản sao lưu',
 };
+
+/** Ba vai cấp được cho tài khoản khác, đúng thứ tự ô chọn của quantri3. */
+export const CHON_VAI = [['quan_tri', TEN_VAI.quan_tri], ['sua', TEN_VAI.sua], ['xem', TEN_VAI.xem]];
 
 /** Một `<td>` chứa lần lượt các con — chuỗi hoặc nút DOM. */
 export function td(...con) {
@@ -33,10 +39,10 @@ export function span(cls, chu) {
   return s;
 }
 
-/** `<span class="name">` + `<span class="sub">` — dòng phụ trống thì không vẽ. */
+/** `<span class="name">` + `<span class="sub">` — phần trống thì không vẽ. */
 export function tenVaPhu(ten, phu) {
   const f = document.createDocumentFragment();
-  f.append(span('name', ten));
+  if (ten) f.append(span('name', ten));
   if (phu) f.append(span('sub', phu));
   return f;
 }
@@ -44,6 +50,12 @@ export function tenVaPhu(ten, phu) {
 /** `kieu`: '' (xanh) · 'wait' (cam) · 'red' (đỏ) — đúng ba kiểu của quantri3. */
 export function huyHieu(chu, kieu = '') {
   return span('badge' + (kieu ? ' ' + kieu : ''), chu);
+}
+
+/** Đổi chữ + kiểu của một huy hiệu có sẵn trong HTML. */
+export function datHuyHieu(el, chu, kieu = '') {
+  el.className = 'badge' + (kieu ? ' ' + kieu : '');
+  el.textContent = chu;
 }
 
 /** `kieu`: '' · 'primary' · 'warm' · 'danger'. */
@@ -55,25 +67,55 @@ export function nut(chu, kieu = '') {
   return b;
 }
 
+/** Chép NGUYÊN VĂN một `style=` có sẵn trong mẫu dòng của quantri3. */
+export function chepKieu(el, css) {
+  el.style.cssText = css;
+  return el;
+}
+
+/** Nút nhỏ trong ô bảng — `style="font-size:11px;padding:2px 7px"` của quantri3. */
+export function nutNho(chu, kieu = '') {
+  return chepKieu(nut(chu, kieu), 'font-size:11px;padding:2px 7px');
+}
+
 /**
  * `<button class="link">` của quantri3 — KHÔNG `<a>`: thẻ `a` mang gạch chân
  * mặc định của trình duyệt mà CSS prototype không gỡ, nên nhìn lệch hẳn.
  * Bấm thì đổi `#`, cùng một đường với mọi nút điều hướng khác.
  */
 export function lienKet(chu, hash) {
+  return nutLink(chu, () => { window.location.hash = hash.replace(/^#/, ''); });
+}
+
+/** `<button class="link">` chạy một việc thay vì đổi `#`. */
+export function nutLink(chu, bam) {
   const b = document.createElement('button');
   b.type = 'button';
   b.className = 'link';
   b.textContent = chu;
-  b.addEventListener('click', () => { window.location.hash = hash.replace(/^#/, ''); });
+  if (bam) b.addEventListener('click', bam);
   return b;
 }
 
-/** Nút mờ kèm lý do — việc máy chủ CHƯA làm được. Không giả vờ chạy. */
+/** Nút mờ kèm lý do — việc máy chủ CHƯA làm được, hoặc chắc chắn bị từ chối. */
 export function nutMo(chu, lyDo, kieu = '') {
   const b = nut(chu, kieu);
   b.disabled = true;
   b.title = lyDo;
+  return b;
+}
+
+/**
+ * Một mục của menu *Chọn hành động*: có lý do khoá thì mờ kèm lý do, không
+ * thì bấm được. Bấm xong đóng menu — hộp hỏi mở ra, menu không đứng lơ lửng.
+ */
+export function mucMenu(chu, lyDo, bam, kieu = '') {
+  if (lyDo) return nutMo(chu, lyDo, kieu);
+  const b = nut(chu, kieu);
+  b.addEventListener('click', () => {
+    for (const x of document.querySelectorAll('.action-options')) x.hidden = true;
+    bam();
+  });
   return b;
 }
 
@@ -88,7 +130,7 @@ export function chuaCo(chu, lyDo) {
 export function hangNut(...ds) {
   const d = document.createElement('div');
   d.className = 'row-actions';
-  d.append(...ds);
+  d.append(...ds.filter(Boolean));
   return d;
 }
 
@@ -110,9 +152,7 @@ export function menuTuyChon(chu, dsNut) {
   ds.hidden = true;
   for (const b of dsNut) {
     if (b) { ds.append(b); continue; }
-    const k = document.createElement('div');
-    k.style.cssText = 'border-top:1px solid var(--line);margin:3px 0';   // chép nguyên quantri3
-    ds.append(k);
+    ds.append(chepKieu(document.createElement('div'), 'border-top:1px solid var(--line);margin:3px 0'));
   }
   mo.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -148,6 +188,14 @@ export function dongTrong(tbody, soCot, chu, thuLai) {
   }
   tr.append(o);
   tbody.append(tr);
+  return o;
+}
+
+/** Hai chữ cái đầu trên ô tròn `.avatar` của quantri3. */
+export function chuDau(hoTen, email) {
+  const tu = String(hoTen || '').trim().split(/\s+/).filter(Boolean);
+  const chu = tu.length >= 2 ? tu[0][0] + tu[tu.length - 1][0] : (tu[0] || email || '?').slice(0, 2);
+  return chu.toUpperCase();
 }
 
 function phan(iso) {

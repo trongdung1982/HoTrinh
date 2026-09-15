@@ -1,5 +1,5 @@
 {
-  "capNhat": "15/09/2026 22:29",
+  "capNhat": "16/09/2026 05:58",
   "ghiChu": "Hạ bằng --ha-moc.",
   "no": {
     "dau-file:js/domains/so-sanh.js": 36,
@@ -14,13 +14,7 @@
     "dau-file:js/pages/person-edit.js": 212,
     "dau-file:js/pages/person-list.js": 82,
     "dau-file:js/pages/quan-tri/khu-gia-pha.js": 37,
-    "dau-file:js/pages/quan-tri/khu-kiem-duyet.js": 56,
-    "dau-file:js/pages/quan-tri/khu-tai-khoan-he-thong.js": 117,
-    "dau-file:js/pages/quan-tri/khu-tai-khoan.js": 38,
-    "dau-file:js/pages/quan-tri/khu-thanh-vien.js": 159,
-    "dau-file:js/pages/quan-tri/khung.js": 39,
     "dau-file:js/pages/quan-tri/o-goi-y.js": 39,
-    "dau-file:js/pages/quan-tri/trang-chi-tiet.js": 36,
     "dau-file:js/pages/review.js": 99,
     "dau-file:js/pages/settings.js": 60,
     "dau-file:js/pages/tree-view.js": 63,
@@ -31,9 +25,9 @@
     "dau-file:js/utils/id.js": 60,
     "dau-file:js/utils/image.js": 37,
     ".claude/memory/MEMORY.md:dai": 292,
-    "supabase/CHI-DAN.md:byte": 9502,
-    "supabase/CHI-DAN.md:dai": 1488,
-    "supabase/KE-HOACH.md:byte": 20500,
+    "supabase/CHI-DAN.md:byte": 8660,
+    "supabase/CHI-DAN.md:dai": 807,
+    "supabase/KE-HOACH.md:byte": 17825,
     "index:dong-dai": 29,
     "ten-sai": 2
   }

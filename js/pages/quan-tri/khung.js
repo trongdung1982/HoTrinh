@@ -4,50 +4,42 @@
 //            trong QuanTri.html, đọc `#`, hiện đúng MỘT `<section class="view">`
 //            và giao cho khu/trang ấy đổ dữ liệu.
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: services/sb, pages/dang-nhap,
-//            pages/quan-tri/khu-kiem-duyet · khu-gia-pha · khu-tai-khoan ·
-//            khu-quan-tri-he-thong · trang-cay · trang-tai-khoan · trang-moi ·
-//            trang-chi-tiet
-// Phiên bản: 1.0.0 · Cập nhật: 15/09/2026 (b118c)
-//            1.0.0 (b118c) KHÔNG DỰNG KHUNG NỮA. Thanh trái, đầu trang, các
-//            `section` đều là HTML của prototype quantri3 nằm sẵn trong
-//            `QuanTri.html`; file này chỉ hiện/ẩn và gắn việc. Mỗi khu/trang
-//            khai `view` = `id` của section nó vẽ vào. Khu chưa chuyển sang
-//            giao diện quantri3 vẽ vào `#khu-tam` bằng mã cũ.
-//            0.6.0 (b118) khu thứ tư *Quản trị hệ thống*. 0.5.0 (b117) khu 2
-//            *Tài khoản của tôi*. 0.4.0 (b115) lớp TRANG CHI TIẾT.
+// Phụ thuộc: services/sb, pages/dang-nhap, quan-tri/khu-kiem-duyet ·
+//            khu-gia-pha · khu-tai-khoan · khu-quan-tri-he-thong · trang-cay ·
+//            trang-tai-khoan · trang-moi · trang-chi-tiet · o-bang
+// Phiên bản: 1.1.0 · Cập nhật: 16/09/2026 (b118d)
+// Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
 // ═══ BA LUẬT CỦA KHUNG NÀY, VÀ VÌ SAO ═══
 //
 //   1. **Thanh điều hướng mang con số cần nhìn.** Số đơn chờ duyệt và số thay
 //      đổi chờ kiểm duyệt đứng trong `<b>` của chính nút ấy (kiểu quantri3).
-//      Mỗi số tồn tại đúng một chỗ.
-//
-//   2. **Mỗi lần chỉ hiện MỘT section, và chỉ khu ấy gọi máy chủ.** Mở trang
-//      lần đầu chỉ tốn hai lời gọi đếm cho hai con số trên thanh.
-//
+//   2. **Mỗi lần chỉ hiện MỘT section, và chỉ khu ấy gọi máy chủ.**
 //   3. **Khu đang mở ghi vào `#` của địa chỉ.** Tải lại về đúng chỗ cũ, gửi
 //      link cho nhau được, nút Back chạy đúng.
 //
-// ⚠ **Không có kết cục "không đủ quyền".** Trang này KHÔNG phải hàng rào —
-//   hàng rào nằm ở Postgres. Nút *Quản trị hệ thống* ẩn với người không có
-//   cờ ấy là theo prototype, không phải để chặn: gõ thẳng `#quan-tri-he-thong`
-//   vẫn mở được, và máy chủ trả về rỗng.
+// ⚠ Từ b118d MỌI khu và trang vẽ vào section quantri3 của nó — không còn
+//   `#khu-tam`. Một trang chi tiết có nhiều mục thì mục nào khác section của
+//   trang thì khai `view` ngay trên mục ấy (ví dụ `MUC_TRANG_CAY`).
 //
-// ⚠ File này không hỏi bề ngang màn hình. Thanh trái thành hàng thẻ trên điện
-//   thoại là việc của `@media(max-width:850px)` trong `quan-tri.css`.
+// ⚠ **Không có kết cục "không đủ quyền".** Trang này KHÔNG phải hàng rào —
+//   hàng rào nằm ở Postgres. Gõ thẳng `#quan-tri-he-thong` vẫn mở được, và
+//   máy chủ trả về rỗng.
+//
+// ⚠ Không hỏi bề ngang màn hình — việc của `@media(max-width:850px)` trong CSS.
 
 import { layPhien, dsChoDuyet, demChoKiemDuyet } from '../../services/sb.js';
 import { mountDangNhap } from '../dang-nhap.js';
-import { mountKhuKiemDuyet } from './khu-kiem-duyet.js';
+import { mountKhuKiemDuyet, mountChiTietKiemDuyet } from './khu-kiem-duyet.js';
 import { mountKhuGiaPha } from './khu-gia-pha.js';
 import { mountKhuTaiKhoan } from './khu-tai-khoan.js';
 import { mountKhuQuanTriHeThong, mountChonCayMacDinh } from './khu-quan-tri-he-thong.js';
 import { mountTrangCay, MUC_TRANG_CAY } from './trang-cay.js';
-import { mountTrangTaiKhoan, MUC_TRANG_TAI_KHOAN } from './trang-tai-khoan.js';
+import { mountTrangTaiKhoan } from './trang-tai-khoan.js';
 import { mountTrangMoi } from './trang-moi.js';
 import { duongDan } from './trang-chi-tiet.js';
+import { chuDau } from './o-bang.js';
 
 /**
  * Bốn khu, đúng thứ tự trên thanh. `ma` là chuỗi đi vào `#` của địa chỉ nên
@@ -55,32 +47,32 @@ import { duongDan } from './trang-chi-tiet.js';
  * `view` là `id` của `<section>` trong QuanTri.html.
  *
  * ⚠ **Khu 2 mang HAI cái tên, và đó là chủ ý** (b106). Chữ trên thanh là
- *   *Tài khoản*; `ma` vẫn là `thanh-vien` vì nó nằm trong `#` của địa chỉ.
- *
- * ⚠ `view: 'khu-tam'` = khu CHƯA chuyển sang giao diện quantri3 (b118c). Mỗi
- *   lần chuyển xong một khu thì đổi `view` sang section quantri3 của nó.
+ *   *Tài khoản*, section là `#tai-khoan`; `ma` vẫn là `thanh-vien` vì nó nằm
+ *   trong `#` của địa chỉ.
  */
 const KHU = [
   { ma: 'gia-pha',    chu: 'Gia phả', view: 'gia-pha' },
-  { ma: 'thanh-vien', chu: 'Tài khoản', view: 'khu-tam' },
-  { ma: 'kiem-duyet', chu: 'Kiểm duyệt', view: 'khu-tam' },
+  { ma: 'thanh-vien', chu: 'Tài khoản', view: 'tai-khoan' },
+  { ma: 'kiem-duyet', chu: 'Kiểm duyệt', view: 'kiem-duyet' },
   { ma: 'quan-tri-he-thong', chu: 'Quản trị hệ thống', view: 'quan-tri-he-thong' },
 ];
 
 /**
  * TRANG CHI TIẾT — lớp thứ hai dưới một khu. Địa chỉ
- * `#<khu>/<ma>/<mã thứ đang xem>[/<mục>]`. `muc` rỗng = trang không có thanh
- * mục con. `khu` + `ma` cũng là giao kèo trong địa chỉ.
+ * `#<khu>/<ma>/<mã thứ đang xem>[/<mục>]`. `muc` rỗng = trang không có mục con.
  */
 const TRANG = [
-  { khu: 'gia-pha', ma: 'cay', view: 'khu-tam', mount: mountTrangCay, muc: MUC_TRANG_CAY },
+  // quantri3 `#tree-detail` · `#tree-members` · `#tree-requests` — mục nào ở
+  // section nào khai trong `MUC_TRANG_CAY`.
+  { khu: 'gia-pha', ma: 'cay', view: 'tree-detail', mount: mountTrangCay, muc: MUC_TRANG_CAY },
   // quantri3 `#tree-invite` — cột *Mời gia nhập* của bảng Gia phả mở trang này.
   { khu: 'gia-pha', ma: 'moi', view: 'tree-invite', mount: mountTrangMoi, muc: [] },
-  // ⚠ Khu cha là `quan-tri-he-thong` (đổi b118) — trang mở từ sổ tài khoản.
-  { khu: 'quan-tri-he-thong', ma: 'tai-khoan', view: 'khu-tam', mount: mountTrangTaiKhoan,
-    muc: MUC_TRANG_TAI_KHOAN },
-  // quantri3 `#sys-default-tree-selector`. Đoạn mã luôn là `chon` — trang này
-  // không nói về MỘT thứ nào, nhưng địa chỉ trang chi tiết cần đủ ba đoạn.
+  // quantri3 `#kiem-duyet-chitiet`. Mã = `<mã cây>-<số lần Lưu>`: một lần Lưu
+  // chỉ có nghĩa trong đúng một cây (luật 5a).
+  { khu: 'kiem-duyet', ma: 'lan-luu', view: 'kiem-duyet-chitiet', mount: mountChiTietKiemDuyet, muc: [] },
+  // quantri3 `#sys-account-trees` — cột *Số cây* của Sổ tài khoản mở trang này.
+  { khu: 'quan-tri-he-thong', ma: 'tai-khoan', view: 'sys-account-trees', mount: mountTrangTaiKhoan, muc: [] },
+  // quantri3 `#sys-default-tree-selector`. Đoạn mã luôn là `chon`.
   { khu: 'quan-tri-he-thong', ma: 'cay-mac-dinh', view: 'sys-default-tree-selector',
     mount: mountChonCayMacDinh, muc: [] },
 ];
@@ -108,7 +100,8 @@ export async function mountKhung(appEl) {
   const app = document.querySelector('.app');
   app.hidden = false;
 
-  veNguoiDung(app, phien);
+  app.querySelector('[data-avatar]').textContent = chuDau(phien.hoTen, phien.email);
+  app.querySelector('[data-user-email]').textContent = phien.email || '';
 
   /** `ma` khu → nút của nó. Giữ lại để tô đậm và để gắn con số đếm. */
   const nutTheoMa = new Map();
@@ -131,17 +124,6 @@ export async function mountKhung(appEl) {
   veKhuDangMo();
 
   napSoDem(phien.treeId, nutTheoMa);
-}
-
-/** Dòng tài khoản ở góc phải đầu trang — `.top .user` của quantri3. */
-function veNguoiDung(app, phien) {
-  const ten = (phien.hoTen || '').trim();
-  const tu = ten.split(/\s+/).filter(Boolean);
-  const chuDau = tu.length >= 2
-    ? tu[0][0] + tu[tu.length - 1][0]
-    : (ten || phien.email || '?').slice(0, 2);
-  app.querySelector('[data-avatar]').textContent = chuDau.toUpperCase();
-  app.querySelector('[data-user-email]').textContent = phien.email || '';
 }
 
 // ============================================================
@@ -187,12 +169,10 @@ function veKhu(app, nutTheoMa, phien) {
     else b.removeAttribute('aria-current');
   }
 
-  const viewId = trang ? trang.view : khu.view;
+  const viewId = trang ? ((muc && muc.view) || trang.view) : khu.view;
   for (const v of app.querySelectorAll('main > .view')) v.hidden = v.id !== viewId;
   const el = document.getElementById(viewId);
-  // Section quantri3 giữ nguyên HTML, khu tự đổ lại dữ liệu. Chỉ chỗ vẽ tạm
-  // mới được dọn trắng — nó không có HTML nào của prototype để giữ.
-  if (viewId === 'khu-tam') el.innerHTML = '';
+  window.scrollTo(0, 0);
 
   if (trang) {
     trang.mount(el, { phien, thamSo: doan[2], muc: muc ? muc.ma : '',
@@ -200,8 +180,8 @@ function veKhu(app, nutTheoMa, phien) {
     return;
   }
 
-  // ⚠ Khu nhận `phien` để biết danh tính và cây đang mở — KHÔNG để suy quyền.
-  //   Câu QUYỀN mỗi khu tự hỏi máy chủ.
+  // ⚠ Khu nhận `phien` để biết danh tính — KHÔNG để suy quyền. Câu QUYỀN mỗi
+  //   khu tự hỏi máy chủ.
   if (khu.ma === 'gia-pha') mountKhuGiaPha(el, phien);
   else if (khu.ma === 'thanh-vien') mountKhuTaiKhoan(el, phien);
   else if (khu.ma === 'kiem-duyet') mountKhuKiemDuyet(el);
@@ -226,10 +206,11 @@ function docHash() {
  * Gắn số đơn chờ duyệt và số thay đổi chờ kiểm duyệt vào chính hai nút ấy.
  *
  * ⚠ **Hỏng thì im lặng, và đó là cố ý.** Không phải quản trị thì hai hàm này
- *   trả mảng rỗng và số 0 — đúng thiết kế. Mạng hỏng thật thì khu người ta
- *   bấm vào sẽ tự nói ra.
+ *   trả mảng rỗng và số 0 — đúng thiết kế.
  *
  * ⚠ **Số 0 thì không vẽ gì cả** (`CLAUDE.md` mục 7).
+ *
+ * ⚠ Nợ còn treo: hai con số đếm theo cây ĐANG MỞ (`KE-HOACH.md` › Còn treo).
  */
 async function napSoDem(treeId, nutTheoMa) {
   if (!treeId) return;

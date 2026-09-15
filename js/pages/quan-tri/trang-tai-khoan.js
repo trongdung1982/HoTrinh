@@ -1,248 +1,224 @@
 // ============================================================
 // giapha-supabase · js/pages/quan-tri/trang-tai-khoan.js
-// Vai trò  : Trang chi tiết MỘT tài khoản (`#thanh-vien/tai-khoan/<mã tài
-//            khoản>`) — Tổng quan · Các gia phả liên quan. CHỈ ĐỌC.
+// Vai trò  : Trang *Các gia phả của tài khoản* `#quan-tri-he-thong/tai-khoan/
+//            <mã tài khoản>` — đổ dữ liệu vào section `#sys-account-trees` của
+//            quantri3: mỗi dòng một cây, menu *Chọn ▾* đổi vai · gắn người ·
+//            tin cậy · gỡ · duyệt đơn, cộng mời vào cây khác và đổi họ tên.
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: services/sb, config, quan-tri/trang-chi-tiet,
-//            quan-tri/khu-thanh-vien (mẩu vẽ + `trangThaiDong`)
-// Phiên bản: 0.2.0 · Cập nhật: 15/09/2026 (b118)
-//            0.2.0 Khu cha đổi từ `thanh-vien` sang `quan-tri-he-thong` —
-//            file này tự KHÔNG hardcode tên khu (nhận `ctx.hashQuayVe` /
-//            `ctx.chuQuayVe` từ `khung.js`), chỉ câu "Về khu …" ở nhánh
-//            "không thấy tài khoản" là phải sửa tay.
+// Phụ thuộc: services/sb, quan-tri/hop-thoai · trang-cay · khu-quan-tri-he-thong · o-bang
+// Phiên bản: 1.0.0 · Cập nhật: 16/09/2026 (b118d)
+// Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
-// ⚠ **Tài khoản lấy theo MÃ NGẮN trong địa chỉ**, không theo `userId`. Mã ngắn
-//   là `not null unique` (`11` mục 1) và là thứ người ta đọc cho nhau qua điện
-//   thoại; một chuỗi uuid trong link thì không ai đọc được, cũng không ai kiểm
-//   được link mình nhận có đúng người không.
+// ⚠ **Luật 5b②:** cột *Số cây* của Sổ tài khoản là dòng TÓM TẮT; bấm vào mở
+//   trang này — mỗi dòng mang TÊN CÂY của nó, và mọi hộp hỏi gọi tên cây ấy.
+//   Đó là lý do việc SỬA được đứng ở đây mà không đứng trong ô tóm tắt.
 //
-// ⚠ **Trang này KHÔNG có nút nào**, và đó là luật 5b② chứ không phải việc còn
-//   thiếu. Mọi thứ ở đây hoặc là cờ cấp tài khoản (đã có chỗ sửa ở khu *Quản
-//   trị hệ thống*), hoặc là quyền trong MỘT cây — mà chỗ sửa quyền trong một cây là
-//   bảng của cây ấy, nơi tên cây đứng ngay cạnh ô đang sửa. Mỗi dòng ở mục
-//   *Các gia phả liên quan* là một liên kết sang đúng bảng ấy. Chép năm việc
-//   đổi quyền sang đây là dựng chỗ thứ ba để chúng lệch nhau.
+// ⚠ **Tài khoản lấy theo MÃ NGẮN trong địa chỉ**, không theo `userId` — mã
+//   ngắn là thứ người ta đọc cho nhau qua điện thoại.
 //
 // ⚠ Chỉ Quản trị hệ thống mở được thật — `ds_tai_khoan_he_thong()` và
-//   `ds_cay_cua_tai_khoan()` đều gác bằng cờ ấy ở máy chủ. Người khác gõ địa
-//   chỉ vẫn mở được vỏ trang và nhận câu "không thấy"; trang không tự chặn,
-//   vì trang không phải hàng rào.
+//   `ds_cay_cua_tai_khoan()` gác bằng cờ ấy. Người khác gõ địa chỉ vẫn mở được
+//   vỏ trang và nhận câu "không thấy"; trang không tự chặn.
+//
+// ⚠ Hộp hỏi đổi quyền dùng CHUNG với bảng Thành viên của trang cây
+//   (`trang-cay.js`) — một việc, một bản.
 
-import { dsTaiKhoanHeThong, dsCayCuaTaiKhoan } from '../../services/sb.js';
-import { vaiTroBangChu } from '../../config.js';
-import { veVoChiTiet, veChuaChuyen, duongDan } from './trang-chi-tiet.js';
 import {
-  huyHieu, o, veLoi, gioVietNam, nhanCay, trangThaiDong,
-  capChieuCao, CSS_DAU_BANG,
-} from './khu-thanh-vien.js';
+  dsTaiKhoanHeThong, dsCayCuaTaiKhoan, layDanhSachGiaPha, moiVaoCay, datHoTenTaiKhoan,
+} from '../../services/sb.js';
+import { duongDan } from './trang-chi-tiet.js';
+import { hoi } from './hop-thoai.js';
+import { datTabQuanTriHeThong } from './khu-quan-tri-he-thong.js';
+import {
+  hoiDoiVai, hoiGanNguoi, hoiTinCay, hoiGo, hoiDuyetDon, hoiTuChoiDon, moSoDo, cumCay,
+} from './trang-cay.js';
+import {
+  TEN_VAI, CHON_VAI, td, span, tenVaPhu, huyHieu, nut, mucMenu, menuTuyChon, chuaCo,
+  dongTrong, ngay,
+} from './o-bang.js';
 
-/** Mục con — `ma` đi vào `#` của địa chỉ, là giao kèo với người dùng. */
-export const MUC_TRANG_TAI_KHOAN = [
-  { ma: 'tong-quan', chu: 'Tổng quan' },
-  { ma: 'gia-pha', chu: 'Các gia phả liên quan' },
-];
+const LY_DO_CONG_KHAI =
+  'Công khai theo từng trường thông tin chưa có ở máy chủ — việc riêng, làm sau b120.';
 
 /**
- * @param {HTMLElement} el
- * @param {object} ctx  do `khung.js` dựng — mọi giá trị đã được khung kiểm
- * @param {string} ctx.thamSo  mã tài khoản trong địa chỉ
+ * @param {HTMLElement} sec  `section#sys-account-trees`
+ * @param {object} ctx       do `khung.js` dựng — `thamSo` là mã tài khoản
  */
-export async function mountTrangTaiKhoan(el, ctx) {
-  el.textContent = 'Đang mở tài khoản…';
+export async function mountTrangTaiKhoan(sec, ctx) {
+  // Nút "← Sổ tài khoản" về khu cha — mở đúng tab ấy, như quantri3.
+  datTabQuanTriHeThong('so-tai-khoan');
 
-  // Bấm sang chỗ khác trong lúc chờ thì khung đã vẽ trang khác vào `el` —
-  // kết quả về muộn không được đè lên. Cùng luật `trang-cay.js`.
+  const $ = (id) => sec.querySelector('#' + id);
+  const tb = $('sat-trees-tbody');
+  const bHoTen = $('btn-sat-ho-ten');
+  const bThem = $('btn-sat-add-to-tree');
+  $('sat-acc-name').textContent = 'Đang mở tài khoản…';
+  $('sat-acc-meta').textContent = '';
+  $('sat-acc-code').textContent = ctx.thamSo;
+  $('sat-tree-count').textContent = '';
+  bHoTen.disabled = true;
+  bThem.disabled = true;
+  dongTrong(tb, 7, 'Đang đọc…');
+
   const hashLuc = window.location.hash;
-  const kq = await dsTaiKhoanHeThong();
+  const [kq, kqCay] = await Promise.all([dsTaiKhoanHeThong(), layDanhSachGiaPha()]);
   if (window.location.hash !== hashLuc) return;
-
-  const vo = { hashQuayVe: ctx.hashQuayVe, chuQuayVe: ctx.chuQuayVe };
+  const napLai = () => mountTrangTaiKhoan(sec, ctx);
 
   if (!kq.ok) {
-    const nd = veVoChiTiet(el, { ...vo, tua: 'Không mở được tài khoản' });
-    veChuaChuyen(nd, kq.loi || 'Máy chủ không trả lời.');
+    $('sat-acc-name').textContent = 'Không mở được tài khoản';
+    dongTrong(tb, 7, kq.loi || 'Máy chủ không trả lời.', napLai);
     return;
   }
 
-  const tk = (kq.ds || []).find((t) => t.maNgan === ctx.thamSo);
+  const tk = kq.ds.find((t) => t.maNgan === ctx.thamSo);
   if (!tk) {
-    const nd = veVoChiTiet(el, { ...vo, viTri: ctx.thamSo,
-      tua: 'Không thấy tài khoản mã ' + ctx.thamSo });
-    // ⚠ Hai câu khác nhau cho hai người khác nhau. Người gõ đúng mã CỦA MÌNH
-    //   mà không phải Quản trị hệ thống thì không hỏng gì cả — họ chỉ đang ở
-    //   nhầm cửa, và cửa đúng là khu Tài khoản.
-    const laToi = ctx.phien && ctx.phien.maNgan && ctx.phien.maNgan === ctx.thamSo;
-    veChuaChuyen(nd, laToi
-      ? 'Đây là mã tài khoản của chính bạn. Trang chi tiết một tài khoản chỉ ' +
-        'Quản trị hệ thống mở được; thông tin của bạn nằm ở khu Tài khoản.'
-      : 'Sổ tài khoản không có mã ấy — hoặc bạn đang đăng nhập bằng một tài ' +
-        'khoản không phải Quản trị hệ thống, và chỉ Quản trị hệ thống xem được ' +
-        'tài khoản của người khác.',
-      ctx.hashQuayVe, 'Về khu Quản trị hệ thống');
+    const laToi = ctx.phien && ctx.phien.maNgan === ctx.thamSo;
+    $('sat-acc-name').textContent = 'Không thấy tài khoản mã ' + ctx.thamSo;
+    dongTrong(tb, 7, laToi
+      ? 'Đây là mã tài khoản của chính bạn. Trang này chỉ Quản trị hệ thống mở được; thông tin ' +
+        'của bạn nằm ở khu Tài khoản.'
+      : 'Sổ tài khoản không có mã ấy — hoặc bạn không phải Quản trị hệ thống, và chỉ Quản trị hệ ' +
+        'thống xem được tài khoản của người khác.');
     return;
   }
 
-  const nd = veVoChiTiet(el, {
-    ...vo,
-    viTri: 'Tài khoản ' + tk.maNgan,
-    tua: tk.hoTen || tk.email || tk.maNgan,
-    phu: (tk.hoTen && tk.email ? tk.email + ' · ' : '') + 'mã ' + tk.maNgan,
-    muc: MUC_TRANG_TAI_KHOAN,
-    mucDangMo: ctx.muc,
-    hashMuc: ctx.hashMuc,
-  });
+  const quyen = [tk.laQuanTriHeThong ? 'Quản trị hệ thống' : '', tk.duocTaoCay ? 'Được tạo cây' : '']
+    .filter(Boolean).join(' · ') || 'Thành viên thông thường';
+  $('sat-acc-name').textContent = 'Các gia phả của ' + (tk.hoTen || tk.email);
+  $('sat-acc-meta').textContent = ['Mã: ' + tk.maNgan, tk.email, 'Quyền hệ thống: ' + quyen,
+    'Trạng thái: Hoạt động'].join(' · ');
+  $('sat-acc-code').textContent = tk.maNgan;
 
-  if (ctx.muc === 'gia-pha') veCacGiaPha(nd, tk, hashLuc);
-  else veTongQuan(nd, tk);
-}
+  // — Đổi họ tên: chỗ DUY NHẤT điền tên cho một tài khoản (b109b) —
+  bHoTen.disabled = false;
+  bHoTen.onclick = async () => {
+    const r = await hoi({
+      tua: 'Đổi họ tên tài khoản',
+      chu: 'Tên để NHẬN MẶT ' + tk.email + ' trong ô gợi ý — không phải tên người trong sơ đồ gia ' +
+        'phả. Bỏ trống thì ô gợi ý chỉ hiện được địa chỉ email.',
+      truong: [{ ma: 'ten', nhan: 'Họ tên', goiY: 'Nguyễn Văn Hùng — để trống là xoá tên', giaTri: tk.hoTen || '' }],
+      nutOk: 'Lưu họ tên',
+      lam: (v) => datHoTenTaiKhoan(tk.userId, v.ten),
+    });
+    if (r) napLai();
+  };
 
-// ============================================================
-// Tổng quan
-// ============================================================
+  // — Thêm vào gia phả khác = gửi LỜI MỜI (chữ ký thứ nhất) —
+  const dsCay = kqCay.ok ? kqCay.ds.filter((c) => !c.daXoaLuc) : [];
+  const moiVao = async () => {
+    const r = await hoi({
+      tua: 'Thêm tài khoản vào gia phả',
+      chu: 'Mời ' + tk.email + ' vào một gia phả. Lời mời là chữ ký thứ nhất — tài khoản này phải ' +
+        'tự bấm Nhận thì mới thật sự vào cây. Ô gia phả mở ra ở mục trống, cố ý: lời mời phải nói ' +
+        'rõ mời vào cây nào.',
+      truong: [
+        { ma: 'cay', nhan: 'Gia phả', chon: [['', '— chọn gia phả —'],
+          ...dsCay.map((c) => [c.fileId, (c.ten || '') + ' · ' + c.treeCode])], giaTri: '' },
+        { ma: 'vai', nhan: 'Quyền khi tham gia', chon: CHON_VAI, giaTri: 'sua' },
+      ],
+      nutOk: 'Gửi lời mời',
+      lam: (v) => (v.cay ? moiVaoCay(v.cay, tk.email, v.vai, '')
+        : { ok: false, loi: 'Chưa chọn gia phả — lời mời phải nói rõ mời vào cây nào.' }),
+    });
+    if (r) napLai();
+  };
+  bThem.disabled = tk.laChinhToi || !dsCay.length;
+  bThem.title = tk.laChinhToi ? 'Không ai tự mời mình vào cây được.' : '';
+  bThem.onclick = moiVao;
 
-function veTongQuan(nd, tk) {
-  const soCay = [String(tk.soCay) + ' gia phả'];
-  if (tk.soCho) soCay.push(tk.soCho + ' đơn đang chờ');
-  if (tk.soMoi) soCay.push(tk.soMoi + ' lời mời chưa nhận');
-
-  const dong = [
-    ['Họ tên', tk.hoTen],
-    ['Email', tk.email
-      ? tk.email + (tk.daXacNhanEmail ? ' · đã xác nhận' : ' · CHƯA xác nhận') : ''],
-    ['Mã tài khoản', tk.maNgan],
-    ['Quản trị hệ thống', tk.laQuanTriHeThong ? 'Có' : 'Không'],
-    ['Được dựng gia phả mới', !tk.duocTaoCay ? 'Không'
-      : tk.laQuanTriHeThong ? 'Có — đi kèm cờ Quản trị hệ thống' : 'Có'],
-    ['Có chân ở', soCay.join(' · ')],
-    ['Đang làm chủ', tk.soCayLamChu ? tk.soCayLamChu + ' gia phả' : ''],
-    ['Đăng ký', tk.taoLuc ? gioVietNam(tk.taoLuc) : ''],
-    // Mốc trống ở đây KHÔNG phải trường trống — "chưa đăng nhập lần nào" là
-    // thông tin, và là thông tin đáng đọc nhất khi đoán một email gõ nhầm.
-    ['Đăng nhập gần nhất', tk.dangNhapGanNhat
-      ? gioVietNam(tk.dangNhapGanNhat) : 'Chưa đăng nhập lần nào'],
-  ];
-
-  const dl = document.createElement('dl');
-  dl.className = 'qt-tt';
-  for (const [nhan, giaTri] of dong) {
-    if (!giaTri) continue;
-    const hang = document.createElement('div');
-    hang.className = 'qt-tt-dong';
-    const dt = document.createElement('dt');
-    dt.textContent = nhan;
-    const dd = document.createElement('dd');
-    dd.textContent = giaTri;
-    if (nhan === 'Mã tài khoản' && tk.laChinhToi) dd.append(huyHieu('Bạn', false));
-    hang.append(dt, dd);
-    dl.append(hang);
-  }
-  nd.append(dl);
-
-  const ghi = document.createElement('p');
-  ghi.className = 'qt-ghi qt-ghi-khoi';
-  ghi.textContent =
-    'Trang này chỉ để xem. Hai cờ cấp tài khoản, họ tên, mời vào cây và xoá ' +
-    'tài khoản: bấm tên tài khoản ở sổ đăng ký của khu Quản trị hệ thống. Vai ' +
-    'trò và mã người trong MỘT gia phả: mục Các gia phả liên quan, bấm tên gia phả.';
-  nd.append(ghi);
-}
-
-// ============================================================
-// Các gia phả liên quan
-// ============================================================
-
-/** Mục của trang cây ứng với từng trạng thái — nơi dòng ấy SỬA được. */
-const MUC_CAY_THEO_TRANG_THAI = {
-  thanhvien: 'thanh-vien', duocmoi: 'loi-moi', donxin: 'don-xin-vao',
-};
-
-async function veCacGiaPha(nd, tk, hashLuc) {
-  nd.textContent = 'Đang đọc các gia phả…';
-
-  const kq = await dsCayCuaTaiKhoan(tk.userId);
+  const kqDs = await dsCayCuaTaiKhoan(tk.userId);
   if (window.location.hash !== hashLuc) return;
-  nd.innerHTML = '';
+  if (!kqDs.ok) { dongTrong(tb, 7, kqDs.loi || 'Không đọc được các gia phả của tài khoản này.', napLai); return; }
 
-  if (!kq.ok) {
-    nd.append(veLoi(kq.loi || 'Không đọc được các gia phả của tài khoản này.',
-      () => veCacGiaPha(nd, tk, hashLuc)));
-    return;
-  }
+  const ds = kqDs.ds;
+  const soVao = ds.filter((c) => c.daDuyet).length;
+  const treo = ds.length - soVao;
+  $('sat-tree-count').textContent = 'Đang tham gia ' + soVao + ' cây' +
+    (treo ? ' · ' + treo + ' đơn hoặc lời mời đang chờ' : '');
 
-  const ds = kq.ds || [];
   if (!ds.length) {
-    const r = document.createElement('div');
-    r.className = 'qt-chua-lam';
-    r.textContent = 'Tài khoản này chưa có chân, đơn xin vào hay lời mời ở gia phả nào.';
-    nd.append(r);
+    const o = dongTrong(tb, 7, 'Tài khoản này hiện chưa tham gia cây gia phả nào.');
+    if (!bThem.disabled) {
+      const b = nut('+ Thêm vào cây', 'warm');
+      b.style.marginLeft = '8px';   // chép nguyên quantri3
+      b.addEventListener('click', moiVao);
+      o.append(b);
+    }
     return;
   }
 
-  const ghi = document.createElement('p');
-  ghi.className = 'qt-ghi';
-  ghi.style.margin = '0 0 10px';
-  ghi.textContent = 'Chỉ để đọc. Bấm tên gia phả để mở bảng của đúng cây ấy — ' +
-    'chỗ đổi vai và gắn mã người, nơi tên cây đứng cạnh ô đang sửa.';
-  nd.append(ghi);
+  tb.innerHTML = '';
+  for (const c of ds) tb.append(dongCay(c, tk, ctx.phien, napLai));
+}
 
-  const khung = document.createElement('div');
-  khung.className = 'qt-cuon-ngang';
-  capChieuCao(khung, ds.length);
+function dongCay(c, tk, phien, napLai) {
+  const tt = c.daDuyet ? 'thanhvien' : c.moiLuc ? 'duocmoi' : 'donxin';
+  const cay = { treeId: c.treeId, ten: c.ten, maCay: c.maCay };
+  // Hình dạng `t` mà các hộp hỏi chờ: quyền gắn vào TÀI KHOẢN, còn vai và mã
+  // người thì theo TỪNG CÂY — ghép hai nguồn đúng ở đây.
+  const t = {
+    userId: tk.userId, email: tk.email, maNgan: tk.maNgan, laChinhToi: tk.laChinhToi,
+    vai: c.vai, daDuyet: c.daDuyet, maNguoi: c.maNguoi, tenNguoi: c.tenNguoi,
+    tinCay: c.tinCay, laChuCay: c.laChuCay,
+  };
 
-  const bang = document.createElement('table');
-  bang.className = 'qt-bang';
+  const maCay = document.createElement('strong');
+  maCay.textContent = c.maCay;
 
-  const thead = document.createElement('thead');
-  const trDau = document.createElement('tr');
-  for (const chu of ['Gia phả', 'Vai trò', 'Người được gắn', 'Trạng thái']) {
-    const th = document.createElement('th');
-    th.style.cssText = CSS_DAU_BANG;
-    th.textContent = chu;
-    trDau.append(th);
+  // Người được mời mang vai `xem` tới lúc Nhận — hiện vai SẼ nhận (b110c).
+  const vaiHien = tt === 'duocmoi' ? (c.moiVai || c.vai) : c.vai;
+  const vai = huyHieu(c.laChuCay ? 'Chủ gia phả' : (TEN_VAI[vaiHien] || vaiHien),
+    c.laChuCay || vaiHien === 'quan_tri' ? '' : 'wait');
+
+  const trang = td(
+    huyHieu(tt === 'thanhvien' ? 'Đã duyệt' : tt === 'duocmoi' ? 'Được mời — chờ họ bấm Nhận' : 'Đơn chờ duyệt',
+      tt === 'thanhvien' ? '' : 'wait'),
+    c.thamGia ? span('sub', ngay(c.thamGia)) : '');
+
+  const cuaMinh = tk.laChinhToi
+    ? 'Tài khoản của chính bạn — không ai đặt quyền cho chính mình được.' : '';
+  const saoLuu = c.vai === 'sao_luu'
+    ? 'Tài khoản sao lưu tự động — đổi vai hay gỡ nó là bản sao lưu đêm ra file rỗng.' : '';
+
+  const ds = [];
+  if (tt === 'thanhvien') {
+    ds.push(
+      mucMenu('Đổi vai trò trong cây',
+        cuaMinh || (c.laChuCay ? 'Chủ gia phả không hạ vai được — bàn giao trước.' : '') || saoLuu,
+        () => hoiDoiVai(t, cay, napLai)),
+      mucMenu('Gắn / đổi mã người', cuaMinh, () => hoiGanNguoi(t, cay, napLai)),
+      mucMenu(c.tinCay ? 'Tắt tin cậy (ghi thẳng)' : 'Bật tin cậy (ghi thẳng)', cuaMinh,
+        () => hoiTinCay(t, cay, napLai)),
+      mucMenu('Gỡ khỏi gia phả',
+        cuaMinh || (c.laChuCay ? 'Không thể gỡ chủ sở hữu khi chưa bàn giao.' : '') || saoLuu,
+        () => hoiGo(t, cay, napLai), 'danger'),
+    );
+  } else if (tt === 'donxin') {
+    ds.push(
+      mucMenu('Duyệt đơn vào ' + cumCay(cay), cuaMinh, () => hoiDuyetDon(t, cay, napLai)),
+      mucMenu('Từ chối đơn', cuaMinh, () => hoiTuChoiDon(t, cay, napLai), 'danger'),
+    );
+  } else {
+    // ⚠ Lời mời không có việc NHẬN hộ — chỉ thu hồi (chữ ký thứ hai là của họ).
+    ds.push(mucMenu('Thu hồi lời mời', '', () => hoiGo(t, cay, napLai), 'danger'));
   }
-  thead.append(trDau);
-  bang.append(thead);
+  ds.push(null,
+    mucMenu('Mở bảng thành viên của cây', '', () => {
+      window.location.hash = duongDan('gia-pha', 'cay', c.maCay, 'thanh-vien');
+    }),
+    mucMenu('Xem sơ đồ', '', () => moSoDo(cay, phien)));
 
-  const ruot = document.createElement('tbody');
-  for (const c of ds) {
-    const trangThai = trangThaiDong(c);
-    const tr = document.createElement('tr');
-
-    const oCay = o('', '');
-    const a = document.createElement('a');
-    a.className = 'qt-lk';
-    a.href = '#' + duongDan('gia-pha', 'cay', c.maCay, MUC_CAY_THEO_TRANG_THAI[trangThai]);
-    a.textContent = nhanCay({ ten: c.ten, maCay: c.maCay });
-    oCay.append(a);
-
-    // Người được mời mang `xem` tới lúc Nhận — hiện vai SẼ nhận (b110c).
-    const vai = trangThai === 'duocmoi' ? (c.moiVai || c.vai) : c.vai;
-    const oVai = o(vaiTroBangChu(vai), 'white-space:nowrap');
-
-    const oNguoi = o('', '');
-    if (c.maNguoi) {
-      const ten = document.createElement('div');
-      ten.style.fontWeight = '600';
-      ten.textContent = c.tenNguoi || c.maNguoi;
-      oNguoi.append(ten);
-      if (c.tenNguoi && c.tenNguoi !== c.maNguoi) {
-        const ma = document.createElement('div');
-        ma.className = 'qt-ghi';
-        ma.textContent = 'Mã: ' + c.maNguoi;
-        oNguoi.append(ma);
-      }
-    }
-
-    const oTrang = o(trangThai === 'duocmoi' ? 'Được mời — chờ họ bấm Nhận'
-      : trangThai === 'donxin' ? 'Đơn xin vào chờ duyệt'
-      : 'Đã vào' + (c.tinCay ? ' · tin cậy' : ''), '');
-    if (c.laChuCay) oTrang.append(huyHieu('Chủ gia phả', true));
-
-    tr.append(oCay, oVai, oNguoi, oTrang);
-    ruot.append(tr);
-  }
-  bang.append(ruot);
-  khung.append(bang);
-  nd.append(khung);
+  const tr = document.createElement('tr');
+  tr.append(
+    td(tenVaPhu(c.ten || c.maCay, 'Mã: ' + c.maCay)),
+    td(maCay),
+    td(vai),
+    td(c.maNguoi ? tenVaPhu(c.tenNguoi || c.maNguoi, 'ID: ' + c.maNguoi) : span('name', 'Chưa gắn')),
+    td(chuaCo('Chưa có', LY_DO_CONG_KHAI)),
+    trang,
+    td(menuTuyChon('Chọn ▾', ds)),
+  );
+  return tr;
 }

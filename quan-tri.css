@@ -33,63 +33,17 @@
 .qt-canh-bao a { color:var(--muted); }
 .loi-dong { display:block; margin-top:6px; color:var(--danger); font-size:12px; line-height:1.4; }
 .dong-trong td { color:var(--muted); text-align:center; padding:22px 16px; }
-.modal-box textarea, .modal-box input[type="text"] {
-  width:100%; padding:10px; border:1px solid var(--line); border-radius:8px;
-  font:inherit; margin:0 0 14px; box-sizing:border-box; }
-
-/* ═══ TẠM — class `.qt-*` của các khu CHƯA chuyển sang giao diện quantri3 ═══
-   Khu Tài khoản · Kiểm duyệt · Sổ tài khoản · trang chi tiết một cây vẫn vẽ
-   bằng mã b106–b118. Xoá từng dòng dưới đây khi khu cuối cùng dùng nó đã
-   chuyển xong — `grep qt-<tên> js/` ra rỗng là xoá được. */
-.qt-tua { margin:0 0 12px; font-size:22px; }
-.qt-chua-lam { padding:18px; border:1px solid var(--line); border-radius:10px;
-               background:var(--paper); color:var(--muted); line-height:1.6; }
-.qt-di-toi { display:inline-block; margin-top:8px; color:var(--accent); font-weight:600; }
-.qt-lk { color:var(--ink); text-decoration:none; border-bottom:1px solid #dcd5cb; }
-.qt-lk:hover { border-bottom-color:var(--accent); }
-.qt-tt { margin:0; border:1px solid var(--line); border-radius:10px; background:var(--paper); }
-.qt-tt-dong { display:grid; grid-template-columns:minmax(0,200px) minmax(0,1fr);
-              gap:12px; padding:11px 16px; border-top:1px solid #f2eee8; }
-.qt-tt-dong:first-child { border-top:0; }
-.qt-tt dt { color:var(--muted); }
-.qt-tt dd { margin:0; overflow-wrap:anywhere; }
-.qt-danh-tinh { margin:0 0 12px; color:var(--ink); font-weight:600; line-height:1.5;
-                overflow-wrap:anywhere; }
-.qt-cho { color:var(--muted); }
-.qt-hai-cot { display:grid; grid-template-columns:repeat(2, minmax(0,1fr));
-              gap:16px; margin:0 0 16px; align-items:start; }
-.qt-khoi { min-width:0; margin:0 0 16px; padding:14px 16px 16px;
-           border:1px solid var(--line); border-radius:10px; background:var(--paper); }
-.qt-hai-cot > .qt-khoi { margin:0; }
-.qt-khoi-dau { display:flex; flex-wrap:wrap; align-items:baseline;
-               justify-content:space-between; gap:2px 12px; margin:0 0 8px; }
-.qt-khoi-tua { margin:0; font-size:15px; }
-.qt-ghi { color:var(--muted); font-size:12px; line-height:1.5; }
-.qt-ghi-khoi { margin:10px 0 0; }
-.qt-ghi-loi { margin:0 0 8px; color:var(--danger); }
-.qt-khoi .qt-tt { border:0; background:none; }
-.qt-khoi .qt-tt-dong { padding:9px 0; }
-.qt-cuon-ngang { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-.qt-bang { width:100%; min-width:720px; border-collapse:collapse; font-size:13px; }
-.qt-bang th { padding:9px 10px; text-align:left; font-weight:600; font-size:12px;
-              color:var(--muted); white-space:nowrap; }
-.qt-bang td { padding:10px; border-top:1px solid #f2eee8; vertical-align:top;
-              color:var(--ink); overflow-wrap:anywhere; }
-.qt-khung-viec { margin-top:14px; }
-.qt-form { display:flex; flex-direction:column; gap:10px; max-width:420px; }
-.qt-nhan-o { display:flex; flex-direction:column; gap:4px; font-size:12px; color:var(--muted); }
-.qt-o-nhap { padding:8px 10px; border:1px solid #dcd5cb; border-radius:7px;
-             background:#fff; color:var(--ink); font:inherit; font-size:14px; }
-.qt-hang-nut { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:4px; }
-/* Bảng cũ vẽ bằng `style=` từng ô — không để `table{min-width:760px}` và
-   `th{text-transform:uppercase}` của prototype kéo phình bảng con lồng bên
-   trong. Chỉ áp trong vùng tạm, không đụng bảng quantri3. */
-#khu-tam table, [data-tam] table { min-width:0; }
-#khu-tam th, [data-tam] th { text-transform:none; letter-spacing:0; }
-
-@media (max-width: 1000px) {
-  .qt-hai-cot { grid-template-columns:minmax(0,1fr); }
-}
-@media (max-width: 680px) {
-  .qt-tt-dong { grid-template-columns:minmax(0,1fr); gap:2px; }
-}
+/* Ô nhập trong hộp hỏi — từ b118d mọi ô đổi vai, gắn mã người, lý do… mở ra
+   trong hộp `#custom-modal`, vì bảng quantri3 không có chỗ đứng cho chúng. */
+.modal-box textarea, .modal-box input[type="text"], .modal-box select {
+  display:block; width:100%; padding:10px; border:1px solid var(--line); border-radius:8px;
+  font:inherit; margin:5px 0 14px; box-sizing:border-box; }
+/* Ô "Quyền" bấm được là `button.link` của quantri3; khoá thì đọc như chữ thường. */
+.link:disabled { color:var(--ink); cursor:default; }
+/* Dữ liệu thật dài hơn chữ mẫu: nút trong ô bảng gãy dòng thì chữ `button` căn
+   giữa — trông khác prototype. Giữ chữ thẳng trái, nút mở menu một dòng. */
+td .link { text-align:left; }
+.action-menu > .btn { white-space:nowrap; }
+/* Bảng đặt trong `.layout` (trang cây) phải cuộn TRONG `.panel`, không đẩy cột
+   phải của lưới tràn khỏi mép — prototype không có bảng nào ở chỗ ấy. */
+.layout > div { min-width:0; }

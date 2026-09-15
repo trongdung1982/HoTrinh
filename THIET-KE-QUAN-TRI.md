@@ -515,6 +515,13 @@ b100, đừng tự làm.
 > bàn giao AGY — câu ấy cấm dữ liệu mẫu và JS giả lập, **không cấm giao diện**.
 > Từ b118c `QuanTri.html` + `quan-tri.css` là bản chép nguyên văn quantri3.
 > Địa chỉ `#` vẫn theo 9.2 (khác prototype, không nhìn thấy).
+>
+> ⚠⚠ **ĐÍNH CHÍNH b118d (16/09/2026):** `QuanTri.html` nay là NGUYÊN FILE quantri3
+> dựng bằng máy, mọi trang con vẽ vào section của mình; `khu-thanh-vien.js` ·
+> `khu-tai-khoan-he-thong.js` đã xoá. Chỗ nào ở mục 5–8 và bảng khu 2 nói "mã ở
+> đâu / nối bằng gì" với hai file ấy là lịch sử — mã và luật hiện nay ở
+> `so-tay/trang-quan-tri.md`. Luật (gọi tên cây · khoá dòng của chính mình ·
+> lời mời không nhận hộ) giữ nguyên.
 
 ### 9.1 Bốn khu cũ vẫn đúng, đổi khung điều hướng
 

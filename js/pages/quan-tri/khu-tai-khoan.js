@@ -1,219 +1,105 @@
 // ============================================================
 // giapha-supabase · js/pages/quan-tri/khu-tai-khoan.js
-// Vai trò  : Khu 2 của trang Quản trị — TÀI KHOẢN CỦA TÔI: hồ sơ · quyền cấp
-//            hệ thống · các gia phả tôi tham gia (kèm nút Đề xuất mã người) ·
-//            đổi mật khẩu.
+// Vai trò  : Khu 2 của trang Quản trị — TÀI KHOẢN CỦA TÔI: đổ dữ liệu vào
+//            section `#tai-khoan` của quantri3 (hồ sơ · quyền cấp hệ thống ·
+//            các gia phả tôi tham gia · đổi mật khẩu).
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: services/sb, config, quan-tri/khu-thanh-vien (mẩu vẽ + đơn đề
-//            xuất), quan-tri/trang-chi-tiet
-// Phiên bản: 0.2.0 · Cập nhật: 15/09/2026 (b118)
-//            0.2.0 Chip *Toàn hệ thống* rời khỏi khu này, sang khu Quản trị
-//            hệ thống riêng (`khu-quan-tri-he-thong.js`) —
-//            `THIET-KE-QUAN-TRI.md` 9.1 đã hẹn "tạm ở khu 2 tới b118". Khu
-//            này giờ chỉ còn MỘT thứ để vẽ nên bỏ luôn hàng chip, `chipDangMo`
-//            và `napHeThong()` — một khu một thứ thì không cần tấm lọc.
+// Phụ thuộc: services/sb, quan-tri/hop-thoai · trang-cay · o-bang
+// Phiên bản: 1.0.0 · Cập nhật: 16/09/2026 (b118d)
+// Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
-//
-// ═══ VÌ SAO KHU NÀY ĐỔI RUỘT ═══
-//
-// Tới b116, khu 2 là bảng *"tài khoản trong MỘT cây"* kèm ô chọn cây. b116 đã
-// đưa đúng bảng ấy — nguyên vẹn, cùng `veBang()` — vào trang chi tiết một cây
-// (`#gia-pha/cay/<mã>/thanh-vien` · `loi-moi` · `don-xin-vao`), nên để nó ở
-// đây nữa là hai chỗ đổi quyền cho cùng một cây, tức hai chỗ để lệch nhau.
-// Bản đồ đã chốt ở b114 (`THIET-KE-QUAN-TRI.md` 9.1) đặt khu này đúng như
-// prototype quantri3 `#tai-khoan`: **tài khoản của chính người đang xem.**
-//
-// ⚠ **Không còn ô chọn cây — và luật 5a không mất gì.** Ô ấy tồn tại để một
-//   bảng "của một cây" khỏi ngầm định cây đang mở. Bảng ở đây liệt kê MỌI
-//   cây, mỗi dòng mang tên cây của nó, nên câu *"cây nào"* tự tan khi người
-//   ta bấm vào một dòng — đúng lý lẽ 5b② đã dùng cho cột xuyên cây. Không có
-//   dòng nào ở file này đọc `phien.treeId`.
 //
 // ⚠ **Khu này MỞ CHO MỌI NGƯỜI**, không riêng quản trị. Nó chỉ hỏi máy chủ
 //   những câu về chính người hỏi (`ds_gia_pha()` · dòng `tree_members` của
-//   mình), nên không cần hàng rào nào mới. Đó cũng là chỗ trả nợ b111c: một
-//   Thành viên thường trước đây không có đường nộp đơn đề xuất mã người, vì
-//   khu cũ gác bằng `co_the_kiem_duyet()`.
+//   mình qua RLS), nên không cần hàng rào nào mới. Không dòng nào ở file này
+//   đọc `phien.treeId` để chọn cây — mỗi dòng bảng mang tên cây của nó.
 //
-// ⚠ **Không `alert()`, không `confirm()`.** Cả app không dùng ở đâu cả.
+// ⚠ **Hai cờ cấp tài khoản chỉ để ĐỌC.** Không ai tự đặt quyền cho mình —
+//   nút *Chấp nhận / Từ chối* lời mời Quản trị hệ thống của quantri3 để ẩn:
+//   bổ nhiệm hai chữ ký chưa có ở máy chủ (b118b).
 
 import {
-  layPhien, layDanhSachGiaPha, chanCuaToi, doiMatKhau, dangXuat,
+  layDanhSachGiaPha, chanCuaToi, doiMatKhau, dangXuat, nguoiDangNhap,
 } from '../../services/sb.js';
-import { vaiTroBangChu } from '../../config.js';
+import { hoi, bao } from './hop-thoai.js';
+import { hoiDeXuatGan, moSoDo } from './trang-cay.js';
 import {
-  bangDeXuatCuaToi, nutHaiNhip, dongBao, huyHieu, nut, veLoi, o,
-  capChieuCao, CSS_DAU_BANG,
-} from './khu-thanh-vien.js';
-import { duongDan } from './trang-chi-tiet.js';
+  TEN_VAI, td, span, tenVaPhu, huyHieu, datHuyHieu, nut, nutLink, lienKet, chuaCo,
+  hangNut, dongTrong, chuDau, ngay, ngayGio,
+} from './o-bang.js';
+
+/** Bảng *Các gia phả tôi đang tham gia* hiện sẵn ngần này dòng (quantri3). */
+const SO_HIEN_TRUOC = 5;
+
+const LY_DO_CONG_KHAI =
+  'Công khai theo từng trường thông tin chưa có ở máy chủ — việc riêng, làm sau b120.';
+
+let moRong = false;
 
 /**
- * Cây đang mở khung Đề xuất — giữ qua `napLai()`. Nộp đơn xong thì cả khu vẽ
- * lại; không giữ thì khung đóng sập đúng lúc người ta cần đọc *"Đang chờ
- * xét"*, và trông như cú bấm chẳng làm gì.
+ * @param {HTMLElement} sec  `section#tai-khoan`
+ * @param {object} phien     kết quả `sb.layPhien()`
  */
-let deXuatDangMo = null;
+export async function mountKhuTaiKhoan(sec, phien) {
+  const $ = (id) => sec.querySelector('#' + id);
+  veHoSo(sec, phien, null);
+  veQuyenHeThong(sec, phien);
+  ganMatKhau(sec);
 
-// ============================================================
-// Cửa vào
-// ============================================================
+  $('gia-pha-extra').innerHTML = '';
+  $('gia-pha-extra').hidden = true;
+  $('tk-xem-them').hidden = true;
+  $('tk-cay-dem').textContent = '';
+  dongTrong($('tk-cay-tbody'), 7, 'Đang đọc các gia phả của bạn…');
 
-/**
- * @param {HTMLElement} el     thân trang, đã dọn sạch
- * @param {object} [phienVao]  kết quả `sb.layPhien()`; thiếu thì tự hỏi
- */
-export async function mountKhuTaiKhoan(el, phienVao) {
-  el.innerHTML = '';
-
-  const h = document.createElement('h2');
-  h.className = 'qt-tua';
-  h.textContent = 'Tài khoản';
-
-  // ⚠ Dòng danh tính đứng TRƯỚC mọi thứ (b109e) — trang này là chỗ đọc quyền
-  //   cấp hệ thống của chính mình, nhầm tài khoản đang đăng nhập ở đó là
-  //   nhầm ở chỗ dễ hiểu sai nhất app.
-  const ai = document.createElement('p');
-  ai.className = 'qt-danh-tinh';
-
-  const than = document.createElement('div');
-  than.className = 'qt-cho';
-  than.textContent = 'Đang đọc tài khoản…';
-
-  el.append(h, ai, than);
-
-  const phien = phienVao || await layPhien();
-  if (phien.loi) {
-    than.innerHTML = '';
-    than.append(veLoi(phien.loi, () => mountKhuTaiKhoan(el, null)));
-    return;
-  }
-
-  ai.textContent = dongDanhTinh(phien);
-  veThan(than, phien);
-}
-
-/** *"Bạn đang đăng nhập bằng <tên> · <email> · mã <mã>."* — trống thì không vẽ. */
-function dongDanhTinh(phien) {
-  const phan = [];
-  if (phien.hoTen) phan.push(phien.hoTen);
-  if (phien.email) phan.push(phien.email);
-  if (phien.maNgan) phan.push('mã ' + phien.maNgan);
-  return phan.length ? 'Bạn đang đăng nhập bằng ' + phan.join(' · ') + '.' : '';
-}
-
-function veThan(than, phien) {
-  than.innerHTML = '';
-  than.className = '';
-  veCuaToi(than, phien, () => veThan(than, phien));
-}
-
-// ============================================================
-// Tài khoản của tôi
-// ============================================================
-
-async function veCuaToi(than, phien, napLai) {
-  const cho = document.createElement('div');
-  cho.className = 'qt-cho';
-  cho.textContent = 'Đang đọc các gia phả của bạn…';
-
-  const hai = document.createElement('div');
-  hai.className = 'qt-hai-cot';
-  hai.append(veKhoiHoSo(phien), veKhoiQuyenHeThong(phien));
-
-  const oCay = veKhoi('Các gia phả tôi đang tham gia',
-    'Vai trò và vị trí của bạn trong từng sơ đồ');
-  oCay.append(cho);
-
-  than.append(hai, oCay, veKhoiMatKhau());
-
-  // ⚠ Hai câu hỏi đi CÙNG LƯỢT, và chúng không thay được cho nhau:
-  //   `ds_gia_pha()` biết cả đơn chờ lẫn lời mời nhưng không biết mã người;
-  //   `chanCuaToi()` biết mã người nhưng chỉ thấy chân ĐÃ DUYỆT (RLS).
+  // ⚠ Ba câu hỏi đi CÙNG LƯỢT và không thay được cho nhau: `ds_gia_pha()` biết
+  //   đơn chờ lẫn lời mời nhưng không biết mã người; `chanCuaToi()` biết mã
+  //   người nhưng chỉ thấy chân ĐÃ DUYỆT; `nguoiDangNhap()` biết ngày đăng ký.
   const hashLuc = window.location.hash;
-  const [kqCay, kqChan] = await Promise.all([layDanhSachGiaPha(), chanCuaToi()]);
-  // Người bấm sang khu khác trong lúc chờ thì `than` đã rời màn hình.
-  if (window.location.hash !== hashLuc || !than.isConnected) return;
+  const [nguoi, kqCay, kqChan] = await Promise.all([
+    nguoiDangNhap().catch(() => null), layDanhSachGiaPha(), chanCuaToi(),
+  ]);
+  if (window.location.hash !== hashLuc) return;
 
-  cho.remove();
-  veBangCay(oCay, kqCay, kqChan, napLai);
+  veHoSo(sec, phien, nguoi);
+  veBangCay(sec, phien, kqCay, kqChan, () => mountKhuTaiKhoan(sec, phien));
 }
 
-/** Một khối có tựa — cùng hình với `panel` của prototype. */
-function veKhoi(tua, phu) {
-  const khoi = document.createElement('section');
-  khoi.className = 'qt-khoi';
-  const dau = document.createElement('div');
-  dau.className = 'qt-khoi-dau';
-  const h = document.createElement('h3');
-  h.className = 'qt-khoi-tua';
-  h.textContent = tua;
-  dau.append(h);
-  if (phu) {
-    const s = document.createElement('span');
-    s.className = 'qt-ghi';
-    s.textContent = phu;
-    dau.append(s);
-  }
-  khoi.append(dau);
-  return khoi;
+// ============================================================
+// Hồ sơ cá nhân · Quyền cấp hệ thống
+// ============================================================
+
+/** Trường trống thì KHÔNG vẽ hàng đó (`CLAUDE.md` mục 7). */
+function veHoSo(sec, phien, nguoi) {
+  const dat = (id, chu) => {
+    const o = sec.querySelector('#' + id);
+    o.textContent = chu || '';
+    const li = o.closest('li');
+    if (li) li.hidden = !chu;
+  };
+  sec.querySelector('#tk-avatar').textContent = chuDau(phien.hoTen, phien.email);
+  dat('tk-ten', phien.hoTen);
+  dat('tk-email', phien.email);
+  dat('tk-ma', phien.maNgan);
+  dat('tk-ngay-dk', nguoi && ngay(nguoi.created_at));
+  dat('tk-dang-nhap', nguoi && ngayGio(nguoi.last_sign_in_at));
+
+  const xacMinh = nguoi ? Boolean(nguoi.email_confirmed_at) : null;
+  const b = sec.querySelector('#tk-xac-minh');
+  b.hidden = xacMinh === null;
+  datHuyHieu(b, xacMinh ? 'Đã xác minh' : 'Chưa xác minh email', xacMinh ? '' : 'wait');
+  sec.querySelector('#tk-trang-thai').textContent = 'Đang hoạt động' +
+    (xacMinh === null ? '' : xacMinh ? ' · Đã xác minh' : ' · Chưa xác minh email');
 }
 
-/** Bảng nhãn · giá trị. Giá trị trống thì KHÔNG vẽ hàng đó (`CLAUDE.md` mục 7). */
-function veBangTT(dong) {
-  const dl = document.createElement('dl');
-  dl.className = 'qt-tt';
-  for (const [nhan, giaTri] of dong) {
-    if (!giaTri) continue;
-    const hang = document.createElement('div');
-    hang.className = 'qt-tt-dong';
-    const dt = document.createElement('dt');
-    dt.textContent = nhan;
-    const dd = document.createElement('dd');
-    dd.textContent = giaTri;
-    hang.append(dt, dd);
-    dl.append(hang);
-  }
-  return dl;
-}
-
-function veKhoiHoSo(phien) {
-  const khoi = veKhoi('Hồ sơ');
-  khoi.append(veBangTT([
-    ['Họ tên', phien.hoTen],
-    ['Email', phien.email],
-    ['Mã tài khoản', phien.maNgan],
-  ]));
-  return khoi;
-}
-
-/**
- * Hai cờ cấp TÀI KHOẢN — hai thứ DUY NHẤT trên cả trang không hỏi "cây nào"
- * (ngoại lệ của luật 5a, và nhãn phải tự khai điều đó).
- *
- * ⚠ Chỉ để ĐỌC. Không ai tự đặt quyền cho mình — cửa thứ sáu và thứ bảy —
- *   nên ở đây không có nút nào, kể cả khi người xem là Quản trị hệ thống.
- */
-function veKhoiQuyenHeThong(phien) {
-  const khoi = veKhoi('Quyền cấp hệ thống', 'Áp dụng toàn phần mềm, không riêng cây nào');
+function veQuyenHeThong(sec, phien) {
   const laQT = Boolean(phien.laQuanTriHeThong);
-  khoi.append(veBangTT([
-    ['Quản trị hệ thống', laQT ? 'Có' : 'Không'],
-    ['Được dựng gia phả mới', !phien.duocTaoCay ? 'Không'
-      : laQT ? 'Có — đi kèm cờ Quản trị hệ thống' : 'Có'],
-  ]));
-
-  const ghi = document.createElement('p');
-  ghi.className = 'qt-ghi qt-ghi-khoi';
-  // ⚠ Câu cuối nói thẳng phần CHƯA có. `THIET-KE-NHIEU-CAY.md` 11.9 đã chốt
-  //   bổ nhiệm Quản trị hệ thống bằng hai chữ ký (mời rồi tự nhận), nhưng máy
-  //   chủ tới b118b vẫn đặt thẳng một chữ ký — vẽ nút *Chấp nhận* lúc này là
-  //   vẽ một cái nút không nối vào đâu.
-  ghi.textContent =
-    'Hai cờ này chỉ một Quản trị hệ thống KHÁC đổi được — không ai tự đặt ' +
-    'quyền cho mình. Lời mời nhận vai Quản trị hệ thống (hai chữ ký) chưa có ở ' +
-    'máy chủ, làm ở bước b118b.';
-  khoi.append(ghi);
-  return khoi;
+  datHuyHieu(sec.querySelector('#my-sys-qtht-badge'), laQT ? 'Có (Quản trị hệ thống)' : 'Không');
+  sec.querySelector('#my-sys-qtht-sub').textContent = laQT
+    ? 'Quyền quản lý toàn bộ hệ thống phần mềm'
+    : 'Chỉ một Quản trị hệ thống khác cấp được. Lời mời nhận vai hai chữ ký làm ở b118b.';
+  sec.querySelector('#my-sys-qtht-actions').hidden = true;
+  datHuyHieu(sec.querySelector('#tk-tao-cay'), phien.duocTaoCay ? 'Có' : 'Không');
 }
 
 // ============================================================
@@ -221,15 +107,9 @@ function veKhoiQuyenHeThong(phien) {
 // ============================================================
 
 /**
- * Ba trạng thái loại trừ nhau, xét theo đúng thứ tự `veOThaoTac()` của khu
- * Gia phả: **lời mời đứng TRƯỚC** (bài học b111c — xem được cây không có
- * nghĩa là có chân trong cây).
- *
- * ⚠ Cây chỉ XEM ĐƯỢC mà không có chân (Quản trị hệ thống thấy mọi cây; cây mặc
- *   định mở cho người lạ) KHÔNG vào bảng này. Bảng trả lời *"tôi tham gia
- *   đâu"*, không trả lời *"tôi đọc được đâu"* — câu sau là khu Gia phả.
- *
- * @returns {'duocmoi'|'thanhvien'|'donxin'|null}
+ * Ba trạng thái loại trừ nhau — **lời mời đứng TRƯỚC** (bài học b111c: xem
+ * được cây không có nghĩa là có chân trong cây). Cây chỉ XEM ĐƯỢC mà không có
+ * chân KHÔNG vào bảng này — câu ấy là của khu Gia phả.
  */
 function trangThaiCuaToi(c) {
   if (c.duocMoi) return 'duocmoi';
@@ -238,244 +118,124 @@ function trangThaiCuaToi(c) {
   return null;
 }
 
-function veBangCay(khoi, kqCay, kqChan, napLai) {
-  if (!kqCay.ok) {
-    khoi.append(veLoi(kqCay.loi || 'Không đọc được danh sách gia phả.', napLai));
-    return;
-  }
+function veBangCay(sec, phien, kqCay, kqChan, napLai) {
+  const $ = (id) => sec.querySelector('#' + id);
+  const tbA = $('tk-cay-tbody');
+  const tbB = $('gia-pha-extra');
 
-  // Lỗi đọc mã người KHÔNG làm hỏng cả bảng — vai và trạng thái vẫn đúng. Nhưng
-  // phải nói ra, và phải thu nút Đề xuất lại: không biết mình đã gắn với ai thì
-  // chưa biết có cần đề xuất hay không.
+  if (!kqCay.ok) { dongTrong(tbA, 7, kqCay.loi || 'Không đọc được danh sách gia phả.', napLai); return; }
+
   const chan = new Map((kqChan.ok ? kqChan.ds : []).map((r) => [r.treeId, r]));
-  if (!kqChan.ok) {
-    const n = document.createElement('p');
-    n.className = 'qt-ghi qt-ghi-loi';
-    n.textContent = 'Không đọc được bạn đang gắn với ai trong sơ đồ: ' +
-      (kqChan.loi || 'lỗi không rõ') + '.';
-    khoi.append(n);
-  }
+  const ds = kqCay.ds.filter((c) => !c.daXoaLuc && trangThaiCuaToi(c));
 
-  const ds = (kqCay.ds || [])
-    .filter((c) => !c.daXoaLuc && trangThaiCuaToi(c));
+  // Lỗi đọc mã người KHÔNG làm hỏng cả bảng — nhưng phải nói ra.
+  $('tk-cay-dem').textContent = ds.length + ' cây · Quyền và vị trí nhân vật của bạn trong từng sơ đồ' +
+    (kqChan.ok ? '' : ' · Không đọc được bạn gắn với ai: ' + (kqChan.loi || 'lỗi không rõ'));
 
   if (!ds.length) {
-    const r = document.createElement('div');
-    r.className = 'qt-chua-lam';
-    r.append(document.createTextNode(
-      'Bạn chưa có chân trong gia phả nào. Xin vào một gia phả, hoặc nhận lời ' +
-      'mời, ở khu Gia phả.'));
-    const a = document.createElement('a');
-    a.className = 'qt-di-toi';
-    a.href = '#gia-pha';
-    a.textContent = 'Mở khu Gia phả';
-    r.append(document.createElement('br'), a);
-    khoi.append(r);
+    const o = dongTrong(tbA, 7, 'Bạn chưa có chân trong gia phả nào. Xin vào một gia phả, hoặc nhận lời mời, ở khu Gia phả. ');
+    o.append(lienKet('Mở khu Gia phả →', 'gia-pha'));
     return;
   }
 
-  const khung = document.createElement('div');
-  khung.className = 'qt-cuon-ngang';
-  capChieuCao(khung, ds.length);
+  tbA.innerHTML = '';
+  ds.forEach((c, i) => (i < SO_HIEN_TRUOC ? tbA : tbB)
+    .append(dongCay(c, chan.get(c.fileId), kqChan.ok, phien, napLai)));
 
-  const bang = document.createElement('table');
-  bang.className = 'qt-bang';
-  bang.append(veDauBang());
-
-  const ruot = document.createElement('tbody');
-  const oViec = document.createElement('div');
-  for (const c of ds) {
-    ruot.append(veDongCay(c, chan.get(c.fileId), kqChan.ok, napLai));
-  }
-  bang.append(ruot);
-  khung.append(bang);
-  khoi.append(khung);
-
-  // Nói "kéo ngang" CHỈ KHI nó đúng — đo, không đoán (b106).
-  requestAnimationFrame(() => {
-    if (khung.scrollWidth > khung.clientWidth + 4) {
-      const n = document.createElement('p');
-      n.className = 'qt-ghi';
-      n.textContent = 'Màn hình hẹp hơn bảng — kéo ngang trong bảng để thấy cột cuối.';
-      khung.after(n);
-    }
-  });
-
-  // Khung Đề xuất đứng NGOÀI bảng, rộng bằng cả khối — bài học b106: nhét vào
-  // một ô bảng thì trên điện thoại ba ô nhập bị cắt mất nửa phải.
-  khoi.append(oViec);
-  const dangMo = deXuatDangMo && ds.find((c) => c.fileId === deXuatDangMo);
-  if (dangMo) moDeXuat(oViec, dangMo, napLai);
+  const them = ds.length - SO_HIEN_TRUOC;
+  if (them <= 0) return;
+  const bThem = $('btn-xem-them-cay');
+  const chu = $('tk-hien-thi');
+  const ve = () => {
+    tbB.hidden = !moRong;
+    bThem.textContent = moRong ? 'Thu gọn ▴' : 'Xem thêm (' + them + ' cây) ▾';
+    chu.textContent = moRong ? 'Đang hiển thị tất cả ' + ds.length + ' cây'
+      : 'Đang hiển thị ' + SO_HIEN_TRUOC + ' / ' + ds.length + ' cây';
+  };
+  bThem.onclick = () => { moRong = !moRong; ve(); };
+  $('tk-xem-them').hidden = false;
+  ve();
 }
 
-function veDauBang() {
-  const thead = document.createElement('thead');
-  const tr = document.createElement('tr');
-  for (const chu of ['Gia phả', 'Mã cây', 'Vai trò của tôi',
-                     'Tôi được gắn với ai trong sơ đồ?', 'Trạng thái', '']) {
-    const th = document.createElement('th');
-    th.style.cssText = CSS_DAU_BANG;
-    th.textContent = chu;
-    tr.append(th);
-  }
-  thead.append(tr);
-  return thead;
-}
-
-function veDongCay(c, chan, docDuocChan, napLai) {
+function dongCay(c, chan, docDuocChan, phien, napLai) {
   const trangThai = trangThaiCuaToi(c);
-  const tr = document.createElement('tr');
+  const cay = { treeId: c.fileId, ten: c.ten || '', maCay: c.treeCode };
 
-  // — Gia phả: tên bấm sang trang chi tiết cây (b116) —
-  const oTen = o('', '');
-  const a = document.createElement('a');
-  a.className = 'qt-lk';
-  a.href = '#' + duongDan('gia-pha', 'cay', c.treeCode);
-  a.textContent = c.ten || c.treeCode;
-  oTen.append(a);
-  if (c.toiLaChu) oTen.append(huyHieu('Chủ gia phả', true));
+  const vai = c.toiLaChu ? huyHieu('Chủ gia phả')
+    : trangThai === 'duocmoi' ? huyHieu('Được mời: ' + (TEN_VAI[c.moiVai] || c.moiVai || ''), 'wait')
+    : trangThai === 'donxin' ? huyHieu('Đơn xin vào', 'wait')
+    : huyHieu(TEN_VAI[(chan && chan.vai) || c.vaiCuaToi] || c.vaiCuaToi || '');
 
-  // `nowrap`: `.qt-bang td` cho gãy chữ ở mọi chỗ (email dài), và mã cây bảy
-  // ký tự gãy thành "NPGQ8C / 9" — ảnh kq-4 bắt được. Mã phải đọc liền một hơi.
-  const oMa = o(c.treeCode, 'font-family:ui-monospace,monospace;font-size:12px;' +
-    'color:#5b4533;white-space:nowrap;overflow-wrap:normal');
-
-  // — Vai trò: người được mời mang `xem` cho tới lúc Nhận, nên hiện vai SẼ nhận —
-  const vai = trangThai === 'duocmoi'
-    ? 'Sẽ là ' + vaiTroBangChu(c.moiVai)
-    : trangThai === 'thanhvien'
-    ? vaiTroBangChu((chan && chan.vai) || c.vaiCuaToi)
-    : '';
-  const oVai = o(vai, 'white-space:nowrap');
-
-  // — Người được gắn: chỉ có nghĩa với chân đã duyệt —
-  const oNguoi = o('', '');
+  let gan = '';
   if (trangThai === 'thanhvien' && docDuocChan) {
-    if (chan && chan.maNguoi) {
-      const ten = document.createElement('div');
-      ten.style.fontWeight = '600';
-      ten.textContent = chan.tenNguoi || chan.maNguoi;
-      oNguoi.append(ten);
-      if (chan.tenNguoi) {
-        const ma = document.createElement('div');
-        ma.className = 'qt-ghi';
-        ma.textContent = 'Mã: ' + chan.maNguoi;
-        oNguoi.append(ma);
-      }
-    } else {
-      const s = document.createElement('span');
-      s.className = 'qt-ghi';
-      s.textContent = 'Chưa gắn người';
-      oNguoi.append(s);
-    }
+    gan = chan && chan.maNguoi
+      ? tenVaPhu(chan.tenNguoi || chan.maNguoi, 'Mã: ' + chan.maNguoi)
+      : span('muted', 'Chưa gắn người');
   }
 
-  const oTrang = o(trangThai === 'duocmoi'
-    ? 'Được mời — bấm Nhận ở khu Gia phả'
-    : trangThai === 'donxin' ? 'Đơn xin vào đang chờ duyệt' : 'Đã vào', '');
+  const trang = trangThai === 'thanhvien' ? huyHieu('Đã duyệt')
+    : trangThai === 'duocmoi' ? huyHieu('Chờ bạn nhận lời', 'wait')
+    : huyHieu('Chờ duyệt', 'wait');
 
-  const oThao = o('', 'text-align:right');
-
-  // ⚠ NÚT ĐỀ XUẤT CHỈ TRÊN CHÂN ĐÃ DUYỆT CHƯA GẮN AI (9.2②). Đơn còn chờ và
-  //   lời mời chưa nhận thì `nop_de_xuat_gan()` từ chối (đo Q4, Q5) — vẽ nút ở
-  //   đó là mời người ta bấm để nghe từ chối.
-  // ⚠ Nút này KHÔNG gắn gì. Nó mở khung nộp ĐƠN, và một quản trị KHÁC xét ở
-  //   `#gia-pha/cay/<mã>/de-xuat-gan` — cửa thứ TÁM, gác ở máy chủ.
+  const viec = [];
+  if (c.coTheXem) viec.push(nutLink('Xem sơ đồ →', () => moSoDo(cay, phien)));
+  if (trangThai === 'duocmoi') viec.push(lienKet('Nhận lời ở khu Gia phả →', 'gia-pha'));
+  // ⚠ Nút Đề xuất CHỈ trên chân đã duyệt chưa gắn ai (9.2②) — đơn còn chờ và
+  //   lời mời chưa nhận thì `nop_de_xuat_gan()` từ chối (đo Q4, Q5).
   if (trangThai === 'thanhvien' && docDuocChan && !(chan && chan.maNguoi)) {
-    const dangMo = deXuatDangMo === c.fileId;
-    const b = nut(dangMo ? 'Thu lại' : 'Đề xuất mã người', false);
-    b.addEventListener('click', () => {
-      deXuatDangMo = dangMo ? null : c.fileId;
-      napLai();
-    });
-    oThao.append(b);
+    const b = nut('Đề xuất mã người');
+    b.addEventListener('click', () => hoiDeXuatGan(cay, napLai));
+    viec.push(b);
   }
 
-  tr.append(oTen, oMa, oVai, oNguoi, oTrang, oThao);
+  const tr = document.createElement('tr');
+  tr.append(
+    td(span('name', c.ten || c.treeCode)),
+    td(c.treeCode),
+    td(vai),
+    td(gan),
+    td(chuaCo('Chưa có', LY_DO_CONG_KHAI)),
+    td(trang),
+    td(viec.length > 1 ? hangNut(...viec) : (viec[0] || '')),
+  );
   return tr;
 }
 
-function moDeXuat(oViec, c, napLai) {
-  const cay = { treeId: c.fileId, ten: c.ten || '', maCay: c.treeCode || '' };
-  oViec.className = 'qt-khung-viec';
-  // `t` rỗng: khung một việc này chỉ cần biết CÂY — người nộp là chính người
-  // đang đăng nhập, máy chủ đọc `auth.uid()`, không nhận ai từ trình duyệt.
-  oViec.append(bangDeXuatCuaToi({}, cay, napLai));
-}
-
 // ============================================================
-// Bảo mật — đổi mật khẩu · đăng xuất
+// Bảo mật & Đổi mật khẩu
 // ============================================================
 
-function veKhoiMatKhau() {
-  const khoi = veKhoi('Bảo mật và đổi mật khẩu');
+function ganMatKhau(sec) {
+  const oCu = sec.querySelector('#pass-current');
+  const oMoi = sec.querySelector('#pass-new');
+  const oLai = sec.querySelector('#pass-confirm');
+  // `autocomplete` đúng tên là thứ khiến trình quản lý mật khẩu điền hộ ô cũ.
+  oCu.autocomplete = 'current-password';
+  oMoi.autocomplete = 'new-password';
+  oLai.autocomplete = 'new-password';
 
-  const form = document.createElement('div');
-  form.className = 'qt-form';
-
-  const oCu = oMatKhau('Mật khẩu hiện tại', 'current-password');
-  const oMoi = oMatKhau('Mật khẩu mới', 'new-password');
-  const oLai = oMatKhau('Gõ lại mật khẩu mới', 'new-password');
-  form.append(oCu.nhan, oMoi.nhan, oLai.nhan);
-
-  const bao = dongBao();
-
-  const bDoi = nut('Cập nhật mật khẩu', true);
-  bDoi.addEventListener('click', async () => {
-    bao.style.color = '#a83220';
-    // Ba phép dưới đây chỉ để khỏi gửi một yêu cầu chắc chắn vô ích. Luật độ
-    // dài là của Supabase — câu từ chối của nó hiện nguyên văn.
-    if (!oCu.o.value || !oMoi.o.value) {
-      bao.textContent = 'Gõ đủ mật khẩu hiện tại và mật khẩu mới.';
-      return;
-    }
-    if (oMoi.o.value !== oLai.o.value) {
-      bao.textContent = 'Hai lần gõ mật khẩu mới không khớp nhau.';
-      return;
-    }
-    if (oMoi.o.value === oCu.o.value) {
-      bao.textContent = 'Mật khẩu mới trùng mật khẩu hiện tại.';
-      return;
-    }
+  const bDoi = sec.querySelector('#btn-doi-mat-khau');
+  bDoi.onclick = async () => {
+    // Ba phép dưới chỉ để khỏi gửi một yêu cầu chắc chắn vô ích. Luật độ dài
+    // là của Supabase — câu từ chối của nó hiện nguyên văn.
+    if (!oCu.value || !oMoi.value) { bao('Đổi mật khẩu', 'Gõ đủ mật khẩu hiện tại và mật khẩu mới.'); return; }
+    if (oMoi.value !== oLai.value) { bao('Lỗi nhập liệu', 'Mật khẩu xác nhận không khớp. Vui lòng kiểm tra lại.'); return; }
+    if (oMoi.value === oCu.value) { bao('Đổi mật khẩu', 'Mật khẩu mới trùng mật khẩu hiện tại.'); return; }
     bDoi.disabled = true;
-    bDoi.textContent = 'Đang đổi…';
-    const kq = await doiMatKhau(oCu.o.value, oMoi.o.value);
+    const kq = await doiMatKhau(oCu.value, oMoi.value);
     bDoi.disabled = false;
-    bDoi.textContent = 'Cập nhật mật khẩu';
-    if (!kq.ok) { bao.textContent = kq.loi || 'Không đổi được mật khẩu.'; return; }
-    oCu.o.value = ''; oMoi.o.value = ''; oLai.o.value = '';
-    bao.style.color = '#2f6b3a';
-    bao.textContent = 'Đã đổi mật khẩu. Lần đăng nhập sau dùng mật khẩu mới.';
-  });
+    if (!kq.ok) { bao('Không đổi được mật khẩu', kq.loi || 'Máy chủ từ chối.'); return; }
+    oCu.value = ''; oMoi.value = ''; oLai.value = '';
+    bao('Thành công', 'Đã đổi mật khẩu. Lần đăng nhập sau dùng mật khẩu mới.');
+  };
 
-  // Đăng xuất đi hai nhịp: một cú bấm lỡ tay là phải gõ lại mật khẩu.
-  const bRa = nutHaiNhip('Đăng xuất', 'Bấm lần nữa để đăng xuất', false, async () => {
-    const kq = await dangXuat();
-    if (kq && kq.ok) { window.location.reload(); return true; }
-    bao.style.color = '#a83220';
-    bao.textContent = (kq && kq.loi) || 'Không đăng xuất được.';
-    return false;
-  }, true);
-
-  const hang = document.createElement('div');
-  hang.className = 'qt-hang-nut';
-  hang.append(bDoi, bRa);
-
-  form.append(hang, bao);
-  khoi.append(form);
-  return khoi;
-}
-
-function oMatKhau(chu, tuDien) {
-  const nhan = document.createElement('label');
-  nhan.className = 'qt-nhan-o';
-  nhan.textContent = chu;
-  const o = document.createElement('input');
-  o.type = 'password';
-  o.className = 'qt-o-nhap';
-  // `autocomplete` đúng tên là thứ khiến trình quản lý mật khẩu điền hộ ô cũ
-  // và đề nghị lưu ô mới — cùng lý do `dang-nhap.js` đặt nó.
-  o.autocomplete = tuDien;
-  nhan.append(o);
-  return { nhan, o };
+  sec.querySelector('#btn-dang-xuat').onclick = async () => {
+    const kq = await hoi({
+      tua: 'Đăng xuất',
+      chu: 'Bạn có chắc chắn muốn đăng xuất khỏi hệ thống không?',
+      nutOk: 'Đăng xuất', nutHuy: 'Ở lại', kieuOk: 'danger',
+      lam: () => dangXuat(),
+    });
+    if (kq) window.location.reload();
+  };
 }

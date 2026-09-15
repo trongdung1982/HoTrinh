@@ -1,0 +1,67 @@
+# Sổ tay · trang Quản trị
+
+Gồm      : `QuanTri.html` — NGUYÊN FILE prototype quantri3, dựng bằng máy · `quan-tri.css` — CSS nguyên văn quantri3 + vài dòng app · `js/pages/quan-tri/khung.js` — `#` → section · `khu-gia-pha.js` · `khu-tai-khoan.js` · `khu-kiem-duyet.js` · `khu-quan-tri-he-thong.js` · `trang-cay.js` · `trang-moi.js` · `trang-tai-khoan.js` — đổ dữ liệu vào section của mình · `hop-thoai.js` — hộp hỏi + ô nhập · `o-bang.js` — mẩu ô bảng · `o-goi-y.js` — ô gợi ý
+Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài repo: `../kiem-thu/sb-gia.mjs` · `trang-quan-tri-gia.html` · `so-quantri3.mjs` · `xem-khung-quan-tri.mjs` · prototype `../codex/dua_claude.ai/quantri3.html`
+
+## Luật chung
+
+- **Giao diện = NGUYÊN FILE prototype quantri3.** Đổi giao diện thì sửa prototype
+  trước, rồi DỰNG LẠI cả `QuanTri.html` bằng kịch bản — không chép từng khu, không
+  vẽ bằng JS. Chỉ được bỏ: dòng mẫu trong `tbody`, khối *"Ghi chú cho Claude
+  Code"*, `datalist` mẫu, nút *mô phỏng*, `<script>` giả lập; chữ mẫu thay bằng ô
+  trống có `id`.
+- **Mỗi khu/trang vẽ vào section của nó** — `view` trong `KHU`/`TRANG` của
+  `khung.js`; mục nào khác section của trang thì khai `view` trên mục
+  (`MUC_TRANG_CAY`). Không có chỗ vẽ tạm.
+- **JS không đặt `style` mới.** Chỉ `chepKieu()` chép nguyên `style=` đã có trong
+  mẫu dòng của quantri3. Ô nhập đổi quyền mở TRONG hộp hỏi (`hoi({truong})`) —
+  bảng quantri3 không có chỗ đứng cho chúng.
+- **Hộp hỏi đổi quyền có MỘT bản** — `trang-cay.js` (`hoiDoiVai` · `hoiGanNguoi` ·
+  `hoiTinCay` · `hoiGo` · `hoiDuyetDon` · `hoiTuChoiDon` · `hoiDeXuatGan`); trang
+  một tài khoản gọi lại. Mọi hộp gọi TÊN CÂY (`cumCay`, luật 5a).
+- **Máy chủ chưa làm được** thì nút mờ kèm lý do / chữ *"Chưa có"* kèm `title` —
+  không vẽ số giả, không giả vờ chạy. Câu hỏi nói đúng máy chủ HÔM NAY.
+- **Thêm cửa vào `sb.js` thì thêm ở `sb-gia.mjs`** — thiếu một tên là `SyntaxError`
+  lúc nạp, cả bộ ảnh ra nền trơn (đã xảy ra b110b, b111). Tham số của bản giả
+  phải cùng NGHĨA với máy chủ.
+- **Nhìn bằng mắt trước khi báo xong**: `node ../kiem-thu/so-quantri3.mjs [lọc]`
+  (cặp `sq-p-*` prototype / `sq-a-*` app). Bộ bất biến văn bản không bắt được
+  lệch giao diện. ⚠ `xem-khung-quan-tri.mjs` (kq-*) còn kịch bản bấm của giao
+  diện cũ (*Sửa quyền*, *Xét đơn*…) — ảnh ra sai cảnh, đừng dùng tới khi viết lại.
+
+## Lỗi đã gặp — áp cho MỌI file trong "Gồm"
+
+- **Chép lắt nhắt từng khu (b118c)** — trang mang khung quantri3 nhưng ruột bốn
+  khu vẽ tạm bằng mã cũ trong `#khu-tam`, bốn section không được chép; chủ dự án
+  thấy `#gia-pha/cay/NTB/thanh-vien` khác hẳn prototype. Cách tránh: dựng nguyên
+  file bằng kịch bản mà mỗi phép thay khẳng định *khớp đúng 1 chỗ*. Phép bắt:
+  PHẦN O *"đủ 13 section"* · *"không còn ô vẽ tạm"*.
+- **Dữ liệu thật dài hơn chữ mẫu** — nút trong ô gãy dòng và chữ `button` căn
+  giữa; bảng đặt trong `.layout` đẩy cột phải tràn mép. Vá bằng CSS phần app:
+  `td .link{text-align:left}` · `.action-menu > .btn{white-space:nowrap}` ·
+  `.layout > div{min-width:0}`. Chỉ ảnh chụp bắt được. ⚠ Cột *Nội dung thao tác*
+  (Kiểm duyệt) và Sổ tài khoản vẫn chật — độ rộng cột nằm trong `style=` của
+  prototype, và ảnh prototype gãy y hệt; muốn rộng ra thì sửa prototype.
+- **`ganGoiY` bắn `input` SAU `khiChon`** — bộ nghe *"gõ tay thì bỏ lựa chọn"*
+  chạy ngay sau cú chọn và xoá luôn lựa chọn (hộp Bàn giao cũ dính). Cách tránh:
+  lúc bấm nút, so `ô.value === lựaChọn.email`.
+- **Bản giả `dsKiemDuyet(cây, null)` trả rỗng** — máy chủ thật trả mọi trạng
+  thái; trang chi tiết một lần Lưu ra *"không thấy"* trong ảnh. Vá ở `sb-gia.mjs`.
+- **Phép kiểm xanh "ăn may"** — *"trang tài khoản CHỈ ĐỌC"* vẫn đạt sau khi trang
+  đổi vai được, vì nó gọi hộp hỏi chứ không gọi thẳng cửa. Hình dạng mã đổi thì
+  đính chính theo ĐIỀU phép canh — đọc thân phép trước, đừng chỉ đọc tên.
+
+## Vì sao làm thế này
+
+- **HTML tĩnh, JS chỉ đổ dữ liệu**: giao diện có đúng MỘT bản — bản prototype. JS
+  dựng thẻ là bản thứ hai do người viết mã tự quyết, đúng thứ đã lệch b115–b118.
+- **Kiểm duyệt đọc MỌI cây kiểm duyệt được** (quantri3: *"Tất cả gia phả bạn quản
+  lý"*), không cây đang mở (luật 5a). N cây tốn 1 + N + 3N vòng mạng; khi nhiều
+  cây thì cần một hàm máy chủ gộp — chưa có.
+- **Nút *Lời mời* của trang cây không là một mục** — đi sang `#gia-pha/moi/<mã>`,
+  nơi bảng *Lời mời đã gửi* ở. Một bảng, một địa chỉ.
+- **`ds_kiem_duyet()` không trả người duyệt · lúc duyệt · lý do từ chối** (cột có
+  trong `change_log`, hàm chưa đọc) — hai tab lịch sử để trống ba cột, không bịa.
+- **`#account-detail` · `#public-info-detail` có trong HTML mà không có lối vào** —
+  prototype không nối cái đầu; cái sau cần công khai theo từng trường, máy chủ
+  chưa có (sau b120). Chép cho đủ file.

@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 15/09/2026 · Bước gần nhất: **b118e** — luật gọn + phép đo `do-gon.mjs` (`/kiem-tra` phép 10)
-· Việc kế tiếp: **b118d — chuyển nốt các khu còn vẽ tạm sang HTML quantri3**
+*Cập nhật 16/09/2026 · Bước gần nhất: **b118d** — trang Quản trị dựng từ NGUYÊN FILE quantri3, mọi trang con gắn chức năng
+· Việc kế tiếp: **b118b — SQL cho bốn luật mới (nhóm D)**
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên, nên mỗi dòng thừa ở
 đây là dòng thừa nhân với số phiên còn lại. Vượt trần là dấu hiệu có thứ đứng
@@ -24,7 +24,6 @@ quantri3 vào app chính sau đó mới làm việc khác."*
 
 | Làm thứ | Bước | Việc | Mô hình |
 |---|---|---|---|
-| 7b | **b118d** | Chuyển nốt sang HTML quantri3, **mỗi phiên một khu** — mục b118d bên dưới | Opus |
 | 7c | **b118b** | SQL cho bốn luật mới *(nhóm D)* — đụng nền móng quyền | Opus |
 | 8 | **b119** | Khu Sao lưu + Số đếm đối chiếu *(số cũ: b112)* | Sonnet |
 | 9 | **b120** | Mã người xuyên cây *(số cũ: b113)* | Sonnet |
@@ -47,20 +46,18 @@ thống (b118) đều đã nối, mỗi khu ít nhất một việc thật. Phâ
 REST, 5/5 hàng rào đạt (b94, b96). Chặng đã đóng: **b87 → b118e** — mỗi bước
 một file `nhat-ky/`.
 
-⚠⚠ **Từ b118c giao diện trang Quản trị LÀ prototype quantri3** — `QuanTri.html`
-và `quan-tri.css` là bản chép nguyên văn; JS chỉ đổ dữ liệu và gắn nút. Không
-vẽ lại bằng `style=` hay class tự đặt *(b115–b118 đã làm thế, chủ dự án phải
-hỏi lại 15/09)*. Khu chưa chuyển vẽ tạm vào `#khu-tam` bằng mã cũ.
+⚠⚠ **Từ b118d trang Quản trị LÀ nguyên file prototype quantri3**, dựng bằng máy,
+mọi trang con gắn chức năng thật, không còn chỗ vẽ tạm — luật và bẫy ở
+`so-tay/trang-quan-tri.md`. Chưa ai bấm trên máy chủ thật.
 
 ⚠ **`domains/` chưa sửa một dòng nào** trong cả mười file, suốt cả cuộc chuyển
 nhà từ Drive sang Supabase. Đó là nghiệm thu của luật phân lớp, giữ nguyên.
 
-### Ba điểm dừng chưa bấm thử — HOÃN tới khi xong trang Quản trị
+### Điểm dừng chưa bấm thử — trang Quản trị đã xong (b118d), nay bấm được
 
-Cả ba là "chưa ai bấm", không phải "chưa viết". Chủ dự án chốt 15/09/2026:
+Tất cả là "chưa ai bấm", không phải "chưa viết". Chủ dự án chốt 15/09/2026:
 *"chưa xong trang quantri thì không bấm thử mời và chấp nhận quyền quản trị hệ
-thống"* — và **đã có sẵn hai tài khoản Quản trị hệ thống**. Không ghi mục này
-vào "đang chặn" nữa; đề nghị bấm thử sau b118.
+thống"* — và **đã có sẵn hai tài khoản Quản trị hệ thống**.
 
 | Điểm dừng | Bấm gì |
 |---|---|
@@ -68,6 +65,7 @@ vào "đang chặn" nữa; đề nghị bấm thử sau b118.
 | **b111b** — gắn mã người từ cả hai tấm, đổi cây ở ô chọn | Mã xong, `20` đã dán |
 | **b111c** — nộp đề xuất · tự duyệt bị từ chối · người khác duyệt được | Mã + giao diện mới xong (b117), `21` đã dán 14/09: ① nút **Nhận** lời mời bằng tài khoản Quản trị hệ thống *(vá 14/09)*; ② nộp ở khu **Tài khoản** → bảng các gia phả → *Đề xuất mã người*; ③ tự duyệt ở `#gia-pha/cay/<mã>/de-xuat-gan` bị máy chủ từ chối; ④ một Quản trị hệ thống KHÁC duyệt được |
 | **b117** — khu Tài khoản trên máy chủ thật | ① bảng *Các gia phả tôi tham gia* hiện đúng mã người đã gắn — bằng tài khoản **thành viên thường**, vì nó đọc qua RLS chứ không qua hàm Quản trị; ② *Đổi mật khẩu* với mật khẩu cũ SAI phải bị từ chối, với mật khẩu cũ đúng thì đổi được |
+| **b118d** — cả trang Quản trị trên máy chủ thật | Mở từng trang con; bấm mỗi menu *Chọn hành động* / *Chọn ▾* một lần; một lần Duyệt và một lần Từ chối ở *Kiểm duyệt › Xem trước / sau*. Ảnh chụp mới chỉ trên máy chủ giả |
 
 ⚠ **Một việc treo không có số, và nó đi theo MÁY chứ không theo bước:** commit
 `render 1.9.1` của repo `giapha/` (`44768d9`) **chưa đẩy được** — trên LapAMD
@@ -117,36 +115,11 @@ cây → **`THIET-KE-NHIEU-CAY.md`**; bốn khu của `QuanTri.html` →
 hai: **việc nào đụng `vai_tro()` thì đứng sau việc không đụng** — sai ở nền
 móng thì mọi thứ xây bên trên sai theo, và không có gì báo lỗi.
 
-### Dùng chung cho b115 → b118b — quantri3 vào app
+### Trang Quản trị — đọc `so-tay/trang-quan-tri.md` trước khi đụng
 
-⚠ Prototype: `../codex/dua_claude.ai/quantri3.html` (**ngoài `Claude_Code`**,
-ở thư mục cha `Gia_pha/` — đừng tìm trong repo). Dữ liệu và JavaScript trong
-đó là **mô phỏng**: *"Không bê dữ liệu mẫu, mã giả hoặc các đoạn thử nghiệm vào
-repo chính"* — bàn giao AGY 13/09. ⚠⚠ Câu ấy cấm dữ liệu mẫu và JS giả,
-**KHÔNG cấm giao diện** — b114 đọc nhầm, đính chính b118c. Trước khi báo xong mỗi khu: mọi route có
-handler, mọi tab mở đúng, mọi nút thành lời gọi dịch vụ thật *(hoặc mờ kèm lý do)*.
-
-⚠ **Bản đồ đã chốt ở b114 — `THIET-KE-QUAN-TRI.md` mục 9, đọc 9.5 TRƯỚC.**
-Bảng 9.3 bản đầu sai ba ô, đã đính chính. Nói *"hàm này thiếu"* thì grep
-`luoc-do/` trước — 56 hàm `export` của `sb.js` không phải danh sách hàm máy chủ.
-⚠ Khung **KHÔNG đổi sang tab ngang**: prototype vẫn là thanh trái, dưới 850px
-mới thành hàng thẻ, đúng mục 3 cũ *(đính chính b114)*.
-
-⚠ **Trang chi tiết đã có vỏ từ b115** (`nhat-ky/b115-*.md`): thêm trang mới
-= thêm một dòng vào `TRANG` của `khung.js` *(từ b118c mang `view` = `id`
-section quantri3)* + vỏ `veVoChiTiet()`. **Khung sửa
-`#` lạ ở mọi tầng — trang KHÔNG tự sửa `#`**, và `#` lạ sửa bằng
-`replaceState`, không gán lại `location.hash` *(bộ bất biến canh cả hai)*.
-
-### b118d — chuyển nốt sang HTML quantri3 · MỖI PHIÊN MỘT KHU
-
-| | |
-|---|---|
-| **Làm** | Đổi `view` của khu/trang trong `khung.js` từ `khu-tam` sang section quantri3: ① trang cây — `#tree-members` · `#tree-requests` (+ `#tree-detail`: Vòng đời · Đề xuất gắn) ② khu Tài khoản `#tai-khoan` ③ Kiểm duyệt `#kiem-duyet` + `#kiem-duyet-chitiet` ④ Sổ tài khoản (bảng chờ sẵn trong `data-ban-mau`) + `#sys-account-trees` *(chưa chép vào HTML)* |
-| **Cách làm** | Như b118c *(đọc `nhat-ky/b118c-*.md` trước)*: HTML nằm sẵn, bỏ dữ liệu giả rồi — chỉ đổ dòng vào `tbody`, gắn nút vào hàm `sb.js` đã nối ở b116–b118 (chép logic từ file cũ), dùng `o-bang.js` + `hop-thoai.js`. Không `style=` mới. Máy chủ chưa có → `nutMo(chu, lyDo)` |
-| **⚠⚠ Nhớ `sb-gia.mjs`** | Thêm cửa vào `sb.js` thì thêm cả ở đó — thiếu một tên là `SyntaxError` lúc nạp, **cả bộ ảnh ra nền trơn**. Đã xảy ra hai lần (b110b, b111). `kiem-trang-quan-tri.mjs` PHẦN M tự đối chiếu và báo tên thiếu |
-| **⚠ Luật 5b②** | Cột xuyên cây của Sổ tài khoản là dòng TÓM TẮT, bấm vào mở bảng theo từng cây, không bao giờ là chỗ sửa |
-| **Điểm dừng mỗi phiên** | `node ../kiem-thu/so-quantri3.mjs <cảnh>` rồi nhìn cặp `sq-p-*`/`sq-a-*` · `kiem-trang-quan-tri.mjs` đạt · `/kiem-tra` đạt 10. Khu cuối xong: xoá `#khu-tam` + khối TẠM `.qt-*` trong CSS; file mã cũ hết người `import` thì **hỏi** rồi mới xoá |
+⚠ Nói *"hàm máy chủ này thiếu"* thì grep `luoc-do/` trước — `export` của
+`sb.js` không phải danh sách hàm máy chủ (`THIET-KE-QUAN-TRI.md` 9.5).
+⚠ Khung KHÔNG đổi sang tab ngang: thanh trái, dưới 850px mới thành hàng thẻ.
 
 ### b118b — SQL cho bốn luật mới *(nhóm D)* · đụng nền móng quyền
 
@@ -198,7 +171,8 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 
 | Việc | Ghi ở đâu |
 |---|---|
-| ⚠ **Bảng tấm *Toàn hệ thống* nay CHÍN cột** và ở 1280px tràn khỏi khu — câu nhắc *"kéo ngang"* đo `scrollWidth` thật nên không nói dối. Chưa vỡ, nhưng **cột thứ mười là cột làm vỡ**: muốn thêm cột thì phải bỏ một cột, hoặc xếp chồng hai dòng trong một ô | `THIET-KE-QUAN-TRI.md` khu 2 |
+| ⚠ **`ds_kiem_duyet()` chưa trả người duyệt · lúc duyệt · lý do từ chối** — hai tab lịch sử của Kiểm duyệt để trống ba cột (cột có trong `change_log`, hàm chưa đọc). Sửa hàm là `drop` → chép cả `grant` | `so-tay/trang-quan-tri.md` |
+| ⚠ **`xem-khung-quan-tri.mjs` (ngoài repo) còn kịch bản bấm của giao diện cũ** — viết lại theo cảnh của `so-quantri3.mjs`, hoặc bỏ | `so-tay/trang-quan-tri.md` |
 | ⚠ **Hai việc của điểm dừng b106 chưa nghiệm thu bằng mắt**: gắn được mã người · đăng nhập bằng vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **Nợ b105 chưa trả**: người mang vai `quan_tri` **được phong** vẫn THẤY khối *Đơn chờ duyệt* trong Cài đặt, bấm Duyệt thì máy chủ từ chối — **giấu nút đi** | `nhat-ky/b105-quan-ly-thanh-vien.md` |
 | ⚠ **`HUONG-DAN-PHAN-QUYEN.md` mục 3 vẫn bảo chủ dự án gõ `update` trong SQL Editor** — b106 đã làm xong màn hình thay nó, nhưng chưa ai xoá mục ấy. Hướng dẫn cũ còn sống là đường để sửa tay đè lên màn hình | `nhat-ky/b106-khu-tai-khoan.md` |
