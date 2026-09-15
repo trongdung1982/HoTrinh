@@ -161,7 +161,7 @@ mạng**, nên chúng **không** chứng minh RLS chặn đúng:
 | `kiem-thu/kiem-sao-luu.mjs` | **33/33 đạt** | Mã trigger sao lưu, với Supabase và Drive giả |
 | `kiem-thu/kiem-di-doi.mjs` | **46/46 đạt** | Bộ sinh SQL di dời — bóc ngược dữ liệu ra khỏi file SQL rồi so lại với cây nguồn. **Không chạy SQL** |
 | Đồ thị `import` | **47/47** nối được | App nạp được, không thiếu module |
-| `/kiem-tra` | đạt cả 9 phép | Không vi phạm phân lớp |
+| `/kiem-tra` | đạt cả 10 phép | Không vi phạm phân lớp · phép 10: không đẻ thêm rác (`QUY-TAC-GON.md`) |
 
 **Giới hạn theo nhánh chưa có hiệu lực.** Bảng `branches` và `branch_access` đã
 dựng, hai hàng rào trong `luu_cay()` đã đứng đúng chỗ, nhưng hàm

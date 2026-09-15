@@ -1,9 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 15/09/2026 · Bước gần nhất: **b118c** — trang Quản trị = HTML + CSS nguyên văn quantri3 (phần 1)
-· Việc kế tiếp: **b118d — chuyển nốt các khu còn vẽ tạm sang HTML quantri3**
+*Cập nhật 15/09/2026 · Bước gần nhất: **b118e** — luật gọn + phép đo `do-gon.mjs` (`/kiem-tra` phép 10)
+· Việc kế tiếp: **b118f — trả nợ gọn ở file nạp mỗi phiên**, rồi **b118d**
 
-⚠ **TRẦN CỨNG 250 DÒNG.** File này nạp ở đầu MỌI phiên, nên mỗi dòng thừa ở
+⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên, nên mỗi dòng thừa ở
 đây là dòng thừa nhân với số phiên còn lại. Vượt trần là dấu hiệu có thứ đứng
 nhầm chỗ, **đừng nới trần**. Ba luật giữ nó gọn:
 
@@ -25,14 +25,7 @@ quantri3 vào app chính sau đó mới làm việc khác."*
 
 | Làm thứ | Bước | Việc | Mô hình |
 |---|---|---|---|
-| ~~1~~ | ~~b112~~ | ✓ **XONG 14/09/2026** — 212 KB → 81 KB, giảm 61,8% | Opus |
-| ~~2~~ | ~~b113~~ | ✓ **XONG 14/09/2026** — khối Gia phả ở lại Cài đặt (xác nhận, cạnh khu 1) + vá phép đo mù; workflow 3 repo vệ tinh giữ, dùng chung backend là cố ý | Sonnet |
-| ~~3~~ | ~~b114~~ | ✓ **XONG 15/09/2026** — bản đồ + 4 luật đổi theo prototype (`THIET-KE-NHIEU-CAY.md` 11.9) | Opus |
-| ~~4~~ | ~~b115~~ | ✓ **XONG 15/09/2026** — lớp trang chi tiết `#<khu>/<trang>/<mã>[/<mục>]` + trang một cây (Tổng quan đọc thật); bốn khu cũ không đổi | Opus |
-| ~~5~~ | ~~b116~~ | ✓ **XONG 15/09/2026** — bốn chip khu Gia phả, tên cây bấm sang trang chi tiết; ba mục trang cây điền thật + Vòng đời mới; `rut_don_xin_vao`/`roi_cay` (`22`, chưa dán lên Supabase thật) | Sonnet |
-| ~~6~~ | ~~b117~~ | ✓ **XONG 15/09/2026** — khu 2 = *Tài khoản của tôi* (mở cho MỌI người) + chip *Toàn hệ thống*; trang `#thanh-vien/tai-khoan/<mã>`; nút Đề xuất ở bảng các gia phả, xét đơn ở trang cây; `doiMatKhau` · `chanCuaToi` | Opus |
-| ~~7~~ | ~~b118~~ | ✓ **XONG 15/09/2026** — khu thứ tư đổi *Sao lưu* → *Quản trị hệ thống*; sổ tài khoản dời từ chip khu Tài khoản sang đó; trang chi tiết tài khoản đổi khu cha theo; Kiểm duyệt không đổi (đã nối sẵn); 298 phép, 43 ảnh | Sonnet |
-| ~~7a~~ | ~~b118c~~ | ✓ **XONG 15/09/2026** — chủ dự án: *"copy nguyên giao diện quantri3 rồi gắn chức năng"*. HTML + CSS = bản chép quantri3; gắn thật Gia phả · trang Mời · QTHT (Tổng quan · Cây mặc định · Thùng rác) | Opus |
+| 7a | **b118f** | Trả nợ gọn ở file nạp mỗi phiên — mục b118f bên dưới | Sonnet |
 | 7b | **b118d** | Chuyển nốt sang HTML quantri3, **mỗi phiên một khu** — mục b118d bên dưới | Opus |
 | 7c | **b118b** | SQL cho bốn luật mới *(nhóm D)* — đụng nền móng quyền | Opus |
 | 8 | **b119** | Khu Sao lưu + Số đếm đối chiếu *(số cũ: b112)* | Sonnet |
@@ -53,7 +46,7 @@ cây** — NTB 59 người và Nguyễn Phúc Giáo 681 người — mã cây **
 `QuanTri.html` là khung **bốn khu**, cộng lớp **trang chi tiết** từ b115 —
 Gia phả (b116) · Tài khoản (b117) · Kiểm duyệt (đã có từ trước) · Quản trị hệ
 thống (b118) đều đã nối, mỗi khu ít nhất một việc thật. Phân quyền đã đo bằng
-REST, 5/5 hàng rào đạt (b94, b96). Chặng đã đóng: **b87 → b118c** — mỗi bước
+REST, 5/5 hàng rào đạt (b94, b96). Chặng đã đóng: **b87 → b118e** — mỗi bước
 một file `nhat-ky/`.
 
 ⚠⚠ **Từ b118c giao diện trang Quản trị LÀ prototype quantri3** — `QuanTri.html`
@@ -147,6 +140,14 @@ section quantri3)* + vỏ `veVoChiTiet()`. **Khung sửa
 `#` lạ ở mọi tầng — trang KHÔNG tự sửa `#`**, và `#` lạ sửa bằng
 `replaceState`, không gán lại `location.hash` *(bộ bất biến canh cả hai)*.
 
+### b118f — trả nợ gọn ở file nạp mỗi phiên · chỉ tài liệu, không đụng mã
+
+| | |
+|---|---|
+| **Làm** | Theo `QUY-TAC-GON.md` mục 4 *Cắt an toàn*: `KE-HOACH.md` về ≤ 15 KB · ô dài của `CHI-DAN.md` (≤ 400 ký tự, ≤ 8 KB — giải thích dời về file đích) · dòng `MEMORY.md` > 250 ký tự. **Không** cắt ghi chú đầu file mã — trả dần theo luật D1 khi b118d mở đúng file ấy |
+| **Vì sao trước b118d** | Nợ ở file nạp mỗi phiên nhân với mọi phiên b118d còn lại; thứ tự chốt 14/09 cũng đặt *chống phình* lên đầu |
+| **Điểm dừng** | `do-gon.mjs --ha-moc` xoá được các khoản `CHI-DAN` · `KE-HOACH` · `MEMORY`; mọi dòng ⚠ đã cắt chỉ được nơi trú |
+
 ### b118d — chuyển nốt sang HTML quantri3 · MỖI PHIÊN MỘT KHU
 
 | | |
@@ -155,7 +156,7 @@ section quantri3)* + vỏ `veVoChiTiet()`. **Khung sửa
 | **Cách làm** | Như b118c *(đọc `nhat-ky/b118c-*.md` trước)*: HTML nằm sẵn, bỏ dữ liệu giả rồi — chỉ đổ dòng vào `tbody`, gắn nút vào hàm `sb.js` đã nối ở b116–b118 (chép logic từ file cũ), dùng `o-bang.js` + `hop-thoai.js`. Không `style=` mới. Máy chủ chưa có → `nutMo(chu, lyDo)` |
 | **⚠⚠ Nhớ `sb-gia.mjs`** | Thêm cửa vào `sb.js` thì thêm cả ở đó — thiếu một tên là `SyntaxError` lúc nạp, **cả bộ ảnh ra nền trơn**. Đã xảy ra hai lần (b110b, b111). `kiem-trang-quan-tri.mjs` PHẦN M tự đối chiếu và báo tên thiếu |
 | **⚠ Luật 5b②** | Cột xuyên cây của Sổ tài khoản là dòng TÓM TẮT, bấm vào mở bảng theo từng cây, không bao giờ là chỗ sửa |
-| **Điểm dừng mỗi phiên** | `node ../kiem-thu/so-quantri3.mjs <cảnh>` rồi nhìn cặp `sq-p-*`/`sq-a-*` · `kiem-trang-quan-tri.mjs` đạt · `/kiem-tra` đạt 9. Khu cuối xong: xoá `#khu-tam` + khối TẠM `.qt-*` trong CSS; file mã cũ hết người `import` thì **hỏi** rồi mới xoá |
+| **Điểm dừng mỗi phiên** | `node ../kiem-thu/so-quantri3.mjs <cảnh>` rồi nhìn cặp `sq-p-*`/`sq-a-*` · `kiem-trang-quan-tri.mjs` đạt · `/kiem-tra` đạt 10. Khu cuối xong: xoá `#khu-tam` + khối TẠM `.qt-*` trong CSS; file mã cũ hết người `import` thì **hỏi** rồi mới xoá |
 
 ### b118b — SQL cho bốn luật mới *(nhóm D)* · đụng nền móng quyền
 
@@ -231,6 +232,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | Chưa mở file `.ged` xuất ra bằng một phần mềm gia phả thật | `BAT-DAU.md` mục 5 |
 | **Ảnh: kho công khai hay kho kín?** Hiện công khai — đường dẫn khó đoán, nhưng *"khó đoán"* không phải *"được bảo vệ"* | `KIEN-TRUC.md` mục 7 |
 | **`branches` / `branch_access` dựng từ `01-bang.sql` nay KHÔNG dùng** — luật đi theo trực hệ, không chia chi *(chốt 04/09/2026)* | `06-quyen-truc-he.sql` mục 2 |
+| **`GEMINI.md` vẫn bảo Antigravity chạy *"7 phép rà"*** — nay 10; AGY sửa mã thì cũng phải chạy `do-gon.mjs` | `../GEMINI.md` dòng 138 |
 
 ### ⚠ Bộ bất biến bố cục đang gác nhầm nhánh
 

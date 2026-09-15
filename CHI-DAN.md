@@ -1,11 +1,10 @@
 # CHỈ DẪN — đọc file này đầu mỗi phiên
 
-*Nhánh Supabase · cập nhật 14/09/2026 (b111c)*
+*Nhánh Supabase · cập nhật 15/09/2026 (b118e)*
 
-⚠ **TRẦN CỨNG 80 DÒNG.** Vượt là dấu hiệu có thứ đứng nhầm chỗ — chuyển ra
-file riêng, **đừng nới trần**. `MUC-LUC` của nhánh cũ phình tới 590 dòng vì
-không ai đặt trần cho nó, và một file phải đọc mỗi phiên mà dài 590 dòng thì
-nó chính là thứ nó sinh ra để tránh.
+⚠ **TRẦN CỨNG 80 DÒNG · 8 KB · mỗi dòng ≤ 400 ký tự** — đo: `kiem-thu/do-gon.mjs`
+*(đếm dòng bằng mắt thì dòng dài ra)*. Vượt là có thứ đứng nhầm chỗ — chuyển ra
+file riêng, **đừng nới trần**.
 
 ## Việc hôm nay → đọc file nào
 
@@ -28,14 +27,15 @@ nó chính là thứ nó sinh ra để tránh.
 | Đụng sao lưu, trigger Apps Script | `sao-luu/SaoLuu.gs` · `luoc-do/05-sao-luu.sql` · `kiem-thu/kiem-sao-luu.mjs` |
 | Đụng di dời dữ liệu vào bảng | `di-doi/HUONG-DAN-DI-DOI.md` · `di-doi/sinh-sql-di-doi.mjs` |
 | Thêm/nâng cấp thư viện | `js/vendor/DOC-VENDOR.md` — và **hỏi chủ dự án trước** |
+| Dọn rác · cắt tài liệu · viết ghi chú đầu file · phép 10 báo LỖI | `QUY-TAC-GON.md` · đo: `node kiem-thu/do-gon.mjs` |
 | Xuất/nhập GEDCOM, Excel | `../tai-lieu/CAU-TRUC-DU-LIEU_V06.md` mục *Ánh xạ GEDCOM* |
 | Hướng dẫn chủ dự án bấm gì | `HUONG-DAN-DUNG-BANG.md` |
 | Mở app tại chỗ, cài máy thứ hai, dùng `gh` | `../MAY-THU-HAI.md` *(ngoài repo)* |
 | Muốn biết vì sao chuyển nhà | `BAT-DAU.md` (chứng cứ gốc, không sửa) |
 
 **Đừng đọc cả thư mục.** Đọc theo bảng trên. Đặc biệt: đừng mở mọi file trong
-`nhat-ky/` cùng lúc — mở `nhat-ky/INDEX.md` trước, nó có một dòng cho mỗi bước
-đủ để quyết định có mở file bước hay không.
+`nhat-ky/` cùng lúc — `Grep` trong `nhat-ky/INDEX.md` trước (27 KB, đừng mở cả
+file); mỗi bước một dòng, đủ để quyết định có mở file bước hay không.
 
 ## Ba điều phải biết trước khi gõ dòng đầu tiên
 
