@@ -27,15 +27,15 @@ file riêng, **đừng nới trần**.
 | Đụng sao lưu, trigger Apps Script | `sao-luu/SaoLuu.gs` · `luoc-do/05-sao-luu.sql` · `kiem-thu/kiem-sao-luu.mjs` |
 | Đụng di dời dữ liệu vào bảng | `di-doi/HUONG-DAN-DI-DOI.md` · `di-doi/sinh-sql-di-doi.mjs` |
 | Thêm/nâng cấp thư viện | `js/vendor/DOC-VENDOR.md` — và **hỏi chủ dự án trước** |
-| Dọn rác · cắt tài liệu · viết ghi chú đầu file · phép 10 báo LỖI | `QUY-TAC-GON.md` · đo: `node kiem-thu/do-gon.mjs` |
+| **Gặp lỗi / điều đáng chú ý** · dọn rác · ghi chú đầu file · phép 10 báo LỖI | `QUY-TAC-GON.md` mục 4–5 · `so-tay/` · đo: `node kiem-thu/do-gon.mjs` |
 | Xuất/nhập GEDCOM, Excel | `../tai-lieu/CAU-TRUC-DU-LIEU_V06.md` mục *Ánh xạ GEDCOM* |
 | Hướng dẫn chủ dự án bấm gì | `HUONG-DAN-DUNG-BANG.md` |
 | Mở app tại chỗ, cài máy thứ hai, dùng `gh` | `../MAY-THU-HAI.md` *(ngoài repo)* |
 | Muốn biết vì sao chuyển nhà | `BAT-DAU.md` (chứng cứ gốc, không sửa) |
 
 **Đừng đọc cả thư mục.** Đọc theo bảng trên. Đặc biệt: đừng mở mọi file trong
-`nhat-ky/` cùng lúc — `Grep` trong `nhat-ky/INDEX.md` trước (27 KB, đừng mở cả
-file); mỗi bước một dòng, đủ để quyết định có mở file bước hay không.
+`nhat-ky/` (kho lưu trữ) — tra chuyện cũ bằng `Grep`. Sắp sửa file có dòng
+`Sổ tay:` thì đọc sổ tay ấy trước.
 
 ## Ba điều phải biết trước khi gõ dòng đầu tiên
 
@@ -60,12 +60,9 @@ file); mỗi bước một dòng, đủ để quyết định có mở file bư�
   thì `git log -p <file>`, đừng đẻ ra bản thứ hai.
   *(Khác `tai-lieu/` — thư mục ấy giữ quy ước `_Vxx` vì nó là bản sao Knowledge
   Base trên claude.ai, nơi không có lịch sử phiên bản.)*
-- **`nhat-ky/INDEX.md` chỉ được THÊM DÒNG, không bao giờ sinh lại cả file.**
-  Nhánh cũ từng cắt nhầm mất bảng *Đính chính* đúng vì sinh lại (V62 hỏng,
-  V63 sửa). Không có bước sinh lại thì không có chỗ để cắt nhầm.
-- Mỗi bước một file `nhat-ky/bXX-*.md`, **viết xong không sửa lại nữa**. Phần
-  *"vì sao"* dài hơn phần *"làm gì"* — cái "làm gì" đọc mã là ra, cái "vì sao"
-  mất đi thì không đoán lại được.
+- **Ghi theo CHỨC NĂNG, không theo phiên** (từ 15/09/2026): gặp lỗi thì ghi vào
+  `so-tay/<chức-năng>.md` và xoá dấu vết ở các file đã thấy; việc từng phiên nằm
+  ở lời commit. `nhat-ky/` là kho lưu trữ, không thêm, không sửa.
 
 - ⚠ Mọi file thả vào `supabase/` **đều đi lên mạng**, và lịch sử git giữ lại
   cả bản đã xoá sau này. Hỏi câu ấy trước khi thêm file.

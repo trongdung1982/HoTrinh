@@ -1,6 +1,6 @@
 {
-  "capNhat": "15/09/2026 22:05",
-  "ghiChu": "Lập sổ — mọi chỗ vượt trần tại thời điểm này. Chỉ được hạ bằng --ha-moc.",
+  "capNhat": "15/09/2026 22:29",
+  "ghiChu": "Hạ bằng --ha-moc.",
   "no": {
     "dau-file:js/domains/so-sanh.js": 36,
     "dau-file:js/pages/backup.js": 40,
@@ -31,9 +31,9 @@
     "dau-file:js/utils/id.js": 60,
     "dau-file:js/utils/image.js": 37,
     ".claude/memory/MEMORY.md:dai": 292,
-    "supabase/CHI-DAN.md:byte": 9751,
+    "supabase/CHI-DAN.md:byte": 9502,
     "supabase/CHI-DAN.md:dai": 1488,
-    "supabase/KE-HOACH.md:byte": 21530,
+    "supabase/KE-HOACH.md:byte": 20500,
     "index:dong-dai": 29,
     "ten-sai": 2
   }

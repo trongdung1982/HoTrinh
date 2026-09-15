@@ -77,6 +77,7 @@ thường, không phải thiếu sót.
 | 118 | 15/09/2026 | Khu thứ tư đổi Sao lưu → Quản trị hệ thống, sổ tài khoản dời sang đó; 298 phép | `b118-khu-quan-tri-he-thong.md` |
 | 118c | 15/09/2026 | Trang Quản trị = HTML + CSS nguyên văn quantri3; gắn Gia phả · Mời · Cây mặc định · Thùng rác | `b118c-chep-nguyen-quantri3.md` |
 | 118e | 15/09/2026 | Luật gọn (dọn rác + tiết kiệm token) đo bằng `do-gon.mjs` = `/kiem-tra` phép 10; sổ nợ chỉ được hạ | `b118e-luat-gon.md` |
+| — | 15/09/2026 | **ĐÓNG nhật ký theo phiên.** Việc → lời commit · bài học → `so-tay/` (`QUY-TAC-GON.md` mục 5) | — |
 
 *Cột "Nội dung một dòng": **một câu, tối đa 110 ký tự**. Nói bước ấy làm được
 cái gì, không nói vì sao. Đây là dòng để người đọc quyết định có mở file bước

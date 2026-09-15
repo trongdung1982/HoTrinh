@@ -1,17 +1,16 @@
 # KẾ HOẠCH — nhánh Supabase
 
 *Cập nhật 15/09/2026 · Bước gần nhất: **b118e** — luật gọn + phép đo `do-gon.mjs` (`/kiem-tra` phép 10)
-· Việc kế tiếp: **b118f — trả nợ gọn ở file nạp mỗi phiên**, rồi **b118d**
+· Việc kế tiếp: **b118d — chuyển nốt các khu còn vẽ tạm sang HTML quantri3**
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên, nên mỗi dòng thừa ở
 đây là dòng thừa nhân với số phiên còn lại. Vượt trần là dấu hiệu có thứ đứng
 nhầm chỗ, **đừng nới trần**. Ba luật giữ nó gọn:
 
-1. **Xong rồi thì xoá khỏi đây.** Mỗi bước đã đóng có `nhat-ky/bXX-*.md` của
-   riêng nó, và `nhat-ky/INDEX.md` có một dòng cho mỗi bước. Chép lại ở đây là
-   chép lần thứ ba. Muốn đọc bản cũ: `git log -p KE-HOACH.md`.
+1. **Xong rồi thì xoá khỏi đây.** Việc đã làm nằm ở lời commit (`git log`).
+   Muốn đọc bản cũ: `git log -p KE-HOACH.md`.
 2. **File này giữ đúng bốn thứ:** đang ở đâu · trạng thái dán SQL · việc kế
-   tiếp · việc còn treo. Bài học của một bước thuộc về nhật ký bước ấy.
+   tiếp · việc còn treo. Bài học thuộc về `so-tay/` của chức năng ấy.
 3. **Dòng ⚠ chỉ được chuyển, không được mất.** Trước khi cắt phải liệt kê mọi
    dòng ⚠ ra và chỉ được nơi trú của từng dòng *(b112 làm thế, 153 dòng)*.
 
@@ -25,7 +24,6 @@ quantri3 vào app chính sau đó mới làm việc khác."*
 
 | Làm thứ | Bước | Việc | Mô hình |
 |---|---|---|---|
-| 7a | **b118f** | Trả nợ gọn ở file nạp mỗi phiên — mục b118f bên dưới | Sonnet |
 | 7b | **b118d** | Chuyển nốt sang HTML quantri3, **mỗi phiên một khu** — mục b118d bên dưới | Opus |
 | 7c | **b118b** | SQL cho bốn luật mới *(nhóm D)* — đụng nền móng quyền | Opus |
 | 8 | **b119** | Khu Sao lưu + Số đếm đối chiếu *(số cũ: b112)* | Sonnet |
@@ -139,14 +137,6 @@ mới thành hàng thẻ, đúng mục 3 cũ *(đính chính b114)*.
 section quantri3)* + vỏ `veVoChiTiet()`. **Khung sửa
 `#` lạ ở mọi tầng — trang KHÔNG tự sửa `#`**, và `#` lạ sửa bằng
 `replaceState`, không gán lại `location.hash` *(bộ bất biến canh cả hai)*.
-
-### b118f — trả nợ gọn ở file nạp mỗi phiên · chỉ tài liệu, không đụng mã
-
-| | |
-|---|---|
-| **Làm** | Theo `QUY-TAC-GON.md` mục 4 *Cắt an toàn*: `KE-HOACH.md` về ≤ 15 KB · ô dài của `CHI-DAN.md` (≤ 400 ký tự, ≤ 8 KB — giải thích dời về file đích) · dòng `MEMORY.md` > 250 ký tự. **Không** cắt ghi chú đầu file mã — trả dần theo luật D1 khi b118d mở đúng file ấy |
-| **Vì sao trước b118d** | Nợ ở file nạp mỗi phiên nhân với mọi phiên b118d còn lại; thứ tự chốt 14/09 cũng đặt *chống phình* lên đầu |
-| **Điểm dừng** | `do-gon.mjs --ha-moc` xoá được các khoản `CHI-DAN` · `KE-HOACH` · `MEMORY`; mọi dòng ⚠ đã cắt chỉ được nơi trú |
 
 ### b118d — chuyển nốt sang HTML quantri3 · MỖI PHIÊN MỘT KHU
 
