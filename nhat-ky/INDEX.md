@@ -73,6 +73,7 @@ thường, không phải thiếu sót.
 | 114 | 15/09/2026 | Bản đồ quantri3 → hàm máy chủ; chốt 4 luật đổi theo prototype; sửa 3 ô sai; chưa sửa mã | `b114-ban-do-quantri3.md` |
 | 115 | 15/09/2026 | Lớp trang chi tiết dưới bốn khu (`#gia-pha/cay/<mã>`, nút Quay lại, thanh mục); 258 phép | `b115-khung-trang-chi-tiet.md` |
 | 116 | 15/09/2026 | Khu Gia phả: bốn chip, tên cây bấm sang trang chi tiết; điền thật ba mục + Vòng đời mới; `rut_don_xin_vao`/`roi_cay` (`22`) | `b116-khu-gia-pha.md` |
+| 117 | 15/09/2026 | Khu Tài khoản = *Tài khoản của tôi*, mở cho mọi người; trang chi tiết một tài khoản (chỉ đọc); xét đơn đề xuất về trang cây; `doiMatKhau` hỏi lại mật khẩu cũ; bộ kiểm tự đối chiếu `sb-gia.mjs` | `b117-khu-tai-khoan.md` |
 
 *Cột "Nội dung một dòng": **một câu, tối đa 110 ký tự**. Nói bước ấy làm được
 cái gì, không nói vì sao. Đây là dòng để người đọc quyết định có mở file bước

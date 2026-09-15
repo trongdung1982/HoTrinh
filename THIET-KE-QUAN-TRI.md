@@ -747,6 +747,19 @@ repo Public, và lịch sử git giữ cả bản đã xoá. Đường duy nhấ
 *Xoá cây*, đúng dự đoán. Đã viết ở `trang-cay.js` mục `vong-doi`, dùng lại
 `doiChuCay` · `xinXoaCay`/`huyXinXoaCay`/`duyetXoaCay` đã có, không hàm mới.
 
+**✓ Làm ở b117 (15/09/2026) — khu 2 và `#account-detail`.** Địa chỉ khác
+prototype, cùng lý do b115: `#thanh-vien` (khu, `ma` giữ nguyên) và
+`#thanh-vien/tai-khoan/<mã ngắn>` thay cho `#tai-khoan` · `#account-detail`.
+Ba quyết định, lý do đầy đủ ở `nhat-ky/b117-khu-tai-khoan.md`:
+① khu 2 **không còn ô chọn cây và ba tấm lọc** — bảng quyền một cây đã sống ở
+trang cây từ b116, giữ cả hai là hai chỗ đổi quyền; bảng *Các gia phả tôi tham
+gia* gọi tên cây trên từng dòng nên luật 5a không mất gì;
+② trang chi tiết tài khoản **chỉ đọc**, mỗi dòng cây là liên kết sang bảng
+của đúng cây ấy (5b②);
+③ cột *"Tôi được gắn với ai?"* đọc dòng `tree_members` của chính mình qua RLS
+(`chanCuaToi`), vì `ds_cay_cua_tai_khoan()` chỉ Quản trị hệ thống gọi được.
+Chip *Toàn hệ thống* tạm ở khu 2 tới b118.
+
 ⚠ **Khuyến nghị cũ, viết trước khi hỏi** *(9.5 thay thế)*: mục 5, 6, 7, 12 và khung điều hướng
 (9.1/9.2①) là **vừa sức bốn bước đã định**, không đụng luật đã chốt ở đâu.
 Mười mục còn lại (1, 2, 3, 4, 8, 9, 10, 11 và câu hỏi *"Vòng đời"* ở

@@ -4,9 +4,13 @@
 //            máy tính, hàng thẻ ngang trên điện thoại. Mỗi lần vẽ một khu.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, pages/dang-nhap,
-//            pages/quan-tri/khu-kiem-duyet · khu-gia-pha · khu-thanh-vien ·
-//            trang-cay · trang-chi-tiet
-// Phiên bản: 0.4.0 · Cập nhật: 15/09/2026 07:40
+//            pages/quan-tri/khu-kiem-duyet · khu-gia-pha · khu-tai-khoan ·
+//            trang-cay · trang-tai-khoan · trang-chi-tiet
+// Phiên bản: 0.5.0 · Cập nhật: 15/09/2026 (b117)
+//            0.5.0 (b117) khu 2 vẽ bằng `khu-tai-khoan.js` (Tài khoản của
+//            tôi) · trang chi tiết thứ hai `#thanh-vien/tai-khoan/<mã>` ·
+//            huy hiệu ĐƠN CHỜ DUYỆT chuyển sang nút Gia phả — đơn nay xét ở
+//            trang của từng cây, dưới khu ấy.
 //            0.4.0 (b115) lớp TRANG CHI TIẾT dưới bốn khu — danh sách `TRANG`,
 //            địa chỉ `#<khu>/<trang>/<mã>[/<mục>]`, `veKhu()` sửa `#` lạ từng
 //            tầng. Bốn khu cũ không đổi một dòng.
@@ -50,8 +54,9 @@ import { layPhien, dsChoDuyet, demChoKiemDuyet } from '../../services/sb.js';
 import { mountDangNhap } from '../dang-nhap.js';
 import { mountKhuKiemDuyet } from './khu-kiem-duyet.js';
 import { mountKhuGiaPha } from './khu-gia-pha.js';
-import { mountKhuThanhVien } from './khu-thanh-vien.js';
+import { mountKhuTaiKhoan } from './khu-tai-khoan.js';
 import { mountTrangCay, MUC_TRANG_CAY } from './trang-cay.js';
+import { mountTrangTaiKhoan, MUC_TRANG_TAI_KHOAN } from './trang-tai-khoan.js';
 import { duongDan } from './trang-chi-tiet.js';
 
 /**
@@ -66,8 +71,9 @@ import { duongDan } from './trang-chi-tiet.js';
  *   người trong sơ đồ — chủ dự án nhắc thẳng chỗ này 08/09/2026. Còn `ma` vẫn
  *   là `thanh-vien` vì nó nằm trong `#` của địa chỉ: đổi nó là làm hỏng mọi
  *   link `QuanTri.html#thanh-vien` đã gửi đi, để lấy về đúng một chữ không ai
- *   nhìn thấy. Tên file `khu-thanh-vien.js` giữ cùng lý do — đổi tên file mã
- *   là việc phải hỏi chủ dự án (`CLAUDE.md` mục 9).
+ *   nhìn thấy. Từ b117 khu này vẽ bằng `khu-tai-khoan.js`; `khu-thanh-vien.js`
+ *   ở lại làm thư viện bảng "tài khoản của một cây" — đổi tên file mã là việc
+ *   phải hỏi chủ dự án (`CLAUDE.md` mục 9).
  */
 const KHU = [
   { ma: 'gia-pha',    chu: 'Gia phả' },
@@ -84,11 +90,12 @@ const KHU = [
  * `muc` là danh sách mục con, mục ĐẦU là mục mặc định. `khu` + `ma` cũng là
  * giao kèo trong địa chỉ như `ma` của khu — đổi một chữ là link cũ hỏng.
  *
- * Còn chờ đăng ký: trang một tài khoản dưới `thanh-vien` (b117) · trang
- * đối chiếu một lần sửa dưới `kiem-duyet` (b118).
+ * Còn chờ đăng ký: trang đối chiếu một lần sửa dưới `kiem-duyet` (b118).
  */
 const TRANG = [
   { khu: 'gia-pha', ma: 'cay', mount: mountTrangCay, muc: MUC_TRANG_CAY },
+  { khu: 'thanh-vien', ma: 'tai-khoan', mount: mountTrangTaiKhoan,
+    muc: MUC_TRANG_TAI_KHOAN },
 ];
 
 // ============================================================
@@ -236,7 +243,7 @@ function veKhu(than, nutTheoMa, phien) {
   //   (`coTheQuanTri`, `ds_gia_pha`); `phien` chỉ mang danh tính và cây đang
   //   mở. Suy quyền từ `phien.vaiTro` là dựng phân quyền bằng JavaScript.
   if (khu.ma === 'gia-pha') mountKhuGiaPha(than, phien);
-  else if (khu.ma === 'thanh-vien') mountKhuThanhVien(than, phien);
+  else if (khu.ma === 'thanh-vien') mountKhuTaiKhoan(than, phien);
   else if (khu.ma === 'kiem-duyet') mountKhuKiemDuyet(than);
   else veKhuChuaLam(than, khu);
 }
@@ -288,7 +295,10 @@ async function napSoDem(treeId, nutTheoMa) {
       dsChoDuyet(treeId),
       demChoKiemDuyet(treeId),
     ]);
-    themSo(nutTheoMa.get('thanh-vien'), Array.isArray(dsDon) ? dsDon.length : 0,
+    // ⚠ Nút GIA PHẢ, không phải nút Tài khoản (đổi b117): đơn xin vào nay xét
+    //   ở `#gia-pha/cay/<mã>/don-xin-vao`. Con số đứng cạnh một khu không có
+    //   chỗ xử lý nó là dẫn người ta đi tìm một cái nút không có ở đó.
+    themSo(nutTheoMa.get('gia-pha'), Array.isArray(dsDon) ? dsDon.length : 0,
            'đơn chờ duyệt');
     themSo(nutTheoMa.get('kiem-duyet'), Number(soKiemDuyet) || 0,
            'thay đổi chờ kiểm duyệt');

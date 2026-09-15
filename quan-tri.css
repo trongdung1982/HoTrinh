@@ -2,7 +2,9 @@
    giapha-supabase · quan-tri.css
    Vai trò  : Bố cục khung bốn khu của `QuanTri.html` — thanh trái trên máy
               tính, hàng thẻ ngang trên điện thoại.
-   Phiên bản: 0.3.0 · Cập nhật: 15/09/2026 (b116)
+   Phiên bản: 0.4.0 · Cập nhật: 15/09/2026 (b117)
+              0.4.0 (b117) khu Tài khoản: chip · khối có tựa · lưới hai cột
+              (gập ở 1000px) · bảng `.qt-bang` · form mật khẩu.
               0.3.0 (b116) `.qt-lk` — liên kết tên cây trong bảng, bấm sang
               trang chi tiết.
               0.2.0 (b115) trang chi tiết: thanh Quay lại, thanh mục con
@@ -101,10 +103,53 @@
 .qt-tt dt { color:#6a625a; }
 .qt-tt dd { margin:0; overflow-wrap:anywhere; }
 
+/* ═══ Khu Tài khoản (b117) ═══
+   Chip lấy nguyên ngôn ngữ hình của `.qt-nut` và chip khu Gia phả: bo 9px,
+   nền #2a2622 khi đang chọn. Khối `.qt-khoi` là `panel` của prototype. */
+.qt-danh-tinh { margin:0 0 12px; color:#2a2622; font-weight:600; line-height:1.5;
+                overflow-wrap:anywhere; }
+.qt-cho { color:#8a8078; }
+.qt-chips { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 16px; }
+.qt-chip { padding:8px 14px; border:1px solid #e6e0d8; border-radius:9px;
+           background:#faf8f5; color:#2a2622; font:inherit; font-size:13px;
+           cursor:pointer; touch-action:manipulation; }
+.qt-chip.dang-mo { border-color:#2a2622; background:#2a2622; color:#fffdf9;
+                   font-weight:600; }
+.qt-hai-cot { display:grid; grid-template-columns:repeat(2, minmax(0,1fr));
+              gap:16px; margin:0 0 16px; align-items:start; }
+.qt-khoi { min-width:0; margin:0 0 16px; padding:14px 16px 16px;
+           border:1px solid #e6e0d8; border-radius:10px; background:#fffdf9; }
+.qt-hai-cot > .qt-khoi { margin:0; }
+.qt-khoi-dau { display:flex; flex-wrap:wrap; align-items:baseline;
+               justify-content:space-between; gap:2px 12px; margin:0 0 8px; }
+.qt-khoi-tua { margin:0; font-size:15px; }
+.qt-ghi { color:#8a8078; font-size:12px; line-height:1.5; }
+.qt-ghi-khoi { margin:10px 0 0; }
+.qt-ghi-loi { margin:0 0 8px; color:#a83220; }
+/* Bảng thông tin nằm TRONG khối đã có viền — bỏ viền thứ hai. */
+.qt-khoi .qt-tt { border:0; background:none; }
+.qt-khoi .qt-tt-dong { padding:9px 0; }
+.qt-cuon-ngang { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.qt-bang { width:100%; min-width:720px; border-collapse:collapse; font-size:13px; }
+.qt-bang th { padding:9px 10px; text-align:left; font-weight:600; font-size:12px;
+              color:#6a625a; white-space:nowrap; }
+.qt-bang td { padding:10px; border-top:1px solid #f2eee8; vertical-align:top;
+              color:#2a2622; overflow-wrap:anywhere; }
+.qt-khung-viec { margin-top:14px; }
+.qt-form { display:flex; flex-direction:column; gap:10px; max-width:420px; }
+.qt-nhan-o { display:flex; flex-direction:column; gap:4px; font-size:12px;
+             color:#6a625a; }
+.qt-o-nhap { padding:8px 10px; border:1px solid #dcd5cb; border-radius:7px;
+             background:#fff; color:#2a2622; font:inherit; font-size:14px; }
+.qt-hang-nut { display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+               margin-top:4px; }
+
 /* ⚠ 1000px, KHÔNG 680px: thanh trái 210px của khung vẫn còn ở khoảng
    681–1000px, và cộng thêm thanh mục 205px nữa thì nội dung chỉ còn chừng
    200px. Nên thanh mục thành hàng thẻ SỚM hơn thanh trái. */
 @media (max-width: 1000px) {
+  /* Hai khối Hồ sơ · Quyền cấp hệ thống: cùng lý do, mỗi khối còn ~340px. */
+  .qt-hai-cot { grid-template-columns:minmax(0,1fr); }
   .qt-layout { grid-template-columns:minmax(0,1fr); gap:12px; }
   .qt-muc { flex-direction:row; overflow-x:auto; padding:6px;
             -webkit-overflow-scrolling:touch; }

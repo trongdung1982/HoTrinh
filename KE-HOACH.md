@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 15/09/2026 · Bước gần nhất: **b116** — quantri3: khu Gia phả
-· Việc kế tiếp: **b117 — quantri3: khu Tài khoản, và chuyển khối b111c sang**
+*Cập nhật 15/09/2026 · Bước gần nhất: **b117** — quantri3: khu Tài khoản
+· Việc kế tiếp: **b118 — quantri3: khu Kiểm duyệt + Quản trị hệ thống**
 
 ⚠ **TRẦN CỨNG 250 DÒNG.** File này nạp ở đầu MỌI phiên, nên mỗi dòng thừa ở
 đây là dòng thừa nhân với số phiên còn lại. Vượt trần là dấu hiệu có thứ đứng
@@ -30,7 +30,7 @@ quantri3 vào app chính sau đó mới làm việc khác."*
 | ~~3~~ | ~~b114~~ | ✓ **XONG 15/09/2026** — bản đồ + 4 luật đổi theo prototype (`THIET-KE-NHIEU-CAY.md` 11.9) | Opus |
 | ~~4~~ | ~~b115~~ | ✓ **XONG 15/09/2026** — lớp trang chi tiết `#<khu>/<trang>/<mã>[/<mục>]` + trang một cây (Tổng quan đọc thật); bốn khu cũ không đổi | Opus |
 | ~~5~~ | ~~b116~~ | ✓ **XONG 15/09/2026** — bốn chip khu Gia phả, tên cây bấm sang trang chi tiết; ba mục trang cây điền thật + Vòng đời mới; `rut_don_xin_vao`/`roi_cay` (`22`, chưa dán lên Supabase thật) | Sonnet |
-| 6 | **b117** | quantri3 — khu Tài khoản *(gồm chuyển khối b111c sang)* | Opus |
+| ~~6~~ | ~~b117~~ | ✓ **XONG 15/09/2026** — khu 2 = *Tài khoản của tôi* (mở cho MỌI người) + chip *Toàn hệ thống*; trang `#thanh-vien/tai-khoan/<mã>`; nút Đề xuất ở bảng các gia phả, xét đơn ở trang cây; `doiMatKhau` · `chanCuaToi` | Opus |
 | 7 | **b118** | quantri3 — khu Kiểm duyệt + Quản trị hệ thống | Sonnet |
 | 7b | **b118b** | SQL cho bốn luật mới *(nhóm D)* — đụng nền móng quyền | Opus |
 | 8 | **b119** | Khu Sao lưu + Số đếm đối chiếu *(số cũ: b112)* | Sonnet |
@@ -48,9 +48,9 @@ bước (`THIET-KE-NHIEU-CAY.md` mục 12 ghi sẵn luật ấy).
 **App chạy thật tại `https://nguyentrongbac.io.vn`** từ 03/09/2026 *(chứng chỉ
 Let's Encrypt hạn 02/12/2026; địa chỉ cũ `301` về đây)*. Máy chủ thật có **hai
 cây** — NTB 59 người và Nguyễn Phúc Giáo 681 người — mã cây **3 chữ số**. Trang
-`QuanTri.html` là khung **bốn khu**, cộng lớp **trang chi tiết** từ b115 — khu Gia phả (b116) đã nối vào, ba khu kia
-còn lại (b117/b118). Phân quyền đã đo bằng REST, 5/5 hàng rào
-đạt (b94, b96). Chặng đã đóng: **b87 → b116** — mỗi bước một file `nhat-ky/`.
+`QuanTri.html` là khung **bốn khu**, cộng lớp **trang chi tiết** từ b115 — khu Gia phả (b116) và Tài khoản (b117) đã nối
+vào, hai khu kia còn lại (b118). Phân quyền đã đo bằng REST, 5/5 hàng rào
+đạt (b94, b96). Chặng đã đóng: **b87 → b117** — mỗi bước một file `nhat-ky/`.
 
 ⚠ **`domains/` chưa sửa một dòng nào** trong cả mười file, suốt cả cuộc chuyển
 nhà từ Drive sang Supabase. Đó là nghiệm thu của luật phân lớp, giữ nguyên.
@@ -66,7 +66,8 @@ vào "đang chặn" nữa; đề nghị bấm thử sau b118.
 |---|---|
 | **b111** — kiểm duyệt TRƯỚC/SAU | Một lần Lưu "chờ duyệt" thật. ⚠ Quản trị luôn `ghi_thang()`, nên tự gắn mã người cho tài khoản CỦA MÌNH **không** tạo ra hàng chờ — phải Lưu bằng tài khoản KHÔNG quản trị cây ấy |
 | **b111b** — gắn mã người từ cả hai tấm, đổi cây ở ô chọn | Mã xong, `20` đã dán |
-| **b111c** — nộp đề xuất · tự duyệt bị từ chối · người khác duyệt được | Mã xong, `21` đã dán 14/09 → đi cùng **b117**: ① nút **Nhận** lời mời bằng tài khoản Quản trị hệ thống *(vá 14/09)*; ② tự bấm duyệt bị máy chủ từ chối; ③ một Quản trị hệ thống KHÁC duyệt được |
+| **b111c** — nộp đề xuất · tự duyệt bị từ chối · người khác duyệt được | Mã + giao diện mới xong (b117), `21` đã dán 14/09: ① nút **Nhận** lời mời bằng tài khoản Quản trị hệ thống *(vá 14/09)*; ② nộp ở khu **Tài khoản** → bảng các gia phả → *Đề xuất mã người*; ③ tự duyệt ở `#gia-pha/cay/<mã>/de-xuat-gan` bị máy chủ từ chối; ④ một Quản trị hệ thống KHÁC duyệt được |
+| **b117** — khu Tài khoản trên máy chủ thật | ① bảng *Các gia phả tôi tham gia* hiện đúng mã người đã gắn — bằng tài khoản **thành viên thường**, vì nó đọc qua RLS chứ không qua hàm Quản trị; ② *Đổi mật khẩu* với mật khẩu cũ SAI phải bị từ chối, với mật khẩu cũ đúng thì đổi được |
 
 ⚠ **Một việc treo không có số, và nó đi theo MÁY chứ không theo bước:** commit
 `render 1.9.1` của repo `giapha/` (`44768d9`) **chưa đẩy được** — trên LapAMD
@@ -135,20 +136,13 @@ mới thành hàng thẻ, đúng mục 3 cũ *(đính chính b114)*.
 `#` lạ ở mọi tầng — trang KHÔNG tự sửa `#`**, và `#` lạ sửa bằng
 `replaceState`, không gán lại `location.hash` *(bộ bất biến canh cả hai)*.
 
-### b117 — quantri3: khu Tài khoản, và chuyển khối b111c sang
-
-| | |
-|---|---|
-| **Làm** | Bảng tài khoản + trang chi tiết + bảng *Các gia phả liên quan*; chuyển **nút Đề xuất mã người** và **khối xét đơn** của b111c sang đúng chỗ đã chốt ở b114 *(9.2②: nút ở `#tai-khoan` cạnh cột gắn người · xét đơn ở `#tree-detail`)* · nhóm B: `doiMatKhau` + cờ dựng cây vào `layPhien()` — ⚠ thêm cả ở `sb-gia.mjs` |
-| **⚠ Giữ nguyên ba thứ** | ① nút Duyệt **mờ sẵn kèm lý do** trên đơn của chính mình — cửa thứ TÁM của luật *"không ai tự đặt quyền cho mình"*; ② ô chọn cây riêng, KHÔNG dính cây đang mở của app; ③ cột xuyên cây không bao giờ là chỗ sửa — nó là dòng TÓM TẮT, bấm vào mở bảng theo từng cây |
-| **Điểm dừng** | Nộp đề xuất · tự duyệt bị từ chối · quản trị khác duyệt được — cả ba trên giao diện mới |
-
 ### b118 — quantri3: khu Kiểm duyệt + Quản trị hệ thống, ảnh, `/kiem-tra`
 
 | | |
 |---|---|
 | **Làm** | Hai khu còn lại; `xem-khung-quan-tri.mjs` chụp lại **toàn bộ** theo khung mới |
-| **⚠⚠ Nhớ `sb-gia.mjs`** | Thêm cửa vào `sb.js` thì thêm cả ở đó — thiếu một tên là `SyntaxError` lúc nạp, **cả bộ ảnh ra nền trơn**. Đã xảy ra hai lần (b110b, b111) |
+| **⚠⚠ Nhớ `sb-gia.mjs`** | Thêm cửa vào `sb.js` thì thêm cả ở đó — thiếu một tên là `SyntaxError` lúc nạp, **cả bộ ảnh ra nền trơn**. Đã xảy ra hai lần (b110b, b111). Từ b117 `kiem-trang-quan-tri.mjs` PHẦN M tự đối chiếu và báo tên thiếu |
+| **⚠ Chip *Toàn hệ thống*** | Đang ở khu Tài khoản (`khu-tai-khoan.js`) — chuyển sang khu Quản trị hệ thống. Luật 5b② vẫn áp: cột xuyên cây là dòng TÓM TẮT, bấm vào mở bảng theo từng cây, không bao giờ là chỗ sửa |
 | **Điểm dừng** | Nhìn bằng mắt cả bộ ảnh ở 1280px và 390px; `/kiem-tra` đạt cả 9 |
 
 ### b118b — SQL cho bốn luật mới *(nhóm D)* · đụng nền móng quyền
@@ -205,6 +199,8 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Hai việc của điểm dừng b106 chưa nghiệm thu bằng mắt**: gắn được mã người · đăng nhập bằng vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **Nợ b105 chưa trả**: người mang vai `quan_tri` **được phong** vẫn THẤY khối *Đơn chờ duyệt* trong Cài đặt, bấm Duyệt thì máy chủ từ chối — **giấu nút đi** | `nhat-ky/b105-quan-ly-thanh-vien.md` |
 | ⚠ **`HUONG-DAN-PHAN-QUYEN.md` mục 3 vẫn bảo chủ dự án gõ `update` trong SQL Editor** — b106 đã làm xong màn hình thay nó, nhưng chưa ai xoá mục ấy. Hướng dẫn cũ còn sống là đường để sửa tay đè lên màn hình | `nhat-ky/b106-khu-tai-khoan.md` |
+| ⚠ **Thành viên thường nộp đề xuất phải gõ mã người trần** — ô gợi ý đi qua `tim_nguoi_trong_cay()`, gác bằng `co_the_quan_tri()`, nên với họ không gợi ý gì. Nộp vẫn được | `nhat-ky/b117-khu-tai-khoan.md` |
+| ⚠ **Huy hiệu *đơn chờ duyệt* trên nút Gia phả đếm theo cây ĐANG MỞ** (`napSoDem(phien.treeId)`) — chỗ duy nhất của trang còn dính cây đang mở. Có từ b101, b117 chỉ dời nút | `khung.js` · luật 5a |
 | ⚠ **Ai gọi `don_thung_rac()`** — nút bấm tay hay trigger Apps Script đêm? Chưa hỏi chủ dự án | `THIET-KE-NHIEU-CAY.md` mục 11.6 |
 | ⚠ **`settings.js` vẫn gọi thứ này là *Quyền*** trong khi khu Quản trị đã đổi hết sang **Vai trò** (b109c). Chính luật *"hai màn hình gọi một thứ bằng hai tên"* là lý do đổi tên lần ấy | `nhat-ky/b109c-o-vai-tro.md` |
 | ⚠ **b103 → b105 của Antigravity vẫn nằm NGOÀI repo**, trong `codex/`, mới dán lên Staging. Soi lướt: `12` và `13` không thêm luật ghi nào — nhưng chưa rà kỹ, chưa đo | `PHOI-HOP-AI.md` |

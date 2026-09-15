@@ -3,9 +3,15 @@
 // Vai trò  : Tấm lọc *Toàn hệ thống* của khu Tài khoản — SỔ ĐĂNG KÝ của cả
 //            phần mềm, và bảng sâu theo từng cây của một tài khoản.
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: services/sb, config, pages/quan-tri/khu-thanh-vien
-// Phiên bản: 0.6.0 · Cập nhật: 10/09/2026 (b111b)
-//            0.6.0 cột **Người được gắn**, chủ dự án đặt hàng 10/09/2026.
+// Phụ thuộc: services/sb, config, pages/quan-tri/khu-thanh-vien,
+//            pages/quan-tri/trang-chi-tiet
+// Phiên bản: 0.7.0 · Cập nhật: 15/09/2026 (b117)
+//            0.7.0 bảng sâu mở đầu bằng liên kết sang trang chi tiết MỘT
+//            tài khoản (`#thanh-vien/tai-khoan/<mã>`). Bảng sâu vẫn là chỗ
+//            SỬA; trang kia chỉ đọc. Từ b117 file này tới đây qua chip
+//            *Toàn hệ thống* của `khu-tai-khoan.js`, không còn qua tấm lọc
+//            của `khu-thanh-vien.js`.
+//            0.6.0 (10/09/2026, b111b) cột **Người được gắn**, chủ dự án đặt hàng 10/09/2026.
 //              ⚠ CÂU HỎI NÀY XUYÊN CÂY, và đó là cả cái khó của nó. Mã người
 //                là khái niệm THEO TỪNG CÂY — một tài khoản có `person_id`
 //                khác nhau ở mỗi cây họ có mặt — nên một ô bảng ở tấm *Toàn hệ
@@ -120,6 +126,7 @@ import {
   o, huyHieu, nut, veLoi, gioVietNam, capChieuCao, CSS_DAU_BANG,
 } from './khu-thanh-vien.js';
 import { ganGoiY, dongNguoi } from './o-goi-y.js';
+import { duongDan } from './trang-chi-tiet.js';
 
 /** Trần quyền mời được — đúng trần của `moi_vao_cay()` ở `14` mục 2. */
 const VAI_MOI_DUOC = ['quan_tri', 'sua', 'xem'];
@@ -767,6 +774,16 @@ function veBangSau(tk, ds, dsCay, napLai) {
   hop.style.cssText =
     'display:flex;flex-direction:column;gap:14px;padding:12px 0 2px;' +
     'border-top:1px solid #ece6dd';
+
+  // b117 — trang chi tiết của tài khoản này: đọc gọn một chỗ, và là một link
+  // gửi cho nhau được. Bảng sâu ở ngay dưới vẫn là chỗ SỬA; trang kia chỉ đọc.
+  if (tk.maNgan) {
+    const lk = document.createElement('a');
+    lk.className = 'qt-di-toi';
+    lk.href = '#' + duongDan('thanh-vien', 'tai-khoan', tk.maNgan);
+    lk.textContent = 'Mở trang chi tiết tài khoản ' + tk.maNgan + ' →';
+    hop.append(lk);
+  }
 
   if (tk.laChinhToi) {
     hop.append(dongNhac(

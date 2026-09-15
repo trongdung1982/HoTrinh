@@ -4,8 +4,15 @@
 //            thành những hàm mang đúng hình dạng mà repo.js và pages/ chờ.
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
-// Phụ thuộc: cau-hinh.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.19.0 · Cập nhật: 15/09/2026 (b116)
+// Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
+// Phiên bản: 0.20.0 · Cập nhật: 15/09/2026 (b117)
+//            0.20.0 khu **Tài khoản của tôi** (b117): `layPhien()` mang thêm
+//            `userId` · `duocTaoCay` (không thêm vòng mạng — cùng dòng
+//            `tai_khoan` đã đọc) · `doiMatKhau()` HỎI LẠI mật khẩu cũ trước
+//            khi đổi · `chanCuaToi()` đọc dòng `tree_members` của CHÍNH MÌNH
+//            qua RLS — vì `ds_cay_cua_tai_khoan()` chỉ Quản trị hệ thống gọi
+//            được, thành viên thường không có đường nào khác biết mình đang
+//            gắn với ai trong sơ đồ.
 //            0.19.0 `rutDonXinVao()` · `roiCay()` (`luoc-do/22`) — hai việc
 //            CHÍNH NGƯỜI TRONG CUỘC tự làm cho mình, không đụng vai. Đối xứng
 //            GIẢ với `tuChoiLoiMoi()` (chỉ xoá LỜI MỜI) và `goThanhVien()`
@@ -95,6 +102,7 @@ import {
   SUPABASE_URL, SUPABASE_KHOA_CONG_KHAI, KHO_ANH,
   TEN_HO, NGUOI_QUAN_LY, thieuCauHinh,
 } from '../cau-hinh.js';
+import { fullName } from '../utils/text.js';
 
 // ============================================================
 // Máy khách — dựng một lần, dùng lại
@@ -191,6 +199,34 @@ export async function quenMatKhau(email) {
   return error ? { ok: false, loi: cauLoi(error) } : { ok: true, loi: null };
 }
 
+/**
+ * Đổi mật khẩu của CHÍNH người đang đăng nhập. Trả về { ok, loi }.
+ *
+ * ⚠ **HỎI LẠI MẬT KHẨU CŨ, bằng một lần đăng nhập thật.** `auth.updateUser()`
+ *   không đòi mật khẩu cũ — ai ngồi vào một máy đang mở sẵn trang Quản trị là
+ *   đổi được mật khẩu rồi khoá chủ nó ra ngoài. Đăng nhập lại bằng mật khẩu cũ
+ *   là phép kiểm do MÁY CHỦ chấm, không phải một ô so chuỗi trong trình duyệt.
+ *
+ * ⚠ Độ dài tối thiểu KHÔNG kiểm ở đây. Supabase có luật riêng (cài trong bảng
+ *   điều khiển), và câu từ chối của nó đi thẳng ra màn hình qua `cauLoi()` —
+ *   đặt thêm một con số ở đây là có hai luật, và có ngày chúng lệch nhau.
+ */
+export async function doiMatKhau(matKhauCu, matKhauMoi) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+
+  const nguoi = await nguoiDangNhap();
+  if (!nguoi || !nguoi.email) return { ok: false, loi: 'Chưa đăng nhập.' };
+
+  const { error: loiCu } = await k.auth.signInWithPassword({
+    email: nguoi.email, password: String(matKhauCu || ''),
+  });
+  if (loiCu) return { ok: false, loi: 'Mật khẩu hiện tại không đúng.' };
+
+  const { error } = await k.auth.updateUser({ password: String(matKhauMoi || '') });
+  return error ? { ok: false, loi: cauLoi(error) } : { ok: true, loi: null };
+}
+
 /** Người đang đăng nhập, hoặc `null`. Không gọi mạng — đọc phiên trong máy. */
 export async function nguoiDangNhap() {
   const k = layKhach();
@@ -230,6 +266,7 @@ export async function layPhien() {
     daDangNhap: false, email: '', vaiTro: null,
     docDuoc: false, suaDuoc: false, treeId: null,
     laQuanTriHeThong: false, maNgan: '', hoTen: '',
+    userId: '', duocTaoCay: false,
     nguoiTrungTamMacDinh: null, hienNgayGio: false,
     tenHo: TEN_HO, nguoiQuanLy: NGUOI_QUAN_LY, loi: null,
   };
@@ -263,13 +300,20 @@ export async function layPhien() {
       k.from('tree_members').select('tree_id, role').eq('user_id', nguoi.id),
       k.rpc('la_quan_tri_he_thong'),
       k.rpc('ma_tai_khoan_cua_toi'),
-      k.from('tai_khoan').select('ho_ten').eq('user_id', nguoi.id).maybeSingle(),
+      k.from('tai_khoan').select('ho_ten, duoc_tao_cay').eq('user_id', nguoi.id).maybeSingle(),
     ]);
 
   const laQuanTriHeThong = Boolean(coQuyenHT);
   const maNgan = maTk || '';
   const hoTen = (hangTk && hangTk.ho_ten) || '';
-  const nenNguoi = { ...nen, laQuanTriHeThong, maNgan, hoTen };
+  // ⚠ Chép ĐÚNG MỘT DÒNG của `duoc_tao_cay()` (`11` mục 11): cờ Quản trị hệ
+  //   thống HOẶC cột của tài khoản. Chép chứ không gọi hàm ấy, vì gọi là vòng
+  //   mạng thứ năm ở đầu MỌI trang (`THIET-KE-QUAN-TRI.md` 9.3). Trường này chỉ
+  //   để HIỆN chữ "Có/Không" — hàng rào thật vẫn là hàm máy chủ, `taoGiaPhaMoi()`
+  //   hỏi nó ngay lúc bấm.
+  const duocTaoCay = laQuanTriHeThong || Boolean(hangTk && hangTk.duoc_tao_cay);
+  const nenNguoi = { ...nen, laQuanTriHeThong, maNgan, hoTen,
+                     userId: nguoi.id, duocTaoCay };
 
   if (error) {
     return { ...nenNguoi, daDangNhap: true, email: nguoi.email, loi: cauLoi(error) };
@@ -1527,6 +1571,59 @@ export async function dsCayCuaTaiKhoan(userId) {
     tinCay: Boolean(r.tin_cay),
     laChuCay: Boolean(r.la_chu_cay),
     thamGia: r.added_at || null,
+  }));
+  return { ok: true, loi: null, ds };
+}
+
+/**
+ * Những chân **đã duyệt** của CHÍNH người đang đăng nhập: vai · mã người được
+ * gắn (kèm tên) · tin cậy — mỗi cây một dòng. Cho bảng *Các gia phả tôi đang
+ * tham gia* của khu Tài khoản (b117).
+ *
+ * ⚠ **Vì sao không dùng `dsCayCuaTaiKhoan(toi)`:** hàm máy chủ ấy gác bằng
+ *   `la_quan_tri_he_thong()` (`15` mục 5), nên thành viên thường gọi cho chính
+ *   mình cũng nhận mảng rỗng. Đọc thẳng bảng thì luật RLS `doc_tree_members`
+ *   (`02`, qua `la_thanh_vien()` của `18`) đã cho mỗi người đọc dòng của cây
+ *   mình có chân — không hàm mới, không nới luật nào.
+ *
+ * ⚠ Hệ quả, và nó ĐÚNG: đơn còn chờ và lời mời chưa nhận KHÔNG ra ở đây —
+ *   `la_thanh_vien()` đòi `approved`. Hai trạng thái ấy đã có ở `ds_gia_pha()`
+ *   (`daNopDon` · `duocMoi`); nơi gọi ghép hai nguồn theo `treeId`.
+ *
+ * ⚠ Tên người đọc từ bảng `persons` qua RLS `co_the_xem_cay()`, ghép bằng
+ *   `utils/text.fullName` — đúng hàm sơ đồ dùng, để một người không mang hai
+ *   tên trên hai màn hình. Không dùng `timNguoiTrongCay()`: nó gác bằng
+ *   `co_the_quan_tri()`, thành viên thường gọi ra rỗng.
+ */
+export async function chanCuaToi() {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', ds: [] };
+
+  const nguoi = await nguoiDangNhap();
+  if (!nguoi) return { ok: false, loi: 'Chưa đăng nhập.', ds: [] };
+
+  const { data, error } = await k.from('tree_members')
+    .select('tree_id, role, approved, person_id, tin_cay')
+    .eq('user_id', nguoi.id).eq('approved', true);
+  if (error) return { ok: false, loi: cauLoi(error), ds: [] };
+
+  const coMa = (data || []).filter((r) => r.person_id);
+  const ten = new Map();
+  if (coMa.length) {
+    const { data: ng } = await k.from('persons')
+      .select('tree_id, id, names')
+      .in('id', [...new Set(coMa.map((r) => r.person_id))]);
+    for (const p of ng || []) ten.set(p.tree_id + '|' + p.id, fullName(p));
+  }
+
+  const ds = (data || []).map((r) => ({
+    treeId: r.tree_id,
+    vai: r.role || '',
+    maNguoi: r.person_id || '',
+    // Không đọc được tên (người đã xoá, lỗi mạng) thì để TRỐNG, màn hình vẽ
+    // mã trần — đừng bịa chữ thay thế, `CLAUDE.md` mục 7.
+    tenNguoi: (r.person_id && ten.get(r.tree_id + '|' + r.person_id)) || '',
+    tinCay: Boolean(r.tin_cay),
   }));
   return { ok: true, loi: null, ds };
 }

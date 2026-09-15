@@ -5,8 +5,13 @@
 //            và ghi thật; mục Đề xuất gắn người còn nói làm ở bước nào (b117).
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, config, quan-tri/trang-chi-tiet,
-//            quan-tri/khu-thanh-vien (dùng lại `veBang`), quan-tri/o-goi-y
-// Phiên bản: 0.2.0 · Cập nhật: 15/09/2026 (b116)
+//            quan-tri/khu-thanh-vien (dùng lại `veBang` · khối xét đơn đề
+//            xuất), quan-tri/o-goi-y
+// Phiên bản: 0.3.0 · Cập nhật: 15/09/2026 (b117)
+//            0.3.0 Mục *Đề xuất gắn người* điền thật — khối xét đơn b111c
+//            (`veKhoiDeXuatGan()`) chuyển từ khu Tài khoản sang đây, đúng chỗ
+//            đã chốt ở 9.2②. Ba mục bảng nay hiện câu *"bạn chỉ xem được"*
+//            cho quản trị được phong (nợ b105, trước ở khu Tài khoản cũ).
 //            0.2.0 Ba mục *Thành viên & quyền · Lời mời · Đơn xin vào* điền
 //            thật — dùng lại NGUYÊN VẸN `veBang()` của `khu-thanh-vien.js`,
 //            chỉ lọc `ds` theo `trangThaiDong()` trước khi vẽ (không viết
@@ -30,7 +35,9 @@ import {
 } from '../../services/sb.js';
 import { vaiTroBangChu } from '../../config.js';
 import { veVoChiTiet, veChuaChuyen } from './trang-chi-tiet.js';
-import { veBang, trangThaiDong, nut, veLoi } from './khu-thanh-vien.js';
+import {
+  veBang, trangThaiDong, nut, veLoi, veNhacChiXem, veKhoiDeXuatGan, cumCay,
+} from './khu-thanh-vien.js';
 import { ganGoiY, dongTaiKhoan } from './o-goi-y.js';
 
 /**
@@ -51,9 +58,7 @@ export const MUC_TRANG_CAY = [
   { ma: 'vong-doi', chu: 'Vòng đời' },
   // 9.2② — xét đơn đề xuất gắn mã người là việc của TỪNG CÂY, nên nó đứng ở
   // đây cạnh Đơn xin vào, không phải một tab của Quản trị hệ thống.
-  { ma: 'de-xuat-gan', chu: 'Đề xuất gắn người',
-    hienNay: ['Chuyển sang đây ở b117. Hôm nay: khu Tài khoản, khối xét đơn đề xuất dưới bảng.',
-              'thanh-vien', 'Mở khu Tài khoản'] },
+  { ma: 'de-xuat-gan', chu: 'Đề xuất gắn người' },
 ];
 
 /**
@@ -116,6 +121,7 @@ export async function mountTrangCay(el, ctx) {
     'Không có đơn xin vào nào đang chờ.');
   else if (muc.ma === 'vong-doi') veVongDoi(nd, cay, ctx.phien,
     () => mountTrangCay(el, ctx));
+  else if (muc.ma === 'de-xuat-gan') veMucDeXuat(nd, cay);
 }
 
 /**
@@ -213,8 +219,43 @@ async function veMucBang(nd, cay, phien, trangThai, chuRong) {
   const oViec = document.createElement('div');
   const bo = { oViec, dangMo: null, nut: [], oVai: [] };
 
+  // Nợ b105: quản trị được phong XEM được bảng mà không đổi được quyền của ai.
+  // Nói trước khi họ bấm, đừng để nút xám tự giải thích.
+  if (!duocDoiQuyen) nd.append(veNhacChiXem());
   nd.append(veBang(ds, phien, cayNho, duocDoiQuyen, napLai, bo));
   nd.append(oViec);
+}
+
+// ============================================================
+// Đề xuất gắn người — khối xét đơn b111c, chuyển sang đây ở b117
+// ============================================================
+//
+// ⚠ Xét đơn là việc của TỪNG CÂY (9.2②), nên nó đứng trong trang của cây ấy
+//   chứ không phải một tab của Quản trị hệ thống. Nút Duyệt trên đơn của chính
+//   mình **mờ sẵn kèm lý do** — cửa thứ TÁM, gác ở máy chủ; `veMotDon()` giữ
+//   nguyên từng dòng.
+
+async function veMucDeXuat(nd, cay) {
+  nd.textContent = 'Đang đọc đơn đề xuất…';
+
+  const hashLuc = window.location.hash;
+  const cayNho = { treeId: cay.fileId, ten: cay.ten || '', maCay: cay.treeCode || '' };
+  const napLai = () => veMucDeXuat(nd, cay);
+
+  const duocDoiQuyen = await coTheQuanTri(cay.fileId);
+  const khoi = await veKhoiDeXuatGan(cayNho, duocDoiQuyen, napLai);
+  if (window.location.hash !== hashLuc) return;
+
+  nd.innerHTML = '';
+  if (!khoi) {
+    const r = document.createElement('div');
+    r.className = 'qt-chua-lam';
+    r.textContent = 'Không có đơn đề xuất gắn mã người nào đang chờ trong ' +
+      cumCay(cayNho) + '.';
+    nd.append(r);
+    return;
+  }
+  nd.append(khoi);
 }
 
 // ============================================================
