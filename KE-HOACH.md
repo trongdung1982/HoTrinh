@@ -84,9 +84,9 @@ thứ hai: hai chỗ ghi là hai chỗ để lệch nhau.
 nào.** Mốc gần nhất: `18` (10/09) · `19`, `20` (10/09) · `21` (14/09, bảng tự
 kiểm đạt hết). `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
 
-⚠ **`22-rut-don-roi-cay.sql` (b116) — VIẾT XONG, ĐO XONG TRÊN BÀN THỬ TẠI
-CHỖ (27/27 đạt), CHƯA DÁN lên Supabase thật hay Staging.** Không đụng vai,
-dán sau `18`/`20`/`21` là đủ, không có chuỗi dán lại nào bị ảnh hưởng.
+**`22-rut-don-roi-cay.sql` (b116) — ĐÃ DÁN lên Supabase THẬT 15/09/2026,
+bảng tự kiểm đạt hết.** Chưa rõ đã dán lên Staging chưa — hỏi lại trước khi
+coi cả hai máy chủ đã đồng bộ tới `22`.
 
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
 `11`/`10`→`14`→`16`→`18` · `13`/`14`→`15`→`20`→`18` · `08`→`18`. Ba luật nữa,
