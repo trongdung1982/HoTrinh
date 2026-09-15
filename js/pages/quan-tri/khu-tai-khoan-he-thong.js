@@ -1,16 +1,19 @@
 // ============================================================
 // giapha-supabase · js/pages/quan-tri/khu-tai-khoan-he-thong.js
-// Vai trò  : Tấm lọc *Toàn hệ thống* của khu Tài khoản — SỔ ĐĂNG KÝ của cả
-//            phần mềm, và bảng sâu theo từng cây của một tài khoản.
+// Vai trò  : Nội dung khu QUẢN TRỊ HỆ THỐNG — SỔ ĐĂNG KÝ của cả phần mềm, và
+//            bảng sâu theo từng cây của một tài khoản.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, config, pages/quan-tri/khu-thanh-vien,
 //            pages/quan-tri/trang-chi-tiet
-// Phiên bản: 0.7.0 · Cập nhật: 15/09/2026 (b117)
+// Phiên bản: 0.8.0 · Cập nhật: 15/09/2026 (b118)
+//            0.8.0 File này tới đây qua `khu-quan-tri-he-thong.js` (khu
+//            RIÊNG trên thanh điều hướng), không còn qua chip *Toàn hệ
+//            thống* của `khu-tai-khoan.js` — dời ra theo hẹn của
+//            `THIET-KE-QUAN-TRI.md` 9.1. Đường dẫn sang trang chi tiết một
+//            tài khoản đổi khu cha theo: `#quan-tri-he-thong/tai-khoan/<mã>`,
+//            không còn `#thanh-vien/…`.
 //            0.7.0 bảng sâu mở đầu bằng liên kết sang trang chi tiết MỘT
-//            tài khoản (`#thanh-vien/tai-khoan/<mã>`). Bảng sâu vẫn là chỗ
-//            SỬA; trang kia chỉ đọc. Từ b117 file này tới đây qua chip
-//            *Toàn hệ thống* của `khu-tai-khoan.js`, không còn qua tấm lọc
-//            của `khu-thanh-vien.js`.
+//            tài khoản. Bảng sâu vẫn là chỗ SỬA; trang kia chỉ đọc.
 //            0.6.0 (10/09/2026, b111b) cột **Người được gắn**, chủ dự án đặt hàng 10/09/2026.
 //              ⚠ CÂU HỎI NÀY XUYÊN CÂY, và đó là cả cái khó của nó. Mã người
 //                là khái niệm THEO TỪNG CÂY — một tài khoản có `person_id`
@@ -780,7 +783,7 @@ function veBangSau(tk, ds, dsCay, napLai) {
   if (tk.maNgan) {
     const lk = document.createElement('a');
     lk.className = 'qt-di-toi';
-    lk.href = '#' + duongDan('thanh-vien', 'tai-khoan', tk.maNgan);
+    lk.href = '#' + duongDan('quan-tri-he-thong', 'tai-khoan', tk.maNgan);
     lk.textContent = 'Mở trang chi tiết tài khoản ' + tk.maNgan + ' →';
     hop.append(lk);
   }

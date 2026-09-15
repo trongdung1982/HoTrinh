@@ -5,8 +5,17 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, pages/dang-nhap,
 //            pages/quan-tri/khu-kiem-duyet · khu-gia-pha · khu-tai-khoan ·
-//            trang-cay · trang-tai-khoan · trang-chi-tiet
-// Phiên bản: 0.5.0 · Cập nhật: 15/09/2026 (b117)
+//            khu-quan-tri-he-thong · trang-cay · trang-tai-khoan ·
+//            trang-chi-tiet
+// Phiên bản: 0.6.0 · Cập nhật: 15/09/2026 (b118)
+//            0.6.0 (b118) khu thứ tư đổi từ *Sao lưu* (chưa viết) sang
+//            *Quản trị hệ thống* — vẽ bằng `khu-quan-tri-he-thong.js`, vỏ
+//            nạp động sổ tài khoản dời từ chip *Toàn hệ thống* của khu Tài
+//            khoản (`THIET-KE-QUAN-TRI.md` 9.1). Trang chi tiết một tài
+//            khoản (`TRANG`) đi theo, đổi khu cha từ `thanh-vien` sang
+//            `quan-tri-he-thong` — nút "← Quay lại" phải về đúng khu vừa mở
+//            nó ra. *Sao lưu* lùi lại thành một tab bên trong khu này, làm
+//            ở b119.
 //            0.5.0 (b117) khu 2 vẽ bằng `khu-tai-khoan.js` (Tài khoản của
 //            tôi) · trang chi tiết thứ hai `#thanh-vien/tai-khoan/<mã>` ·
 //            huy hiệu ĐƠN CHỜ DUYỆT chuyển sang nút Gia phả — đơn nay xét ở
@@ -55,6 +64,7 @@ import { mountDangNhap } from '../dang-nhap.js';
 import { mountKhuKiemDuyet } from './khu-kiem-duyet.js';
 import { mountKhuGiaPha } from './khu-gia-pha.js';
 import { mountKhuTaiKhoan } from './khu-tai-khoan.js';
+import { mountKhuQuanTriHeThong } from './khu-quan-tri-he-thong.js';
 import { mountTrangCay, MUC_TRANG_CAY } from './trang-cay.js';
 import { mountTrangTaiKhoan, MUC_TRANG_TAI_KHOAN } from './trang-tai-khoan.js';
 import { duongDan } from './trang-chi-tiet.js';
@@ -74,13 +84,18 @@ import { duongDan } from './trang-chi-tiet.js';
  *   nhìn thấy. Từ b117 khu này vẽ bằng `khu-tai-khoan.js`; `khu-thanh-vien.js`
  *   ở lại làm thư viện bảng "tài khoản của một cây" — đổi tên file mã là việc
  *   phải hỏi chủ dự án (`CLAUDE.md` mục 9).
+ *
+ * ⚠ **Khu 4 đổi tên ở b118**: `sao-luu` → `quan-tri-he-thong`, cùng lý do
+ *   trên — `ma` là giao kèo trong `#`, nhưng khu này CHƯA từng viết xong
+ *   (`chuaLam`) nên chưa có link thật nào ngoài kia trỏ vào `#sao-luu`, đổi
+ *   `ma` không làm hỏng gì. Nội dung mới là sổ tài khoản dời từ khu Tài
+ *   khoản; *Sao lưu* trở thành một việc con của khu này ở b119.
  */
 const KHU = [
   { ma: 'gia-pha',    chu: 'Gia phả' },
   { ma: 'thanh-vien', chu: 'Tài khoản' },
   { ma: 'kiem-duyet', chu: 'Kiểm duyệt' },
-  { ma: 'sao-luu',    chu: 'Sao lưu',
-    chuaLam: 'Khu này làm ở bước b108 — xem bản sao lưu và số đếm đối chiếu.' },
+  { ma: 'quan-tri-he-thong', chu: 'Quản trị hệ thống' },
 ];
 
 /**
@@ -94,7 +109,10 @@ const KHU = [
  */
 const TRANG = [
   { khu: 'gia-pha', ma: 'cay', mount: mountTrangCay, muc: MUC_TRANG_CAY },
-  { khu: 'thanh-vien', ma: 'tai-khoan', mount: mountTrangTaiKhoan,
+  // ⚠ `khu: 'quan-tri-he-thong'`, KHÔNG còn `'thanh-vien'` (đổi b118) — trang
+  //   này mở từ sổ tài khoản, và sổ ấy nay sống ở khu Quản trị hệ thống. Để
+  //   khu cũ thì nút "← Quay lại" đưa người xem về nhầm khu.
+  { khu: 'quan-tri-he-thong', ma: 'tai-khoan', mount: mountTrangTaiKhoan,
     muc: MUC_TRANG_TAI_KHOAN },
 ];
 
@@ -245,6 +263,7 @@ function veKhu(than, nutTheoMa, phien) {
   if (khu.ma === 'gia-pha') mountKhuGiaPha(than, phien);
   else if (khu.ma === 'thanh-vien') mountKhuTaiKhoan(than, phien);
   else if (khu.ma === 'kiem-duyet') mountKhuKiemDuyet(than);
+  else if (khu.ma === 'quan-tri-he-thong') mountKhuQuanTriHeThong(than, phien);
   else veKhuChuaLam(than, khu);
 }
 

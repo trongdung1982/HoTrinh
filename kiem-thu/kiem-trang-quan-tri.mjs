@@ -3,10 +3,16 @@
 // Vai trò  : Kiểm TRANG QUẢN TRỊ — `QuanTri.html`, `js/app-quan-tri.js`,
 //            `js/pages/quan-tri/khung.js` · `khu-kiem-duyet.js` ·
 //            `khu-thanh-vien.js` · `khu-tai-khoan-he-thong.js` ·
-//            `khu-tai-khoan.js` · `trang-tai-khoan.js`, và những cửa của
-//            chúng trong `js/services/sb.js` (b98 + b101 + b106 + b109 + b117).
+//            `khu-tai-khoan.js` · `khu-quan-tri-he-thong.js` ·
+//            `trang-tai-khoan.js`, và những cửa của chúng trong
+//            `js/services/sb.js` (b98 + b101 + b106 + b109 + b117 + b118).
 // Chạy     : cd supabase/kiem-thu && node kiem-trang-quan-tri.mjs
-// Phiên bản: 0.8.0 · Cập nhật: 15/09/2026 (b117)
+// Phiên bản: 0.9.0 · Cập nhật: 15/09/2026 (b118)
+//            0.9.0 Sổ tài khoản dời từ chip *Toàn hệ thống* của khu Tài
+//            khoản sang khu RIÊNG *Quản trị hệ thống* (`khu-quan-tri-he-thong.js`,
+//            khu thứ tư — thay chỗ khu `sao-luu` chưa từng viết). Đính chính
+//            PHẦN I (ba phép nạp động) và trang chi tiết một tài khoản
+//            (TRANG đổi khu cha) theo đúng chỗ mới.
 //            0.8.0 PHẦN M — khu Tài khoản của tôi + trang chi tiết một tài
 //            khoản; phép "sb-gia.mjs có đủ mọi tên trang Quản trị nhập từ
 //            sb.js" (chỗ đã làm trắng cả bộ ảnh HAI lần). Đính chính bốn phép
@@ -94,6 +100,8 @@ const JS_HT = doc('../js/pages/quan-tri/khu-tai-khoan-he-thong.js');
 // b117 — khu 2 vẽ bằng file này; `khu-thanh-vien.js` ở lại làm thư viện bảng.
 const JS_KTK = doc('../js/pages/quan-tri/khu-tai-khoan.js');
 const JS_TTK = doc('../js/pages/quan-tri/trang-tai-khoan.js');
+// b118 — khu 4 (Quản trị hệ thống), vỏ nạp động JS_HT ở trên.
+const JS_QTHT = doc('../js/pages/quan-tri/khu-quan-tri-he-thong.js');
 // Đọc sớm ở đây (PHẦN L đọc lại): PHẦN H cần nó trước khi tới PHẦN L.
 const JS_TC_SOM = doc('../js/pages/quan-tri/trang-cay.js');
 const SQL_08 = boGhiChu(doc('../luoc-do/08-kiem-duyet.sql'));
@@ -316,7 +324,7 @@ kiem('khung không tự lọc quyền bằng vaiTro phía trình duyệt',
 
 // Bốn khu, và `ma` của chúng là giao kèo với người dùng: nó đi vào `#` của
 // địa chỉ, nên đổi một chữ là mọi link đã gửi đi hỏng.
-for (const ma of ['gia-pha', 'thanh-vien', 'kiem-duyet', 'sao-luu']) {
+for (const ma of ['gia-pha', 'thanh-vien', 'kiem-duyet', 'quan-tri-he-thong']) {
   kiem('có khu ' + ma, new RegExp("ma: '" + ma + "'").test(JS_KH),
        'thiếu khu này trong danh sách KHU');
 }
@@ -347,14 +355,15 @@ kiem('số 0 thì không vẽ huy hiệu',
      /if\s*\(!nut\s*\|\|\s*!so\)\s*return/.test(JS_KH),
      'vẽ cả số 0');
 
-// Ba khu chưa viết phải nói thẳng chúng làm ở bước nào — bảng trống nói
-// "không có dữ liệu", mà sự thật là "chưa ai viết màn hình này".
-// b106 viết xong khu Tài khoản, nên chỉ còn MỘT khu mang câu `chuaLam` (Sao
-// lưu → b108). Con số này giảm dần theo từng bước, và nó phải giảm ĐÚNG LÚC:
-// một khu đã viết mà vẫn còn `chuaLam` thì `veKhu()` vẽ câu "chưa làm" đè lên
-// màn hình vừa viết xong.
-kiem('một khu chưa làm còn lại, và nó nói rõ làm ở bước nào',
-     (JS_KH.match(/chuaLam:/g) || []).length === 1, 'sai số khu chưa làm');
+// Bốn khu phải nói thẳng khu nào chưa viết — bảng trống nói "không có dữ
+// liệu", mà sự thật là "chưa ai viết màn hình này". Con số này giảm dần theo
+// từng bước, và nó phải giảm ĐÚNG LÚC: một khu đã viết mà vẫn còn `chuaLam`
+// thì `veKhu()` vẽ câu "chưa làm" đè lên màn hình vừa viết xong.
+// ⚠ b118: khu thứ tư đổi tên `sao-luu` → `quan-tri-he-thong` VÀ được viết
+//   luôn (sổ tài khoản dời sang) — không còn khu nào mang câu `chuaLam` nữa.
+//   *Sao lưu* lùi thành một việc con bên trong khu này, làm ở b119.
+kiem('không còn khu nào ở trạng thái "chưa làm"',
+     (JS_KH.match(/chuaLam:/g) || []).length === 0, 'sai số khu chưa làm');
 
 // ⚠ Regex phải dừng ở dấu `}` của chính mục ấy. Bản đầu quét 120 ký tự bất
 //   kể ranh giới, nên nó vớ luôn `chuaLam` của MỤC SAU và báo hỏng oan —
@@ -368,6 +377,12 @@ kiem('khu Tài khoản đã nối vào khung, không còn câu "chưa làm"',
      /mountKhuTaiKhoan/.test(JS_KH) &&
      !/'thanh-vien'[^}]*chuaLam/.test(JS_KH),
      'khu 2 chưa nối, hoặc còn câu chưa làm đè lên nó');
+
+// b118 — khu thứ tư đổi tên và được viết.
+kiem('khu Quản trị hệ thống đã nối vào khung, không còn câu "chưa làm"',
+     /mountKhuQuanTriHeThong/.test(JS_KH) &&
+     !/'quan-tri-he-thong'[^}]*chuaLam/.test(JS_KH),
+     'khu 4 chưa nối, hoặc còn câu chưa làm đè lên nó');
 
 // ⚠ `ma` là giao kèo trong `#` của địa chỉ, chữ trên thanh là thứ người đọc.
 //   b106 tách hai thứ ấy có chủ ý: `thanh-vien` giữ nguyên để link cũ không
@@ -621,27 +636,26 @@ for (const ten of ['ds_tai_khoan_he_thong', 'ds_cay_cua_tai_khoan']) {
        'create or replace không đổi được danh sách cột trả về');
 }
 
-// Tấm lọc thứ tư phải GÁC bằng cờ, không phải hiện cho mọi người rồi để máy
-// chủ trả mảng rỗng — bảng rỗng không nói được "bạn không có quyền".
-// ⚠ Đính chính b117 cho ba phép dưới: tấm lọc thứ tư thành CHIP *Toàn hệ
-//   thống* của `khu-tai-khoan.js`, cùng luật gác, cùng đường nạp động.
-kiem('chip Toàn hệ thống chỉ hiện cho người có cờ Quản trị hệ thống',
-     /ma: 'hethong'[\s\S]{0,80}chiQuanTriHeThong: true/.test(JS_KTK) &&
-     /chiQuanTriHeThong && !coHeThong/.test(boGhiChuJs(JS_KTK)),
-     'chip hiện cho cả người không có cờ');
-
-// ⚠ NẠP ĐỘNG. Lý do cũ (vòng import với `khu-thanh-vien.js`) không còn: file
-//   sổ đăng ký nhập `khu-thanh-vien.js`, không nhập `khu-tai-khoan.js`. Lý do
-//   còn lại vẫn đủ: chỉ một hạng người mở được chip ấy, nạp sẵn cho mọi người
-//   là bắt họ tải 1.300 dòng họ không có cửa dùng.
-kiem('khu Tài khoản nạp sổ Toàn hệ thống bằng import() ĐỘNG',
-     /await import\('\.\/khu-tai-khoan-he-thong\.js'\)/.test(JS_KTK) &&
-     !/^import[\s\S]*?from\s+'\.\/khu-tai-khoan-he-thong\.js'/m.test(JS_KTK),
+// ⚠ Đính chính b118 cho ba phép dưới: sổ Toàn hệ thống không còn là chip của
+//   `khu-tai-khoan.js` — nó là khu RIÊNG trên thanh điều hướng
+//   (`khu-quan-tri-he-thong.js`), và app này không tự lọc nav bằng cờ (cùng
+//   luật `khu-kiem-duyet.js`) — máy chủ lọc, `mountToanHeThong()` đã tự nói
+//   rõ "máy chủ không trả về tài khoản nào" khi người xem không có cờ ấy. Nên
+//   không còn phép "chỉ hiện cho người có cờ" ở lớp giao diện.
+//
+// ⚠ NẠP ĐỘNG vẫn giữ nguyên: chỉ một hạng người có việc thật ở khu này, nạp
+//   sẵn cho mọi người là bắt họ tải 1.300 dòng họ không có cửa dùng.
+kiem('khu Quản trị hệ thống nạp sổ tài khoản bằng import() ĐỘNG',
+     /await import\('\.\/khu-tai-khoan-he-thong\.js'\)/.test(JS_QTHT) &&
+     !/^import[\s\S]*?from\s+'\.\/khu-tai-khoan-he-thong\.js'/m.test(JS_QTHT),
      'nạp tĩnh — mọi người phải tải phần chỉ Quản trị hệ thống dùng');
 
 kiem('file nạp hụt thì NÓI RA, không đứng im ở chữ "Đang đọc…"',
-     /catch\s*\([\s\S]{0,200}veLoi\(/.test(JS_KTK),
+     /catch\s*\([\s\S]{0,200}veLoi\(/.test(JS_QTHT),
      'không bắt lỗi nạp module');
+
+kiem('khu Tài khoản KHÔNG còn chip/đường nạp Toàn hệ thống (dời hẳn sang khu riêng)',
+     !/khu-tai-khoan-he-thong\.js/.test(JS_KTK), 'khu Tài khoản còn giữ lại đường nạp cũ');
 
 {
   const thieu = classThieuTrongCss(JS_HT, CSS);
@@ -1134,8 +1148,10 @@ for (const [ten, ma] of [['khu-tai-khoan.js', JS_KTK], ['trang-tai-khoan.js', JS
        thieu.length === 0, 'thiếu định nghĩa: ' + thieu.join(', '));
 }
 
-kiem('khung đăng ký trang chi tiết một tài khoản dưới khu thanh-vien',
-     /khu:\s*'thanh-vien',\s*ma:\s*'tai-khoan',\s*mount:\s*mountTrangTaiKhoan/.test(JS_KH),
+// ⚠ Đính chính b118: khu cha đổi từ `thanh-vien` sang `quan-tri-he-thong` —
+//   sổ tài khoản (nơi mở trang chi tiết này ra) đã dời sang khu ấy.
+kiem('khung đăng ký trang chi tiết một tài khoản dưới khu quan-tri-he-thong',
+     /khu:\s*'quan-tri-he-thong',\s*ma:\s*'tai-khoan',\s*mount:\s*mountTrangTaiKhoan/.test(JS_KH),
      'không thấy dòng đăng ký trong TRANG');
 
 kiem('trang tài khoản tìm tài khoản theo MÃ NGẮN trong địa chỉ',
@@ -1201,6 +1217,34 @@ kiem('layPhien() mang userId · duocTaoCay, không thêm vòng mạng',
     kiem('sb-gia.mjs có đủ mọi tên trang Quản trị nhập từ sb.js',
          thieu.length === 0, 'thiếu: ' + thieu.join(', '));
   }
+}
+
+// ============================================================
+// PHẦN N — b118: khu Quản trị hệ thống (khu-quan-tri-he-thong.js)
+// ============================================================
+console.log('\nPHẦN N — khu Quản trị hệ thống js/pages/quan-tri/khu-quan-tri-he-thong.js');
+
+kiem('file có khối ghi chú đầu file đúng khuôn',
+     ghiChuDauFile(JS_QTHT), 'thiếu Vai trò / Lớp / Phụ thuộc / Phiên bản');
+
+kiem('file không chạm window.supabase — luật MỘT CỬA',
+     motCua(JS_QTHT), 'file gọi thẳng máy chủ');
+
+kiem('file không dùng alert/confirm',
+     !/\b(alert|confirm)\s*\(/.test(boGhiChuJs(JS_QTHT)),
+     'app này không dùng hộp thoại của trình duyệt ở đâu cả');
+
+kiem('file KHÔNG kéo theo bộ vẽ sơ đồ',
+     !/from\s+'\.\.\/(tree-view|khoi-dong)\.js'/.test(boGhiChuJs(JS_QTHT)),
+     'import bộ vẽ — trang Quản trị cố ý không nạp cây');
+
+kiem('file không hỏi bề ngang màn hình trong JS',
+     motBoMa(JS_QTHT), 'có nhánh riêng theo innerWidth/matchMedia');
+
+{
+  const thieu = classThieuTrongCss(JS_QTHT, CSS);
+  kiem('mọi class qt- dùng trong file đều có trong quan-tri.css',
+       thieu.length === 0, 'thiếu định nghĩa: ' + thieu.join(', '));
 }
 
 // ============================================================
@@ -1313,10 +1357,11 @@ console.log('\nPHẦN G — kiểm chứng ngược (bẻ gãy có chủ ý)');
 // G13 — nối hai file bằng import TĨNH cả hai chiều. Vòng import trong ES
 // Modules gốc không ném lỗi lúc nạp: nó để một hàm thành `undefined` và chỉ
 // vỡ ra lúc ai đó bấm đúng cái nút gọi hàm ấy.
-// ⚠ Đính chính b117: gieo vào `khu-tai-khoan.js`, nơi lời nạp động nay đứng.
+// ⚠ Đính chính b118: gieo vào `khu-quan-tri-he-thong.js`, nơi lời nạp động
+//   nay đứng (dời khỏi `khu-tai-khoan.js`).
 {
   const hong13 = "import { mountToanHeThong } from './khu-tai-khoan-he-thong.js';\n" +
-                 JS_KTK.replace(/await import\('\.\/khu-tai-khoan-he-thong\.js'\)/,
+                 JS_QTHT.replace(/await import\('\.\/khu-tai-khoan-he-thong\.js'\)/,
                                'null');
   kiem('bắt được việc nạp tĩnh sổ Toàn hệ thống',
        !/await import\('\.\/khu-tai-khoan-he-thong\.js'\)/.test(hong13) ||

@@ -5,7 +5,11 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, config, quan-tri/trang-chi-tiet,
 //            quan-tri/khu-thanh-vien (mẩu vẽ + `trangThaiDong`)
-// Phiên bản: 0.1.0 · Cập nhật: 15/09/2026 (b117)
+// Phiên bản: 0.2.0 · Cập nhật: 15/09/2026 (b118)
+//            0.2.0 Khu cha đổi từ `thanh-vien` sang `quan-tri-he-thong` —
+//            file này tự KHÔNG hardcode tên khu (nhận `ctx.hashQuayVe` /
+//            `ctx.chuQuayVe` từ `khung.js`), chỉ câu "Về khu …" ở nhánh
+//            "không thấy tài khoản" là phải sửa tay.
 // ============================================================
 //
 // ⚠ **Tài khoản lấy theo MÃ NGẮN trong địa chỉ**, không theo `userId`. Mã ngắn
@@ -14,8 +18,8 @@
 //   được link mình nhận có đúng người không.
 //
 // ⚠ **Trang này KHÔNG có nút nào**, và đó là luật 5b② chứ không phải việc còn
-//   thiếu. Mọi thứ ở đây hoặc là cờ cấp tài khoản (đã có chỗ sửa ở chip *Toàn
-//   hệ thống*), hoặc là quyền trong MỘT cây — mà chỗ sửa quyền trong một cây là
+//   thiếu. Mọi thứ ở đây hoặc là cờ cấp tài khoản (đã có chỗ sửa ở khu *Quản
+//   trị hệ thống*), hoặc là quyền trong MỘT cây — mà chỗ sửa quyền trong một cây là
 //   bảng của cây ấy, nơi tên cây đứng ngay cạnh ô đang sửa. Mỗi dòng ở mục
 //   *Các gia phả liên quan* là một liên kết sang đúng bảng ấy. Chép năm việc
 //   đổi quyền sang đây là dựng chỗ thứ ba để chúng lệch nhau.
@@ -75,7 +79,7 @@ export async function mountTrangTaiKhoan(el, ctx) {
       : 'Sổ tài khoản không có mã ấy — hoặc bạn đang đăng nhập bằng một tài ' +
         'khoản không phải Quản trị hệ thống, và chỉ Quản trị hệ thống xem được ' +
         'tài khoản của người khác.',
-      ctx.hashQuayVe, 'Về khu Tài khoản');
+      ctx.hashQuayVe, 'Về khu Quản trị hệ thống');
     return;
   }
 
@@ -139,7 +143,7 @@ function veTongQuan(nd, tk) {
   ghi.className = 'qt-ghi qt-ghi-khoi';
   ghi.textContent =
     'Trang này chỉ để xem. Hai cờ cấp tài khoản, họ tên, mời vào cây và xoá ' +
-    'tài khoản: bấm tên tài khoản ở chip Toàn hệ thống của khu Tài khoản. Vai ' +
+    'tài khoản: bấm tên tài khoản ở sổ đăng ký của khu Quản trị hệ thống. Vai ' +
     'trò và mã người trong MỘT gia phả: mục Các gia phả liên quan, bấm tên gia phả.';
   nd.append(ghi);
 }

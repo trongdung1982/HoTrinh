@@ -2,13 +2,16 @@
 // giapha-supabase · js/pages/quan-tri/khu-tai-khoan.js
 // Vai trò  : Khu 2 của trang Quản trị — TÀI KHOẢN CỦA TÔI: hồ sơ · quyền cấp
 //            hệ thống · các gia phả tôi tham gia (kèm nút Đề xuất mã người) ·
-//            đổi mật khẩu. Riêng Quản trị hệ thống có thêm chip *Toàn hệ
-//            thống* (sổ đăng ký cả phần mềm, file bên cạnh).
+//            đổi mật khẩu.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, config, quan-tri/khu-thanh-vien (mẩu vẽ + đơn đề
-//            xuất), quan-tri/trang-chi-tiet, quan-tri/khu-tai-khoan-he-thong
-//            (nạp động)
-// Phiên bản: 0.1.0 · Cập nhật: 15/09/2026 (b117)
+//            xuất), quan-tri/trang-chi-tiet
+// Phiên bản: 0.2.0 · Cập nhật: 15/09/2026 (b118)
+//            0.2.0 Chip *Toàn hệ thống* rời khỏi khu này, sang khu Quản trị
+//            hệ thống riêng (`khu-quan-tri-he-thong.js`) —
+//            `THIET-KE-QUAN-TRI.md` 9.1 đã hẹn "tạm ở khu 2 tới b118". Khu
+//            này giờ chỉ còn MỘT thứ để vẽ nên bỏ luôn hàng chip, `chipDangMo`
+//            và `napHeThong()` — một khu một thứ thì không cần tấm lọc.
 // ============================================================
 //
 // ═══ VÌ SAO KHU NÀY ĐỔI RUỘT ═══
@@ -45,25 +48,6 @@ import {
 import { duongDan } from './trang-chi-tiet.js';
 
 /**
- * Hai chip. Chip thứ hai GÁC BẰNG CỜ, không hiện cho mọi người rồi để máy chủ
- * trả mảng rỗng — bảng rỗng không nói được "bạn không có quyền".
- *
- * ⚠ Chỉ còn một chip thì KHÔNG vẽ hàng chip: một hàng có đúng một nút nói sai
- *   một câu — rằng có chỗ khác để đi. Cùng luật với ô chọn cây b111b.
- *
- * ⚠ Chip *Toàn hệ thống* ở lại đây TỚI b118, rồi chuyển sang khu Quản trị hệ
- *   thống (`THIET-KE-QUAN-TRI.md` 9.1). Chữ trên chip giữ nguyên để link và
- *   thói quen của người dùng không đổi hai lần.
- */
-const CHIP = [
-  { ma: 'cua-toi', chu: 'Tài khoản của tôi' },
-  { ma: 'hethong', chu: 'Toàn hệ thống', chiQuanTriHeThong: true },
-];
-
-/** Chip đang mở — module-level, giữ nguyên qua các lần vẽ lại. */
-let chipDangMo = 'cua-toi';
-
-/**
  * Cây đang mở khung Đề xuất — giữ qua `napLai()`. Nộp đơn xong thì cả khu vẽ
  * lại; không giữ thì khung đóng sập đúng lúc người ta cần đọc *"Đang chờ
  * xét"*, và trông như cú bấm chẳng làm gì.
@@ -85,9 +69,9 @@ export async function mountKhuTaiKhoan(el, phienVao) {
   h.className = 'qt-tua';
   h.textContent = 'Tài khoản';
 
-  // ⚠ Dòng danh tính đứng TRƯỚC mọi thứ, ở cả hai chip (b109e). Chip *Toàn hệ
-  //   thống* là chỗ đổi được cờ của người khác — nhầm tài khoản đang đăng
-  //   nhập ở đó là nhầm ở chỗ nguy hiểm nhất app.
+  // ⚠ Dòng danh tính đứng TRƯỚC mọi thứ (b109e) — trang này là chỗ đọc quyền
+  //   cấp hệ thống của chính mình, nhầm tài khoản đang đăng nhập ở đó là
+  //   nhầm ở chỗ dễ hiểu sai nhất app.
   const ai = document.createElement('p');
   ai.className = 'qt-danh-tinh';
 
@@ -118,70 +102,9 @@ function dongDanhTinh(phien) {
 }
 
 function veThan(than, phien) {
-  const coHeThong = Boolean(phien.laQuanTriHeThong);
-  // Cờ tắt đi giữa chừng thì đừng đứng ở một chip không còn tồn tại.
-  if (chipDangMo === 'hethong' && !coHeThong) chipDangMo = 'cua-toi';
-
   than.innerHTML = '';
   than.className = '';
-
-  const napLai = () => veThan(than, phien);
-
-  const chip = CHIP.filter((c) => !(c.chiQuanTriHeThong && !coHeThong));
-  if (chip.length > 1) than.append(veHangChip(chip, napLai));
-
-  const noiDung = document.createElement('div');
-  than.append(noiDung);
-
-  if (chipDangMo === 'hethong') napHeThong(noiDung, napLai);
-  else veCuaToi(noiDung, phien, napLai);
-}
-
-function veHangChip(chip, napLai) {
-  const hang = document.createElement('div');
-  hang.className = 'qt-chips';
-  for (const c of chip) {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'qt-chip' + (c.ma === chipDangMo ? ' dang-mo' : '');
-    b.textContent = c.chu;
-    if (c.ma === chipDangMo) b.setAttribute('aria-pressed', 'true');
-    b.addEventListener('click', () => {
-      if (chipDangMo === c.ma) return;
-      chipDangMo = c.ma;
-      napLai();
-    });
-    hang.append(b);
-  }
-  return hang;
-}
-
-/**
- * Chip *Toàn hệ thống* — cả phần vẽ nằm ở `khu-tai-khoan-he-thong.js`, tới đây
- * bằng `import()` ĐỘNG: chỉ một hạng người mở được nó, nạp sẵn cho mọi người
- * là bắt họ tải thứ họ không có cửa dùng.
- *
- * ⚠ File nạp hụt (sai chữ hoa trong tên — GitHub Pages phân biệt, Windows thì
- *   không) phải NÓI RA, đừng đứng im ở chữ "Đang đọc…".
- */
-async function napHeThong(than, napLai) {
-  const cho = document.createElement('div');
-  cho.className = 'qt-cho';
-  cho.textContent = 'Đang đọc sổ tài khoản…';
-  than.append(cho);
-
-  let mo;
-  try {
-    mo = await import('./khu-tai-khoan-he-thong.js');
-  } catch (e) {
-    cho.remove();
-    than.append(veLoi('Không nạp được phần Toàn hệ thống: ' + (e && e.message
-      ? e.message : 'lỗi không rõ'), napLai));
-    return;
-  }
-
-  cho.remove();
-  await mo.mountToanHeThong(than, napLai);
+  veCuaToi(than, phien, () => veThan(than, phien));
 }
 
 // ============================================================
