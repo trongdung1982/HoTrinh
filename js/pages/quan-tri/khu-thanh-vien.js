@@ -7,7 +7,10 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, config, quan-tri/o-goi-y,
 //            pages/quan-tri/khu-tai-khoan-he-thong (nạp động)
-// Phiên bản: 0.11.0 · Cập nhật: 14/09/2026 21:40 (b111c)
+// Phiên bản: 0.12.0 · Cập nhật: 15/09/2026 (b116)
+//            0.12.0 `veBang()` (bảng tài khoản của một cây) nay XUẤT RA —
+//            `trang-cay.js` dùng lại nguyên vẹn cho ba mục *Thành viên &
+//            quyền · Lời mời · Đơn xin vào*. Không đổi hành vi một dòng nào.
 //            0.11.0 (b111c) ĐƠN ĐỀ XUẤT gắn mã người. Dòng của chính
 //            mình đổi từ **khoá câm** sang **khoá kèm nút Đề xuất**, và
 //            khu mọc thêm khối XÉT ĐƠN theo cây đang chọn. ⚠ Luật "không
@@ -727,7 +730,18 @@ function veThanhLoc(soCho, coHeThong, doiLoc) {
 // Bảng
 // ============================================================
 
-function veBang(ds, phien, cay, duocDoiQuyen, napLai, bo) {
+/**
+ * Bảng tài khoản của MỘT cây — cột đổi vai · gắn người · tin cậy · gỡ · bàn
+ * giao, mỗi dòng thích ứng theo `trangThaiDong()`.
+ *
+ * ⚠ Xuất ra để `trang-cay.js` (b116) dùng lại nguyên vẹn cho ba mục *Thành
+ *   viên & quyền · Lời mời · Đơn xin vào* — khác `mountKhuThanhVien()` (khu
+ *   này), hàm ở đây KHÔNG có ô chọn cây hay tấm lọc *Toàn hệ thống*: người gọi
+ *   tự lọc `ds` theo `trangThaiDong()` rồi truyền `cay` đã biết trước từ địa
+ *   chỉ. Không viết bảng thứ hai — cùng năm việc, cùng luật khoá nút, cùng chỗ
+ *   dễ vỡ (`veMotDong()` đã canh) chỉ nên có một bản.
+ */
+export function veBang(ds, phien, cay, duocDoiQuyen, napLai, bo) {
   // Bảng rộng phải tự cuộn TRONG khung của nó, không kéo phình cả lưới hai cột
   // của trang. Cùng cách hai khu kia làm.
   const khung = document.createElement('div');

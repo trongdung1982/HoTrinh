@@ -5,7 +5,18 @@
 //            người lạ thấy tên", và ô đặt cây mặc định của hệ thống.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, config, utils/id, quan-tri/o-goi-y
-// Phiên bản: 0.7.2 · Cập nhật: 14/09/2026 21:10 (b111c)
+// Phiên bản: 0.8.0 · Cập nhật: 15/09/2026 (b116)
+//            0.8.0 BỐN CHIP thay bảng phẳng duy nhất — *Tôi quản lý · Tôi là
+//            thành viên · Có thể xin vào · Tạo gia phả mới*, đúng prototype
+//            quantri3. Không viết bảng thứ hai: ba chip đầu lọc CÙNG `ds` đã
+//            đọc một lần rồi vẽ lại đúng `veBang()`/`veDong()` cũ — không đổi
+//            một dòng logic của Mời/Xoá/công tắc/Nhận-Từ chối. Chip *Tạo gia
+//            phả mới* thay nút+modal cũ bằng form NGAY TRONG chip (khớp
+//            prototype); `veHangTao()`/`veHopTaoCay()`/`veDaDung()` cũ xoá,
+//            thay bằng `veTamTaoMoi()`/`veTaoXong()`. Cột *Cây làm việc* thêm
+//            **Rời khỏi gia phả** (thành viên đã duyệt, không phải chủ) và
+//            **Rút đơn** (đã nộp đơn) — `luoc-do/22`. Tên cây trong bảng nay
+//            là liên kết sang `#gia-pha/cay/<mã>` (b115).
 //            0.7.2 ⚠ VÁ lỗi chủ dự án báo 14/09/2026: cột *Cây làm việc*
 //            hỏi `duocMoi` **trước** `coTheXem`. Bản cũ không bao giờ vẽ
 //            nút Nhận cho Quản trị hệ thống (xem được mọi cây nhờ cờ) hay
@@ -76,13 +87,14 @@
 import {
   layDanhSachGiaPha, layCayMacDinh, datCayMacDinh,
   datChoNguoiLaThayTen, chonGiaPha, xinVaoCay, taoGiaPhaMoi,
-  moiVaoCay, nhanLoiMoi, tuChoiLoiMoi,
+  moiVaoCay, nhanLoiMoi, tuChoiLoiMoi, rutDonXinVao, roiCay,
   timTaiKhoan, timNguoiTrongCay,
   xinXoaCay, huyXinXoaCay, duyetXoaCay, phucHoiCay, donThungRac, xoaAnhThat,
 } from '../../services/sb.js';
 import { vaiTroBangChu } from '../../config.js';
 import { sinhMaCay } from '../../utils/id.js';
 import { ganGoiY, dongTaiKhoan, dongNguoi } from './o-goi-y.js';
+import { duongDan } from './trang-chi-tiet.js';
 
 /**
  * Vẽ khu Gia phả.
@@ -128,6 +140,7 @@ async function nap(than, phien) {
     return;
   }
 
+  const napLai = () => nap(than, phien);
   const tatCa = kq.ds || [];
 
   // ⚠ Cây trong thùng rác TÁCH HẲN khỏi bảng chính. Để nó ở cả hai chỗ là
@@ -137,43 +150,93 @@ async function nap(than, phien) {
   const ds = tatCa.filter((c) => !c.daXoaLuc);
   const dsRac = tatCa.filter((c) => c.daXoaLuc);
 
-  // ⚠ Nút này đứng TRƯỚC nhánh "danh sách rỗng" bên dưới, và đó là chỗ nó
-  //   phải đứng: người vừa được cấp quyền dựng cây mà chưa có chân ở đâu cả
-  //   nhìn thấy đúng một màn hình trống — nếu nút nằm cạnh bảng thì họ không
-  //   có nút.
-  than.append(veHangTao(() => nap(than, phien)));
-
   if (phien.laQuanTriHeThong) {
-    than.append(veOCayMacDinh(ds, cayMacDinh, () => nap(than, phien)));
+    than.append(veOCayMacDinh(ds, cayMacDinh, napLai));
   }
 
-  if (!ds.length && dsRac.length) {
-    // Mọi cây người này thấy đều đang nằm trong thùng rác — cảnh chỉ Quản trị
-    // hệ thống gặp được. Bảng chính trống, nhưng câu "chưa có gia phả nào"
-    // bên dưới sẽ nói sai hẳn, nên nhảy thẳng xuống khối Thùng rác.
-    than.append(veKhoiThungRac(dsRac, () => nap(than, phien)));
-    return;
+  // ⚠ BA NHÓM, MỘT `ds` ĐÃ ĐỌC — không hỏi máy chủ thêm lần nào cho bốn chip.
+  //   Mỗi dòng rơi vào ĐÚNG MỘT nhóm (loại trừ nhau), theo thứ tự xét:
+  //     · quản lý  — chủ cây HOẶC được phong `quan_tri`;
+  //     · thành viên — còn lại, đã có vai (xem/sửa) HOẶC đang là lời mời chờ
+  //       nhận (`duocMoi`) — cùng một câu hỏi "tôi có/đang có chân ở đây";
+  //     · có thể xin vào — chưa có vai, chưa được mời (`daNopDon` vẫn rơi vào
+  //       đây, `veOThaoTac()` tự vẽ đúng trạng thái "đã nộp đơn").
+  const dsQuanLy = ds.filter((c) => c.toiLaChu || c.vaiCuaToi === 'quan_tri');
+  const dsThanhVienChip = ds.filter((c) =>
+    !dsQuanLy.includes(c) && (c.vaiCuaToi || c.duocMoi));
+  const dsCoTheXin = ds.filter((c) => !c.vaiCuaToi && !c.duocMoi);
+
+  than.append(veKhoiChip(phien, cayMacDinh, dsQuanLy, dsThanhVienChip, dsCoTheXin, napLai));
+
+  if (dsRac.length) than.append(veKhoiThungRac(dsRac, napLai));
+}
+
+// ============================================================
+// Bốn chip — Tôi quản lý · Tôi là thành viên · Có thể xin vào · Tạo mới
+// ============================================================
+
+const CHIP = [
+  { ma: 'manage', chu: 'Tôi quản lý' },
+  { ma: 'member', chu: 'Tôi là thành viên' },
+  { ma: 'available', chu: 'Có thể xin vào' },
+  { ma: 'create', chu: 'Tạo gia phả mới' },
+];
+
+/** Chip đang mở — module-level, giữ nguyên qua các lần `napLai()`. */
+let chipDangMo = 'manage';
+
+function veKhoiChip(phien, cayMacDinh, dsQuanLy, dsThanh, dsCoThe, napLai) {
+  const box = document.createElement('div');
+
+  const hang = document.createElement('div');
+  hang.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px';
+  for (const c of CHIP) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    const dangChon = c.ma === chipDangMo;
+    b.textContent = c.chu;
+    b.style.cssText =
+      'padding:8px 14px;font:inherit;font-size:13px;border-radius:9px;' +
+      'cursor:pointer;touch-action:manipulation;' +
+      'border:1px solid ' + (dangChon ? '#2a2622' : '#e6e0d8') + ';' +
+      'background:' + (dangChon ? '#2a2622' : '#faf8f5') + ';' +
+      'color:' + (dangChon ? '#fffdf9' : '#2a2622') + ';' +
+      'font-weight:' + (dangChon ? '600' : '400');
+    b.addEventListener('click', () => {
+      if (chipDangMo === c.ma) return;
+      chipDangMo = c.ma;
+      napLai();
+    });
+    hang.append(b);
+  }
+  box.append(hang);
+
+  if (chipDangMo === 'manage') {
+    box.append(veTamDs(dsQuanLy, cayMacDinh, phien, napLai,
+      'Bạn chưa quản lý gia phả nào — làm chủ hoặc được phong Quản trị một ' +
+      'cây thì cây ấy hiện ở đây.'));
+  } else if (chipDangMo === 'member') {
+    box.append(veTamDs(dsThanh, cayMacDinh, phien, napLai,
+      'Bạn chưa là thành viên của gia phả nào khác.'));
+  } else if (chipDangMo === 'available') {
+    box.append(veTamDs(dsCoThe, cayMacDinh, phien, napLai,
+      'Không có gia phả nào khác để xin vào lúc này.'));
+  } else {
+    box.append(veTamTaoMoi(napLai));
   }
 
+  return box;
+}
+
+/** Ba chip đầu đều vẽ đúng MỘT bảng — không viết bảng thứ hai. */
+function veTamDs(ds, cayMacDinh, phien, napLai, chuRong) {
   if (!ds.length) {
-    // ⚠ Câu này nói ĐÚNG hai điều cùng lúc, và cả hai đều là sự thật của máy
-    //   chủ: người này chưa là thành viên cây nào, VÀ chưa có cây nào bật
-    //   công tắc cho người lạ thấy tên. Đừng rút gọn thành "không có gia phả
-    //   nào" — hệ thống có cây, chỉ là chưa cây nào mở tên ra.
     const r = document.createElement('div');
     r.className = 'qt-chua-lam';
-    r.textContent =
-      'Bạn chưa là thành viên của gia phả nào, và hiện chưa có gia phả nào ' +
-      'mở tên cho người ngoài xem. Hãy liên hệ người quản lý gia phả bạn muốn vào.';
-    than.append(r);
-    return;
+    r.textContent = chuRong;
+    return r;
   }
-
-  than.append(veBang(ds, cayMacDinh, phien, () => nap(than, phien)));
-
-  if (dsRac.length) {
-    than.append(veKhoiThungRac(dsRac, () => nap(than, phien)));
-  }
+  return veBang(ds, cayMacDinh, phien, napLai);
 }
 
 // ============================================================
@@ -242,9 +305,13 @@ function veDong(c, cayMacDinh, phien, napLai) {
   const tr = document.createElement('tr');
   tr.style.cssText = 'border-bottom:1px solid #f2eee8;vertical-align:top';
 
-  // — Tên cây, kèm hai huy hiệu trạng thái —
-  const oTen = o('', 'padding:10px;font-weight:600;color:#2a2622');
-  oTen.textContent = c.ten || '(chưa đặt tên)';
+  // — Tên cây, liên kết sang trang chi tiết (b115/b116), kèm hai huy hiệu —
+  const oTen = o('', 'padding:10px;font-weight:600');
+  const aTen = document.createElement('a');
+  aTen.className = 'qt-lk';
+  aTen.href = '#' + duongDan('gia-pha', 'cay', c.tenFile);
+  aTen.textContent = c.ten || '(chưa đặt tên)';
+  oTen.append(aTen);
   // ⚠ KHÔNG gắn huy hiệu "Đang mở" ở đây nữa (bỏ 08/09/2026). Dấu tích ở cột
   //   *Cây làm việc* đã nói đúng điều ấy, và nói ở chỗ người ta bấm để đổi.
   //   Hai chỗ cùng nói một tin trên một hàng thì người đọc phải dừng lại hỏi
@@ -364,6 +431,11 @@ function veOThaoTac(c, phien, napLai) {
 
   if (c.coTheXem) {
     td.append(veDauTich(c, phien));
+    // ⚠ CHỦ CÂY không rời được (`roi_cay()` chặn, `luoc-do/22`) — nút chỉ vẽ
+    //   cho người có vai (`vaiCuaToi`) mà không phải chủ. Người xem được cây
+    //   qua QTHT/cây mặc định mà chưa có chân thật (`vaiCuaToi` rỗng) thì
+    //   không có gì để "rời" cả.
+    if (c.vaiCuaToi && !c.toiLaChu) td.append(veNutRoiCay(c, napLai));
     return td;
   }
 
@@ -372,6 +444,7 @@ function veOThaoTac(c, phien, napLai) {
     d.textContent = 'đã nộp đơn, đang chờ duyệt';
     d.style.cssText = 'font-size:12px;color:#8a8078';
     td.append(d);
+    td.append(veNutRutDon(c, napLai));
     return td;
   }
 
@@ -419,6 +492,69 @@ function veKhoiNhanTuChoi(c, td, napLai) {
 
   hop.append(chu, hang);
   return hop;
+}
+
+/**
+ * Nút *Rời khỏi gia phả* — hỏi rồi mới rời, đúng luật "hỏi trước, làm sau"
+ * đã dùng khắp file này. Chỉ vẽ cho người có vai thật, không phải chủ
+ * (`luoc-do/22-rut-don-roi-cay.sql`: `roi_cay()` tự chặn chủ cây).
+ */
+function veNutRoiCay(c, napLai) {
+  const box = document.createElement('div');
+  box.style.cssText = 'margin-top:4px';
+
+  const b = nut('Rời khỏi gia phả', false);
+  b.style.cssText += ';font-size:11px;padding:3px 8px';
+
+  b.addEventListener('click', () => {
+    box.innerHTML = '';
+    const hoi = document.createElement('span');
+    hoi.textContent = 'Rời "' + (c.ten || 'gia phả này') + '"? ';
+    hoi.style.cssText = 'font-size:11px;color:#6a625a';
+
+    const bOk = nut('Rời khỏi', false);
+    bOk.style.cssText += ';font-size:11px;padding:2px 7px;border-color:#a83220;color:#a83220';
+    const bThoi = nut('Thôi', false);
+    bThoi.style.cssText += ';font-size:11px;padding:2px 7px';
+
+    bThoi.addEventListener('click', () => { box.innerHTML = ''; box.append(b); });
+
+    bOk.addEventListener('click', async () => {
+      bOk.disabled = true; bThoi.disabled = true;
+      bOk.textContent = 'Đang rời…';
+      const kq = await roiCay(c.fileId);
+      if (kq.ok) { napLai(); return; }
+      bOk.disabled = false; bThoi.disabled = false;
+      bOk.textContent = 'Rời khỏi';
+      box.append(dongLoi(kq.loi || 'Không rời được.'));
+    });
+
+    box.append(hoi, bOk, bThoi);
+  });
+
+  box.append(b);
+  return box;
+}
+
+/** Nút *Rút đơn* — chỉ trên dòng ĐÃ NỘP ĐƠN (`c.daNopDon`), không phải lời mời. */
+function veNutRutDon(c, napLai) {
+  const box = document.createElement('div');
+  box.style.cssText = 'margin-top:4px';
+
+  const b = nut('Rút đơn', false);
+  b.style.cssText += ';font-size:11px;padding:3px 8px';
+  b.addEventListener('click', async () => {
+    b.disabled = true;
+    b.textContent = 'Đang rút…';
+    const kq = await rutDonXinVao(c.fileId);
+    if (kq.ok) { napLai(); return; }
+    b.disabled = false;
+    b.textContent = 'Rút đơn';
+    box.append(dongLoi(kq.loi || 'Không rút được đơn.'));
+  });
+
+  box.append(b);
+  return box;
 }
 
 /**
@@ -1137,79 +1273,43 @@ function veFormXin(td, c, napLai) {
 }
 
 // ============================================================
-// Dựng gia phả mới
+// Chip *Tạo gia phả mới* — form NGAY TRONG chip, không modal
 // ============================================================
+//
+// ⚠⚠ **CHIP NÀY HIỆN CHO MỌI NGƯỜI, KỂ CẢ NGƯỜI KHÔNG CÓ QUYỀN** — và đó là
+//   yêu cầu viết thành chữ ở điểm dừng b104: *"một tài khoản không được cấp
+//   bấm vào thì bị MÁY CHỦ từ chối, không phải bị JavaScript giấu nút"*.
+//
+//   Không phải chuyện lười. Hai lý do:
+//   · Giấu nút thì người không có quyền **không biết là có thứ để xin** — đúng
+//     cái lỗi mà cả tầng 1 của `THIET-KE-NHIEU-CAY.md` sinh ra để tránh.
+//   · Và giấu nút cám dỗ người viết sau tin rằng cái ẩn là cái được chặn.
+//     Hàng rào thật nằm ở `duoc_tao_cay()` trong `12-tao-cay.sql`, đã đo bằng
+//     REST giả lập (`do-b104.mjs` HR1). Màn hình chỉ chuyển lời từ chối ấy.
+//
+// ⚠ Mã cây điền sẵn bằng `sinhMaCay()` của `utils/id.js`, và **thôi tự điền
+//   ngay khi người dùng gõ tay vào ô mã**. Ghi đè lên chữ người ta vừa gõ là
+//   kiểu hỏng làm người dùng tưởng bàn phím hỏng.
+//
+// ⚠ b116 đổi từ nút+modal sang form NGAY TRONG chip (khớp prototype quantri3:
+//   pane *Tạo gia phả mới* vẽ hộp nhập thẳng, không lớp phủ). Không đổi một
+//   dòng LỆNH nào — vẫn `taoGiaPhaMoi()`, vẫn `sinhMaCay()` tự điền mã.
 
-/** Hàng chứa nút *+ Dựng gia phả mới*, đứng trên cùng khu. */
-function veHangTao(napLai) {
-  const hang = document.createElement('div');
-  hang.style.cssText = 'margin-bottom:16px';
-
-  const b = nut('+ Dựng gia phả mới', false);
-  b.style.cssText += ';padding:7px 14px;font-size:13px';
-  b.addEventListener('click', () => veHopTaoCay(napLai));
-
-  hang.append(b);
-  return hang;
-}
-
-/**
- * Hộp nhập tên · mã · ghi chú, rồi gọi máy chủ.
- *
- * ⚠⚠ **NÚT NÀY HIỆN CHO MỌI NGƯỜI, KỂ CẢ NGƯỜI KHÔNG CÓ QUYỀN** — và đó là
- *   yêu cầu viết thành chữ ở điểm dừng b104: *"một tài khoản không được cấp
- *   bấm vào thì bị MÁY CHỦ từ chối, không phải bị JavaScript giấu nút"*.
- *
- *   Không phải chuyện lười. Hai lý do:
- *   · Giấu nút thì người không có quyền **không biết là có thứ để xin** — đúng
- *     cái lỗi mà cả tầng 1 của `THIET-KE-NHIEU-CAY.md` sinh ra để tránh.
- *   · Và giấu nút cám dỗ người viết sau tin rằng cái ẩn là cái được chặn.
- *     Hàng rào thật nằm ở `duoc_tao_cay()` trong `12-tao-cay.sql`, đã đo bằng
- *     REST giả lập (`do-b104.mjs` HR1). Màn hình chỉ chuyển lời từ chối ấy.
- *
- * ⚠ Mã cây điền sẵn bằng `sinhMaCay()` của `utils/id.js`, và **thôi tự điền
- *   ngay khi người dùng gõ tay vào ô mã**. Ghi đè lên chữ người ta vừa gõ là
- *   kiểu hỏng làm người dùng tưởng bàn phím hỏng.
- */
-function veHopTaoCay(napLai) {
-  const lopPhu = document.createElement('div');
-  lopPhu.style.cssText =
-    'position:fixed;inset:0;background:rgba(42,38,34,.35);z-index:30;' +
-    'display:flex;align-items:center;justify-content:center;padding:16px;' +
-    'font-family:system-ui,sans-serif;color:#2a2622';
-
+function veTamTaoMoi(napLai) {
   const hop = document.createElement('div');
-  hop.setAttribute('role', 'dialog');
-  hop.setAttribute('aria-modal', 'true');
-  hop.style.cssText =
-    'background:#fffdf9;border-radius:14px;padding:18px;box-sizing:border-box;' +
-    'width:100%;max-width:440px;box-shadow:0 8px 32px rgba(42,38,34,.28)';
+  hop.style.cssText = 'max-width:440px';
 
-  const tua = document.createElement('div');
-  tua.textContent = 'Dựng gia phả mới';
-  tua.style.cssText = 'font-size:19px;font-weight:600';
-
-  // ⚠ Câu thứ hai thêm ở b110b, và nó sửa một chỗ dễ hiểu ngược. Bản trước chỉ
-  //   nói *"bạn là người quản trị của nó"* — đọc lên nghe như hễ ai quản trị
-  //   một gia phả là dựng được gia phả mới. Ngược hẳn: quyền dựng cây là một
-  //   CỜ RIÊNG của tài khoản (`tai_khoan.duoc_tao_cay`), tách hẳn khỏi vai
-  //   Quản trị gia phả, và chỉ Quản trị hệ thống cấp. Chủ dự án chốt
-  //   09/09/2026.
-  //
-  // ⚠ Nói ra KHÔNG phải là hỏi trước rồi giấu nút — nút vẫn hiện cho mọi
-  //   người, hàng rào vẫn ở máy chủ. Xem khối chú thích trên hàm này.
   const dan = document.createElement('div');
   dan.textContent =
     'Gia phả mới dựng ra sẽ rỗng, và bạn là chủ kiêm người quản trị của nó. ' +
     'Thêm người đầu tiên ở màn hình sơ đồ. Dựng gia phả là một ' +
     'quyền riêng của tài khoản, do Quản trị hệ thống cấp — quản trị một gia ' +
     'phả có sẵn không đồng nghĩa với dựng được gia phả mới.';
-  dan.style.cssText =
-    'font-size:13px;line-height:1.55;color:#8a8078;margin:6px 0 14px';
+  dan.style.cssText = 'font-size:13px;line-height:1.55;color:#8a8078;margin:0 0 14px';
+  hop.append(dan);
 
   const [oTen, khungTen] = oNhap('Tên gia phả', 'Ví dụ: Họ Lê làng Bắc Ninh');
-  const [oMa, khungMa] = oNhap('Mã gia phả',
-    'Chữ không dấu và số, ví dụ: LEBN');
+  const [oMa, khungMa] = oNhap('Mã gia phả', 'Chữ không dấu và số, ví dụ: LEBN');
   const [oNote, khungNote] = oNhap('Ghi chú (không bắt buộc)', '');
 
   // Mã hiện trên màn hình như một mã, không như một câu chữ.
@@ -1228,100 +1328,76 @@ function veHopTaoCay(napLai) {
   });
 
   const oLoi = document.createElement('div');
-
-  const hang = document.createElement('div');
-  hang.style.cssText = 'display:flex;justify-content:flex-end;gap:8px;margin-top:16px';
-
-  const bHuy = nut('Huỷ bỏ', false);
-  bHuy.style.cssText += ';padding:8px 16px;font-size:13px';
-  const bTao = nut('Dựng', true);
-  bTao.style.cssText += ';padding:8px 18px;font-size:13px';
-
-  function dong() {
-    document.removeEventListener('keydown', phimEsc);
-    lopPhu.remove();
-  }
-  function phimEsc(e) { if (e.key === 'Escape' && !bTao.disabled) dong(); }
-
-  bHuy.addEventListener('click', dong);
-  lopPhu.addEventListener('click', (e) => {
-    if (e.target === lopPhu && !bTao.disabled) dong();
-  });
-  document.addEventListener('keydown', phimEsc);
+  const bTao = nut('Dựng gia phả mới', true);
+  bTao.style.cssText += ';padding:8px 18px;font-size:13px;margin-top:4px';
 
   bTao.addEventListener('click', async () => {
     oLoi.innerHTML = '';
     bTao.disabled = true;
-    bHuy.disabled = true;
     bTao.textContent = 'Đang dựng…';
 
     const kq = await taoGiaPhaMoi(oTen.value, oMa.value.toUpperCase(), oNote.value);
 
-    if (kq.ok) { veDaDung(kq.cay); return; }
+    if (kq.ok) { veTaoXong(hop, kq.cay, napLai); return; }
 
-    // Máy chủ từ chối — nói lý do NGAY TRONG HỘP, đừng đóng hộp rồi báo sau
-    // lưng người ta. Đây cũng là chỗ người không được cấp quyền nghe câu
-    // "chưa được cấp quyền dựng gia phả mới", nguyên văn từ máy chủ.
+    // Máy chủ từ chối — nói lý do NGAY TẠI CHIP, đừng vờ như đã xong. Đây
+    // cũng là chỗ người không được cấp quyền nghe câu "chưa được cấp quyền
+    // dựng gia phả mới", nguyên văn từ máy chủ.
     bTao.disabled = false;
-    bHuy.disabled = false;
-    bTao.textContent = 'Dựng';
+    bTao.textContent = 'Dựng gia phả mới';
     oLoi.append(dongLoi(kq.loi || 'Không dựng được gia phả.'));
   });
 
-  /** Dựng xong: đổi cả ruột hộp, cho đúng một đường đi tiếp. */
-  function veDaDung(cay) {
-    hop.innerHTML = '';
+  hop.append(khungTen, khungMa, khungNote, oLoi, bTao);
+  return hop;
+}
 
-    const t = document.createElement('div');
-    t.textContent = 'Đã dựng xong';
-    t.style.cssText = 'font-size:19px;font-weight:600';
+/** Dựng xong: đổi cả ruột chip, cho đúng một đường đi tiếp. */
+function veTaoXong(hop, cay, napLai) {
+  hop.innerHTML = '';
 
-    const c = document.createElement('div');
-    c.textContent =
-      '“' + (cay.ten || '') + '” (mã ' + (cay.maCay || '') + ') nay là gia phả ' +
-      'của bạn, và đang rỗng. Mở nó ra để thêm người đầu tiên.';
-    c.style.cssText = 'font-size:13px;line-height:1.55;color:#8a8078;margin-top:6px';
+  const t = document.createElement('div');
+  t.textContent = 'Đã dựng xong';
+  t.style.cssText = 'font-size:17px;font-weight:600';
 
-    const loi2 = document.createElement('div');
+  const c = document.createElement('div');
+  c.textContent =
+    '“' + (cay.ten || '') + '” (mã ' + (cay.maCay || '') + ') nay là gia phả ' +
+    'của bạn, và đang rỗng. Mở nó ra để thêm người đầu tiên.';
+  c.style.cssText = 'font-size:13px;line-height:1.55;color:#8a8078;margin-top:6px';
 
-    const h = document.createElement('div');
-    h.style.cssText = 'display:flex;justify-content:flex-end;gap:8px;margin-top:16px';
+  const loi2 = document.createElement('div');
 
-    const bSau = nut('Để sau', false);
-    bSau.style.cssText += ';padding:8px 16px;font-size:13px';
-    bSau.addEventListener('click', () => { dong(); napLai(); });
+  const h = document.createElement('div');
+  h.style.cssText = 'display:flex;gap:8px;margin-top:14px';
 
-    const bMo = nut('Mở gia phả mới', true);
-    bMo.style.cssText += ';padding:8px 18px;font-size:13px';
-    bMo.addEventListener('click', async () => {
-      bMo.disabled = true;
-      bSau.disabled = true;
-      bMo.textContent = 'Đang mở…';
-      const d = await chonGiaPha(cay.fileId);
-      if (d.ok) {
-        // ⚠ Đi thẳng sang SƠ ĐỒ, khác hẳn việc đổi cây ở cột *Cây làm việc*
-        //   (chỗ ấy cố ý ở lại trang Quản trị). Ở đây người ta vừa dựng một
-        //   cây rỗng, và việc duy nhất còn ý nghĩa là thêm người đầu tiên —
-        //   thứ chỉ có ở màn hình sơ đồ.
-        window.location.href = 'index.html';
-        return;
-      }
-      bMo.disabled = false;
-      bSau.disabled = false;
-      bMo.textContent = 'Mở gia phả mới';
-      loi2.append(dongLoi(d.loi || 'Đã dựng được nhưng chưa mở được.'));
-    });
+  const bSau = nut('Để sau', false);
+  bSau.style.cssText += ';padding:8px 16px;font-size:13px';
+  bSau.addEventListener('click', () => napLai());
 
-    h.append(bSau, bMo);
-    hop.append(t, c, loi2, h);
-    bMo.focus();
-  }
+  const bMo = nut('Mở gia phả mới', true);
+  bMo.style.cssText += ';padding:8px 18px;font-size:13px';
+  bMo.addEventListener('click', async () => {
+    bMo.disabled = true;
+    bSau.disabled = true;
+    bMo.textContent = 'Đang mở…';
+    const d = await chonGiaPha(cay.fileId);
+    if (d.ok) {
+      // ⚠ Đi thẳng sang SƠ ĐỒ, khác hẳn việc đổi cây ở cột *Cây làm việc*
+      //   (chỗ ấy cố ý ở lại trang Quản trị). Ở đây người ta vừa dựng một
+      //   cây rỗng, và việc duy nhất còn ý nghĩa là thêm người đầu tiên —
+      //   thứ chỉ có ở màn hình sơ đồ.
+      window.location.href = 'index.html';
+      return;
+    }
+    bMo.disabled = false;
+    bSau.disabled = false;
+    bMo.textContent = 'Mở gia phả mới';
+    loi2.append(dongLoi(d.loi || 'Đã dựng được nhưng chưa mở được.'));
+  });
 
-  hang.append(bHuy, bTao);
-  hop.append(tua, dan, khungTen, khungMa, khungNote, oLoi, hang);
-  lopPhu.append(hop);
-  document.body.append(lopPhu);
-  oTen.focus();
+  h.append(bSau, bMo);
+  hop.append(t, c, loi2, h);
 }
 
 /** Một ô nhập kèm nhãn. Trả về `[ô, khung]`. */

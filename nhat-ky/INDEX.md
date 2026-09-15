@@ -72,6 +72,7 @@ thường, không phải thiếu sót.
 | 113 | 14/09/2026 | Rà 12/09 của AGY: khối Gia phả ở lại Cài đặt (chủ dự án xác nhận, cạnh khu 1) + vá phép đo mù; 3 repo vệ tinh dùng chung backend là cố ý | `b113-ra-lai-agy-12-09.md` |
 | 114 | 15/09/2026 | Bản đồ quantri3 → hàm máy chủ; chốt 4 luật đổi theo prototype; sửa 3 ô sai; chưa sửa mã | `b114-ban-do-quantri3.md` |
 | 115 | 15/09/2026 | Lớp trang chi tiết dưới bốn khu (`#gia-pha/cay/<mã>`, nút Quay lại, thanh mục); 258 phép | `b115-khung-trang-chi-tiet.md` |
+| 116 | 15/09/2026 | Khu Gia phả: bốn chip, tên cây bấm sang trang chi tiết; điền thật ba mục + Vòng đời mới; `rut_don_xin_vao`/`roi_cay` (`22`) | `b116-khu-gia-pha.md` |
 
 *Cột "Nội dung một dòng": **một câu, tối đa 110 ký tự**. Nói bước ấy làm được
 cái gì, không nói vì sao. Đây là dòng để người đọc quyết định có mở file bước

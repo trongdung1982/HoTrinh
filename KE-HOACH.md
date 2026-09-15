@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 15/09/2026 · Bước gần nhất: **b115** — quantri3: khung + trang chi tiết
-· Việc kế tiếp: **b116 — quantri3: khu Gia phả**
+*Cập nhật 15/09/2026 · Bước gần nhất: **b116** — quantri3: khu Gia phả
+· Việc kế tiếp: **b117 — quantri3: khu Tài khoản, và chuyển khối b111c sang**
 
 ⚠ **TRẦN CỨNG 250 DÒNG.** File này nạp ở đầu MỌI phiên, nên mỗi dòng thừa ở
 đây là dòng thừa nhân với số phiên còn lại. Vượt trần là dấu hiệu có thứ đứng
@@ -29,7 +29,7 @@ quantri3 vào app chính sau đó mới làm việc khác."*
 | ~~2~~ | ~~b113~~ | ✓ **XONG 14/09/2026** — khối Gia phả ở lại Cài đặt (xác nhận, cạnh khu 1) + vá phép đo mù; workflow 3 repo vệ tinh giữ, dùng chung backend là cố ý | Sonnet |
 | ~~3~~ | ~~b114~~ | ✓ **XONG 15/09/2026** — bản đồ + 4 luật đổi theo prototype (`THIET-KE-NHIEU-CAY.md` 11.9) | Opus |
 | ~~4~~ | ~~b115~~ | ✓ **XONG 15/09/2026** — lớp trang chi tiết `#<khu>/<trang>/<mã>[/<mục>]` + trang một cây (Tổng quan đọc thật); bốn khu cũ không đổi | Opus |
-| 5 | **b116** | quantri3 — khu Gia phả | Sonnet |
+| ~~5~~ | ~~b116~~ | ✓ **XONG 15/09/2026** — bốn chip khu Gia phả, tên cây bấm sang trang chi tiết; ba mục trang cây điền thật + Vòng đời mới; `rut_don_xin_vao`/`roi_cay` (`22`, chưa dán lên Supabase thật) | Sonnet |
 | 6 | **b117** | quantri3 — khu Tài khoản *(gồm chuyển khối b111c sang)* | Opus |
 | 7 | **b118** | quantri3 — khu Kiểm duyệt + Quản trị hệ thống | Sonnet |
 | 7b | **b118b** | SQL cho bốn luật mới *(nhóm D)* — đụng nền móng quyền | Opus |
@@ -48,8 +48,9 @@ bước (`THIET-KE-NHIEU-CAY.md` mục 12 ghi sẵn luật ấy).
 **App chạy thật tại `https://nguyentrongbac.io.vn`** từ 03/09/2026 *(chứng chỉ
 Let's Encrypt hạn 02/12/2026; địa chỉ cũ `301` về đây)*. Máy chủ thật có **hai
 cây** — NTB 59 người và Nguyễn Phúc Giáo 681 người — mã cây **3 chữ số**. Trang
-`QuanTri.html` là khung **bốn khu**, cộng lớp **trang chi tiết** từ b115. Phân quyền đã đo bằng REST, 5/5 hàng rào
-đạt (b94, b96). Chặng đã đóng: **b87 → b115** — mỗi bước một file `nhat-ky/`.
+`QuanTri.html` là khung **bốn khu**, cộng lớp **trang chi tiết** từ b115 — khu Gia phả (b116) đã nối vào, ba khu kia
+còn lại (b117/b118). Phân quyền đã đo bằng REST, 5/5 hàng rào
+đạt (b94, b96). Chặng đã đóng: **b87 → b116** — mỗi bước một file `nhat-ky/`.
 
 ⚠ **`domains/` chưa sửa một dòng nào** trong cả mười file, suốt cả cuộc chuyển
 nhà từ Drive sang Supabase. Đó là nghiệm thu của luật phân lớp, giữ nguyên.
@@ -82,6 +83,10 @@ thứ hai: hai chỗ ghi là hai chỗ để lệch nhau.
 **Đã dán lên CẢ HAI Supabase (thật + Staging): `01` → `21`, không sót file
 nào.** Mốc gần nhất: `18` (10/09) · `19`, `20` (10/09) · `21` (14/09, bảng tự
 kiểm đạt hết). `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
+
+⚠ **`22-rut-don-roi-cay.sql` (b116) — VIẾT XONG, ĐO XONG TRÊN BÀN THỬ TẠI
+CHỖ (27/27 đạt), CHƯA DÁN lên Supabase thật hay Staging.** Không đụng vai,
+dán sau `18`/`20`/`21` là đủ, không có chuỗi dán lại nào bị ảnh hưởng.
 
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
 `11`/`10`→`14`→`16`→`18` · `13`/`14`→`15`→`20`→`18` · `08`→`18`. Ba luật nữa,
@@ -129,14 +134,6 @@ mới thành hàng thẻ, đúng mục 3 cũ *(đính chính b114)*.
 = thêm một dòng vào `TRANG` của `khung.js` + vỏ `veVoChiTiet()`. **Khung sửa
 `#` lạ ở mọi tầng — trang KHÔNG tự sửa `#`**, và `#` lạ sửa bằng
 `replaceState`, không gán lại `location.hash` *(bộ bất biến canh cả hai)*.
-
-### b116 — quantri3: khu Gia phả
-
-| | |
-|---|---|
-| **Làm** | Bốn chip *(Tôi quản lý · Tôi là thành viên · Có thể xin vào · Tạo gia phả mới)* + **điền trang chi tiết đã có** `#gia-pha/cay/<mã>` *(`trang-cay.js`: mục còn `hienNay` là mục chưa chuyển)* và nối dòng cây trong bảng sang nó · nhóm C `luoc-do/22`: `rut_don_xin_vao` · `roi_cay` *(không đụng vai — chạy bàn thử 5433 trước)* · hỏi nghĩa tab *Vòng đời* |
-| **⚠ Giữ nguyên** | Vá 14/09/2026 ở `veOThaoTac()` — **lời mời đứng trước quyền xem**. Chuyển khung mà đánh rơi thứ tự ấy là trả lại đúng lỗi chủ dự án vừa báo |
-| **Điểm dừng** | Nhận / Từ chối lời mời vẫn bấm được bằng tài khoản Quản trị hệ thống |
 
 ### b117 — quantri3: khu Tài khoản, và chuyển khối b111c sang
 

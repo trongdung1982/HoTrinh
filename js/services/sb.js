@@ -5,7 +5,11 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.18.0 · Cập nhật: 14/09/2026 21:40 (b111c)
+// Phiên bản: 0.19.0 · Cập nhật: 15/09/2026 (b116)
+//            0.19.0 `rutDonXinVao()` · `roiCay()` (`luoc-do/22`) — hai việc
+//            CHÍNH NGƯỜI TRONG CUỘC tự làm cho mình, không đụng vai. Đối xứng
+//            GIẢ với `tuChoiLoiMoi()` (chỉ xoá LỜI MỜI) và `goThanhVien()`
+//            (cố ý từ chối tự gỡ) — cả hai hàm cũ không làm được việc này.
 //            0.18.0 sáu cửa **ĐƠN ĐỀ XUẤT GẮN MÃ NGƯỜI**
 //            (`luoc-do/21-de-xuat-gan-nguoi.sql`): `nopDeXuatGan()` ·
 //            `rutDeXuatGan()` · `deXuatGanCuaToi()` · `dsDeXuatGan()` ·
@@ -963,6 +967,30 @@ export async function tuChoiLoiMoi(treeId) {
   const k = layKhach();
   if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
   const { data, error } = await k.rpc('tu_choi_loi_moi', { p_tree: treeId });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/**
+ * Rút đơn XIN VÀO của chính mình (`luoc-do/22`). Chỉ xoá dòng
+ * `approved=false, moi_luc is null` — một LỜI MỜI thì đi bằng `tuChoiLoiMoi`.
+ */
+export async function rutDonXinVao(treeId) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('rut_don_xin_vao', { p_tree: treeId });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/**
+ * Rời khỏi một gia phả đã là thành viên đã duyệt (`luoc-do/22`). Máy chủ tự
+ * chặn chủ cây — hàm này không hỏi trước.
+ */
+export async function roiCay(treeId) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('roi_cay', { p_tree: treeId });
   if (error) return { ok: false, loi: cauLoi(error) };
   return data || { ok: false, loi: 'Máy chủ không trả lời.' };
 }

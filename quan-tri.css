@@ -2,7 +2,9 @@
    giapha-supabase · quan-tri.css
    Vai trò  : Bố cục khung bốn khu của `QuanTri.html` — thanh trái trên máy
               tính, hàng thẻ ngang trên điện thoại.
-   Phiên bản: 0.2.0 · Cập nhật: 15/09/2026 07:40
+   Phiên bản: 0.3.0 · Cập nhật: 15/09/2026 (b116)
+              0.3.0 (b116) `.qt-lk` — liên kết tên cây trong bảng, bấm sang
+              trang chi tiết.
               0.2.0 (b115) trang chi tiết: thanh Quay lại, thanh mục con
               `.qt-layout`, bảng thông tin `.qt-tt`.
 
@@ -85,6 +87,10 @@
 .qt-noi-dung { min-width:0; }
 .qt-di-toi { display:inline-block; margin-top:8px; color:#5b4533;
              font-weight:600; }
+
+/* Liên kết trong dòng — tên trong bảng bấm sang trang chi tiết (b116). */
+.qt-lk { color:#2a2622; text-decoration:none; border-bottom:1px solid #dcd5cb; }
+.qt-lk:hover { border-bottom-color:#5b4533; }
 
 /* Bảng thông tin hai cột: nhãn · giá trị. */
 .qt-tt { margin:0; border:1px solid #e6e0d8; border-radius:10px;

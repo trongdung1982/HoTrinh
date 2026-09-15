@@ -5,7 +5,11 @@
 //            `khu-thanh-vien.js` · `khu-tai-khoan-he-thong.js`, và những cửa
 //            của chúng trong `js/services/sb.js` (b98 + b101 + b106 + b109).
 // Chạy     : cd supabase/kiem-thu && node kiem-trang-quan-tri.mjs
-// Phiên bản: 0.7.0 · Cập nhật: 15/09/2026 (b115)
+// Phiên bản: 0.7.1 · Cập nhật: 15/09/2026 (b116)
+//            0.7.1 Đính chính hai phép PHẦN L đã lỗi thời (đòi trang cây chỉ
+//            nạp đúng MỘT cửa `sb.js`) — b116 điền ba mục thật + Vòng đời,
+//            hợp lệ đụng nhiều cửa hơn. Thu hẹp lại đúng luật 5a: không đọc
+//            `phien.treeId` để chọn cây. Không đổi số phép (256 → 256).
 //            0.7.0 PHẦN L — lớp trang chi tiết: `trang-chi-tiet.js` ·
 //            `trang-cay.js`, đăng ký trong `TRANG` của khung, luật 5a (tìm
 //            cây theo mã trong địa chỉ), CSS gập thanh mục con. G20 · G21.
@@ -1061,10 +1065,16 @@ kiem('nút Quay lại về khu cha bằng location.hash, không history.back()',
 kiem('trang cây tìm cây theo MÃ trong địa chỉ, không theo cây đang mở',
      trangCayTheoMa(JS_TC), 'trang cây đọc phien.treeId / rơi về cây đang mở');
 
-kiem('trang cây b115 chỉ ĐỌC — từ sb.js chỉ nạp layDanhSachGiaPha',
-     /import\s*\{\s*layDanhSachGiaPha\s*\}\s*from\s*'\.\.\/\.\.\/services\/sb\.js'/
-       .test(JS_TC),
-     'trang cây nạp thêm cửa — b115 là bước khung, chưa đổi ruột');
+// ⚠ Đính chính b116: bản 0.7.0 (b115) đòi trang cây chỉ nạp ĐÚNG MỘT cửa
+//   `layDanhSachGiaPha` — đúng cho lúc ấy ("b115 dựng KHUNG, chưa đổi ruột"),
+//   nhưng b116 điền ba mục thật (Thành viên & quyền · Lời mời · Đơn xin vào,
+//   dùng lại `veBang()` của khu Tài khoản) và mục Vòng đời (Bàn giao · Xoá) —
+//   cả hai đụng nhiều cửa `sb.js` hơn MỘT, đúng ý đồ đã ghi ở `KE-HOACH.md`
+//   b116. Luật thật không phải "chỉ một cửa" mà là luật 5a bên trên: KHÔNG
+//   BAO GIỜ chọn cây bằng `phien.treeId`. Phép này đo đúng luật ấy.
+kiem('trang cây (b116) không đọc phien.treeId để chọn cây, dù đã điền nhiều cửa sb.js hơn',
+     !/phien\.treeId/.test(boGhiChuJs(JS_TC)),
+     'trang cây đọc phien.treeId ở đâu đó — luật 5a bị phá');
 
 kiem('kết quả máy chủ về muộn không đè lên trang vừa mở',
      /location\.hash\s*!==\s*hashLuc/.test(JS_TC),
@@ -1294,7 +1304,12 @@ process.exitCode = hong === 0 ? 0 : 1;
  */
 function trangCayTheoMa(js) {
   const lenh = boGhiChuJs(js);
-  return /c\.treeCode\s*===\s*ctx\.thamSo/.test(lenh) && !/treeId/.test(lenh);
+  // ⚠ Đính chính b116: từng cấm bare `treeId` xuất hiện ở BẤT CỨ ĐÂU trong
+  //   file — quá tay, vì nó bắt nhầm cả biến địa phương `const treeId =
+  //   cay.fileId` và khoá `{treeId, ten, maCay}` của đối tượng `cay` truyền
+  //   cho `veBang()` (đúng hình dạng `khu-thanh-vien.js` đã dùng). Luật thật
+  //   chỉ cấm đúng MỘT thứ: lấy `phien.treeId` làm cây đang xem.
+  return /c\.treeCode\s*===\s*ctx\.thamSo/.test(lenh) && !/phien\.treeId/.test(lenh);
 }
 
 /**

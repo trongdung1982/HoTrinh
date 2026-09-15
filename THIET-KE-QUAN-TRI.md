@@ -548,7 +548,8 @@ nằm TRONG địa chỉ theo luật 5a. Mục đầu không ghi vào địa ch�
 một dòng trong `TRANG` của `khung.js`; vỏ (Quay lại · tựa · thanh mục) ở
 `trang-chi-tiet.js`. Thanh mục gập thành hàng thẻ ở **1000px**, không 680px:
 khoảng 681–1000px thanh trái 210px vẫn còn, thêm 205px thanh mục là nội dung
-chỉ còn chừng 200px. Huy hiệu đếm trong thanh mục **chưa làm** — b116.
+chỉ còn chừng 200px. Huy hiệu đếm trong thanh mục **chưa làm** — vẫn treo,
+đẩy sang sau b116 (ba mục đã có nội dung thật, đếm là việc thêm, không chặn).
 
 **② Khối b111c cắm vào đâu?** Xác nhận đúng gợi ý của `KE-HOACH.md`: nút
 **Đề xuất mã người** đứng ở khu Tài khoản, cạnh cột *"Tôi được gắn với ai
@@ -742,9 +743,9 @@ không gọi được bằng khoá công khai. Khoá ấy **tuyệt đối khôn
 repo Public, và lịch sử git giữ cả bản đã xoá. Đường duy nhất là Edge Function
 đọc khoá từ biến bí mật của Supabase — việc riêng, nhóm E.
 
-**Còn một câu chưa hỏi:** tab *Vòng đời* ở `#tree-detail` prototype để trống.
-Đoán: chỗ đặt *Bàn giao chủ* + *Xoá cây*. Hỏi lúc làm khu Gia phả, không chặn
-khung.
+**✓ Đã hỏi và chốt 15/09/2026 (b116):** tab *Vòng đời* = *Bàn giao chủ* +
+*Xoá cây*, đúng dự đoán. Đã viết ở `trang-cay.js` mục `vong-doi`, dùng lại
+`doiChuCay` · `xinXoaCay`/`huyXinXoaCay`/`duyetXoaCay` đã có, không hàm mới.
 
 ⚠ **Khuyến nghị cũ, viết trước khi hỏi** *(9.5 thay thế)*: mục 5, 6, 7, 12 và khung điều hướng
 (9.1/9.2①) là **vừa sức bốn bước đã định**, không đụng luật đã chốt ở đâu.
