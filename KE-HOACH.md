@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 15/09/2026 · Bước gần nhất: **b114** — quantri3: bản đồ và chốt thiết kế
-· Việc kế tiếp: **b115 — quantri3: khung + điều hướng**
+*Cập nhật 15/09/2026 · Bước gần nhất: **b115** — quantri3: khung + trang chi tiết
+· Việc kế tiếp: **b116 — quantri3: khu Gia phả**
 
 ⚠ **TRẦN CỨNG 250 DÒNG.** File này nạp ở đầu MỌI phiên, nên mỗi dòng thừa ở
 đây là dòng thừa nhân với số phiên còn lại. Vượt trần là dấu hiệu có thứ đứng
@@ -28,7 +28,7 @@ quantri3 vào app chính sau đó mới làm việc khác."*
 | ~~1~~ | ~~b112~~ | ✓ **XONG 14/09/2026** — 212 KB → 81 KB, giảm 61,8% | Opus |
 | ~~2~~ | ~~b113~~ | ✓ **XONG 14/09/2026** — khối Gia phả ở lại Cài đặt (xác nhận, cạnh khu 1) + vá phép đo mù; workflow 3 repo vệ tinh giữ, dùng chung backend là cố ý | Sonnet |
 | ~~3~~ | ~~b114~~ | ✓ **XONG 15/09/2026** — bản đồ + 4 luật đổi theo prototype (`THIET-KE-NHIEU-CAY.md` 11.9) | Opus |
-| 4 | **b115** | quantri3 — khung + điều hướng | Opus |
+| ~~4~~ | ~~b115~~ | ✓ **XONG 15/09/2026** — lớp trang chi tiết `#<khu>/<trang>/<mã>[/<mục>]` + trang một cây (Tổng quan đọc thật); bốn khu cũ không đổi | Opus |
 | 5 | **b116** | quantri3 — khu Gia phả | Sonnet |
 | 6 | **b117** | quantri3 — khu Tài khoản *(gồm chuyển khối b111c sang)* | Opus |
 | 7 | **b118** | quantri3 — khu Kiểm duyệt + Quản trị hệ thống | Sonnet |
@@ -48,19 +48,24 @@ bước (`THIET-KE-NHIEU-CAY.md` mục 12 ghi sẵn luật ấy).
 **App chạy thật tại `https://nguyentrongbac.io.vn`** từ 03/09/2026 *(chứng chỉ
 Let's Encrypt hạn 02/12/2026; địa chỉ cũ `301` về đây)*. Máy chủ thật có **hai
 cây** — NTB 59 người và Nguyễn Phúc Giáo 681 người — mã cây **3 chữ số**. Trang
-`QuanTri.html` là khung **bốn khu**. Phân quyền đã đo bằng REST, 5/5 hàng rào
-đạt (b94, b96). Chặng đã đóng: **b87 → b114** — mỗi bước một file `nhat-ky/`.
+`QuanTri.html` là khung **bốn khu**, cộng lớp **trang chi tiết** từ b115. Phân quyền đã đo bằng REST, 5/5 hàng rào
+đạt (b94, b96). Chặng đã đóng: **b87 → b115** — mỗi bước một file `nhat-ky/`.
 
 ⚠ **`domains/` chưa sửa một dòng nào** trong cả mười file, suốt cả cuộc chuyển
 nhà từ Drive sang Supabase. Đó là nghiệm thu của luật phân lớp, giữ nguyên.
 
-### Ba chỗ còn hở, và cả ba đều là "chưa ai bấm", không phải "chưa viết"
+### Ba điểm dừng chưa bấm thử — HOÃN tới khi xong trang Quản trị
 
-| Hở | Vì sao chưa đóng |
+Cả ba là "chưa ai bấm", không phải "chưa viết". Chủ dự án chốt 15/09/2026:
+*"chưa xong trang quantri thì không bấm thử mời và chấp nhận quyền quản trị hệ
+thống"* — và **đã có sẵn hai tài khoản Quản trị hệ thống**. Không ghi mục này
+vào "đang chặn" nữa; đề nghị bấm thử sau b118.
+
+| Điểm dừng | Bấm gì |
 |---|---|
-| **b111** — điểm dừng kiểm duyệt TRƯỚC/SAU chưa bấm thử | Cần một lần Lưu "chờ duyệt" thật. ⚠ Quản trị luôn `ghi_thang()`, nên tự gắn mã người cho tài khoản CỦA MÌNH **không** tạo ra hàng chờ. Đường thử được ngay hôm nay: mời một **email thứ hai** vào cây, gắn mã người cho tài khoản ấy, đăng nhập bằng nó rồi Lưu |
-| **b111b** — gắn mã người từ cả hai tấm, đổi cây ở ô chọn | Mã xong, `20` đã dán. Chỉ còn bấm |
-| **b111c** — nộp đề xuất · tự duyệt bị từ chối · người khác duyệt được | Mã xong, `21` đã dán 14/09, bảng tự kiểm đạt hết. ⚠ Chủ dự án **cố ý hoãn**: *"tôi chưa thử trên app vì đợi chỉnh lại giao diện trang quantri"* → đi cùng **b117**. Ba việc phải bấm ở đó: ① nút **Nhận** lời mời bằng tài khoản Quản trị hệ thống *(vá 14/09)*; ② tự bấm duyệt bị máy chủ từ chối; ③ một Quản trị hệ thống KHÁC duyệt được |
+| **b111** — kiểm duyệt TRƯỚC/SAU | Một lần Lưu "chờ duyệt" thật. ⚠ Quản trị luôn `ghi_thang()`, nên tự gắn mã người cho tài khoản CỦA MÌNH **không** tạo ra hàng chờ — phải Lưu bằng tài khoản KHÔNG quản trị cây ấy |
+| **b111b** — gắn mã người từ cả hai tấm, đổi cây ở ô chọn | Mã xong, `20` đã dán |
+| **b111c** — nộp đề xuất · tự duyệt bị từ chối · người khác duyệt được | Mã xong, `21` đã dán 14/09 → đi cùng **b117**: ① nút **Nhận** lời mời bằng tài khoản Quản trị hệ thống *(vá 14/09)*; ② tự bấm duyệt bị máy chủ từ chối; ③ một Quản trị hệ thống KHÁC duyệt được |
 
 ⚠ **Một việc treo không có số, và nó đi theo MÁY chứ không theo bước:** commit
 `render 1.9.1` của repo `giapha/` (`44768d9`) **chưa đẩy được** — trên LapAMD
@@ -120,19 +125,16 @@ Bảng 9.3 bản đầu sai ba ô, đã đính chính. Nói *"hàm này thiếu"
 ⚠ Khung **KHÔNG đổi sang tab ngang**: prototype vẫn là thanh trái, dưới 850px
 mới thành hàng thẻ, đúng mục 3 cũ *(đính chính b114)*.
 
-### b115 — quantri3: khung + điều hướng
-
-| | |
-|---|---|
-| **Làm** | Giữ thanh trái bốn khu + `#khu` (mục 3); thêm lớp **trang chi tiết** con có nút *← Quay lại* và `#` riêng (`#tree-detail`…) → `QuanTri.html` · `pages/quan-tri/khung.js`. `quan-tri.css` vẫn là chỗ duy nhất biết bề ngang, kể cả `.layout` của trang chi tiết |
-| **⚠ Bẫy đã biết** | Ba luật khung điều hướng ở `THIET-KE-QUAN-TRI.md` mục 3, và *"`#` lạ bị sửa bằng cách gán lại `location.hash`"* — bộ bất biến có phép canh đúng chỗ ấy |
-| **Điểm dừng** | Bốn tab mở đúng bốn khu cũ, chưa đổi ruột khu nào; 237 phép bất biến vẫn đạt |
+⚠ **Trang chi tiết đã có vỏ từ b115** (`nhat-ky/b115-*.md`): thêm trang mới
+= thêm một dòng vào `TRANG` của `khung.js` + vỏ `veVoChiTiet()`. **Khung sửa
+`#` lạ ở mọi tầng — trang KHÔNG tự sửa `#`**, và `#` lạ sửa bằng
+`replaceState`, không gán lại `location.hash` *(bộ bất biến canh cả hai)*.
 
 ### b116 — quantri3: khu Gia phả
 
 | | |
 |---|---|
-| **Làm** | Bốn chip *(Tôi quản lý · Tôi là thành viên · Có thể xin vào · Tạo gia phả mới)* + trang chi tiết theo ngữ cảnh cây · nhóm C `luoc-do/22`: `rut_don_xin_vao` · `roi_cay` *(không đụng vai — chạy bàn thử 5433 trước)* · hỏi nghĩa tab *Vòng đời* |
+| **Làm** | Bốn chip *(Tôi quản lý · Tôi là thành viên · Có thể xin vào · Tạo gia phả mới)* + **điền trang chi tiết đã có** `#gia-pha/cay/<mã>` *(`trang-cay.js`: mục còn `hienNay` là mục chưa chuyển)* và nối dòng cây trong bảng sang nó · nhóm C `luoc-do/22`: `rut_don_xin_vao` · `roi_cay` *(không đụng vai — chạy bàn thử 5433 trước)* · hỏi nghĩa tab *Vòng đời* |
 | **⚠ Giữ nguyên** | Vá 14/09/2026 ở `veOThaoTac()` — **lời mời đứng trước quyền xem**. Chuyển khung mà đánh rơi thứ tự ấy là trả lại đúng lỗi chủ dự án vừa báo |
 | **Điểm dừng** | Nhận / Từ chối lời mời vẫn bấm được bằng tài khoản Quản trị hệ thống |
 
@@ -202,7 +204,6 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 
 | Việc | Ghi ở đâu |
 |---|---|
-| ⚠ **MỘT EMAIL THỨ HAI đang chặn BA điểm dừng cùng lúc** — b111 (dựng hàng chờ kiểm duyệt thật), b111b (gắn mã người cho tài khoản khác), b111c (hai chữ ký cần **hai** Quản trị hệ thống). Một việc mở khoá cả ba | `nhat-ky/b111b-*.md` |
 | ⚠ **Bảng tấm *Toàn hệ thống* nay CHÍN cột** và ở 1280px tràn khỏi khu — câu nhắc *"kéo ngang"* đo `scrollWidth` thật nên không nói dối. Chưa vỡ, nhưng **cột thứ mười là cột làm vỡ**: muốn thêm cột thì phải bỏ một cột, hoặc xếp chồng hai dòng trong một ô | `THIET-KE-QUAN-TRI.md` khu 2 |
 | ⚠ **Hai việc của điểm dừng b106 chưa nghiệm thu bằng mắt**: gắn được mã người · đăng nhập bằng vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **Nợ b105 chưa trả**: người mang vai `quan_tri` **được phong** vẫn THẤY khối *Đơn chờ duyệt* trong Cài đặt, bấm Duyệt thì máy chủ từ chối — **giấu nút đi** | `nhat-ky/b105-quan-ly-thanh-vien.md` |

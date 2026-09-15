@@ -4,8 +4,12 @@
 //            máy tính, hàng thẻ ngang trên điện thoại. Mỗi lần vẽ một khu.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, pages/dang-nhap,
-//            pages/quan-tri/khu-kiem-duyet · khu-gia-pha · khu-thanh-vien
-// Phiên bản: 0.3.0 · Cập nhật: 08/09/2026 20:25
+//            pages/quan-tri/khu-kiem-duyet · khu-gia-pha · khu-thanh-vien ·
+//            trang-cay · trang-chi-tiet
+// Phiên bản: 0.4.0 · Cập nhật: 15/09/2026 07:40
+//            0.4.0 (b115) lớp TRANG CHI TIẾT dưới bốn khu — danh sách `TRANG`,
+//            địa chỉ `#<khu>/<trang>/<mã>[/<mục>]`, `veKhu()` sửa `#` lạ từng
+//            tầng. Bốn khu cũ không đổi một dòng.
 //            0.3.0 (b106) nối khu 2. Tên trên thanh là **Tài khoản**, còn `ma`
 //            vẫn là `thanh-vien` — xem ghi chú ở danh sách `KHU` bên dưới.
 // ============================================================
@@ -47,6 +51,8 @@ import { mountDangNhap } from '../dang-nhap.js';
 import { mountKhuKiemDuyet } from './khu-kiem-duyet.js';
 import { mountKhuGiaPha } from './khu-gia-pha.js';
 import { mountKhuThanhVien } from './khu-thanh-vien.js';
+import { mountTrangCay, MUC_TRANG_CAY } from './trang-cay.js';
+import { duongDan } from './trang-chi-tiet.js';
 
 /**
  * Bốn khu, đúng thứ tự trên thanh. `ma` là chuỗi đi vào `#` của địa chỉ nên
@@ -69,6 +75,20 @@ const KHU = [
   { ma: 'kiem-duyet', chu: 'Kiểm duyệt' },
   { ma: 'sao-luu',    chu: 'Sao lưu',
     chuaLam: 'Khu này làm ở bước b108 — xem bản sao lưu và số đếm đối chiếu.' },
+];
+
+/**
+ * TRANG CHI TIẾT — lớp thứ hai dưới một khu (b115, `THIET-KE-QUAN-TRI.md`
+ * 9.1). Địa chỉ `#<khu>/<ma>/<mã thứ đang xem>[/<mục>]`.
+ *
+ * `muc` là danh sách mục con, mục ĐẦU là mục mặc định. `khu` + `ma` cũng là
+ * giao kèo trong địa chỉ như `ma` của khu — đổi một chữ là link cũ hỏng.
+ *
+ * Còn chờ đăng ký: trang một tài khoản dưới `thanh-vien` (b117) · trang
+ * đối chiếu một lần sửa dưới `kiem-duyet` (b118).
+ */
+const TRANG = [
+  { khu: 'gia-pha', ma: 'cay', mount: mountTrangCay, muc: MUC_TRANG_CAY },
 ];
 
 // ============================================================
@@ -158,18 +178,36 @@ export async function mountKhung(appEl) {
 // ============================================================
 
 /**
- * Đọc `#` rồi vẽ đúng khu ấy.
+ * Đọc `#` rồi vẽ đúng khu — hoặc đúng trang chi tiết — ấy.
  *
  * ⚠ `#` lạ — gõ nhầm, hay link cũ từ trước khi đổi tên khu — thì về khu đầu
  *   và **sửa luôn thanh địa chỉ** bằng `replaceState`. Không dùng
  *   `location.hash = …` ở đây: gán vào nó đẻ ra một `hashchange` nữa, tức
  *   vẽ hai lần; và nó thêm một mục vào lịch sử, khiến nút Back quay về đúng
  *   cái `#` hỏng vừa bỏ đi.
+ *
+ * ⚠ Luật ấy áp nguyên cho trang chi tiết (b115), từng tầng một: khu lạ → khu
+ *   đầu · trang lạ hoặc thiếu mã → khu cha · mục lạ → mục đầu. **Khung kiểm
+ *   hết rồi mới giao cho trang**, nên trang không bao giờ phải tự sửa `#` —
+ *   hai chỗ sửa `#` là hai chỗ có ngày sửa khác nhau.
+ *
+ * ⚠ Mã trong địa chỉ (mã cây…) thì khung KHÔNG kiểm: có cây ấy hay không là
+ *   câu hỏi máy chủ, và chỉ trang ấy được gọi máy chủ (luật 2).
  */
 function veKhu(than, nutTheoMa, phien) {
-  const maHash = window.location.hash.slice(1);
-  const khu = KHU.find((k) => k.ma === maHash) || KHU[0];
-  if (maHash !== khu.ma) window.history.replaceState(null, '', '#' + khu.ma);
+  const doan = docHash();
+  const khu = KHU.find((k) => k.ma === doan[0]) || KHU[0];
+  const trang = khu.ma === doan[0] && doan[2]
+    ? TRANG.find((t) => t.khu === khu.ma && t.ma === doan[1]) || null
+    : null;
+  const muc = trang && (trang.muc.find((m) => m.ma === doan[3]) || trang.muc[0]);
+  // Mục đầu tiên KHÔNG ghi tên vào địa chỉ — một chỗ, một địa chỉ.
+  const hashMuc = (ma) => duongDan(khu.ma, trang.ma, doan[2],
+                                   ma === trang.muc[0].ma ? '' : ma);
+  const dung = trang ? hashMuc(muc.ma) : khu.ma;
+  if (window.location.hash.slice(1) !== dung) {
+    window.history.replaceState(null, '', '#' + dung);
+  }
 
   for (const [ma, b] of nutTheoMa) {
     const dangMo = ma === khu.ma;
@@ -181,6 +219,15 @@ function veKhu(than, nutTheoMa, phien) {
   }
 
   than.innerHTML = '';
+
+  // Trang chi tiết: nút trên thanh trái vẫn tô đậm khu CHA ở vòng trên, để
+  // người đang đứng sâu một tầng vẫn biết mình thuộc khu nào.
+  if (trang) {
+    trang.mount(than, { phien, thamSo: doan[2], muc: muc.ma,
+                        hashQuayVe: khu.ma, chuQuayVe: khu.chu, hashMuc });
+    return;
+  }
+
   // ⚠ Hai khu nhận `phien` vì chúng phải biết những thứ chỉ phiên có: cây nào
   //   đang mở, người này có phải Quản trị hệ thống không, email của họ. Truyền
   //   sẵn cũng để khỏi hỏi máy chủ lần thứ hai đúng câu khung vừa hỏi.
@@ -192,6 +239,17 @@ function veKhu(than, nutTheoMa, phien) {
   else if (khu.ma === 'thanh-vien') mountKhuThanhVien(than, phien);
   else if (khu.ma === 'kiem-duyet') mountKhuKiemDuyet(than);
   else veKhuChuaLam(than, khu);
+}
+
+/**
+ * `#` của địa chỉ, tách theo `/`, mỗi đoạn đã giải mã. Đoạn mã hoá hỏng
+ * (`%` lẻ) thành chuỗi rỗng — `decodeURIComponent` ném lỗi, và một cái `#` gõ
+ * nhầm không được làm sập cả khung.
+ */
+function docHash() {
+  return window.location.hash.slice(1).split('/').map((d) => {
+    try { return decodeURIComponent(d); } catch (_) { return ''; }
+  });
 }
 
 /** Khu chưa viết: nói thẳng nó làm ở bước nào, không vẽ bảng trống. */

@@ -2,7 +2,9 @@
    giapha-supabase · quan-tri.css
    Vai trò  : Bố cục khung bốn khu của `QuanTri.html` — thanh trái trên máy
               tính, hàng thẻ ngang trên điện thoại.
-   Phiên bản: 0.1.0 · Cập nhật: 07/09/2026 19:33
+   Phiên bản: 0.2.0 · Cập nhật: 15/09/2026 07:40
+              0.2.0 (b115) trang chi tiết: thanh Quay lại, thanh mục con
+              `.qt-layout`, bảng thông tin `.qt-tt`.
 
    ⚠ FILE RIÊNG, KHÔNG NHÚNG VÀO `QuanTri.html`, và đó là chủ ý. Bản giả để
      nhìn bằng mắt — `../kiem-thu/trang-quan-tri-gia.html`, nằm NGOÀI repo —
@@ -56,6 +58,53 @@
 .qt-canh-bao h1 { margin:0 0 12px; font-size:22px; }
 .qt-canh-bao a { color:#6a625a; }
 
+/* ═══ Trang chi tiết (b115) — lớp thứ hai dưới một khu ═══
+   `js/pages/quan-tri/trang-chi-tiet.js` vẽ vỏ; bề ngang thì chỉ file này biết.
+   Màu lấy lại của huy hiệu `.qt-so` (#e9dfd0 / #5b4533) — không thêm màu mới. */
+.qt-thanh-ve { display:flex; flex-wrap:wrap; align-items:baseline;
+               gap:4px 10px; margin:0 0 14px; }
+.qt-quay-lai { padding:0; border:0; background:none; color:#5b4533;
+               font:inherit; font-size:15px; font-weight:600;
+               cursor:pointer; touch-action:manipulation; }
+.qt-quay-lai:hover { text-decoration:underline; }
+.qt-vi-tri { min-width:0; color:#8a8078; font-size:14px;
+             overflow-wrap:anywhere; }
+.qt-phu { margin:-6px 0 16px; color:#6a625a; overflow-wrap:anywhere; }
+
+/* Thanh mục con 205px bên trái, nội dung bên phải — cùng số đo prototype. */
+.qt-layout { display:grid; grid-template-columns:205px minmax(0,1fr);
+             gap:16px; align-items:start; }
+.qt-muc { display:flex; flex-direction:column; gap:2px; padding:8px;
+          border:1px solid #e6e0d8; border-radius:10px; background:#fffdf9; }
+.qt-muc-nut { display:block; width:100%; padding:9px 10px; border:0;
+              border-radius:8px; background:none; color:#554f49;
+              font:inherit; font-size:14px; text-align:left;
+              cursor:pointer; touch-action:manipulation; }
+.qt-muc-nut:hover { background:#f3eee7; }
+.qt-muc-nut.dang-mo { background:#e9dfd0; color:#5b4533; font-weight:600; }
+.qt-noi-dung { min-width:0; }
+.qt-di-toi { display:inline-block; margin-top:8px; color:#5b4533;
+             font-weight:600; }
+
+/* Bảng thông tin hai cột: nhãn · giá trị. */
+.qt-tt { margin:0; border:1px solid #e6e0d8; border-radius:10px;
+         background:#fffdf9; }
+.qt-tt-dong { display:grid; grid-template-columns:minmax(0,200px) minmax(0,1fr);
+              gap:12px; padding:11px 16px; border-top:1px solid #f2eee8; }
+.qt-tt-dong:first-child { border-top:0; }
+.qt-tt dt { color:#6a625a; }
+.qt-tt dd { margin:0; overflow-wrap:anywhere; }
+
+/* ⚠ 1000px, KHÔNG 680px: thanh trái 210px của khung vẫn còn ở khoảng
+   681–1000px, và cộng thêm thanh mục 205px nữa thì nội dung chỉ còn chừng
+   200px. Nên thanh mục thành hàng thẻ SỚM hơn thanh trái. */
+@media (max-width: 1000px) {
+  .qt-layout { grid-template-columns:minmax(0,1fr); gap:12px; }
+  .qt-muc { flex-direction:row; overflow-x:auto; padding:6px;
+            -webkit-overflow-scrolling:touch; }
+  .qt-muc-nut { width:auto; white-space:nowrap; }
+}
+
 /* Màn hình rộng: bỏ trần 1120px, cho bảng kiểm duyệt dùng hết bề ngang. */
 @media (min-width: 1240px) {
   .qt-khung { max-width:none;
@@ -73,4 +122,6 @@
   .qt-dieu-huong { flex-direction:row; flex-wrap:wrap; gap:8px; }
   .qt-nut { width:auto; margin:0; padding:8px 14px; font-size:13px; }
   .qt-ve-so-do { margin-top:14px; }
+  /* Bảng thông tin: nhãn nằm TRÊN giá trị, không chia đôi 366px. */
+  .qt-tt-dong { grid-template-columns:minmax(0,1fr); gap:2px; }
 }

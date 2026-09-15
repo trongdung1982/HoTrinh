@@ -5,7 +5,10 @@
 //            `khu-thanh-vien.js` · `khu-tai-khoan-he-thong.js`, và những cửa
 //            của chúng trong `js/services/sb.js` (b98 + b101 + b106 + b109).
 // Chạy     : cd supabase/kiem-thu && node kiem-trang-quan-tri.mjs
-// Phiên bản: 0.6.0 · Cập nhật: 10/09/2026 (b110c)
+// Phiên bản: 0.7.0 · Cập nhật: 15/09/2026 (b115)
+//            0.7.0 PHẦN L — lớp trang chi tiết: `trang-chi-tiet.js` ·
+//            `trang-cay.js`, đăng ký trong `TRANG` của khung, luật 5a (tìm
+//            cây theo mã trong địa chỉ), CSS gập thanh mục con. G20 · G21.
 //            0.6.0 PHẦN K — lỗ hổng HAI CHỮ KÝ chủ dự án báo 10/09/2026:
 //            bốn cửa của `13`/`08` ghi được vào một dòng lời mời chưa ai
 //            nhận. Gác cả hai lớp của `18-hai-chu-ky.sql`, cộng phần màn
@@ -1010,6 +1013,67 @@ kiem('sb.js đọc moiLuc · moiVai từ ds_thanh_vien()',
      'cầu nối nuốt mất hai cột — màn hình lại mù');
 
 // ============================================================
+// PHẦN L — b115: lớp TRANG CHI TIẾT dưới bốn khu
+// ============================================================
+console.log('\nPHẦN L — trang chi tiết: trang-chi-tiet.js · trang-cay.js');
+
+const JS_CT = doc('../js/pages/quan-tri/trang-chi-tiet.js');
+const JS_TC = doc('../js/pages/quan-tri/trang-cay.js');
+
+for (const [ten, ma] of [['trang-chi-tiet.js', JS_CT], ['trang-cay.js', JS_TC]]) {
+  kiem(ten + ' có khối ghi chú đầu file đúng khuôn',
+       ghiChuDauFile(ma), 'thiếu Vai trò / Lớp / Phụ thuộc / Phiên bản');
+  kiem(ten + ' không chạm window.supabase — luật MỘT CỬA',
+       motCua(ma), 'gọi thẳng máy chủ');
+  kiem(ten + ' KHÔNG kéo theo bộ vẽ sơ đồ',
+       !/from\s+'\.\.\/(tree-view|khoi-dong)\.js'/.test(boGhiChuJs(ma)),
+       'import bộ vẽ — trang này cố ý không nạp cây');
+  kiem(ten + ' không hỏi bề ngang màn hình trong JS',
+       motBoMa(ma), 'có nhánh riêng theo innerWidth/matchMedia');
+  kiem(ten + ' không dùng alert/confirm',
+       !/\b(alert|confirm)\s*\(/.test(boGhiChuJs(ma)),
+       'app này không dùng hộp thoại của trình duyệt ở đâu cả');
+  const thieu = classThieuTrongCss(ma, CSS);
+  kiem('mọi class qt- của ' + ten + ' có trong quan-tri.css',
+       thieu.length === 0, 'thiếu định nghĩa: ' + thieu.join(', '));
+}
+
+// Trang chi tiết là lớp THỨ HAI của cùng một khung, không phải trang thứ ba:
+// khung đăng ký nó, khung đọc `#`, khung sửa `#` lạ.
+kiem('khung đăng ký trang chi tiết một cây dưới khu gia-pha',
+     /khu:\s*'gia-pha',\s*ma:\s*'cay',\s*mount:\s*mountTrangCay/.test(JS_KH),
+     'không thấy dòng đăng ký trong TRANG');
+
+kiem('khung dựng # của trang chi tiết bằng duongDan(), một chỗ ghép chuỗi',
+     /import\s*\{\s*duongDan\s*\}\s*from\s*'\.\/trang-chi-tiet\.js'/.test(JS_KH) &&
+     /duongDan\(/.test(boGhiChuJs(JS_KH)),
+     'khung tự ghép chuỗi # — hai chỗ ghép là hai chỗ lệch');
+
+// Người mở trang chi tiết bằng link được gửi cho thì `history.back()` đưa họ
+// RA KHỎI trang Quản trị. Nút ghi "Quay lại Gia phả" thì phải về Gia phả.
+kiem('nút Quay lại về khu cha bằng location.hash, không history.back()',
+     /Quay lại/.test(JS_CT) &&
+     /location\.hash\s*=\s*o\.hashQuayVe/.test(JS_CT) &&
+     !/history\.back\s*\(/.test(boGhiChuJs(JS_CT)),
+     'nút Quay lại đi đường khác');
+
+// Luật 5a: không màn hình nào ngầm định cây đang mở.
+kiem('trang cây tìm cây theo MÃ trong địa chỉ, không theo cây đang mở',
+     trangCayTheoMa(JS_TC), 'trang cây đọc phien.treeId / rơi về cây đang mở');
+
+kiem('trang cây b115 chỉ ĐỌC — từ sb.js chỉ nạp layDanhSachGiaPha',
+     /import\s*\{\s*layDanhSachGiaPha\s*\}\s*from\s*'\.\.\/\.\.\/services\/sb\.js'/
+       .test(JS_TC),
+     'trang cây nạp thêm cửa — b115 là bước khung, chưa đổi ruột');
+
+kiem('kết quả máy chủ về muộn không đè lên trang vừa mở',
+     /location\.hash\s*!==\s*hashLuc/.test(JS_TC),
+     'không so lại địa chỉ sau khi chờ máy chủ');
+
+kiem('quan-tri.css: thanh mục con thành một cột khi hẹp',
+     layoutGapKhiHep(CSS), 'thiếu @media gập .qt-layout');
+
+// ============================================================
 // PHẦN G — KIỂM CHỨNG NGƯỢC: bẻ gãy mã rồi xem bài kiểm có bắt được không
 // ============================================================
 console.log('\nPHẦN G — kiểm chứng ngược (bẻ gãy có chủ ý)');
@@ -1201,10 +1265,47 @@ console.log('\nPHẦN G — kiểm chứng ngược (bẻ gãy có chủ ý)');
        !/khoaMo\s*=[^;]*trangThai === 'duocmoi'/.test(boGhiChuJs(hong19)),
        'không bắt được — phép ở PHẦN K vô dụng');
 }
+
+// G20 — trang cây rơi về cây đang mở khi không tìm thấy mã. Neo vào TÊN
+// (`c.treeCode === ctx.thamSo`), không neo vào thứ tự dòng — xem G19.
+{
+  const hong20 = JS_TC.replace(/c\.treeCode\s*===\s*ctx\.thamSo/g,
+                               'c.fileId === ctx.phien.treeId');
+  kiem('bắt được trang cây ngầm định cây đang mở',
+       !trangCayTheoMa(hong20), 'không bắt được — phép ở PHẦN L vô dụng');
+}
+
+// G21 — bỏ chỗ gập thanh mục con: ở 681–1000px nội dung còn chừng 200px.
+{
+  const hong21 = CSS.replace(
+    /(\.qt-layout\s*\{[^}]*grid-template-columns:\s*)minmax\(0,\s*1fr\)/g,
+    '$1205px minmax(0,1fr)');
+  kiem('bắt được thanh mục con không gập khi hẹp',
+       !layoutGapKhiHep(hong21), 'không bắt được — phép ở PHẦN L vô dụng');
+}
 // ------------------------------------------------------------
 console.log('\n' + (hong === 0 ? 'TẤT CẢ ĐẠT' : 'CÓ PHÉP HỎNG') +
             ' — ' + dat + ' đạt, ' + hong + ' hỏng.');
 process.exitCode = hong === 0 ? 0 : 1;
+
+/**
+ * Trang cây tìm cây theo mã trong địa chỉ, và KHÔNG đọc `treeId` ở đâu cả —
+ * luật 5a: không màn hình nào ngầm định cây đang mở.
+ */
+function trangCayTheoMa(js) {
+  const lenh = boGhiChuJs(js);
+  return /c\.treeCode\s*===\s*ctx\.thamSo/.test(lenh) && !/treeId/.test(lenh);
+}
+
+/**
+ * Có một `@media (max-width…)` gập `.qt-layout` thành một cột. Tách theo
+ * `@media` rồi soi từng khúc, để quy tắc gốc (205px + 1fr) không khớp nhầm.
+ */
+function layoutGapKhiHep(css) {
+  return css.split('@media').slice(1).some((k) =>
+    /^\s*\(max-width/.test(k) &&
+    /\.qt-layout\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/.test(k));
+}
 
 // ============================================================
 // Hàm phụ

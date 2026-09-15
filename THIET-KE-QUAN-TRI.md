@@ -541,6 +541,15 @@ trang chi tiết cũng phải khai báo ở đó, không rải sang file khác. 
 cạnh mục điều hướng (luật 1 mục 3) giữ nguyên, cộng thêm huy hiệu đếm trong
 subnav của trang chi tiết (ví dụ *Đơn xin vào ①* ở `#tree-detail`).
 
+✓ **Đã làm ở b115 — và địa chỉ KHÁC prototype.** Không dùng `#tree-detail`
+(tên phẳng, mất khu cha) mà `#<khu>/<trang>/<mã>[/<mục>]`, ví dụ
+`#gia-pha/cay/NPG473/loi-moi`: nút trên thanh trái tô đúng khu cha, và mã cây
+nằm TRONG địa chỉ theo luật 5a. Mục đầu không ghi vào địa chỉ. Trang mới =
+một dòng trong `TRANG` của `khung.js`; vỏ (Quay lại · tựa · thanh mục) ở
+`trang-chi-tiet.js`. Thanh mục gập thành hàng thẻ ở **1000px**, không 680px:
+khoảng 681–1000px thanh trái 210px vẫn còn, thêm 205px thanh mục là nội dung
+chỉ còn chừng 200px. Huy hiệu đếm trong thanh mục **chưa làm** — b116.
+
 **② Khối b111c cắm vào đâu?** Xác nhận đúng gợi ý của `KE-HOACH.md`: nút
 **Đề xuất mã người** đứng ở khu Tài khoản, cạnh cột *"Tôi được gắn với ai
 trong sơ đồ?"* trong bảng *Các gia phả tôi đang tham gia* (`#tai-khoan`) —
