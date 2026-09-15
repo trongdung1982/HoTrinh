@@ -1,172 +1,95 @@
 /* ============================================================
    giapha-supabase · quan-tri.css
-   Vai trò  : Bố cục khung bốn khu của `QuanTri.html` — thanh trái trên máy
-              tính, hàng thẻ ngang trên điện thoại.
-   Phiên bản: 0.4.0 · Cập nhật: 15/09/2026 (b117)
-              0.4.0 (b117) khu Tài khoản: chip · khối có tựa · lưới hai cột
-              (gập ở 1000px) · bảng `.qt-bang` · form mật khẩu.
-              0.3.0 (b116) `.qt-lk` — liên kết tên cây trong bảng, bấm sang
-              trang chi tiết.
-              0.2.0 (b115) trang chi tiết: thanh Quay lại, thanh mục con
-              `.qt-layout`, bảng thông tin `.qt-tt`.
+   Vai trò  : Giao diện trang Quản trị — CHÉP NGUYÊN VĂN CSS của prototype
+              `quantri3.html` chủ dự án đã chốt 13/09/2026.
+   Phiên bản: 1.0.0 · Cập nhật: 15/09/2026 (b118c)
+              1.0.0 (b118c) BỎ toàn bộ bộ `.qt-*` tự vẽ của b101–b117, thay
+              bằng CSS nguyên văn của quantri3. Khối "TẠM" ở cuối file giữ
+              lại những class `.qt-*` mà các khu CHƯA chuyển sang giao diện
+              quantri3 vẫn còn dùng — xoá dần theo từng khu chuyển xong.
 
-   ⚠ FILE RIÊNG, KHÔNG NHÚNG VÀO `QuanTri.html`, và đó là chủ ý. Bản giả để
-     nhìn bằng mắt — `../kiem-thu/trang-quan-tri-gia.html`, nằm NGOÀI repo —
-     nạp đúng file này. Nhúng CSS vào trang thật thì bản giả phải chép lại
-     một bản thứ hai, và hai bản thì có ngày lệch nhau: lúc ấy cái nhìn thấy
-     không còn nói được gì về trang thật nữa.
+   ⚠⚠ KHỐI GIỮA HAI DÒNG "QUANTRI3" LÀ BẢN CHÉP, KHÔNG SỬA TAY.
+     Chủ dự án hỏi 15/09/2026: *"tại sao bạn không copy nguyên giao diện của
+     quantri3.html về và gắn chức năng vào?"* — vì b114–b118 đã vẽ lại theo
+     kiểu cũ và lệch nhiều. Muốn đổi giao diện thì đổi ở prototype trước, rồi
+     chép lại cả khối; sửa lẻ ở đây là bắt đầu lệch lần thứ hai.
 
-   ⚠ Đây cũng là chỗ DUY NHẤT biết màn hình rộng bao nhiêu. `js/pages/
-     quan-tri/khung.js` vẽ đúng một danh sách khu và không hỏi câu ấy lần nào.
+   ⚠ FILE RIÊNG, KHÔNG NHÚNG VÀO `QuanTri.html`: bản giả để nhìn bằng mắt
+     (`../kiem-thu/trang-quan-tri-gia.html`, ngoài repo) nạp đúng file này.
    ============================================================ */
 
-.qt-khung { display:grid; grid-template-columns:210px minmax(0,1fr);
-            gap:24px; margin:0 auto; padding:22px 18px 60px;
-            box-sizing:border-box; max-width:1120px; }
+/* ─── QUANTRI3 · BẮT ĐẦU BẢN CHÉP ─── */
+:root{--bg:#f4f1ec;--paper:#fffdfa;--ink:#282522;--muted:#746d66;--line:#e4ddd5;--accent:#8a5032;--accent-bg:#f7e8dd;--ok:#2f765a;--ok-bg:#e5f2eb;--danger:#aa443c;--danger-bg:#f9e7e5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}.app{max-width:1500px;min-height:100vh;margin:auto;display:grid;grid-template-columns:245px 1fr;background:#fbfaf8}aside{padding:26px 16px;border-right:1px solid var(--line);background:#f8f5f1}.logo{display:flex;gap:10px;align-items:center;margin:0 8px 30px;font:700 18px Georgia,serif}.logo i{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--accent);color:#fff;font-style:normal;font-size:20px}nav{display:grid;gap:5px}.nav{display:flex;align-items:center;gap:10px;width:100%;padding:11px 12px;border:0;border-radius:10px;background:none;color:#554f49;text-align:left;cursor:pointer}.nav.active{background:var(--ink);color:#fff;font-weight:700}.nav b{margin-left:auto;border-radius:999px;padding:1px 7px;background:var(--accent-bg);color:var(--accent);font-size:12px}.nav.active b{background:#fff;color:var(--accent)}.back{display:block;margin:34px 10px;color:var(--muted);text-decoration:none}main{min-width:0;padding:28px clamp(20px,4vw,62px) 70px}.top{display:flex;justify-content:space-between;color:var(--muted);margin-bottom:28px}.user{color:#4c4641}.avatar{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#dfd4c7;color:#5d4838;font-weight:700;margin-right:7px}h1{margin:0;font:36px/1.1 Georgia,serif}h2{margin:0;font-size:19px}h3{margin:0;font-size:15px}.lead{margin:8px 0 0;color:var(--muted);max-width:720px}.head{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:24px}.scope{padding:10px 13px;border:1px solid var(--line);border-radius:11px;background:var(--paper);min-width:230px}.scope small,.scope strong{display:block}.scope small{color:var(--muted);font-size:11px}.notice{padding:13px 16px;border:1px solid #ead7c9;border-radius:12px;background:#fff8f2;margin-bottom:20px;color:#5c4a3e}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}.chip,.btn{border:1px solid var(--line);border-radius:8px;background:var(--paper);padding:8px 12px;color:#514a44;cursor:pointer}.chip.active,.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}.btn.warm{background:var(--accent);color:#fff;border-color:var(--accent)}.btn.danger{color:var(--danger);border-color:#e5bbb7}.role-select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}.role-select:disabled{opacity:.7;cursor:not-allowed;background:#efeae3;border-color:#dcd4ca;color:#5a544e}.panel{border:1px solid var(--line);border-radius:13px;background:var(--paper);overflow:auto;box-shadow:0 8px 25px #4c392010}.panel-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line);gap:12px}.panel-head span{color:var(--muted);font-size:13px}table{width:100%;border-collapse:collapse;min-width:760px}th{padding:10px 16px;text-align:left;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;background:#fcfaf7}td{padding:13px 16px;border-top:1px solid #efe9e2;vertical-align:middle}.name{font-weight:700}.sub{display:block;color:var(--muted);font-size:12px}.badge{display:inline-block;padding:2px 8px;border-radius:99px;background:var(--ok-bg);color:var(--ok);font-size:12px;font-weight:700}.badge.wait{background:var(--accent-bg);color:var(--accent)}.badge.red{background:var(--danger-bg);color:var(--danger)}.link{padding:0;border:0;background:none;color:var(--accent);font-weight:700;cursor:pointer}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}.card{padding:17px;border:1px solid var(--line);border-radius:13px;background:var(--paper)}.card p{color:var(--muted);margin:8px 0 14px}.row-actions{display:flex;gap:7px;flex-wrap:wrap}.invite-grid{display:grid;grid-template-columns:1fr;gap:12px}.filter-results{display:grid;gap:4px;margin-top:6px}.filter-results .link{display:block;width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:#fcfaf7;text-align:left;font-weight:500}.filter-results .link:hover{background:var(--accent-bg)}.action-menu{position:relative;display:inline-block}.action-options{display:grid;gap:6px;position:absolute;z-index:5;right:0;top:calc(100% + 5px);min-width:220px;white-space:nowrap;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--paper);box-shadow:0 10px 24px #4c39201f}.action-options .btn{width:100%;text-align:left}.btn:disabled{opacity:.55;cursor:not-allowed}.is-disabled-row td{color:#aaa;background:#f4f2ef}.is-disabled-row .name,.is-disabled-row .sub{color:#aaa}.layout{display:grid;grid-template-columns:205px 1fr;gap:16px}.subnav{padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--paper);height:max-content}.subnav button{display:block;width:100%;border:0;background:none;text-align:left;padding:9px;border-radius:8px;cursor:pointer;color:#554f49}.subnav button.active{background:var(--accent-bg);color:var(--accent);font-weight:700}.detailbar{display:flex;gap:12px;align-items:center;margin-bottom:18px}.backbtn{border:0;background:none;color:var(--accent);font-weight:700;cursor:pointer}.split{display:grid;grid-template-columns:1fr 1fr;gap:14px}.list{list-style:none;margin:0;padding:0}.list li{display:flex;justify-content:space-between;gap:12px;padding:13px 17px;border-top:1px solid #efe9e2}.list li:first-child{border-top:0}.muted{color:var(--muted)}[hidden]{display:none!important}@media(max-width:850px){.app{display:block}aside{padding:15px;border-right:0;border-bottom:1px solid var(--line)}.logo{margin:0 4px 13px}nav{display:flex;overflow:auto}.nav{width:auto;white-space:nowrap}.back{display:none}.head{display:block}.scope{margin-top:16px}.cards{grid-template-columns:1fr}.layout{grid-template-columns:1fr}.subnav{display:flex;overflow:auto}.subnav button{white-space:nowrap;width:auto}.split{grid-template-columns:1fr}main{padding-top:22px}.top{margin-bottom:20px}.user{display:none}}
+.modal-backdrop{position:fixed;inset:0;background:rgba(40,37,34,0.45);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;animation:fadeIn .15s ease}.modal-box{width:100%;max-width:430px;background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 45px rgba(40,37,34,0.25);padding:22px 24px;text-align:left}.modal-title{margin:0 0 10px;font:700 18px Georgia,serif;color:var(--ink)}.modal-desc{margin:0 0 20px;color:#554f49;font-size:14px;line-height:1.5}.modal-actions{display:flex;justify-content:flex-end;gap:10px}.diff-old{color:var(--danger);font-weight:600;background:var(--danger-bg);padding:2px 7px;border-radius:6px;display:inline-block}.diff-new{color:var(--ok);font-weight:600;background:var(--ok-bg);padding:2px 7px;border-radius:6px;display:inline-block}@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
-/* `sticky`, KHÔNG `fixed`: trang này là một tài liệu dài phải cuộn được
-   bằng cả trang (xem ghi chú #app ở trên). `sticky` giữ nguyên điều ấy. */
-.qt-thanh { position:sticky; top:18px; height:max-content; }
+/* ─── QUANTRI3 · HẾT BẢN CHÉP ─── */
 
-.qt-nhan { font-size:14px; letter-spacing:.1em; margin:0 0 14px;
-           color:#6a625a; font-weight:600; }
-
-.qt-dieu-huong { display:flex; flex-direction:column; }
-
-/* Ngôn ngữ hình lấy nguyên của `veThanhLoc()` trong khu Kiểm duyệt: cùng
-   bo 9px, cùng nền #2a2622 khi đang chọn, cùng viền #e6e0d8 khi không. */
-.qt-nut { display:flex; align-items:center; justify-content:space-between;
-          gap:8px; width:100%; padding:10px 12px; margin:0 0 6px;
-          border:1px solid #e6e0d8; border-radius:9px; background:#faf8f5;
-          color:#2a2622; font:inherit; font-size:15px; text-align:left;
-          cursor:pointer; touch-action:manipulation; }
-.qt-nut:hover { border-color:#c9c0b4; }
-.qt-nut.dang-mo { background:#2a2622; color:#fffdf9; border-color:#2a2622;
-                  font-weight:600; }
-
-/* Con số đếm. Nền sáng cả khi nút đang đen — số phải đọc được ở cả hai. */
-.qt-so { flex:none; min-width:21px; padding:1px 6px; border-radius:10px;
-         background:#e9dfd0; color:#5b4533; font-size:12px;
-         font-weight:600; text-align:center; }
-
-.qt-ve-so-do { display:inline-block; margin-top:24px; color:#6a625a;
-               font-size:15px; }
-
-.qt-than { min-width:0; }   /* không có dòng này thì bảng rộng làm phình cả lưới */
-.qt-tua { margin:0 0 12px; font-size:22px; }
-.qt-chua-lam { padding:18px; border:1px solid #e6e0d8; border-radius:10px;
-               background:#fffdf9; color:#6a625a; line-height:1.6; }
-
-.qt-canh-bao { max-width:560px; margin:0 auto; padding:32px 24px;
-               line-height:1.6; }
+/* ═══ Phần app cần mà prototype không có ═══
+   Prototype là trang tĩnh nên không có chỗ nói "đang đọc", "máy chủ từ chối",
+   hay màn hình đăng nhập. Chỉ dùng biến màu của chính prototype. */
+.qt-canh-bao { max-width:560px; margin:0 auto; padding:32px 24px; line-height:1.6; }
 .qt-canh-bao h1 { margin:0 0 12px; font-size:22px; }
-.qt-canh-bao a { color:#6a625a; }
+.qt-canh-bao a { color:var(--muted); }
+.loi-dong { display:block; margin-top:6px; color:var(--danger); font-size:12px; line-height:1.4; }
+.dong-trong td { color:var(--muted); text-align:center; padding:22px 16px; }
+.modal-box textarea, .modal-box input[type="text"] {
+  width:100%; padding:10px; border:1px solid var(--line); border-radius:8px;
+  font:inherit; margin:0 0 14px; box-sizing:border-box; }
 
-/* ═══ Trang chi tiết (b115) — lớp thứ hai dưới một khu ═══
-   `js/pages/quan-tri/trang-chi-tiet.js` vẽ vỏ; bề ngang thì chỉ file này biết.
-   Màu lấy lại của huy hiệu `.qt-so` (#e9dfd0 / #5b4533) — không thêm màu mới. */
-.qt-thanh-ve { display:flex; flex-wrap:wrap; align-items:baseline;
-               gap:4px 10px; margin:0 0 14px; }
-.qt-quay-lai { padding:0; border:0; background:none; color:#5b4533;
-               font:inherit; font-size:15px; font-weight:600;
-               cursor:pointer; touch-action:manipulation; }
-.qt-quay-lai:hover { text-decoration:underline; }
-.qt-vi-tri { min-width:0; color:#8a8078; font-size:14px;
-             overflow-wrap:anywhere; }
-.qt-phu { margin:-6px 0 16px; color:#6a625a; overflow-wrap:anywhere; }
-
-/* Thanh mục con 205px bên trái, nội dung bên phải — cùng số đo prototype. */
-.qt-layout { display:grid; grid-template-columns:205px minmax(0,1fr);
-             gap:16px; align-items:start; }
-.qt-muc { display:flex; flex-direction:column; gap:2px; padding:8px;
-          border:1px solid #e6e0d8; border-radius:10px; background:#fffdf9; }
-.qt-muc-nut { display:block; width:100%; padding:9px 10px; border:0;
-              border-radius:8px; background:none; color:#554f49;
-              font:inherit; font-size:14px; text-align:left;
-              cursor:pointer; touch-action:manipulation; }
-.qt-muc-nut:hover { background:#f3eee7; }
-.qt-muc-nut.dang-mo { background:#e9dfd0; color:#5b4533; font-weight:600; }
-.qt-noi-dung { min-width:0; }
-.qt-di-toi { display:inline-block; margin-top:8px; color:#5b4533;
-             font-weight:600; }
-
-/* Liên kết trong dòng — tên trong bảng bấm sang trang chi tiết (b116). */
-.qt-lk { color:#2a2622; text-decoration:none; border-bottom:1px solid #dcd5cb; }
-.qt-lk:hover { border-bottom-color:#5b4533; }
-
-/* Bảng thông tin hai cột: nhãn · giá trị. */
-.qt-tt { margin:0; border:1px solid #e6e0d8; border-radius:10px;
-         background:#fffdf9; }
+/* ═══ TẠM — class `.qt-*` của các khu CHƯA chuyển sang giao diện quantri3 ═══
+   Khu Tài khoản · Kiểm duyệt · Sổ tài khoản · trang chi tiết một cây vẫn vẽ
+   bằng mã b106–b118. Xoá từng dòng dưới đây khi khu cuối cùng dùng nó đã
+   chuyển xong — `grep qt-<tên> js/` ra rỗng là xoá được. */
+.qt-tua { margin:0 0 12px; font-size:22px; }
+.qt-chua-lam { padding:18px; border:1px solid var(--line); border-radius:10px;
+               background:var(--paper); color:var(--muted); line-height:1.6; }
+.qt-di-toi { display:inline-block; margin-top:8px; color:var(--accent); font-weight:600; }
+.qt-lk { color:var(--ink); text-decoration:none; border-bottom:1px solid #dcd5cb; }
+.qt-lk:hover { border-bottom-color:var(--accent); }
+.qt-tt { margin:0; border:1px solid var(--line); border-radius:10px; background:var(--paper); }
 .qt-tt-dong { display:grid; grid-template-columns:minmax(0,200px) minmax(0,1fr);
               gap:12px; padding:11px 16px; border-top:1px solid #f2eee8; }
 .qt-tt-dong:first-child { border-top:0; }
-.qt-tt dt { color:#6a625a; }
+.qt-tt dt { color:var(--muted); }
 .qt-tt dd { margin:0; overflow-wrap:anywhere; }
-
-/* ═══ Khu Tài khoản (b117) ═══
-   Chip lấy nguyên ngôn ngữ hình của `.qt-nut` và chip khu Gia phả: bo 9px,
-   nền #2a2622 khi đang chọn. Khối `.qt-khoi` là `panel` của prototype. */
-.qt-danh-tinh { margin:0 0 12px; color:#2a2622; font-weight:600; line-height:1.5;
+.qt-danh-tinh { margin:0 0 12px; color:var(--ink); font-weight:600; line-height:1.5;
                 overflow-wrap:anywhere; }
-.qt-cho { color:#8a8078; }
+.qt-cho { color:var(--muted); }
 .qt-hai-cot { display:grid; grid-template-columns:repeat(2, minmax(0,1fr));
               gap:16px; margin:0 0 16px; align-items:start; }
 .qt-khoi { min-width:0; margin:0 0 16px; padding:14px 16px 16px;
-           border:1px solid #e6e0d8; border-radius:10px; background:#fffdf9; }
+           border:1px solid var(--line); border-radius:10px; background:var(--paper); }
 .qt-hai-cot > .qt-khoi { margin:0; }
 .qt-khoi-dau { display:flex; flex-wrap:wrap; align-items:baseline;
                justify-content:space-between; gap:2px 12px; margin:0 0 8px; }
 .qt-khoi-tua { margin:0; font-size:15px; }
-.qt-ghi { color:#8a8078; font-size:12px; line-height:1.5; }
+.qt-ghi { color:var(--muted); font-size:12px; line-height:1.5; }
 .qt-ghi-khoi { margin:10px 0 0; }
-.qt-ghi-loi { margin:0 0 8px; color:#a83220; }
-/* Bảng thông tin nằm TRONG khối đã có viền — bỏ viền thứ hai. */
+.qt-ghi-loi { margin:0 0 8px; color:var(--danger); }
 .qt-khoi .qt-tt { border:0; background:none; }
 .qt-khoi .qt-tt-dong { padding:9px 0; }
 .qt-cuon-ngang { overflow-x:auto; -webkit-overflow-scrolling:touch; }
 .qt-bang { width:100%; min-width:720px; border-collapse:collapse; font-size:13px; }
 .qt-bang th { padding:9px 10px; text-align:left; font-weight:600; font-size:12px;
-              color:#6a625a; white-space:nowrap; }
+              color:var(--muted); white-space:nowrap; }
 .qt-bang td { padding:10px; border-top:1px solid #f2eee8; vertical-align:top;
-              color:#2a2622; overflow-wrap:anywhere; }
+              color:var(--ink); overflow-wrap:anywhere; }
 .qt-khung-viec { margin-top:14px; }
 .qt-form { display:flex; flex-direction:column; gap:10px; max-width:420px; }
-.qt-nhan-o { display:flex; flex-direction:column; gap:4px; font-size:12px;
-             color:#6a625a; }
+.qt-nhan-o { display:flex; flex-direction:column; gap:4px; font-size:12px; color:var(--muted); }
 .qt-o-nhap { padding:8px 10px; border:1px solid #dcd5cb; border-radius:7px;
-             background:#fff; color:#2a2622; font:inherit; font-size:14px; }
-.qt-hang-nut { display:flex; flex-wrap:wrap; gap:10px; align-items:center;
-               margin-top:4px; }
+             background:#fff; color:var(--ink); font:inherit; font-size:14px; }
+.qt-hang-nut { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:4px; }
+/* Bảng cũ vẽ bằng `style=` từng ô — không để `table{min-width:760px}` và
+   `th{text-transform:uppercase}` của prototype kéo phình bảng con lồng bên
+   trong. Chỉ áp trong vùng tạm, không đụng bảng quantri3. */
+#khu-tam table, [data-tam] table { min-width:0; }
+#khu-tam th, [data-tam] th { text-transform:none; letter-spacing:0; }
 
-/* ⚠ 1000px, KHÔNG 680px: thanh trái 210px của khung vẫn còn ở khoảng
-   681–1000px, và cộng thêm thanh mục 205px nữa thì nội dung chỉ còn chừng
-   200px. Nên thanh mục thành hàng thẻ SỚM hơn thanh trái. */
 @media (max-width: 1000px) {
-  /* Hai khối Hồ sơ · Quyền cấp hệ thống: cùng lý do, mỗi khối còn ~340px. */
   .qt-hai-cot { grid-template-columns:minmax(0,1fr); }
-  .qt-layout { grid-template-columns:minmax(0,1fr); gap:12px; }
-  .qt-muc { flex-direction:row; overflow-x:auto; padding:6px;
-            -webkit-overflow-scrolling:touch; }
-  .qt-muc-nut { width:auto; white-space:nowrap; }
 }
-
-/* Màn hình rộng: bỏ trần 1120px, cho bảng kiểm duyệt dùng hết bề ngang. */
-@media (min-width: 1240px) {
-  .qt-khung { max-width:none;
-              padding-left:clamp(24px, 5vw, 80px);
-              padding-right:clamp(24px, 5vw, 80px); }
-}
-
-/* Điện thoại: thanh trái thành HÀNG THẺ NGANG ở đầu trang. Cùng cây DOM,
-   chỉ đổi chiều của hai cái `flex`. */
 @media (max-width: 680px) {
-  .qt-khung { grid-template-columns:minmax(0,1fr); gap:14px;
-              padding:16px 12px 48px; }
-  .qt-thanh { position:static; }
-  .qt-nhan { display:none; }        /* tựa trang đã có ở <title> và ở khu */
-  .qt-dieu-huong { flex-direction:row; flex-wrap:wrap; gap:8px; }
-  .qt-nut { width:auto; margin:0; padding:8px 14px; font-size:13px; }
-  .qt-ve-so-do { margin-top:14px; }
-  /* Bảng thông tin: nhãn nằm TRÊN giá trị, không chia đôi 366px. */
   .qt-tt-dong { grid-template-columns:minmax(0,1fr); gap:2px; }
 }

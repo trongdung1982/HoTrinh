@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 15/09/2026 · Bước gần nhất: **b118** — quantri3: khu Quản trị hệ thống
-· Việc kế tiếp: **b118b — SQL cho bốn luật mới (nhóm D)**
+*Cập nhật 15/09/2026 · Bước gần nhất: **b118c** — trang Quản trị = HTML + CSS nguyên văn quantri3 (phần 1)
+· Việc kế tiếp: **b118d — chuyển nốt các khu còn vẽ tạm sang HTML quantri3**
 
 ⚠ **TRẦN CỨNG 250 DÒNG.** File này nạp ở đầu MỌI phiên, nên mỗi dòng thừa ở
 đây là dòng thừa nhân với số phiên còn lại. Vượt trần là dấu hiệu có thứ đứng
@@ -32,7 +32,9 @@ quantri3 vào app chính sau đó mới làm việc khác."*
 | ~~5~~ | ~~b116~~ | ✓ **XONG 15/09/2026** — bốn chip khu Gia phả, tên cây bấm sang trang chi tiết; ba mục trang cây điền thật + Vòng đời mới; `rut_don_xin_vao`/`roi_cay` (`22`, chưa dán lên Supabase thật) | Sonnet |
 | ~~6~~ | ~~b117~~ | ✓ **XONG 15/09/2026** — khu 2 = *Tài khoản của tôi* (mở cho MỌI người) + chip *Toàn hệ thống*; trang `#thanh-vien/tai-khoan/<mã>`; nút Đề xuất ở bảng các gia phả, xét đơn ở trang cây; `doiMatKhau` · `chanCuaToi` | Opus |
 | ~~7~~ | ~~b118~~ | ✓ **XONG 15/09/2026** — khu thứ tư đổi *Sao lưu* → *Quản trị hệ thống*; sổ tài khoản dời từ chip khu Tài khoản sang đó; trang chi tiết tài khoản đổi khu cha theo; Kiểm duyệt không đổi (đã nối sẵn); 298 phép, 43 ảnh | Sonnet |
-| 7b | **b118b** | SQL cho bốn luật mới *(nhóm D)* — đụng nền móng quyền | Opus |
+| ~~7a~~ | ~~b118c~~ | ✓ **XONG 15/09/2026** — chủ dự án: *"copy nguyên giao diện quantri3 rồi gắn chức năng"*. HTML + CSS = bản chép quantri3; gắn thật Gia phả · trang Mời · QTHT (Tổng quan · Cây mặc định · Thùng rác) | Opus |
+| 7b | **b118d** | Chuyển nốt sang HTML quantri3, **mỗi phiên một khu** — mục b118d bên dưới | Opus |
+| 7c | **b118b** | SQL cho bốn luật mới *(nhóm D)* — đụng nền móng quyền | Opus |
 | 8 | **b119** | Khu Sao lưu + Số đếm đối chiếu *(số cũ: b112)* | Sonnet |
 | 9 | **b120** | Mã người xuyên cây *(số cũ: b113)* | Sonnet |
 
@@ -51,8 +53,13 @@ cây** — NTB 59 người và Nguyễn Phúc Giáo 681 người — mã cây **
 `QuanTri.html` là khung **bốn khu**, cộng lớp **trang chi tiết** từ b115 —
 Gia phả (b116) · Tài khoản (b117) · Kiểm duyệt (đã có từ trước) · Quản trị hệ
 thống (b118) đều đã nối, mỗi khu ít nhất một việc thật. Phân quyền đã đo bằng
-REST, 5/5 hàng rào đạt (b94, b96). Chặng đã đóng: **b87 → b118** — mỗi bước
+REST, 5/5 hàng rào đạt (b94, b96). Chặng đã đóng: **b87 → b118c** — mỗi bước
 một file `nhat-ky/`.
+
+⚠⚠ **Từ b118c giao diện trang Quản trị LÀ prototype quantri3** — `QuanTri.html`
+và `quan-tri.css` là bản chép nguyên văn; JS chỉ đổ dữ liệu và gắn nút. Không
+vẽ lại bằng `style=` hay class tự đặt *(b115–b118 đã làm thế, chủ dự án phải
+hỏi lại 15/09)*. Khu chưa chuyển vẽ tạm vào `#khu-tam` bằng mã cũ.
 
 ⚠ **`domains/` chưa sửa một dòng nào** trong cả mười file, suốt cả cuộc chuyển
 nhà từ Drive sang Supabase. Đó là nghiệm thu của luật phân lớp, giữ nguyên.
@@ -124,7 +131,8 @@ móng thì mọi thứ xây bên trên sai theo, và không có gì báo lỗi.
 ⚠ Prototype: `../codex/dua_claude.ai/quantri3.html` (**ngoài `Claude_Code`**,
 ở thư mục cha `Gia_pha/` — đừng tìm trong repo). Dữ liệu và JavaScript trong
 đó là **mô phỏng**: *"Không bê dữ liệu mẫu, mã giả hoặc các đoạn thử nghiệm vào
-repo chính"* — bàn giao AGY 13/09. Trước khi báo xong mỗi khu: mọi route có
+repo chính"* — bàn giao AGY 13/09. ⚠⚠ Câu ấy cấm dữ liệu mẫu và JS giả,
+**KHÔNG cấm giao diện** — b114 đọc nhầm, đính chính b118c. Trước khi báo xong mỗi khu: mọi route có
 handler, mọi tab mở đúng, mọi nút thành lời gọi dịch vụ thật *(hoặc mờ kèm lý do)*.
 
 ⚠ **Bản đồ đã chốt ở b114 — `THIET-KE-QUAN-TRI.md` mục 9, đọc 9.5 TRƯỚC.**
@@ -134,18 +142,20 @@ Bảng 9.3 bản đầu sai ba ô, đã đính chính. Nói *"hàm này thiếu"
 mới thành hàng thẻ, đúng mục 3 cũ *(đính chính b114)*.
 
 ⚠ **Trang chi tiết đã có vỏ từ b115** (`nhat-ky/b115-*.md`): thêm trang mới
-= thêm một dòng vào `TRANG` của `khung.js` + vỏ `veVoChiTiet()`. **Khung sửa
+= thêm một dòng vào `TRANG` của `khung.js` *(từ b118c mang `view` = `id`
+section quantri3)* + vỏ `veVoChiTiet()`. **Khung sửa
 `#` lạ ở mọi tầng — trang KHÔNG tự sửa `#`**, và `#` lạ sửa bằng
 `replaceState`, không gán lại `location.hash` *(bộ bất biến canh cả hai)*.
 
-### b118 — quantri3: khu Kiểm duyệt + Quản trị hệ thống, ảnh, `/kiem-tra`
+### b118d — chuyển nốt sang HTML quantri3 · MỖI PHIÊN MỘT KHU
 
 | | |
 |---|---|
-| **Làm** | Hai khu còn lại; `xem-khung-quan-tri.mjs` chụp lại **toàn bộ** theo khung mới |
-| **⚠⚠ Nhớ `sb-gia.mjs`** | Thêm cửa vào `sb.js` thì thêm cả ở đó — thiếu một tên là `SyntaxError` lúc nạp, **cả bộ ảnh ra nền trơn**. Đã xảy ra hai lần (b110b, b111). Từ b117 `kiem-trang-quan-tri.mjs` PHẦN M tự đối chiếu và báo tên thiếu |
-| **⚠ Chip *Toàn hệ thống*** | Đang ở khu Tài khoản (`khu-tai-khoan.js`) — chuyển sang khu Quản trị hệ thống. Luật 5b② vẫn áp: cột xuyên cây là dòng TÓM TẮT, bấm vào mở bảng theo từng cây, không bao giờ là chỗ sửa |
-| **Điểm dừng** | Nhìn bằng mắt cả bộ ảnh ở 1280px và 390px; `/kiem-tra` đạt cả 9 |
+| **Làm** | Đổi `view` của khu/trang trong `khung.js` từ `khu-tam` sang section quantri3: ① trang cây — `#tree-members` · `#tree-requests` (+ `#tree-detail`: Vòng đời · Đề xuất gắn) ② khu Tài khoản `#tai-khoan` ③ Kiểm duyệt `#kiem-duyet` + `#kiem-duyet-chitiet` ④ Sổ tài khoản (bảng chờ sẵn trong `data-ban-mau`) + `#sys-account-trees` *(chưa chép vào HTML)* |
+| **Cách làm** | Như b118c *(đọc `nhat-ky/b118c-*.md` trước)*: HTML nằm sẵn, bỏ dữ liệu giả rồi — chỉ đổ dòng vào `tbody`, gắn nút vào hàm `sb.js` đã nối ở b116–b118 (chép logic từ file cũ), dùng `o-bang.js` + `hop-thoai.js`. Không `style=` mới. Máy chủ chưa có → `nutMo(chu, lyDo)` |
+| **⚠⚠ Nhớ `sb-gia.mjs`** | Thêm cửa vào `sb.js` thì thêm cả ở đó — thiếu một tên là `SyntaxError` lúc nạp, **cả bộ ảnh ra nền trơn**. Đã xảy ra hai lần (b110b, b111). `kiem-trang-quan-tri.mjs` PHẦN M tự đối chiếu và báo tên thiếu |
+| **⚠ Luật 5b②** | Cột xuyên cây của Sổ tài khoản là dòng TÓM TẮT, bấm vào mở bảng theo từng cây, không bao giờ là chỗ sửa |
+| **Điểm dừng mỗi phiên** | `node ../kiem-thu/so-quantri3.mjs <cảnh>` rồi nhìn cặp `sq-p-*`/`sq-a-*` · `kiem-trang-quan-tri.mjs` đạt · `/kiem-tra` đạt 9. Khu cuối xong: xoá `#khu-tam` + khối TẠM `.qt-*` trong CSS; file mã cũ hết người `import` thì **hỏi** rồi mới xoá |
 
 ### b118b — SQL cho bốn luật mới *(nhóm D)* · đụng nền móng quyền
 

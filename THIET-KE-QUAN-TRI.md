@@ -510,6 +510,11 @@ b100, đừng tự làm.
 > prototype tĩnh chủ dự án đã duyệt 13/09/2026. Dữ liệu mẫu và JavaScript
 > trong đó là mô phỏng — bảng dưới đây chỉ giữ lại **hành vi**, không chép
 > HTML/JS mẫu. **Không dòng mã nào trong repo đổi ở bước này.**
+>
+> ⚠⚠ **ĐÍNH CHÍNH b118c (15/09/2026):** *"không chép HTML/JS mẫu"* là đọc nhầm
+> bàn giao AGY — câu ấy cấm dữ liệu mẫu và JS giả lập, **không cấm giao diện**.
+> Từ b118c `QuanTri.html` + `quan-tri.css` là bản chép nguyên văn quantri3.
+> Địa chỉ `#` vẫn theo 9.2 (khác prototype, không nhìn thấy).
 
 ### 9.1 Bốn khu cũ vẫn đúng, đổi khung điều hướng
 

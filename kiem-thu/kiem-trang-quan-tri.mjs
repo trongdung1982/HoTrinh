@@ -7,7 +7,12 @@
 //            `trang-tai-khoan.js`, và những cửa của chúng trong
 //            `js/services/sb.js` (b98 + b101 + b106 + b109 + b117 + b118).
 // Chạy     : cd supabase/kiem-thu && node kiem-trang-quan-tri.mjs
-// Phiên bản: 0.9.0 · Cập nhật: 15/09/2026 (b118)
+// Phiên bản: 0.10.0 · Cập nhật: 15/09/2026 (b118c)
+//            0.10.0 Trang Quản trị nay là HTML + CSS NGUYÊN VĂN của prototype
+//            quantri3. Tám phép bám chỗ cũ được đính chính, không bỏ phép nào:
+//            @media thanh trái (850px của quantri3) · thùng rác dời sang
+//            JS_QTHT · chip Tạo gia phả (không tự lọc quyền) · hai dòng TRANG
+//            có thêm `view:` · `.layout` gập · G6 bẻ `qt-canh-bao`.
 //            0.9.0 Sổ tài khoản dời từ chip *Toàn hệ thống* của khu Tài
 //            khoản sang khu RIÊNG *Quản trị hệ thống* (`khu-quan-tri-he-thong.js`,
 //            khu thứ tư — thay chỗ khu `sao-luu` chưa từng viết). Đính chính
@@ -397,9 +402,12 @@ kiem('khu 2 mang mã thanh-vien nhưng hiện chữ "Tài khoản"',
 kiem('khung không hỏi bề ngang màn hình trong JS (chỗ hỏng câm 8)',
      motBoMa(JS_KH), 'khung có nhánh riêng theo innerWidth/matchMedia');
 
+// ⚠ Đổi b118c: CSS nay là bản chép nguyên văn quantri3 — thanh trái gập
+//   thành hàng thẻ ngang ở `@media(max-width:850px)` (`.app{display:block}`
+//   + `nav{display:flex;overflow:auto}`), không còn `.qt-dieu-huong` ở 680px.
 kiem('quan-tri.css có @media đổi thanh trái thành hàng thẻ ngang',
-     /@media[^{]*max-width:\s*680px[\s\S]{0,500}\.qt-dieu-huong[^}]*row/.test(CSS),
-     'thiếu @media chuyển .qt-dieu-huong sang hàng ngang');
+     /@media\(max-width:850px\)\{\.app\{display:block\}[\s\S]{0,300}nav\{display:flex/.test(CSS),
+     'thiếu @media(max-width:850px) của quantri3 chuyển nav sang hàng ngang');
 
 // Chỗ hỏng câm 7: class trong JS lệch class trong CSS.
 {
@@ -691,7 +699,8 @@ for (const c of CUA_16) {
        coCapQuyen(SQL_16, c.sql), 'thiếu grant execute … to authenticated');
 
   kiem('  màn hình gọi ' + c.js + '()',
-       new RegExp('\\b' + c.js + '\\s*\\(').test(boGhiChuJs(JS_GP)),
+       // b118c: khối Thùng rác dời sang tab của khu Quản trị hệ thống.
+       new RegExp('\\b' + c.js + '\\s*\\(').test(boGhiChuJs(JS_GP + '\n' + JS_QTHT)),
        'cửa có ở sb.js mà chưa lộ ra màn hình nào');
 }
 
@@ -802,7 +811,7 @@ kiem('don_thung_rac() có revoke khỏi public, anon',
 // Màn hình phải đọc `boQua` và `dsAnh`. Bỏ `boQua` là người bấm tưởng đã dọn
 // xong cả loạt; bỏ `dsAnh` là để lại file mồ côi vĩnh viễn trong kho ảnh.
 kiem('màn hình xoá ảnh mồ côi sau khi dọn thùng rác',
-     /dsAnh/.test(boGhiChuJs(JS_GP)) && /xoaAnhThat\s*\(/.test(boGhiChuJs(JS_GP)),
+     /dsAnh/.test(boGhiChuJs(JS_QTHT)) && /xoaAnhThat\s*\(/.test(boGhiChuJs(JS_QTHT)),
      'ảnh trong kho không đi theo delete của Postgres');
 
 // Đơn xin xoá KHÔNG khoá cây — hàng rào ở máy chủ, nhưng màn hình cũng không
@@ -889,11 +898,16 @@ kiem('ô tích khoá sẵn trên dòng của chính mình',
        .test(boGhiChuJs(JS_HT)),
      'mời người ta bấm một thứ chắc chắn bị từ chối');
 
-// ⚠ Hộp Dựng gia phả phải nói quyền ấy TÁCH khỏi vai Quản trị gia phả — câu
-//   cũ đọc lên nghe như hễ quản trị một cây là dựng được cây mới.
-kiem('hộp Dựng gia phả nói quyền dựng cây là quyền RIÊNG của tài khoản',
-     /quyền riêng của tài khoản/i.test(JS_GP),
-     'câu chữ để nguyên thì người đọc vẫn gộp hai hạng làm một');
+// ⚠ Đổi b118c. Bản cũ canh CÂU CHỮ trong hộp Dựng gia phả (câu b110b gộp nhầm
+//   hai hạng). Chip *Tạo gia phả mới* của quantri3 không có câu giải thích
+//   nào — nên không còn câu nào để gộp nhầm. Điều cốt lõi của b110b vẫn phải
+//   giữ: chip KHÔNG ẩn/khoá theo vai hay theo cờ phía trình duyệt; hàng rào
+//   là `duoc_tao_cay()` ở máy chủ, và câu từ chối của máy chủ được hiện ra.
+kiem('chip Tạo gia phả không tự lọc theo quyền dựng cây ở trình duyệt',
+     /taoGiaPhaMoi\s*\(/.test(boGhiChuJs(JS_GP)) &&
+     !/duocTaoCay/.test(boGhiChuJs(JS_GP)) &&
+     /kq\.loi/.test(boGhiChuJs(JS_GP)),
+     'chip tự giấu/khoá theo cờ dựng cây, hoặc nuốt câu từ chối của máy chủ');
 
 // — Không đâu ngầm định cây —
 
@@ -1082,7 +1096,8 @@ for (const [ten, ma] of [['trang-chi-tiet.js', JS_CT], ['trang-cay.js', JS_TC]])
 // Trang chi tiết là lớp THỨ HAI của cùng một khung, không phải trang thứ ba:
 // khung đăng ký nó, khung đọc `#`, khung sửa `#` lạ.
 kiem('khung đăng ký trang chi tiết một cây dưới khu gia-pha',
-     /khu:\s*'gia-pha',\s*ma:\s*'cay',\s*mount:\s*mountTrangCay/.test(JS_KH),
+     // b118c: dòng đăng ký có thêm `view:` (section vẽ vào) giữa `ma` và `mount`.
+     /khu:\s*'gia-pha',\s*ma:\s*'cay',[^}]*mount:\s*mountTrangCay/.test(JS_KH),
      'không thấy dòng đăng ký trong TRANG');
 
 kiem('khung dựng # của trang chi tiết bằng duongDan(), một chỗ ghép chuỗi',
@@ -1151,7 +1166,7 @@ for (const [ten, ma] of [['khu-tai-khoan.js', JS_KTK], ['trang-tai-khoan.js', JS
 // ⚠ Đính chính b118: khu cha đổi từ `thanh-vien` sang `quan-tri-he-thong` —
 //   sổ tài khoản (nơi mở trang chi tiết này ra) đã dời sang khu ấy.
 kiem('khung đăng ký trang chi tiết một tài khoản dưới khu quan-tri-he-thong',
-     /khu:\s*'quan-tri-he-thong',\s*ma:\s*'tai-khoan',\s*mount:\s*mountTrangTaiKhoan/.test(JS_KH),
+     /khu:\s*'quan-tri-he-thong',\s*ma:\s*'tai-khoan',[^}]*mount:\s*mountTrangTaiKhoan/.test(JS_KH),
      'không thấy dòng đăng ký trong TRANG');
 
 kiem('trang tài khoản tìm tài khoản theo MÃ NGẮN trong địa chỉ',
@@ -1296,7 +1311,8 @@ console.log('\nPHẦN G — kiểm chứng ngược (bẻ gãy có chủ ý)');
 // G6 — đổi tên một class trong JS mà quên đổi trong CSS. Đây là chỗ hỏng câm
 // số 7: chữ vẫn đủ, bố cục vỡ, không có lỗi nào.
 {
-  const hong6 = JS_KH.replace("'qt-nut'", "'qt-nut-moi'");
+  // b118c: khung chỉ còn MỘT class `qt-` (`qt-canh-bao`) — bẻ đúng class ấy.
+  const hong6 = JS_KH.replace("'qt-canh-bao'", "'qt-canh-bao-moi'");
   kiem('bắt được class trong JS không có trong CSS',
        classThieuTrongCss(hong6, CSS).length > 0, 'không bắt được');
 }
@@ -1451,11 +1467,12 @@ console.log('\nPHẦN G — kiểm chứng ngược (bẻ gãy có chủ ý)');
        !trangCayTheoMa(hong20), 'không bắt được — phép ở PHẦN L vô dụng');
 }
 
-// G21 — bỏ chỗ gập thanh mục con: ở 681–1000px nội dung còn chừng 200px.
+// G21 — bỏ chỗ gập thanh mục con. b118c: bẻ đúng `.layout{grid-template-columns:1fr}`
+// trong `@media(max-width:850px)` của quantri3 (không còn `.qt-layout`).
 {
   const hong21 = CSS.replace(
-    /(\.qt-layout\s*\{[^}]*grid-template-columns:\s*)minmax\(0,\s*1fr\)/g,
-    '$1205px minmax(0,1fr)');
+    /(\.layout\s*\{\s*grid-template-columns:\s*)1fr\s*\}/g,
+    '$1205px 1fr}');
   kiem('bắt được thanh mục con không gập khi hẹp',
        !layoutGapKhiHep(hong21), 'không bắt được — phép ở PHẦN L vô dụng');
 }
@@ -1549,10 +1566,12 @@ function tenThieuTrongGia(dsTen, jsGia) {
  * Có một `@media (max-width…)` gập `.qt-layout` thành một cột. Tách theo
  * `@media` rồi soi từng khúc, để quy tắc gốc (205px + 1fr) không khớp nhầm.
  */
+// ⚠ Đổi b118c: vỏ trang chi tiết dùng `.layout` › `.subnav` của quantri3, gập
+//   thành một cột ở `@media(max-width:850px)` bằng `.layout{grid-template-columns:1fr}`.
 function layoutGapKhiHep(css) {
   return css.split('@media').slice(1).some((k) =>
     /^\s*\(max-width/.test(k) &&
-    /\.qt-layout\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/.test(k));
+    /\.layout\s*\{[^}]*grid-template-columns:\s*1fr/.test(k));
 }
 
 // ============================================================

@@ -2,7 +2,12 @@
 // giapha-supabase · kiem-thu/kiem-tao-cay.mjs
 // Vai trò  : Gác bước b104 — `luoc-do/12-tao-cay.sql` và ba file JS đi kèm.
 // Chạy     : cd supabase/kiem-thu && node kiem-tao-cay.mjs
-// Phiên bản: 0.1.0 · Cập nhật: 08/09/2026 15:01
+// Phiên bản: 0.2.0 · Cập nhật: 15/09/2026 (b118c)
+//            0.2.0 Chip *Tạo gia phả mới* nay là form của prototype quantri3:
+//            nút *Tạo gia phả* (`#tao-nut` trong QuanTri.html) và KHÔNG có ô gõ
+//            mã — *"Mã cây do hệ thống sinh"*. Hai phép bám form cũ được đính
+//            chính theo đúng điều chúng canh: có lối vào · mã không ghi đè chữ
+//            người gõ (nay vì không còn ô nào để gõ mã).
 // ============================================================
 //
 // ═══ BÀI KIỂM NÀY ĐỨNG Ở ĐÂU ═══
@@ -172,8 +177,10 @@ kiem('khu Gia phả KHÔNG hỏi quyền trước để giấu nút',
      !/duocTaoCay|duoc_tao_cay/i.test(JS_KHU),
      'màn hình tự dựng phân quyền — hàng rào phải là máy chủ');
 
-kiem('nút Dựng gia phả mới có mặt trong khu Gia phả',
-     /Dựng gia phả mới/.test(JS_KHU),
+// b118c: nút là `#tao-nut` ("Tạo gia phả") nằm sẵn trong HTML quantri3; khu
+// Gia phả gắn việc vào đúng nút ấy.
+kiem('nút Tạo gia phả có mặt trong khu Gia phả và gọi máy chủ',
+     /#tao-nut/.test(JS_KHU) && /taoGiaPhaMoi\s*\(/.test(JS_KHU),
      'không có lối vào — hàm máy chủ nằm đó không ai gọi');
 
 kiem('mã cây gợi ý bằng sinhMaCay(), không ghép chuỗi tại chỗ',
@@ -181,10 +188,11 @@ kiem('mã cây gợi ý bằng sinhMaCay(), không ghép chuỗi tại chỗ',
      'ghép chuỗi tại chỗ sẽ lệch với utils/id.js');
 
 // Người dùng gõ tay vào ô mã rồi mà mã vẫn tự đổi theo tên là kiểu hỏng làm
-// người ta tưởng bàn phím hỏng.
-kiem('thôi tự điền mã khi người dùng đã gõ tay',
-     /nguoiDungTuGoMa/.test(JS_KHU),
-     'gợi ý ghi đè lên chữ người dùng vừa gõ');
+// người ta tưởng bàn phím hỏng. b118c: quantri3 bỏ hẳn ô mã — mã sinh ĐÚNG LÚC
+// bấm, từ tên vừa gõ. Phép canh: không có ô mã nào để ghi đè, và mã đi từ tên.
+kiem('mã cây sinh lúc bấm từ tên — không có ô gõ mã để bị ghi đè',
+     /sinhMaCay\s*\(\s*ten\b/.test(JS_KHU) && !/oMa\.value\s*=/.test(JS_KHU),
+     'còn ô mã tự điền, hoặc mã không đi từ tên người dùng vừa gõ');
 
 kiem('dựng xong có đường sang sơ đồ để thêm người đầu tiên',
      /Mở gia phả mới[\s\S]{0,1200}index\.html/.test(JS_KHU),

@@ -5,7 +5,11 @@
 //            máy chủ, không biết trang ấy nói về cái gì.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: (không)
-// Phiên bản: 0.1.0 · Cập nhật: 15/09/2026 07:40 (b115)
+// Phiên bản: 0.2.0 · Cập nhật: 15/09/2026 (b118c)
+//            0.2.0 (b118c) vỏ trang chi tiết dùng class của quantri3 —
+//            `.detailbar` · `.backbtn` · `.head` › `h1` + `.lead` ·
+//            `.layout` › `.subnav`; bỏ bộ `.qt-*` tự vẽ.
+//            0.1.0 (b115) vỏ đầu tiên.
 // ============================================================
 //
 // ═══ VÌ SAO CÓ LỚP THỨ HAI ═══
@@ -61,62 +65,67 @@ export function duongDan(...doan) {
 export function veVoChiTiet(el, o) {
   el.innerHTML = '';
 
+  // — `.detailbar` của quantri3: nút "← Khu cha" + chữ mờ "/ đang ở đâu" —
   const thanhVe = document.createElement('div');
-  thanhVe.className = 'qt-thanh-ve';
+  thanhVe.className = 'detailbar';
 
   // ⚠ **Gán `location.hash`, KHÔNG `history.back()`.** Người mở trang này
   //   bằng một link được gửi cho — không đi qua khu cha — thì `back()` đưa họ
-  //   RA KHỎI trang Quản trị, về chỗ họ bấm link. Nút ghi *"Quay lại Gia
-  //   phả"* thì phải về Gia phả, bất kể người ta tới đây bằng đường nào.
+  //   RA KHỎI trang Quản trị, về chỗ họ bấm link. Nút ghi *"← Gia phả"* thì
+  //   phải về Gia phả, bất kể người ta tới đây bằng đường nào.
   const quayLai = document.createElement('button');
   quayLai.type = 'button';
-  quayLai.className = 'qt-quay-lai';
-  quayLai.textContent = '← Quay lại ' + o.chuQuayVe;
+  quayLai.className = 'backbtn';
+  quayLai.textContent = '← ' + o.chuQuayVe;
   quayLai.addEventListener('click', () => { window.location.hash = o.hashQuayVe; });
   thanhVe.append(quayLai);
 
   if (o.viTri) {
     const viTri = document.createElement('span');
-    viTri.className = 'qt-vi-tri';
+    viTri.className = 'muted';
     viTri.textContent = '/ ' + o.viTri;
     thanhVe.append(viTri);
   }
 
-  const tua = document.createElement('h2');
-  tua.className = 'qt-tua';
+  // — `.head` của quantri3: h1 + dòng `.lead` —
+  const dau = document.createElement('div');
+  dau.className = 'head';
+  const trai = document.createElement('div');
+  const tua = document.createElement('h1');
   tua.textContent = o.tua;
-
-  el.append(thanhVe, tua);
-
+  trai.append(tua);
   if (o.phu) {
     const phu = document.createElement('p');
-    phu.className = 'qt-phu';
+    phu.className = 'lead';
     phu.textContent = o.phu;
-    el.append(phu);
+    trai.append(phu);
   }
+  dau.append(trai);
+
+  el.append(thanhVe, dau);
 
   const noiDung = document.createElement('div');
-  noiDung.className = 'qt-noi-dung';
 
   if (!o.muc || !o.muc.length) {
     el.append(noiDung);
     return noiDung;
   }
 
+  // — `.layout` › `.subnav` của quantri3 (205px bên trái, gập ở 850px) —
   const layout = document.createElement('div');
-  layout.className = 'qt-layout';
+  layout.className = 'layout';
 
-  const thanhMuc = document.createElement('nav');
-  thanhMuc.className = 'qt-muc';
+  const thanhMuc = document.createElement('div');
+  thanhMuc.className = 'subnav';
+  thanhMuc.setAttribute('role', 'navigation');
   thanhMuc.setAttribute('aria-label', 'Các mục của ' + o.tua);
 
   for (const m of o.muc) {
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'qt-muc-nut';
     b.textContent = m.chu;
     const dangMo = m.ma === o.mucDangMo;
-    b.classList.toggle('dang-mo', dangMo);
+    b.classList.toggle('active', dangMo);
     if (dangMo) b.setAttribute('aria-current', 'page');
     // Cùng một đường với nút trên thanh trái: đổi `#`, để `hashchange` vẽ.
     b.addEventListener('click', () => { window.location.hash = o.hashMuc(m.ma); });
