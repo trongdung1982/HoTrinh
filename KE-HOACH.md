@@ -1,10 +1,11 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 16/09/2026 · Bước gần nhất: **b118c** — `sb.js` (9 cửa mới + cờ khoá vào `layPhien()`) và
-giao diện (Sổ tài khoản · khu Tài khoản · Vòng đời · Thành viên & quyền) nối xong cho bốn luật mới,
-`/kiem-tra` 10 phép ĐẠT, `so-quantri3.mjs` không chữ đỏ
-· ⚠ `23-bon-luat-moi.sql` **VẪN CHƯA DÁN** lên máy chủ nào — mã đã sẵn sàng, còn thiếu bước dán tay
-· Việc kế tiếp: **dán `23` lên Staging rồi bấm một vòng khoá→mở khoá, mời QTHT→Nhận, xoá cây→trả lại**
+*Cập nhật 16/09/2026 · Bước gần nhất: **b118c** — `sb.js` (9 cửa mới) + giao diện nối xong cho bốn
+luật mới, `/kiem-tra` 10 phép ĐẠT
+· ⚠ `23-bon-luat-moi.sql` **CHƯA DÁN**. Chủ dự án chốt 16/09: **dán thẳng lên THẬT, bỏ qua Staging**
+(Staging của AGY, không bắt buộc; dữ liệu "thật" hôm nay vẫn toàn giả)
+· Việc kế tiếp: dán `23` lên THẬT → bấm một vòng khoá→mở khoá, mời QTHT→Nhận, xoá cây→trả lại →
+Claude Code kiểm lại bằng REST*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -49,7 +50,7 @@ Quản trị hệ thống**.
 | **b111c** — nộp đề xuất · tự duyệt bị từ chối · người khác duyệt được | Mã + giao diện mới xong (b117), `21` đã dán 14/09: ① nút **Nhận** lời mời bằng tài khoản Quản trị hệ thống *(vá 14/09)*; ② nộp ở khu **Tài khoản** → bảng các gia phả → *Đề xuất mã người*; ③ tự duyệt ở `#gia-pha/cay/<mã>/de-xuat-gan` bị máy chủ từ chối; ④ một Quản trị hệ thống KHÁC duyệt được |
 | **b117** — khu Tài khoản trên máy chủ thật | ① bảng *Các gia phả tôi tham gia* hiện đúng mã người đã gắn — bằng tài khoản **thành viên thường**, vì nó đọc qua RLS chứ không qua hàm Quản trị; ② *Đổi mật khẩu* với mật khẩu cũ SAI phải bị từ chối, với mật khẩu cũ đúng thì đổi được |
 | **b118d** — cả trang Quản trị trên máy chủ thật | Mở từng trang con; bấm mỗi menu *Chọn hành động* / *Chọn ▾* một lần; một lần Duyệt và một lần Từ chối ở *Kiểm duyệt › Xem trước / sau*. Ảnh chụp mới chỉ trên máy chủ giả |
-| **b118b/c** — bốn luật mới | ⚠ Chưa bấm được: `23` **chưa dán**, mã b118c đã xong. Thứ tự còn lại: dán `23` lên **Staging** → bấm một vòng *khoá → mở khoá*, *mời QTHT → Nhận*, *xoá cây → trả lại* |
+| **b118b/c** — bốn luật mới | ⚠ Chưa bấm được: `23` **chưa dán** (xem đầu file). Mã b118c đã xong. Thứ tự còn lại: dán `23` → bấm một vòng *khoá → mở khoá*, *mời QTHT → Nhận*, *xoá cây → trả lại* |
 
 
 ---
@@ -65,11 +66,9 @@ nào.** `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
 bảng tự kiểm đạt hết.** Chưa rõ đã dán lên Staging chưa — hỏi lại trước khi
 coi cả hai máy chủ đã đồng bộ tới `22`.
 
-⚠⚠ **`23-bon-luat-moi.sql` (b118b) — VIẾT XONG, ĐO XONG, *CHƯA DÁN* lên máy
-chủ nào.** Bàn thử 5433: **107/107 đạt** (`kiem-thu/ban-thu-sql/do-b118b.mjs`),
-bảng tự kiểm 16/16 đạt. **b118c đã xong** (mã `sb.js` + giao diện sẵn sàng
-đón bốn luật mới) — việc còn lại CHỈ CÒN là dán tay: **dán lên STAGING trước**,
-bấm thử một vòng, rồi mới dán lên máy chủ THẬT.
+⚠⚠ **`23-bon-luat-moi.sql` — VIẾT XONG, ĐO XONG, *CHƯA DÁN*.** Bàn thử 5433:
+**107/107 đạt**. b118c (mã `sb.js` + giao diện) đã xong — còn lại CHỈ là dán
+tay lên THẬT (chốt 16/09, xem đầu file).
 
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
 `11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18`.
@@ -124,8 +123,8 @@ commit). ⚠ *Xin đổi quyền* duyệt ở bảng **Thành viên & quyền** 
 cho hình dạng dữ liệu khác (`so-tay/trang-quan-tri.md`). `sb-gia.mjs` đã
 thêm 9 cửa + hai ca giả. `/kiem-tra` 10 phép ĐẠT, `so-quantri3.mjs` sạch.
 
-**Còn lại — cần chủ dự án**: dán `23` lên **Staging**, rồi bấm thật một
-vòng: khoá → mở khoá · mời QTHT → Nhận · xoá cây → trả lại.
+**Còn lại — cần chủ dự án**: dán `23` lên THẬT (xem đầu file), rồi bấm một
+vòng khoá→mở khoá · mời QTHT→Nhận · xoá cây→trả lại. Claude Code kiểm REST.
 ### b119 — Khu Sao lưu + Số đếm đối chiếu
 
 | | |
