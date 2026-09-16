@@ -1,6 +1,6 @@
 # CHỈ DẪN — đọc file này đầu mỗi phiên
 
-*Nhánh Supabase · cập nhật 15/09/2026 (b118e)*
+*Nhánh Supabase · cập nhật 16/09/2026 (b118b)*
 
 ⚠ **TRẦN CỨNG 80 DÒNG · 8 KB · mỗi dòng ≤ 400 ký tự** — đo: `kiem-thu/do-gon.mjs`
 *(đếm dòng bằng mắt thì dòng dài ra)*. Vượt là có thứ đứng nhầm chỗ — chuyển ra
@@ -14,13 +14,13 @@ file riêng, **đừng nới trần**.
 | Mới vào nhánh này lần đầu | + `KIEN-TRUC.md` **cả file** |
 | Đụng `services/` | `KIEN-TRUC.md` mục 1, 3 · `DU-LIEU.md` mục 1, 6 |
 | Đổi lược đồ bảng, thêm/bớt trường | `DU-LIEU.md` **cả file** · `luoc-do/` |
-| **Mời vào cây · cờ QT hệ thống · xoá tài khoản · xoá gia phả** | ⚠ `THIET-KE-NHIEU-CAY.md` mục **11.4** *(vào cây cần HAI chữ ký — và mục **11.8**: luật ấy ĐÃ TỪNG THỦNG ở bốn cửa, vá bằng `18`)* · **11.5** *(cờ QTHT)* · **11.6** *(xoá cây — ⚠ ĐỔI 15/09 ở mục **11.9**: chủ xoá thì cây ẩn NGAY — QTHT duyệt vào thùng rác hoặc trả lại — 120 ngày; SQL `16` CHƯA theo kịp)* · `luoc-do/14-loi-moi.sql` · **`16-thung-rac-cay.sql`** ⚠ *mục 11.6 nói **sai đường vá**: sửa `co_the_xem_cay()` mà không chừa lối cho vai `sao_luu` là sao lưu đêm ra file THIẾU cây trong thùng rác, không báo lỗi — sáu bảng nội dung gác bằng chính hàm ấy. Đọc khối đầu `16` trước khi đụng. Và ĐỪNG sửa `la_thanh_vien()`* |
-| Đụng phân quyền, RLS | ⚠ `THIET-KE-NHIEU-CAY.md` mục **11.3** *(bảng 5 hạng — chốt 08/09)* · `luoc-do/13-quan-ly-thanh-vien.sql` *(ai đổi được quyền · luật KHÔNG tự đặt quyền cho mình)* · `DU-LIEU.md` mục 2 + **2a** + **2b** · `11-quyen-he-thong.sql` ⚠ *(cờ quyền: CHỈ luật ĐỌC)* · **`17`** *(cửa 7: cờ `duoc_tao_cay`)* · ⚠ **`18-hai-chu-ky.sql`** *(bốn cửa KHÔNG ghi được vào lời mời chưa nhận — đây là bản đứng CUỐI của `duyet_thanh_vien` · `doi_vai` · `gan_nguoi` · `dat_tin_cay` · `la_thanh_vien` · `ds_thanh_vien` · `ds_cho_duyet`)* · **`20`** *(sổ tài khoản: bản ĐỨNG CUỐI của `ds_tai_khoan_he_thong()` — cột `nguoi_gan` · `so_cay_gan` · `vai_cao_nhat`, và dòng `revoke` mà `15` đánh rơi)* · **`21`** *(cửa 8: đơn ĐỀ XUẤT gắn mã người — người nộp KHÔNG tự duyệt được)* · `06` · `07` · `02-rls.sql` |
+| **Mời vào cây · cờ QT hệ thống · khoá/xoá tài khoản · xoá gia phả** | ⚠⚠ **`so-tay/phan-quyen.md` trước tiên** · `THIET-KE-NHIEU-CAY.md` **11.4**+**11.8** *(vào cây cần HAI chữ ký; luật ấy ĐÃ TỪNG THỦNG ở bốn cửa, vá bằng `18`)* · **11.5** · **11.6** · **11.9** *(bốn luật mới)* · `luoc-do/14` · `16` · ⚠⚠ **`23-bon-luat-moi.sql`** *(bản ĐỨNG CUỐI: khoá mềm 60 ngày · QTHT hai chữ ký · cây ẩn NGAY khi chủ xoá · thùng rác 120 ngày · xin đổi quyền)* |
+| Đụng phân quyền, RLS | ⚠⚠ **`so-tay/phan-quyen.md` trước tiên** — nó nói hàm nào ĐỨNG CUỐI ở file nào, và cặp hàng rào phải đi liền nhau · `THIET-KE-NHIEU-CAY.md` **11.3** *(bảng 5 hạng)* · `DU-LIEU.md` mục 2 + **2a** + **2b** · `luoc-do/13` *(không tự đặt quyền cho mình)* · `11` ⚠ *(cờ quyền: CHỈ luật ĐỌC)* · `17` *(cờ `duoc_tao_cay`)* · `18` *(bốn cửa + `la_thanh_vien` · `ds_thanh_vien` · `ds_cho_duyet`)* · `20` *(`ds_tai_khoan_he_thong`)* · `21` *(đề xuất gắn mã người)* · ⚠⚠ **`23`** *(ĐỨNG CUỐI 13 hàm, gồm `la_quan_tri_he_thong` · `la_thanh_vien` · `co_the_xem_cay` · `co_the_sua` · `ds_gia_pha` — dán lại `11`/`14`/`16`/`18`/`20` thì PHẢI dán lại nó)* · `06` · `07` · `02-rls.sql` |
 | **Ai là "quản trị"?** — trước khi gõ chữ ấy | ⚠ Ba hạng khác nhau: **Quản trị hệ thống** = cờ `tai_khoan` · **Chủ cây** = cột `trees.chu_so_huu` · **Quản trị gia phả** = `tree_members.role='quan_tri'`, **chỉ sửa + duyệt nội dung, KHÔNG đổi quyền**. Mã `quan_tri_he_thong` **không** đặt vào `tree_members` được nữa. ⚠ **Quyền DỰNG cây là hạng thứ tư** = cờ `tai_khoan.duoc_tao_cay`, **tách hẳn** khỏi ba hạng trên (b110b) |
 | Đụng kiểm duyệt nội dung, hoàn tác | `luoc-do/08-kiem-duyet.sql` · `03-ham-luu-cay.sql` khối *chụp ảnh* · `kiem-thu/thu-hoan-tac.sql` · bảng TRƯỚC/SAU: `luoc-do/19-kiem-duyet-chi-tiet.sql` + `js/domains/so-sanh.js` (b111) |
 | **Đụng nhiều cây · quyền cấp hệ thống · tạo cây · mã xuyên cây** | ⚠ `THIET-KE-NHIEU-CAY.md` **trước tiên** |
 | **Đụng trang `QuanTri.html` — bất cứ khu nào** | ⚠⚠ **`so-tay/trang-quan-tri.md` trước tiên** — giao diện = NGUYÊN FILE quantri3 dựng bằng máy (b118d), JS chỉ đổ dữ liệu vào section của mình, không vẽ lại · `THIET-KE-QUAN-TRI.md` · `js/pages/quan-tri/` · ⚠ **nhìn bằng mắt trước khi báo xong**: `node ../kiem-thu/so-quantri3.mjs [lọc]` · ⚠⚠ **thêm cửa vào `sb.js` thì thêm cả ở `kiem-thu/sb-gia.mjs`** — thiếu một tên là cả bộ ảnh ra nền trơn (b110b, b111); thấy **chữ đỏ** đầu trang giả thì đọc nó, đừng sửa bố cục · ⚠ **không màn hình nào ngầm định "cây đang mở"** — mọi chỗ gán quyền gọi tên cây (b110b); ngoại lệ duy nhất là hai cờ cấp tài khoản · ô gợi ý: `o-goi-y.js` + `luoc-do/15-tim-kiem.sql` · ⚠ ảnh 1280px không phân giải "đè" với "sát": `node ../kiem-thu/do-goi-y.mjs` |
-| Bàn thử SQL tại chỗ · phép ĐO hàng rào · tên/mã vai trò | `../kiem-thu/ban-thu-sql/` *(ngoài repo, CÓ trên máy này)* — `do-b102`→`do-b110` ⚠ tiếng Việt vào psql phải đi bằng `-f`, không `-c` · tên vai: `config.js` hàm `vaiTroBangChu()` |
+| Bàn thử SQL tại chỗ · phép ĐO hàng rào · tên/mã vai trò | `../kiem-thu/ban-thu-sql/` *(ngoài repo, CÓ trên máy này)* — `do-b102`→`do-b118b` ⚠ tiếng Việt vào psql phải đi bằng `-f`, không `-c` · tên vai: `config.js` hàm `vaiTroBangChu()` |
 | Duyệt/gắn tài khoản, hỏi "sao tôi không sửa được" | `HUONG-DAN-PHAN-QUYEN.md` |
 | Đụng cách VẼ sơ đồ | `../tai-lieu/QUY-TAC-VE_V14.md` · `BAT-DAU.md` mục 6 |
 | Đụng ảnh | `KIEN-TRUC.md` mục 7 ⚠ có câu chưa chốt |
@@ -48,8 +48,10 @@ file riêng, **đừng nới trần**.
    khung Quản trị bốn khu. `KIEN-TRUC.md` mục 6: còn gì dở.
    ⚠ **File SQL nào đã dán, file nào chưa — hỏi `KE-HOACH.md`.** Không giữ
    bản thứ hai ở đây: nó đổi mỗi bước, và hai chỗ ghi là hai chỗ để lệch nhau.
-   ⚠ **Chuỗi dán lại:** `11`/`10`→`14`→`16`→`18` · `13`/`14`→`15`→`20`→`18` ·
-   `08`→`18`. Quên là mở lại đúng lỗ hổng "hai chữ ký" của b110c.
+   ⚠ **Chuỗi dán lại:** `11`/`10`→`14`→`16`→`18`→**`23`** ·
+   `13`/`14`→`15`→`20`→**`23`** · `08`→`18`. Quên `18` là mở lại lỗ hổng "hai
+   chữ ký" của b110c; quên **`23`** là mở lại khoá mềm, lời mời QTHT và cây đã
+   xoá — cả ba **im lặng**.
    ⚠ **`drop function` XOÁ CẢ `grant`.** Dựng lại một hàm đã có thì chép theo
    cả dòng `grant` của nó, không thì nó lặng lẽ rơi về mặc định Postgres *ai
    cũng gọi được, kể cả `anon`* — `15` đã vấp, `20` vá.

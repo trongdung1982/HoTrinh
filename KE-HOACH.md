@@ -1,37 +1,18 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 16/09/2026 · Bước gần nhất: **b118d** — trang Quản trị dựng từ NGUYÊN FILE quantri3, mọi trang con gắn chức năng
-· Việc kế tiếp: **b118b — SQL cho bốn luật mới (nhóm D)**
+*Cập nhật 16/09/2026 · Bước gần nhất: **b118b** — `23-bon-luat-moi.sql`, đo 107/107 trên bàn thử, **CHƯA DÁN** lên máy chủ nào
+· Việc kế tiếp: **b118c — nối `sb.js` + giao diện cho bốn luật mới***
 
-⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên, nên mỗi dòng thừa ở
-đây là dòng thừa nhân với số phiên còn lại. Vượt trần là dấu hiệu có thứ đứng
-nhầm chỗ, **đừng nới trần**. Ba luật giữ nó gọn:
+⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
+thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
+**đừng nới trần**. Ba luật giữ nó gọn:
 
 1. **Xong rồi thì xoá khỏi đây.** Việc đã làm nằm ở lời commit (`git log`).
    Muốn đọc bản cũ: `git log -p KE-HOACH.md`.
 2. **File này giữ đúng bốn thứ:** đang ở đâu · trạng thái dán SQL · việc kế
    tiếp · việc còn treo. Bài học thuộc về `so-tay/` của chức năng ấy.
-3. **Dòng ⚠ chỉ được chuyển, không được mất.** Trước khi cắt phải liệt kê mọi
-   dòng ⚠ ra và chỉ được nơi trú của từng dòng *(b112 làm thế, 153 dòng)*.
-
----
-
-## Thứ tự làm — chốt 14/09/2026
-
-Chủ dự án ra thứ tự, nguyên văn: *"thứ tự làm sẽ là rà soát chống phình ngữ
-cảnh (nạp thông tin không cần thiết), tham khảo ý kiến agy đề xuất. chuyển đổi
-quantri3 vào app chính sau đó mới làm việc khác."*
-
-| Làm thứ | Bước | Việc | Mô hình |
-|---|---|---|---|
-| 7c | **b118b** | SQL cho bốn luật mới *(nhóm D)* — đụng nền móng quyền | Opus |
-| 8 | **b119** | Khu Sao lưu + Số đếm đối chiếu *(số cũ: b112)* | Sonnet |
-| 9 | **b120** | Mã người xuyên cây *(số cũ: b113)* | Sonnet |
-
-⚠ **Hai mục cuối đã ĐỔI SỐ.** Chúng vốn mang số b112/b113, đặt trước khi chủ
-dự án chèn ba việc mới vào đầu hàng. Chưa bước nào trong hai mục ấy bắt tay
-làm nên đổi số không cắt lịch sử của ai; `KE-HOACH.md` là nguồn đúng cho số
-bước (`THIET-KE-NHIEU-CAY.md` mục 12 ghi sẵn luật ấy).
+3. **Dòng ⚠ chỉ được chuyển, không được mất.** Trước khi cắt phải chỉ được nơi
+   trú mới của từng dòng ⚠.
 
 ---
 
@@ -55,9 +36,8 @@ nhà từ Drive sang Supabase. Đó là nghiệm thu của luật phân lớp, g
 
 ### Điểm dừng chưa bấm thử — trang Quản trị đã xong (b118d), nay bấm được
 
-Tất cả là "chưa ai bấm", không phải "chưa viết". Chủ dự án chốt 15/09/2026:
-*"chưa xong trang quantri thì không bấm thử mời và chấp nhận quyền quản trị hệ
-thống"* — và **đã có sẵn hai tài khoản Quản trị hệ thống**.
+Tất cả là "chưa ai bấm", không phải "chưa viết". Đã có sẵn **hai tài khoản
+Quản trị hệ thống**.
 
 | Điểm dừng | Bấm gì |
 |---|---|
@@ -66,29 +46,37 @@ thống"* — và **đã có sẵn hai tài khoản Quản trị hệ thống**.
 | **b111c** — nộp đề xuất · tự duyệt bị từ chối · người khác duyệt được | Mã + giao diện mới xong (b117), `21` đã dán 14/09: ① nút **Nhận** lời mời bằng tài khoản Quản trị hệ thống *(vá 14/09)*; ② nộp ở khu **Tài khoản** → bảng các gia phả → *Đề xuất mã người*; ③ tự duyệt ở `#gia-pha/cay/<mã>/de-xuat-gan` bị máy chủ từ chối; ④ một Quản trị hệ thống KHÁC duyệt được |
 | **b117** — khu Tài khoản trên máy chủ thật | ① bảng *Các gia phả tôi tham gia* hiện đúng mã người đã gắn — bằng tài khoản **thành viên thường**, vì nó đọc qua RLS chứ không qua hàm Quản trị; ② *Đổi mật khẩu* với mật khẩu cũ SAI phải bị từ chối, với mật khẩu cũ đúng thì đổi được |
 | **b118d** — cả trang Quản trị trên máy chủ thật | Mở từng trang con; bấm mỗi menu *Chọn hành động* / *Chọn ▾* một lần; một lần Duyệt và một lần Từ chối ở *Kiểm duyệt › Xem trước / sau*. Ảnh chụp mới chỉ trên máy chủ giả |
+| **b118b** — bốn luật mới | ⚠ Chưa bấm được: `23` **chưa dán**. Thứ tự: dán `23` lên **Staging** → làm b118c → bấm một vòng *khoá → mở khoá*, *mời QTHT → Nhận*, *xoá cây → trả lại* |
 
-⚠ **Một việc treo không có số, và nó đi theo MÁY chứ không theo bước:** commit
-`render 1.9.1` của repo `giapha/` (`44768d9`) **chưa đẩy được** — trên LapAMD
-`git push` đi bằng `trongdung1982`, mà repo ấy thuộc `ntdungsnotion`, nên nhận
-`403`. Sang LapASUS thì một lệnh là xong. Bản `supabase/` đã đẩy (`0485a2b`).
+⚠ **Treo theo MÁY, không theo bước:** commit `44768d9` của repo `giapha/` chưa
+đẩy được — LapAMD push bằng `trongdung1982`, repo ấy của `ntdungsnotion` → `403`.
+Sang LapASUS là xong.
 
 ---
 
 ## SQL — đã dán gì, và luật dán lại
 
-**Đây là chỗ DUY NHẤT ghi trạng thái dán.** `CHI-DAN.md` cố ý không giữ bản
-thứ hai: hai chỗ ghi là hai chỗ để lệch nhau.
+**Đây là chỗ DUY NHẤT ghi trạng thái dán** — hai chỗ ghi là hai chỗ để lệch nhau.
 
 **Đã dán lên CẢ HAI Supabase (thật + Staging): `01` → `21`, không sót file
-nào.** Mốc gần nhất: `18` (10/09) · `19`, `20` (10/09) · `21` (14/09, bảng tự
-kiểm đạt hết). `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
+nào.** `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
 
 **`22-rut-don-roi-cay.sql` (b116) — ĐÃ DÁN lên Supabase THẬT 15/09/2026,
 bảng tự kiểm đạt hết.** Chưa rõ đã dán lên Staging chưa — hỏi lại trước khi
 coi cả hai máy chủ đã đồng bộ tới `22`.
 
+⚠⚠ **`23-bon-luat-moi.sql` (b118b) — VIẾT XONG, ĐO XONG, *CHƯA DÁN* lên máy
+chủ nào.** Bàn thử 5433: **107/107 đạt** (`kiem-thu/ban-thu-sql/do-b118b.mjs`),
+bảng tự kiểm 16/16 đạt. **Dán lên STAGING trước**, và đọc bảng "bốn nút đổi
+hành vi" ở mục b118c trước khi dán lên máy chủ THẬT — dán xong mà chưa làm
+b118c thì bốn nút đang chạy làm việc khác đi mà không báo lỗi.
+
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
-`11`/`10`→`14`→`16`→`18` · `13`/`14`→`15`→`20`→`18` · `08`→`18`. Ba luật nữa,
+`11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18`.
+`23` đứng CUỐI mọi chuỗi: nó là bản đứng cuối của 13 hàm, trong đó có
+`la_quan_tri_he_thong()` · `la_thanh_vien()` · `co_the_xem_cay()` ·
+`co_the_sua()`. Quên nó là mở lại khoá mềm, mở lại lời mời QTHT thành quyền
+thật, và mở lại cây đã xoá — cả ba đều **im lặng**. Ba luật nữa,
 và cả ba đều đã có người trả giá:
 
 - ⚠ **`05` phải đứng trước `06`.** `05` đặt lại ràng buộc vai **thiếu
@@ -109,11 +97,14 @@ hàng rào thật, luật trực hệ chỉ còn là bộ lọc** giúp admin đ
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
 
-Hai tài liệu thiết kế: quyền cấp hệ thống · danh sách cây · tạo cây · mã xuyên
-cây → **`THIET-KE-NHIEU-CAY.md`**; bốn khu của `QuanTri.html` →
-**`THIET-KE-QUAN-TRI.md`**. Thứ tự theo **"đau nhất trước"**, cộng một luật thứ
-hai: **việc nào đụng `vai_tro()` thì đứng sau việc không đụng** — sai ở nền
-móng thì mọi thứ xây bên trên sai theo, và không có gì báo lỗi.
+**Còn ba bước, theo đúng thứ tự này:** `b118c` *(Sonnet)* → `b119` *(Sonnet)*
+→ `b120` *(Sonnet)*. ⚠ `KE-HOACH.md` là nguồn đúng cho SỐ BƯỚC — `b119`/`b120`
+vốn mang số `b112`/`b113`, chưa bước nào bắt tay làm nên đổi số không cắt lịch
+sử của ai.
+
+Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc nào đụng
+`vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
+bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
 ### Trang Quản trị — đọc `so-tay/trang-quan-tri.md` trước khi đụng
 
@@ -121,19 +112,23 @@ móng thì mọi thứ xây bên trên sai theo, và không có gì báo lỗi.
 `sb.js` không phải danh sách hàm máy chủ (`THIET-KE-QUAN-TRI.md` 9.5).
 ⚠ Khung KHÔNG đổi sang tab ngang: thanh trái, dưới 850px mới thành hàng thẻ.
 
-### b118b — SQL cho bốn luật mới *(nhóm D)* · đụng nền móng quyền
+### b118c — nối `sb.js` + giao diện cho bốn luật mới
 
-⚠ **Tới bước này tài liệu đi TRƯỚC máy chủ**: `THIET-KE-NHIEU-CAY.md` 11.9 đã
-ghi luật mới, SQL đang chạy vẫn là luật cũ *(30 ngày · xin rồi mới ẩn · một
-chữ ký · xoá cứng)*. Thử trên app trước b118b sẽ thấy lệch — đó không phải lỗi.
+⚠⚠ **DÁN `23` VÀO LÀ BỐN NÚT ĐANG CHẠY ĐỔI HÀNH VI**, và không nút nào báo
+lỗi — chúng chỉ làm việc khác đi:
+
+| Nút hôm nay | Sau khi dán `23` |
+|---|---|
+| *Xoá tài khoản* | luôn từ chối *"chưa bị khoá"* — phải khoá mềm trước, 60 ngày sau mới xoá |
+| *Bật cờ Quản trị hệ thống* | **không bật nữa**, chỉ gửi lời mời. Màn hình đọc `ok:true` rồi vẽ "đã bật" là **nói dối** — phải đọc `moi` |
+| *Xin xoá gia phả* | cây **ẩn ngay**; không còn "vẫn dùng được trong lúc chờ" |
+| *Huỷ đơn xin xoá* (chủ cây) | từ chối — nay chỉ QTHT bấm được, nghĩa là *trả lại cho chủ* |
 
 | | |
 |---|---|
-| **Làm** | QTHT hai chữ ký · khoá mềm tài khoản 60 ngày · `16`: cây ẩn ngay khi chủ xoá + thùng rác 120 ngày · xin đổi quyền *(cột + nộp/rút/duyệt)* |
-| **Vì sao đứng sau giao diện** | Đụng `la_quan_tri_he_thong()` và `co_the_xem_cay()` — luật *việc đụng vai đứng sau việc không đụng*. Giao diện vẽ trước, nút chưa có máy chủ thì mờ kèm lý do |
-| **⚠ Bẫy đã biết** | Lời mời QTHT chưa nhận KHÔNG mang quyền *(11.8 áp nguyên)* · `co_the_xem_cay()` phải chừa lối vai `sao_luu` *(khối đầu `16`)* · `drop function` xoá cả `grant` · chuỗi dán lại `14`→`16`→`18` |
-| **Điểm dừng** | Phép đo mượn danh nghĩa trên bàn thử 5433 đạt; ba câu nhỏ cuối 11.9 đã hỏi; rồi mới đưa SQL cho chủ dự án dán |
-
+| **Làm** | `sb.js` bọc 9 cửa mới của `23` *(tên đủ ở khối `grant` cuối file ấy)* + cờ khoá vào `layPhien()` · sửa bốn chỗ ở bảng trên · khu Tài khoản: nút **Chấp nhận/Từ chối** lời mời QTHT · `#tree-requests`: ô duyệt *xin đổi quyền* |
+| **⚠⚠ Bẫy đã trả giá** | Thêm cửa vào `sb.js` thì **thêm cả ở `kiem-thu/sb-gia.mjs`** — thiếu một tên là cả bộ ảnh ra nền trơn (b110b, b111) |
+| **Điểm dừng** | `node ../kiem-thu/so-quantri3.mjs` không có chữ đỏ; một vòng khoá → mở khoá bấm thật trên Staging |
 ### b119 — Khu Sao lưu + Số đếm đối chiếu
 
 | | |
@@ -154,13 +149,13 @@ chữ ký · xoá cứng)*. Thử trên app trước b118b sẽ thấy lệch �
 
 ### Sau b120 — chưa đặt số, chưa chốt
 
-**Nhóm E của quantri3** *(tạo tài khoản mới — ⚠ cần khoá `service_role`, chỉ
-qua Edge Function, khoá **không bao giờ** vào repo Public · công khai theo
-từng trường · nhật ký hệ thống — `THIET-KE-QUAN-TRI.md` 9.5)* ·
-Nhập GEDCOM/Excel qua máy chủ · **khôi phục thật** *(việc nguy hiểm nhất, phải
-kiểm chứng bằng vòng `sao lưu → đổi dữ liệu → khôi phục → dữ liệu quay đúng
-trạng thái cũ`, không phải bằng việc có file JSON)* · nối **quan hệ** bắc qua
-hai cây *(`noi_ve` chỉ nói "cùng một con người", không nói "cùng một gia đình")*.
+**Nhóm E của quantri3** *(`THIET-KE-QUAN-TRI.md` 9.5 — ⚠ tạo tài khoản cần khoá
+`service_role`, chỉ qua Edge Function, khoá **không bao giờ** vào repo Public)* ·
+chặn đăng nhập thật cho tài khoản bị khoá *(`auth.users.banned_until`, cùng
+đường với trên)* · nhập GEDCOM/Excel qua máy chủ · **khôi phục thật** *(việc
+nguy hiểm nhất: phải đo bằng vòng sao lưu → đổi → khôi phục → về đúng trạng
+thái cũ, không phải bằng việc có file JSON)* · nối **quan hệ** bắc qua hai cây
+*(`noi_ve` chỉ nói "cùng một con người", không nói "cùng một gia đình")*.
 
 ---
 
@@ -171,6 +166,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 
 | Việc | Ghi ở đâu |
 |---|---|
+| ⚠ **Hai hàm của `16` nay LỆCH NGHĨA với tên của chúng**: `xin_xoa_cay()` không còn là "xin" — nó ẩn cây ngay; `huy_xin_xoa_cay()` nay chỉ QTHT gọi được và nghĩa thật là *trả lại cho chủ*. Giữ tên cũ ở b118b là **cố ý** (đổi tên kéo theo `sb.js` · `sb-gia.mjs` · `trang-cay.js` · bộ ảnh). Đổi tên là một bước riêng, làm cùng hay ngay sau b118c | `luoc-do/23-bon-luat-moi.sql` khối đầu |
 | ⚠ **`ds_kiem_duyet()` chưa trả người duyệt · lúc duyệt · lý do từ chối** — hai tab lịch sử của Kiểm duyệt để trống ba cột (cột có trong `change_log`, hàm chưa đọc). Sửa hàm là `drop` → chép cả `grant` | `so-tay/trang-quan-tri.md` |
 | ⚠ **`xem-khung-quan-tri.mjs` (ngoài repo) còn kịch bản bấm của giao diện cũ** — viết lại theo cảnh của `so-quantri3.mjs`, hoặc bỏ | `so-tay/trang-quan-tri.md` |
 | ⚠ **Hai việc của điểm dừng b106 chưa nghiệm thu bằng mắt**: gắn được mã người · đăng nhập bằng vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |
@@ -200,14 +196,11 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 
 ### ⚠ Bộ bất biến bố cục đang gác nhầm nhánh
 
-Bộ kiểm 66 phép / 51.250 phép so trên 214 sơ đồ — thứ bảo vệ `domains/layout.js`,
-phần đắt nhất của cả dự án — nằm ở `Claude_Code/kiem-thu/`, **ngoài repo này**,
-và **58 trong 142 file của nó `import` từ `../giapha/js/`**, tức bản đã đóng băng.
-Hôm nay vẫn an toàn vì hai bản `domains/` giống nhau **bit-với-bit, 10/10 file**
-(đo 03/09/2026) — nhưng đó là một sự trùng hợp, không phải một cơ chế: ngày ai
-đó sửa `supabase/js/domains/`, bộ kiểm ấy **vẫn chạy xanh** vì đang đo file
-khác. `/kiem-tra` phép 9 chỉ báo *"hai bản đã lệch"*, không thay được việc trỏ
-bộ kiểm sang đúng chỗ. Ba đường chưa chọn: (a) biến môi trường chọn gốc cho 58
-file kiểm; (b) chép bộ kiểm vào `supabase/kiem-thu/`; (c) sống bằng phép 9.
-**Chỉ phải quyết khi thật sự cần sửa `domains/`** — mà theo `BAT-DAU.md` mục 1
-thì ngày ấy đằng nào cũng phải dừng lại hỏi vì sao.
+Bộ kiểm 66 phép / 51.250 phép so trên 214 sơ đồ — thứ bảo vệ `domains/layout.js`
+— nằm ngoài repo này, ở `Claude_Code/kiem-thu/`, và **58 trong 142 file của nó
+`import` từ `../giapha/js/`**, tức bản đã đóng băng. Ngày ai đó sửa
+`supabase/js/domains/`, bộ kiểm ấy **vẫn chạy xanh** vì đang đo file khác.
+*(Lý lẽ đầy đủ: `/kiem-tra` phép 9.)* Ba đường chưa chọn: (a) biến môi trường
+chọn gốc cho 58 file kiểm; (b) chép bộ kiểm vào `supabase/kiem-thu/`; (c) sống
+bằng phép 9. **Chỉ phải quyết khi thật sự cần sửa `domains/`** — mà ngày ấy
+`BAT-DAU.md` mục 1 đằng nào cũng bắt dừng lại hỏi vì sao.
