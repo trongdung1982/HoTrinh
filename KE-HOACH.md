@@ -1,10 +1,12 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 17/09/2026 · Bước gần nhất: **b118c** — `sb.js` + giao diện xong, `23-bon-luat-moi.sql`
-**ĐÃ DÁN lên THẬT** 17/09/2026 (bỏ qua Staging, chủ dự án chốt). REST xác nhận 17/09: 9 cửa mới đều
-tồn tại, `grant … to authenticated` đúng — ẩn danh gọi bị 401, không lọt qua cửa nào
-· Việc kế tiếp: chủ dự án bấm thật một vòng khoá→mở khoá, mời QTHT→Nhận, xoá cây→trả lại trên app
-thật rồi báo lại; xong thì đóng b118c, chuyển **b119***
+*Cập nhật 17/09/2026 · Bước gần nhất: **b118c ĐÃ ĐÓNG** — `23-bon-luat-moi.sql` dán lên THẬT
+17/09/2026 (bỏ qua Staging, chủ dự án chốt), `sb.js` + giao diện nối xong. Đo bằng REST qua tài
+khoản thử `thu-h9@nguyentrongbac.io.vn` (QTHT thật) + tài khoản `khach@io.vn` + cây thử `TH957`:
+khoá→mở khoá ĐẠT (kể cả chặn xoá trước 60 ngày), mời QTHT (chữ ký 1)→huỷ ĐẠT, xoá cây→trả lại ĐẠT.
+⚠ Chưa tự bấm được bước *Nhận* (chữ ký 2) vì cần mật khẩu tài khoản thứ hai — để chủ dự án tự thử
+nếu muốn chắc thêm, không chặn việc đóng bước
+· Việc kế tiếp: **b119** — Khu Sao lưu + Số đếm đối chiếu*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -49,7 +51,6 @@ Quản trị hệ thống**.
 | **b111c** — nộp đề xuất · tự duyệt bị từ chối · người khác duyệt được | Mã + giao diện mới xong (b117), `21` đã dán 14/09: ① nút **Nhận** lời mời bằng tài khoản Quản trị hệ thống *(vá 14/09)*; ② nộp ở khu **Tài khoản** → bảng các gia phả → *Đề xuất mã người*; ③ tự duyệt ở `#gia-pha/cay/<mã>/de-xuat-gan` bị máy chủ từ chối; ④ một Quản trị hệ thống KHÁC duyệt được |
 | **b117** — khu Tài khoản trên máy chủ thật | ① bảng *Các gia phả tôi tham gia* hiện đúng mã người đã gắn — bằng tài khoản **thành viên thường**, vì nó đọc qua RLS chứ không qua hàm Quản trị; ② *Đổi mật khẩu* với mật khẩu cũ SAI phải bị từ chối, với mật khẩu cũ đúng thì đổi được |
 | **b118d** — cả trang Quản trị trên máy chủ thật | Mở từng trang con; bấm mỗi menu *Chọn hành động* / *Chọn ▾* một lần; một lần Duyệt và một lần Từ chối ở *Kiểm duyệt › Xem trước / sau*. Ảnh chụp mới chỉ trên máy chủ giả |
-| **b118b/c** — bốn luật mới | `23` đã dán lên THẬT, REST xác nhận 9 cửa mới hoạt động. Còn lại: bấm thật một vòng *khoá → mở khoá*, *mời QTHT → Nhận*, *xoá cây → trả lại* |
 
 
 ---
@@ -66,10 +67,9 @@ bảng tự kiểm đạt hết.** Chưa rõ đã dán lên Staging chưa — h�
 coi cả hai máy chủ đã đồng bộ tới `22`.
 
 **`23-bon-luat-moi.sql` — ĐÃ DÁN lên THẬT 17/09/2026** (bỏ qua Staging, chủ
-dự án chốt 16/09). Bàn thử 5433 trước đó: 107/107 đạt. REST xác nhận 17/09:
-9 cửa mới tồn tại và `grant … to authenticated` đúng (ẩn danh gọi bị 401).
-Còn treo: bấm thật một vòng khoá→mở khoá · mời QTHT→Nhận · xoá cây→trả lại
-trên app thật để đóng hẳn b118c.
+dự án chốt 16/09). Bàn thử 5433 trước đó: 107/107 đạt. REST xác nhận 17/09
+qua tài khoản thử: khoá→mở khoá, mời QTHT (chữ ký 1)→huỷ, xoá cây→trả lại —
+cả ba ĐẠT. b118c đóng.
 
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
 `11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18`.
@@ -97,10 +97,9 @@ hàng rào thật, luật trực hệ chỉ còn là bộ lọc** giúp admin đ
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
 
-**Còn ba bước, theo đúng thứ tự này:** `b118c` *(Sonnet)* → `b119` *(Sonnet)*
-→ `b120` *(Sonnet)*. ⚠ `KE-HOACH.md` là nguồn đúng cho SỐ BƯỚC — `b119`/`b120`
-vốn mang số `b112`/`b113`, chưa bước nào bắt tay làm nên đổi số không cắt lịch
-sử của ai.
+**Còn hai bước, theo đúng thứ tự này:** `b119` *(Sonnet)* → `b120` *(Sonnet)*.
+⚠ `KE-HOACH.md` là nguồn đúng cho SỐ BƯỚC — `b119`/`b120` vốn mang số
+`b112`/`b113`, chưa bước nào bắt tay làm nên đổi số không cắt lịch sử của ai.
 
 Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc nào đụng
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
@@ -112,18 +111,6 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 `sb.js` không phải danh sách hàm máy chủ (`THIET-KE-QUAN-TRI.md` 9.5).
 ⚠ Khung KHÔNG đổi sang tab ngang: thanh trái, dưới 850px mới thành hàng thẻ.
 
-### b118c — nối `sb.js` + giao diện cho bốn luật mới — **XONG 17/09/2026**
-
-Đã làm: `sb.js` 9 cửa mới + cờ `biKhoa` vào `layPhien()` · Sổ tài khoản, khu
-Tài khoản, Vòng đời, Thành viên & quyền nối đủ bốn luật (chi tiết: lời
-commit). ⚠ *Xin đổi quyền* duyệt ở bảng **Thành viên & quyền** sẵn có, KHÔNG
-ở `#tree-requests` như dự tính — mục đó tĩnh theo prototype, không có chỗ
-cho hình dạng dữ liệu khác (`so-tay/trang-quan-tri.md`). `sb-gia.mjs` đã
-thêm 9 cửa + hai ca giả. `/kiem-tra` 10 phép ĐẠT, `so-quantri3.mjs` sạch.
-`23` đã dán lên THẬT, REST xác nhận 9 cửa hoạt động + grant đúng.
-
-**Còn lại — cần chủ dự án**: bấm thật một vòng khoá→mở khoá · mời QTHT→Nhận
-· xoá cây→trả lại trên app thật, rồi báo lại để đóng hẳn bước này.
 ### b119 — Khu Sao lưu + Số đếm đối chiếu
 
 | | |
