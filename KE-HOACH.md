@@ -48,9 +48,6 @@ Quản trị hệ thống**.
 | **b118d** — cả trang Quản trị trên máy chủ thật | Mở từng trang con; bấm mỗi menu *Chọn hành động* / *Chọn ▾* một lần; một lần Duyệt và một lần Từ chối ở *Kiểm duyệt › Xem trước / sau*. Ảnh chụp mới chỉ trên máy chủ giả |
 | **b118b** — bốn luật mới | ⚠ Chưa bấm được: `23` **chưa dán**. Thứ tự: dán `23` lên **Staging** → làm b118c → bấm một vòng *khoá → mở khoá*, *mời QTHT → Nhận*, *xoá cây → trả lại* |
 
-⚠ **Treo theo MÁY, không theo bước:** commit `44768d9` của repo `giapha/` chưa
-đẩy được — LapAMD push bằng `trongdung1982`, repo ấy của `ntdungsnotion` → `403`.
-Sang LapASUS là xong.
 
 ---
 
