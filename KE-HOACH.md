@@ -1,11 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 17/09/2026 · Bước gần nhất: **b118c ĐÃ ĐÓNG** — `23-bon-luat-moi.sql` dán lên THẬT
-17/09/2026 (bỏ qua Staging, chủ dự án chốt), `sb.js` + giao diện nối xong. Đo bằng REST qua tài
-khoản thử `thu-h9@nguyentrongbac.io.vn` (QTHT thật) + tài khoản `khach@io.vn` + cây thử `TH957`:
-khoá→mở khoá ĐẠT (kể cả chặn xoá trước 60 ngày), mời QTHT (chữ ký 1)→huỷ ĐẠT, xoá cây→trả lại ĐẠT.
-⚠ Chưa tự bấm được bước *Nhận* (chữ ký 2) vì cần mật khẩu tài khoản thứ hai — để chủ dự án tự thử
-nếu muốn chắc thêm, không chặn việc đóng bước
+*Cập nhật 17/09/2026 · Bước gần nhất: **b118c ĐÃ ĐÓNG** — bốn luật mới của `23-bon-luat-moi.sql`
+đã dán lên THẬT, nối xong `sb.js` + giao diện, đo đạt cả bằng REST (tài khoản thử) lẫn bấm thật
+(chủ dự án tự Nhận lời mời QTHT thành công 17/09/2026)
 · Việc kế tiếp: **b119** — Khu Sao lưu + Số đếm đối chiếu*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
