@@ -5,14 +5,10 @@
 // Lớp      : pages
 // Phụ thuộc: services/repo, services/sb, utils/date, pages/dang-nhap,
 //            pages/tree-view
-// Phiên bản: 0.12.0 · Cập nhật: 09/09/2026 (b110)
-//            0.12.0 nhánh `daxoa` — cây đang mở vừa bị xoá. ⚠ Người rơi vào
-//            đây CÓ ĐỦ QUYỀN; thiếu là thiếu cái cây. Không có nhánh này thì
-//            họ mở ra một sơ đồ trống không lời giải thích, hoặc nghe câu
-//            "chưa được cấp quyền" — sai hẳn. Màn hình kể ĐÍCH DANH tên cây,
-//            người xin và người duyệt, đúng chữ chủ dự án chốt 09/09/2026.
-//            0.11.0 nhánh `duocmoi` — người ĐƯỢC MỜI (b107) thấy Nhận/Từ chối
-//            ngay tại màn hình khởi động, thay vì câu "đơn đang chờ duyệt".
+// Phiên bản: 0.13.0 · Cập nhật: 16/09/2026 (b118c)
+//            0.13.0 nhánh `khoa` — tài khoản bị khoá mềm (`23` mục 4a). Đứng
+//            TRƯỚC MỌI nhánh khác, kể cả `daxoa`. Lịch sử các bản trước:
+//            `git log -p js/pages/khoi-dong.js`.
 // ============================================================
 //
 // ⚠ **ĐỔI SO VỚI BẢN APPS SCRIPT: có thêm một kết cục thứ ba.**
@@ -122,6 +118,21 @@ function hienManHinhKhongCoQuyen(el, phien) {
   //   không lo màn hình trắng"*. Nên nó phải kể ĐÍCH DANH — tên cây, ai xin,
   //   ai duyệt. Một câu "gia phả đã bị xoá" trống không thì người đọc vẫn
   //   phải đi hỏi vòng quanh, tức vẫn là một ngõ cụt, chỉ lịch sự hơn.
+  // ⚠ ĐỨNG TRƯỚC MỌI NHÁNH KHÁC, kể cả 'daxoa': `sb.layPhien()` đã chặn ở
+  //   nguồn (`23` mục 4a — `la_quan_tri_he_thong()` tự trả `false` cho một
+  //   tài khoản bị khoá), nên không nhánh nào dưới đây còn với tới được họ.
+  //   Không có nhánh này thì họ rơi vào "chưa được duyệt" của người mới —
+  //   sai hẳn với cái đang xảy ra.
+  if (phien.trangThai === 'khoa') {
+    el.append(khung([
+      tieuDe('Tài khoản của bạn đang bị khoá'),
+      phien.khoaLyDo ? doan('Lý do: “' + phien.khoaLyDo + '”.') : null,
+      doan('Liên hệ Quản trị hệ thống để được mở khoá.'),
+      phien.email ? nhoMo('Bạn đang đăng nhập bằng: ' + phien.email) : null,
+    ]));
+    return;
+  }
+
   if (phien.trangThai === 'daxoa') {
     el.append(khung([
       tieuDe('Gia phả này đã bị xoá'),

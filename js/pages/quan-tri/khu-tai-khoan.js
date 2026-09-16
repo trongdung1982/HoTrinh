@@ -5,7 +5,9 @@
 //            các gia phả tôi tham gia · đổi mật khẩu).
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/hop-thoai · trang-cay · o-bang
-// Phiên bản: 1.0.0 · Cập nhật: 16/09/2026 (b118d)
+// Phiên bản: 1.1.0 · Cập nhật: 16/09/2026 (b118c)
+//            1.1.0 nút Chấp nhận/Từ chối lời mời Quản trị hệ thống nối thật
+//            (`23` mục 6) — chữ ký thứ hai, đọc `loiMoiQthtCuaToi()`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -14,12 +16,14 @@
 //   mình qua RLS), nên không cần hàng rào nào mới. Không dòng nào ở file này
 //   đọc `phien.treeId` để chọn cây — mỗi dòng bảng mang tên cây của nó.
 //
-// ⚠ **Hai cờ cấp tài khoản chỉ để ĐỌC.** Không ai tự đặt quyền cho mình —
-//   nút *Chấp nhận / Từ chối* lời mời Quản trị hệ thống của quantri3 để ẩn:
-//   bổ nhiệm hai chữ ký chưa có ở máy chủ (b118b).
+// ⚠ **Cờ "Được phép tạo gia phả" chỉ để ĐỌC** — không ai tự đặt quyền cho
+//   mình. Cờ Quản trị hệ thống thì KHÁC: từ b118c nó có nút *Chấp nhận / Từ
+//   chối* thật, đúng nghĩa "chấp nhận" — đây là chữ ký thứ HAI của lời mời
+//   (`23` mục 6), không phải tự đặt quyền cho mình.
 
 import {
   layDanhSachGiaPha, chanCuaToi, doiMatKhau, dangXuat, nguoiDangNhap,
+  loiMoiQthtCuaToi, nhanQuyenQtht, tuChoiQuyenQtht,
 } from '../../services/sb.js';
 import { hoi, bao } from './hop-thoai.js';
 import { hoiDeXuatGan, moSoDo } from './trang-cay.js';
@@ -43,8 +47,9 @@ let moRong = false;
 export async function mountKhuTaiKhoan(sec, phien) {
   const $ = (id) => sec.querySelector('#' + id);
   veHoSo(sec, phien, null);
-  veQuyenHeThong(sec, phien);
+  veQuyenHeThong(sec, phien, {});
   ganMatKhau(sec);
+  ganQuyenHeThong(sec);
 
   $('gia-pha-extra').innerHTML = '';
   $('gia-pha-extra').hidden = true;
@@ -52,16 +57,19 @@ export async function mountKhuTaiKhoan(sec, phien) {
   $('tk-cay-dem').textContent = '';
   dongTrong($('tk-cay-tbody'), 7, 'Đang đọc các gia phả của bạn…');
 
-  // ⚠ Ba câu hỏi đi CÙNG LƯỢT và không thay được cho nhau: `ds_gia_pha()` biết
+  // ⚠ Bốn câu hỏi đi CÙNG LƯỢT và không thay được cho nhau: `ds_gia_pha()` biết
   //   đơn chờ lẫn lời mời nhưng không biết mã người; `chanCuaToi()` biết mã
-  //   người nhưng chỉ thấy chân ĐÃ DUYỆT; `nguoiDangNhap()` biết ngày đăng ký.
+  //   người nhưng chỉ thấy chân ĐÃ DUYỆT; `nguoiDangNhap()` biết ngày đăng ký;
+  //   `loiMoiQthtCuaToi()` biết lời mời Quản trị hệ thống đang chờ (b118c).
   const hashLuc = window.location.hash;
-  const [nguoi, kqCay, kqChan] = await Promise.all([
+  const [nguoi, kqCay, kqChan, moiQtht] = await Promise.all([
     nguoiDangNhap().catch(() => null), layDanhSachGiaPha(), chanCuaToi(),
+    loiMoiQthtCuaToi().catch(() => ({})),
   ]);
   if (window.location.hash !== hashLuc) return;
 
   veHoSo(sec, phien, nguoi);
+  veQuyenHeThong(sec, phien, moiQtht);
   veBangCay(sec, phien, kqCay, kqChan, () => mountKhuTaiKhoan(sec, phien));
 }
 
@@ -92,14 +100,59 @@ function veHoSo(sec, phien, nguoi) {
     (xacMinh === null ? '' : xacMinh ? ' · Đã xác minh' : ' · Chưa xác minh email');
 }
 
-function veQuyenHeThong(sec, phien) {
+/**
+ * Ba trạng thái — đúng bảng của `khu-quan-tri-he-thong.js`: đã có cờ · lời
+ * mời đang chờ CHÍNH MÌNH bấm Nhận · chưa có gì.
+ */
+function veQuyenHeThong(sec, phien, moi) {
   const laQT = Boolean(phien.laQuanTriHeThong);
-  datHuyHieu(sec.querySelector('#my-sys-qtht-badge'), laQT ? 'Có (Quản trị hệ thống)' : 'Không');
-  sec.querySelector('#my-sys-qtht-sub').textContent = laQT
-    ? 'Quyền quản lý toàn bộ hệ thống phần mềm'
-    : 'Chỉ một Quản trị hệ thống khác cấp được. Lời mời nhận vai hai chữ ký làm ở b118b.';
-  sec.querySelector('#my-sys-qtht-actions').hidden = true;
+  const badge = sec.querySelector('#my-sys-qtht-badge');
+  const sub = sec.querySelector('#my-sys-qtht-sub');
+  const actions = sec.querySelector('#my-sys-qtht-actions');
+
+  if (laQT) {
+    datHuyHieu(badge, 'Có (Quản trị hệ thống)');
+    sub.textContent = 'Quyền quản lý toàn bộ hệ thống phần mềm';
+    actions.hidden = true;
+  } else if (moi && moi.coLoiMoi) {
+    datHuyHieu(badge, 'Có lời mời đang chờ', 'wait');
+    sub.textContent = (moi.emailNguoiMoi ? moi.emailNguoiMoi + ' mời bạn' : 'Bạn được mời') +
+      (moi.moiLuc ? ' lúc ' + ngayGio(moi.moiLuc) : '') + '. Bấm Chấp nhận để có cờ ngay.';
+    actions.hidden = false;
+  } else {
+    datHuyHieu(badge, 'Không');
+    sub.textContent = 'Chỉ một Quản trị hệ thống khác mời được.';
+    actions.hidden = true;
+  }
   datHuyHieu(sec.querySelector('#tk-tao-cay'), phien.duocTaoCay ? 'Có' : 'Không');
+}
+
+/**
+ * Chữ ký thứ hai của lời mời Quản trị hệ thống (`23` mục 6, b118c). Đổi
+ * `laQuanTriHeThong` là đổi những gì phần còn lại của trang thấy được, nên
+ * nạp lại cả trang thay vì tự vá `phien` — cùng cách `btn-dang-xuat` làm.
+ */
+function ganQuyenHeThong(sec) {
+  sec.querySelector('#btn-my-accept-qtht').onclick = async () => {
+    const kq = await hoi({
+      tua: 'Chấp nhận làm Quản trị hệ thống',
+      chu: 'Nhận cờ Quản trị hệ thống — đọc và sửa được MỌI gia phả, đổi quyền ở mọi cây, và mời ' +
+        'người khác. Đây là chữ ký thứ hai; lời mời do một Quản trị hệ thống khác gửi.',
+      nutOk: 'Chấp nhận', kieuOk: 'warm',
+      lam: () => nhanQuyenQtht(),
+    });
+    if (kq) window.location.reload();
+  };
+
+  sec.querySelector('#btn-my-decline-qtht').onclick = async () => {
+    const kq = await hoi({
+      tua: 'Từ chối lời mời',
+      chu: 'Từ chối lời mời làm Quản trị hệ thống? Xoá lời mời, không đánh dấu — mời lại được.',
+      nutOk: 'Từ chối', kieuOk: 'danger',
+      lam: () => tuChoiQuyenQtht(),
+    });
+    if (kq) window.location.reload();
+  };
 }
 
 // ============================================================

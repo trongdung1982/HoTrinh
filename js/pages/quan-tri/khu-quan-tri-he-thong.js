@@ -5,7 +5,11 @@
 //            `#sys-default-tree-selector`.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang
-// Phiên bản: 1.1.0 · Cập nhật: 16/09/2026 (b118d)
+// Phiên bản: 1.2.0 · Cập nhật: 16/09/2026 (b118c)
+//            1.2.0 Sổ tài khoản nối bốn luật mới của `23`: khoá mềm/mở khoá
+//            tài khoản thật (không còn mờ) · Bổ nhiệm QTHT đổi thành lời mời
+//            hai chữ ký · Xoá tài khoản đòi đã khoá đủ 60 ngày · thùng rác
+//            120 ngày (đổi `NGAY_THUNG_RAC`).
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -18,15 +22,16 @@
 //   *Tạo tài khoản* · *Sao lưu* · *Nhật ký* — vẽ đúng HTML quantri3 nhưng mờ,
 //   kèm câu nói thẳng việc ấy làm ở bước nào.
 //
-// ⚠ Sổ tài khoản: cột *Bổ nhiệm QTHT* của quantri3 là LỜI MỜI hai chữ ký, máy
-//   chủ hôm nay BẬT THẲNG một chữ ký · *Khóa tài khoản* và *chờ xoá 60 ngày*
-//   chưa có (b118b) · *Xóa tài khoản* hôm nay là XOÁ HẲN. Hộp hỏi nói đúng
-//   máy chủ hôm nay, không nói trước.
+// ⚠ Sổ tài khoản: cột *Bổ nhiệm QTHT* của quantri3 nay là LỜI MỜI hai chữ ký
+//   thật (`23` mục 6, b118c) — bấm chỉ GỬI lời mời, người kia tự bấm Chấp
+//   nhận ở khu Tài khoản mới thật sự có cờ · *Khóa tài khoản* (khoá mềm 60
+//   ngày) đã nối · *Xóa tài khoản* nay ĐÒI đã khoá đủ 60 ngày, không xoá
+//   thẳng được nữa.
 
 import {
   layDanhSachGiaPha, layCayMacDinh, datCayMacDinh, dsTaiKhoanHeThong, dsThanhVien,
   duyetXoaCay, huyXinXoaCay, phucHoiCay, donThungRac, xoaAnhThat,
-  datQuanTriHeThong, datDuocTaoCay, xoaTaiKhoan,
+  datQuanTriHeThong, datDuocTaoCay, xoaTaiKhoan, khoaTaiKhoan, moKhoaTaiKhoan,
 } from '../../services/sb.js';
 import { duongDan } from './trang-chi-tiet.js';
 import { hoi, bao } from './hop-thoai.js';
@@ -36,12 +41,11 @@ import {
 } from './o-bang.js';
 
 /**
- * ⚠⚠ Số ngày một cây nằm trong thùng rác trước khi dọn được — ĐÚNG luật MÁY
- *   CHỦ ĐANG CHẠY (`16-thung-rac-cay.sql`: 30 ngày). `THIET-KE-NHIEU-CAY.md`
- *   11.9 đã chốt 120 ngày, nhưng SQL đổi ở b118b. Đổi hằng số này CÙNG LÚC
- *   dán SQL ấy — màn hình đi trước máy chủ là màn hình nói dối.
+ * Số ngày một cây nằm trong thùng rác trước khi dọn được — ĐÚNG luật MÁY CHỦ
+ * ĐANG CHẠY. `THIET-KE-NHIEU-CAY.md` 11.9 chốt 120 ngày, `23` (b118c) đã dán
+ * đúng con số ấy vào máy chủ.
  */
-const NGAY_THUNG_RAC = 30;
+const NGAY_THUNG_RAC = 120;
 
 /** Tab đang mở — giữ qua các lần nạp lại và khi đi sang trang con rồi về. */
 let tabDangMo = 'tong-quan';
@@ -217,7 +221,7 @@ function dongTaiKhoan(t, ds, napLai) {
     t.daXacNhanEmail ? 'ok' : 'wait'), 'font-size:11px;padding:2px 7px');
   const oEmail = td(boc(email), chepKieu(boc(xn), 'margin-top:4px'));
 
-  // — Quản trị hệ thống —
+  // — Quản trị hệ thống — ba trạng thái: đã có cờ · lời mời đang chờ · chưa có gì.
   const oQT = td();
   if (t.laQuanTriHeThong) {
     oQT.append(huyHieu('Là QTHT', 'ok'));
@@ -228,10 +232,19 @@ function dongTaiKhoan(t, ds, napLai) {
       b.addEventListener('click', () => hoiCoQT(t, false, napLai));
       oQT.append(chepKieu(boc(b), 'margin-top:4px'));
     }
+  } else if (t.qthtMoiLuc) {
+    oQT.append(chepKieu(huyHieu('Đang chờ nhận lời mời', 'wait'), 'display:block;margin-bottom:3px'));
+    oQT.append(chepKieu(span('sub', 'Mời lúc ' + ngayGio(t.qthtMoiLuc) +
+      (t.emailQthtMoiBoi ? ' bởi ' + t.emailQthtMoiBoi : '')), 'display:block;margin-bottom:3px'));
+    if (!t.laChinhToi) {
+      const b = nutNho('Hủy lời mời', 'danger');
+      b.addEventListener('click', () => hoiCoQT(t, false, napLai));
+      oQT.append(b);
+    }
   } else {
     oQT.append(chepKieu(span('sub', 'Chưa có'), 'display:block;margin-bottom:3px'));
     if (!t.laChinhToi) {
-      const b = nutNho('Bổ nhiệm QTHT', 'warm');
+      const b = nutNho('Mời làm QTHT', 'warm');
       b.addEventListener('click', () => hoiCoQT(t, true, napLai));
       oQT.append(b);
     }
@@ -262,22 +275,37 @@ function dongTaiKhoan(t, ds, napLai) {
 
   const oDn = td(t.dangNhapGanNhat ? ngayGio(t.dangNhapGanNhat) : span('muted', 'Chưa đăng nhập'));
 
-  // — Hành động —
+  // — Hành động — khoá mềm trước, xoá hẳn sau 60 ngày (`23` mục 7, b118c).
   let oViec;
   if (t.laChinhToi) {
     oViec = td(chepKieu(span('muted', 'Không tự khóa/xóa'), 'font-size:12px'));
   } else {
-    const bKhoa = chepKieu(nutMo('Khóa tài khoản', 'Khoá mềm tài khoản chưa có ở máy chủ — làm ở b118b.', 'danger'),
-      'font-size:11px;padding:2px 7px');
-    const bXoa = nutNho('Xóa tài khoản', 'danger');
-    bXoa.addEventListener('click', () => hoiXoaTaiKhoan(t, ds, napLai));
     const cot = document.createElement('div');
     chepKieu(cot, 'display:flex;flex-direction:column;gap:4px;align-items:flex-start');
-    cot.append(bKhoa, bXoa);
+
+    if (t.khoaLuc) {
+      cot.append(chepKieu(huyHieu('Đã khoá', 'danger'), 'font-size:11px;padding:2px 7px'));
+      cot.append(chepKieu(span('sub', 'Từ ' + ngay(t.khoaLuc) +
+        (t.khoaLyDo ? ' — “' + t.khoaLyDo + '”' : '')), 'font-size:11px'));
+      const bMo = nutNho('Mở khoá');
+      bMo.addEventListener('click', () => hoiMoKhoaTaiKhoan(t, napLai));
+      cot.append(bMo);
+    } else {
+      const bKhoa = nutNho('Khóa tài khoản', 'danger');
+      bKhoa.addEventListener('click', () => hoiKhoaTaiKhoan(t, napLai));
+      cot.append(bKhoa);
+    }
+
+    const bXoa = t.khoaLuc ? nutNho('Xóa tài khoản', 'danger') : nutMo('Xóa tài khoản',
+      'Khoá mềm trước — 60 ngày sau mới xoá hẳn được.', 'danger');
+    if (t.khoaLuc) bXoa.addEventListener('click', () => hoiXoaTaiKhoan(t, ds, napLai));
+    cot.append(bXoa);
+
     oViec = td(cot);
   }
 
-  tr.append(oTen, oEmail, oQT, oTao, td(huyHieu('Hoạt động')), oSo, oDn, oViec);
+  const oTrangThai = td(t.khoaLuc ? huyHieu('Đã khoá', 'danger') : huyHieu('Hoạt động'));
+  tr.append(oTen, oEmail, oQT, oTao, oTrangThai, oSo, oDn, oViec);
   return tr;
 }
 
@@ -287,20 +315,29 @@ function boc(el) {
   return d;
 }
 
-/** Cửa thứ SÁU (`14` mục 7) — máy chủ không cho tắt người cuối cùng. */
+/**
+ * Cửa thứ SÁU (`14` mục 7), nay HAI chữ ký (`23` mục 6, b118c).
+ *
+ * ⚠⚠ `bat=true` CHỈ GỬI LỜI MỜI — cờ chưa đổi giá trị cho tới khi chính
+ *   người kia bấm Nhận ở khu Tài khoản. `bat=false` (hủy quyền/hủy lời mời)
+ *   vẫn là MỘT chữ ký, có hiệu lực ngay — cố ý, xem `23` mục 6.
+ */
 async function hoiCoQT(t, bat, napLai) {
+  const dangMoi = Boolean(t.qthtMoiLuc);
   const kq = await hoi({
-    tua: bat ? 'Bổ nhiệm Quản trị hệ thống' : 'Hủy quyền Quản trị hệ thống',
+    tua: bat ? 'Mời làm Quản trị hệ thống' : (dangMoi ? 'Hủy lời mời' : 'Hủy quyền Quản trị hệ thống'),
     // ⚠ Cờ của TÀI KHOẢN — một trong hai chỗ duy nhất không hỏi cây (luật 5a),
     //   nên câu phải tự khai điều ấy.
     chu: 'Cờ của tài khoản — cả hệ thống, không chọn cây. ' + (bat
-      ? 'Cấp cờ Quản trị hệ thống cho ' + t.email + '. Máy chủ hôm nay BẬT NGAY (một chữ ký) — lời ' +
-        'mời để người ấy tự bấm Chấp nhận (hai chữ ký) làm ở b118b. Cờ này cho tài khoản đọc và sửa ' +
-        'MỌI gia phả, đổi quyền ở mọi cây, và bật/tắt cờ này cho người khác.'
-      : 'Bạn có chắc chắn muốn hủy quyền Quản trị hệ thống của ' + t.email + '? Máy chủ không cho ' +
-        'tắt người cuối cùng.'),
-    nutOk: bat ? 'Bổ nhiệm' : 'Hủy quyền',
-    nutHuy: bat ? 'Hủy' : 'Giữ lại',
+      ? 'Gửi lời mời làm Quản trị hệ thống cho ' + t.email + '. Đây là chữ ký thứ NHẤT — họ chưa có ' +
+        'một mẩu quyền nào cho tới khi tự bấm Chấp nhận (chữ ký thứ hai) ở khu Tài khoản. Nhận xong, ' +
+        'cờ này cho tài khoản đọc và sửa MỌI gia phả, đổi quyền ở mọi cây, và mời người khác.'
+      : dangMoi
+        ? 'Hủy lời mời chưa được ' + t.email + ' nhận. Họ vẫn chưa có quyền gì từ lời mời này.'
+        : 'Bạn có chắc chắn muốn hủy quyền Quản trị hệ thống của ' + t.email + '? Máy chủ không cho ' +
+          'tắt người cuối cùng.'),
+    nutOk: bat ? 'Gửi lời mời' : 'Hủy',
+    nutHuy: 'Giữ lại',
     kieuOk: bat ? 'warm' : 'danger',
     lam: () => datQuanTriHeThong(t.userId, bat),
   });
@@ -324,8 +361,36 @@ async function hoiTaoCay(t, bat, napLai) {
 }
 
 /**
- * Xoá HẲN — việc duy nhất phá huỷ một lối đăng nhập. Phép so email gõ lại
- * nằm ở MÁY CHỦ (hỏi chính hàng sắp xoá), không so ở đây.
+ * Khoá mềm — chữ ký duy nhất, có hiệu lực ngay. KHÔNG chuyển chủ cây (`23`
+ * mục 7): cây của người bị khoá vẫn có chủ, chỉ tạm không ai làm gì được.
+ */
+async function hoiKhoaTaiKhoan(t, napLai) {
+  const kq = await hoi({
+    tua: 'Khóa tài khoản',
+    chu: 'Khoá mềm ' + t.email + ' — họ không đăng nhập vào được gia phả nào nữa cho tới khi ' +
+      'mở khoá. Không chuyển chủ cây nào cả. Đủ 60 ngày mới xoá hẳn được.',
+    truong: [{ ma: 'email', nhan: 'Gõ lại email của tài khoản này', goiY: t.email },
+      { ma: 'lyDo', nhan: 'Lý do (không bắt buộc)' }],
+    nutOk: 'Khóa', nutHuy: 'Hủy', kieuOk: 'danger',
+    lam: (v) => khoaTaiKhoan(t.userId, v.email.trim(), v.lyDo || ''),
+  });
+  if (kq) napLai();
+}
+
+async function hoiMoKhoaTaiKhoan(t, napLai) {
+  const kq = await hoi({
+    tua: 'Mở khoá tài khoản',
+    chu: 'Mở khoá ' + t.email + ' — họ đăng nhập và dùng lại bình thường ngay.',
+    nutOk: 'Mở khoá',
+    lam: () => moKhoaTaiKhoan(t.userId),
+  });
+  if (kq) napLai();
+}
+
+/**
+ * Xoá HẲN — việc duy nhất phá huỷ một lối đăng nhập. Đòi tài khoản đã khoá
+ * mềm đủ 60 ngày (`23` mục 7) — máy chủ từ chối và nói còn bao nhiêu ngày,
+ * hộp hỏi hiện nguyên câu ấy. Phép so email gõ lại nằm ở MÁY CHỦ, không so ở đây.
  */
 async function hoiXoaTaiKhoan(t, ds, napLai) {
   const truong = [{ ma: 'email', nhan: 'Gõ lại email của tài khoản này', goiY: t.email }];
@@ -335,8 +400,8 @@ async function hoiXoaTaiKhoan(t, ds, napLai) {
   }
   const kq = await hoi({
     tua: 'Xóa tài khoản',
-    chu: '⚠️ Xoá HẲN tài khoản ' + t.email + ' — mất lối đăng nhập, KHÔNG hoàn tác được. (Danh sách ' +
-      'chờ xoá 60 ngày chưa có ở máy chủ — làm ở b118b.) Nhật ký ai sửa gì vẫn còn nguyên.',
+    chu: '⚠️ Xoá HẲN tài khoản ' + t.email + ' — mất lối đăng nhập, KHÔNG hoàn tác được. ' +
+      'Nhật ký ai sửa gì vẫn còn nguyên.',
     truong,
     nutOk: 'Xác nhận xóa', nutHuy: 'Hủy', kieuOk: 'danger',
     lam: (v) => xoaTaiKhoan(t.userId, v.email.trim(), v.chuMoi || ''),

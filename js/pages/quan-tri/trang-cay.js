@@ -6,7 +6,10 @@
 //            hộp hỏi đổi quyền dùng chung với trang một tài khoản.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-goi-y · o-bang
-// Phiên bản: 1.0.0 · Cập nhật: 16/09/2026 (b118d)
+// Phiên bản: 1.1.0 · Cập nhật: 16/09/2026 (b118c)
+//            1.1.0 Vòng đời: xoá cây có hiệu lực NGAY (luật 4), *Rút đơn* đổi
+//            thành *Trả lại cho chủ* — chỉ Quản trị hệ thống. Bảng Thành viên
+//            & quyền nối duyệt/từ chối đơn xin đổi quyền (`23` mục 10).
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -31,6 +34,7 @@ import {
   doiChuCay, duyetThanhVien, tuChoiThanhVien, timNguoiTrongCay, timTaiKhoan,
   xinXoaCay, huyXinXoaCay, duyetXoaCay,
   nopDeXuatGan, rutDeXuatGan, deXuatGanCuaToi, dsDeXuatGan, duyetDeXuatGan, tuChoiDeXuatGan,
+  dsXinDoiVai, duyetXinDoiVai,
 } from '../../services/sb.js';
 import { duongDan } from './trang-chi-tiet.js';
 import { hoi } from './hop-thoai.js';
@@ -235,6 +239,29 @@ export async function hoiTuChoiDon(t, cay, napLai) {
   if (kq) napLai();
 }
 
+/** Duyệt hoặc từ chối đơn XIN ĐỔI QUYỀN của một thành viên (`23` mục 10c). */
+export async function hoiDuyetXinDoiVai(t, xin, cay, napLai) {
+  const kq = await hoi({
+    tua: 'Duyệt đơn xin đổi quyền',
+    chu: t.email + ' xin đổi từ ' + (TEN_VAI[xin.vaiHienTai] || xin.vaiHienTai || '') + ' sang ' +
+      (TEN_VAI[xin.xinVai] || xin.xinVai) + ' trong ' + cumCay(cay) +
+      (xin.xinVaiLyDo ? '. Lý do: “' + xin.xinVaiLyDo + '”.' : '.'),
+    nutOk: 'Duyệt', kieuOk: 'warm',
+    lam: () => duyetXinDoiVai(cay.treeId, t.userId, true),
+  });
+  if (kq) napLai();
+}
+
+export async function hoiTuChoiXinDoiVai(t, cay, napLai) {
+  const kq = await hoi({
+    tua: 'Từ chối đơn xin đổi quyền',
+    chu: 'Từ chối là XOÁ đơn của ' + t.email + ', không đổi vai hiện tại. Người ấy xin lại được.',
+    nutOk: 'Từ chối', kieuOk: 'danger',
+    lam: () => duyetXinDoiVai(cay.treeId, t.userId, false),
+  });
+  if (kq) napLai();
+}
+
 /**
  * Nộp / sửa / rút ĐƠN đề xuất mã người cho CHÍNH MÌNH (`21`). Không gắn gì —
  * một quản trị KHÁC xét ở mục *Đề xuất gắn người* của cây ấy.
@@ -288,7 +315,11 @@ async function mountThanhVien(sec, ctx, hashLuc) {
   if (!cay) { datNguCanh(sec, 'Không thấy gia phả mã ' + ctx.thamSo); dongTrong(tb, 5, loi); return; }
   datNguCanh(sec, (cay.ten || '') + ' · ' + cay.treeCode);
 
-  const [kq, duocDoiQuyen] = await Promise.all([dsThanhVien(cay.fileId), coTheQuanTri(cay.fileId)]);
+  // ⚠ `dsXinDoiVai` đi CÙNG LƯỢT — máy chủ tự trả rỗng nếu không phải quản
+  //   trị, nên gọi luôn không tốn gì thêm khi `duocDoiQuyen` chưa biết trước.
+  const [kq, duocDoiQuyen, dsXin] = await Promise.all([
+    dsThanhVien(cay.fileId), coTheQuanTri(cay.fileId), dsXinDoiVai(cay.fileId),
+  ]);
   if (window.location.hash !== hashLuc) return;
 
   const napLai = () => mountThanhVien(sec, ctx, window.location.hash);
@@ -303,15 +334,16 @@ async function mountThanhVien(sec, ctx, hashLuc) {
   }
 
   const ds = kq.ds.filter((t) => t.daDuyet);
-  dem.textContent = demVai(ds);
+  dem.textContent = demVai(ds) + (dsXin.length ? ' · ' + dsXin.length + ' đơn xin đổi quyền' : '');
   if (!ds.length) { dongTrong(tb, 5, 'Chưa có ai đã vào gia phả này.'); return; }
 
+  const xinMap = new Map(dsXin.map((x) => [x.userId, x]));
   tb.innerHTML = '';
   const c = cayNho(cay);
-  for (const t of ds) tb.append(dongThanhVien(t, c, duocDoiQuyen, napLai));
+  for (const t of ds) tb.append(dongThanhVien(t, c, duocDoiQuyen, napLai, xinMap.get(t.userId)));
 }
 
-function dongThanhVien(t, cay, duocDoiQuyen, napLai) {
+function dongThanhVien(t, cay, duocDoiQuyen, napLai, xin) {
   const tr = document.createElement('tr');
   if (t.laChinhToi) tr.className = 'current-account';
 
@@ -339,6 +371,8 @@ function dongThanhVien(t, cay, duocDoiQuyen, napLai) {
   else bVai.addEventListener('click', () => hoiDoiVai(t, cay, napLai));
   const oVai = td(bVai);
   if (t.tinCay) oVai.append(span('sub', 'Tin cậy — ghi thẳng'));
+  if (xin) oVai.append(span('sub', 'Xin đổi sang ' + (TEN_VAI[xin.xinVai] || xin.xinVai).toLowerCase() +
+    (xin.xinVaiLyDo ? ' — “' + xin.xinVaiLyDo + '”' : '')));
 
   // — Hành động: chủ/QTHT có menu, người chỉ xem có đúng một nút mờ (quantri3) —
   let oViec;
@@ -355,6 +389,13 @@ function dongThanhVien(t, cay, duocDoiQuyen, napLai) {
         () => hoiBanGiaoCho(t, cay, napLai)),
     ];
     if (t.laChinhToi) ds.push(mucMenu('Đề xuất mã người cho mình', '', () => hoiDeXuatGan(cay, napLai)));
+    if (xin) {
+      ds.push(
+        mucMenu('Duyệt đổi sang ' + (TEN_VAI[xin.xinVai] || xin.xinVai).toLowerCase(), '',
+          () => hoiDuyetXinDoiVai(t, xin, cay, napLai), 'warm'),
+        mucMenu('Từ chối đơn xin đổi quyền', '', () => hoiTuChoiXinDoiVai(t, cay, napLai), 'danger'),
+      );
+    }
     ds.push(null, mucMenu('Xóa khỏi gia phả',
       cuaMinh || (t.laChuCay ? 'Không thể xóa chủ sở hữu khi chưa bàn giao' : '') || saoLuu,
       () => hoiGo(t, cay, napLai), 'danger'));
@@ -534,11 +575,13 @@ function dongList(ul, nhan, phu, ...nutPhai) {
 }
 
 /**
- * Vòng đời — Bàn giao chủ + Xoá cây (b116).
+ * Vòng đời — Bàn giao chủ + Xoá cây (b116, luật 4 của `23` từ b118c).
  *
- * ⚠ Máy chủ ĐANG CHẠY luật cũ `16`: *Xóa cây* là gửi ĐƠN, cây dùng bình
- *   thường tới khi Quản trị hệ thống duyệt. Luật *"xoá thì ẩn ngay"* (11.9)
- *   vào ở b118b — câu trong hộp phải nói đúng máy chủ hôm nay.
+ * ⚠⚠ ĐỔI SO VỚI TRƯỚC b118c: *Xóa cây* nay có hiệu lực NGAY — gia phả ẩn với
+ *   mọi người (trừ Quản trị hệ thống) từ giây bấm, không còn "vẫn dùng được
+ *   trong lúc chờ duyệt". Và *"Rút đơn"* đổi tên thành *"Trả lại cho chủ"* —
+ *   nay CHỈ Quản trị hệ thống bấm được, chủ cây không tự rút được nữa (đó
+ *   không còn là rút đơn của mình, mà là đảo ngược một việc đã có hiệu lực).
  */
 function veVongDoi(noi, cay, phien, napLai) {
   const laQT = Boolean(phien.laQuanTriHeThong);
@@ -586,37 +629,39 @@ function veVongDoi(noi, cay, phien, napLai) {
   if (cay.daXoaLuc) {
     dongList(ul, 'Xóa gia phả', 'Đã ở trong thùng rác — khôi phục hoặc dọn ở Quản trị hệ thống › Thùng rác.');
   } else if (cay.xinXoaLuc) {
-    const bRut = duocLam ? nut('Rút đơn xoá') : nutMo('Rút đơn xoá', 'Chỉ chủ gia phả và Quản trị hệ thống.');
-    bRut.addEventListener('click', async () => {
-      const kq = await hoi({ tua: 'Rút đơn xin xoá', chu: 'Rút đơn xin xoá ' + cumCay(c) + '? Gia phả giữ nguyên.',
-        nutOk: 'Rút đơn', lam: () => huyXinXoaCay(cay.fileId) });
+    // ⚠ Chỉ Quản trị hệ thống — chủ cây không tự trả lại được nữa (`23` mục 8b).
+    const bTra = laQT ? nut('Trả lại cho chủ') : nutMo('Trả lại cho chủ', 'Chỉ Quản trị hệ thống.');
+    bTra.addEventListener('click', async () => {
+      const kq = await hoi({ tua: 'Trả lại cho chủ',
+        chu: 'Mở lại ' + cumCay(c) + ' cho chủ gia phả — gia phả hết ẩn, dùng bình thường như trước.',
+        nutOk: 'Trả lại', lam: () => huyXinXoaCay(cay.fileId) });
       if (kq) napLai();
     });
     const bDuyet = laQT ? nut('Duyệt đưa vào thùng rác', 'danger')
       : nutMo('Duyệt đưa vào thùng rác', 'Chỉ Quản trị hệ thống duyệt xoá.', 'danger');
     bDuyet.addEventListener('click', async () => {
       const kq = await hoi({ tua: 'Duyệt đưa vào thùng rác',
-        chu: 'Duyệt xong, ' + cumCay(c) + ' (' + cay.soNguoi + ' người) đóng lại với mọi người ' +
-          'và nằm trong thùng rác. Khôi phục được trước khi dọn.',
+        chu: 'Duyệt xong, ' + cumCay(c) + ' (' + cay.soNguoi + ' người) vào thùng rác, giữ 120 ngày. ' +
+          'Khôi phục được trước khi dọn.',
         nutOk: 'Duyệt', kieuOk: 'danger', lam: () => duyetXoaCay(cay.fileId) });
       if (kq) napLai();
     });
-    dongList(ul, 'Xóa gia phả', 'Đơn xin xoá của ' + (cay.emailXinXoa || 'chủ cây') +
+    dongList(ul, 'Xóa gia phả', 'Đã bị ' + (cay.emailXinXoa || 'chủ cây') + ' xoá' +
       (cay.xinXoaLyDo ? ' — “' + cay.xinXoaLyDo + '”' : '') +
-      '. Cây vẫn dùng bình thường tới khi Quản trị hệ thống duyệt.', bRut, bDuyet);
+      '. Gia phả ĐANG ẨN với mọi người trừ Quản trị hệ thống, chờ duyệt.', bTra, bDuyet);
   } else {
     const bXoa = duocLam ? nut('Xóa cây', 'danger')
       : nutMo('Xóa cây', 'Chỉ chủ gia phả và Quản trị hệ thống xoá được gia phả.', 'danger');
     bXoa.addEventListener('click', async () => {
       const kq = await hoi({ tua: 'Xóa cây',
-        chu: 'Gửi đơn xoá ' + cumCay(c) + '. Gia phả vẫn dùng bình thường cho tới khi Quản trị ' +
-          'hệ thống duyệt đưa vào thùng rác.',
+        chu: '⚠️ ' + cumCay(c) + ' sẽ ẨN NGAY với mọi người (trừ Quản trị hệ thống) — không còn ' +
+          '"vẫn dùng được trong lúc chờ". Quản trị hệ thống sẽ trả lại cho bạn nếu nhầm, hoặc duyệt ' +
+          'đưa hẳn vào thùng rác.',
         oNhap: { nhieuDong: true, goiY: 'Vì sao xoá? Ví dụ: dựng nhầm, đã gộp vào cây khác.' },
-        nutOk: 'Gửi đơn xoá', kieuOk: 'danger', lam: (lyDo) => xinXoaCay(cay.fileId, lyDo) });
+        nutOk: 'Xoá ngay', kieuOk: 'danger', lam: (lyDo) => xinXoaCay(cay.fileId, lyDo) });
       if (kq) napLai();
     });
-    dongList(ul, 'Xóa gia phả', 'Gửi đơn xin xoá. Gia phả vẫn dùng bình thường cho tới khi ' +
-      'Quản trị hệ thống duyệt đưa vào thùng rác.', bXoa);
+    dongList(ul, 'Xóa gia phả', 'Đang dùng bình thường.', bXoa);
   }
 
   noi.append(panel);

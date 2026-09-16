@@ -1,7 +1,10 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 16/09/2026 · Bước gần nhất: **b118b** — `23-bon-luat-moi.sql`, đo 107/107 trên bàn thử, **CHƯA DÁN** lên máy chủ nào
-· Việc kế tiếp: **b118c — nối `sb.js` + giao diện cho bốn luật mới***
+*Cập nhật 16/09/2026 · Bước gần nhất: **b118c** — `sb.js` (9 cửa mới + cờ khoá vào `layPhien()`) và
+giao diện (Sổ tài khoản · khu Tài khoản · Vòng đời · Thành viên & quyền) nối xong cho bốn luật mới,
+`/kiem-tra` 10 phép ĐẠT, `so-quantri3.mjs` không chữ đỏ
+· ⚠ `23-bon-luat-moi.sql` **VẪN CHƯA DÁN** lên máy chủ nào — mã đã sẵn sàng, còn thiếu bước dán tay
+· Việc kế tiếp: **dán `23` lên Staging rồi bấm một vòng khoá→mở khoá, mời QTHT→Nhận, xoá cây→trả lại**
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -46,7 +49,7 @@ Quản trị hệ thống**.
 | **b111c** — nộp đề xuất · tự duyệt bị từ chối · người khác duyệt được | Mã + giao diện mới xong (b117), `21` đã dán 14/09: ① nút **Nhận** lời mời bằng tài khoản Quản trị hệ thống *(vá 14/09)*; ② nộp ở khu **Tài khoản** → bảng các gia phả → *Đề xuất mã người*; ③ tự duyệt ở `#gia-pha/cay/<mã>/de-xuat-gan` bị máy chủ từ chối; ④ một Quản trị hệ thống KHÁC duyệt được |
 | **b117** — khu Tài khoản trên máy chủ thật | ① bảng *Các gia phả tôi tham gia* hiện đúng mã người đã gắn — bằng tài khoản **thành viên thường**, vì nó đọc qua RLS chứ không qua hàm Quản trị; ② *Đổi mật khẩu* với mật khẩu cũ SAI phải bị từ chối, với mật khẩu cũ đúng thì đổi được |
 | **b118d** — cả trang Quản trị trên máy chủ thật | Mở từng trang con; bấm mỗi menu *Chọn hành động* / *Chọn ▾* một lần; một lần Duyệt và một lần Từ chối ở *Kiểm duyệt › Xem trước / sau*. Ảnh chụp mới chỉ trên máy chủ giả |
-| **b118b** — bốn luật mới | ⚠ Chưa bấm được: `23` **chưa dán**. Thứ tự: dán `23` lên **Staging** → làm b118c → bấm một vòng *khoá → mở khoá*, *mời QTHT → Nhận*, *xoá cây → trả lại* |
+| **b118b/c** — bốn luật mới | ⚠ Chưa bấm được: `23` **chưa dán**, mã b118c đã xong. Thứ tự còn lại: dán `23` lên **Staging** → bấm một vòng *khoá → mở khoá*, *mời QTHT → Nhận*, *xoá cây → trả lại* |
 
 
 ---
@@ -64,9 +67,9 @@ coi cả hai máy chủ đã đồng bộ tới `22`.
 
 ⚠⚠ **`23-bon-luat-moi.sql` (b118b) — VIẾT XONG, ĐO XONG, *CHƯA DÁN* lên máy
 chủ nào.** Bàn thử 5433: **107/107 đạt** (`kiem-thu/ban-thu-sql/do-b118b.mjs`),
-bảng tự kiểm 16/16 đạt. **Dán lên STAGING trước**, và đọc bảng "bốn nút đổi
-hành vi" ở mục b118c trước khi dán lên máy chủ THẬT — dán xong mà chưa làm
-b118c thì bốn nút đang chạy làm việc khác đi mà không báo lỗi.
+bảng tự kiểm 16/16 đạt. **b118c đã xong** (mã `sb.js` + giao diện sẵn sàng
+đón bốn luật mới) — việc còn lại CHỈ CÒN là dán tay: **dán lên STAGING trước**,
+bấm thử một vòng, rồi mới dán lên máy chủ THẬT.
 
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
 `11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18`.
@@ -109,23 +112,20 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 `sb.js` không phải danh sách hàm máy chủ (`THIET-KE-QUAN-TRI.md` 9.5).
 ⚠ Khung KHÔNG đổi sang tab ngang: thanh trái, dưới 850px mới thành hàng thẻ.
 
-### b118c — nối `sb.js` + giao diện cho bốn luật mới
+### b118c — nối `sb.js` + giao diện cho bốn luật mới — **MÃ XONG 16/09/2026**
 
-⚠⚠ **DÁN `23` VÀO LÀ BỐN NÚT ĐANG CHẠY ĐỔI HÀNH VI**, và không nút nào báo
-lỗi — chúng chỉ làm việc khác đi:
+⚠⚠ **DÁN `23` VÀO LÀ BỐN NÚT ĐANG ĐỔI HÀNH VI CÙNG LÚC** — mã đã nói đúng
+hành vi mới, máy chủ vẫn chạy hành vi CŨ cho tới khi `23` được dán.
 
-| Nút hôm nay | Sau khi dán `23` |
-|---|---|
-| *Xoá tài khoản* | luôn từ chối *"chưa bị khoá"* — phải khoá mềm trước, 60 ngày sau mới xoá |
-| *Bật cờ Quản trị hệ thống* | **không bật nữa**, chỉ gửi lời mời. Màn hình đọc `ok:true` rồi vẽ "đã bật" là **nói dối** — phải đọc `moi` |
-| *Xin xoá gia phả* | cây **ẩn ngay**; không còn "vẫn dùng được trong lúc chờ" |
-| *Huỷ đơn xin xoá* (chủ cây) | từ chối — nay chỉ QTHT bấm được, nghĩa là *trả lại cho chủ* |
+Đã làm: `sb.js` 9 cửa mới + cờ `biKhoa` vào `layPhien()` · Sổ tài khoản, khu
+Tài khoản, Vòng đời, Thành viên & quyền nối đủ bốn luật (chi tiết: lời
+commit). ⚠ *Xin đổi quyền* duyệt ở bảng **Thành viên & quyền** sẵn có, KHÔNG
+ở `#tree-requests` như dự tính — mục đó tĩnh theo prototype, không có chỗ
+cho hình dạng dữ liệu khác (`so-tay/trang-quan-tri.md`). `sb-gia.mjs` đã
+thêm 9 cửa + hai ca giả. `/kiem-tra` 10 phép ĐẠT, `so-quantri3.mjs` sạch.
 
-| | |
-|---|---|
-| **Làm** | `sb.js` bọc 9 cửa mới của `23` *(tên đủ ở khối `grant` cuối file ấy)* + cờ khoá vào `layPhien()` · sửa bốn chỗ ở bảng trên · khu Tài khoản: nút **Chấp nhận/Từ chối** lời mời QTHT · `#tree-requests`: ô duyệt *xin đổi quyền* |
-| **⚠⚠ Bẫy đã trả giá** | Thêm cửa vào `sb.js` thì **thêm cả ở `kiem-thu/sb-gia.mjs`** — thiếu một tên là cả bộ ảnh ra nền trơn (b110b, b111) |
-| **Điểm dừng** | `node ../kiem-thu/so-quantri3.mjs` không có chữ đỏ; một vòng khoá → mở khoá bấm thật trên Staging |
+**Còn lại — cần chủ dự án**: dán `23` lên **Staging**, rồi bấm thật một
+vòng: khoá → mở khoá · mời QTHT → Nhận · xoá cây → trả lại.
 ### b119 — Khu Sao lưu + Số đếm đối chiếu
 
 | | |

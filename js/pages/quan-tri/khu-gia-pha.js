@@ -6,47 +6,33 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, utils/id, quan-tri/trang-chi-tiet ·
 //            quan-tri/hop-thoai · quan-tri/o-bang
-// Phiên bản: 1.0.0 · Cập nhật: 15/09/2026 (b118c)
-//            1.0.0 (b118c) VIẾT LẠI THEO HTML CỦA QUANTRI3. Không dựng bảng
-//            nào nữa — bảng, tiêu đề cột, chip đều nằm sẵn trong QuanTri.html;
-//            file này đổ dòng vào `tbody[data-tbody]` và gắn việc vào nút.
-//            Lời gọi máy chủ GIỮ NGUYÊN của 0.8.0: cùng hàm, cùng thứ tự xét
-//            lời mời trước quyền xem (vá 14/09), cùng luật hỏi trước khi đổi
-//            cây. Hỏi/báo đi qua hộp `#custom-modal` của quantri3.
-//            Ô cây mặc định hệ thống và khối Thùng rác DỜI sang khu Quản trị
-//            hệ thống, đúng chỗ quantri3 đặt chúng (tab *Cây mặc định* ·
-//            *Thùng rác*).
+// Phiên bản: 1.1.0 · Cập nhật: 16/09/2026 (b118c)
+//            1.1.0 *Xin đổi quyền* nối thật (`xinDoiVai()`, `23` mục 10) ·
+//            *Xóa cây* có hiệu lực NGAY (luật 4) · *Rút đơn xoá* đổi thành
+//            *Trả lại cho chủ*, chỉ Quản trị hệ thống bấm được. Lịch sử các
+//            bản trước: `git log -p`.
 // ============================================================
 //
-// ═══ KHU NÀY LÀ CHỖ DUY NHẤT NGƯỜI LẠ CÓ VIỆC ═══
-//
-// Ba khu kia đều đòi có chân trong một cây. Khu này thì ngược lại: người CHƯA
-// có chân ở đâu cả vào đây để thấy tên các cây và nộp đơn. Nên nó không được
-// chặn ai, và không vẽ câu "bạn không có quyền" khi danh sách rỗng.
-//
-// ═══ MÁY CHỦ QUYẾT, MÀN HÌNH CHỈ CHUYỂN LỜI ═══
-//
-// `ds_gia_pha()` trả về đúng những cây người này được thấy tên, kèm những câu
-// trả lời màn hình KHÔNG được tự suy: `coTheXem` · `toiLaChu` · `daNopDon` ·
-// `duocMoi`. Ẩn/mờ một nút ở đây KHÔNG phải hàng rào — chỉ để không mời
-// người ta bấm thứ chắc chắn bị từ chối.
-//
-// ⚠ **Chỗ khác prototype, vì máy chủ chưa làm được** (mờ kèm lý do, không giả
-//   vờ chạy): cột *Thông tin công khai* (nhóm E) · *Xin đổi quyền* và ô
-//   *Quyền đề nghị* trong đơn (b118b) · *Xóa cây* vẫn là ĐƠN xin xoá theo luật
-//   cũ của `16` cho tới b118b.
+// ⚠ KHU NÀY LÀ CHỖ DUY NHẤT NGƯỜI LẠ CÓ VIỆC — người chưa có chân ở đâu cả
+//   vào đây để thấy tên các cây và nộp đơn; không chặn ai, không vẽ câu "bạn
+//   không có quyền" khi danh sách rỗng.
+// ⚠ MÁY CHỦ QUYẾT, MÀN HÌNH CHỈ CHUYỂN LỜI: `ds_gia_pha()` trả `coTheXem` ·
+//   `toiLaChu` · `daNopDon` · `duocMoi`. Ẩn/mờ một nút ở đây KHÔNG phải hàng
+//   rào — chỉ để không mời người ta bấm thứ chắc chắn bị từ chối.
+// ⚠ **Chỗ khác prototype, vì máy chủ chưa làm được**: cột *Thông tin công
+//   khai* (nhóm E) · ô *Quyền đề nghị* trong đơn xin vào.
 
 import {
   layDanhSachGiaPha, datChoNguoiLaThayTen, chonGiaPha, xinVaoCay, taoGiaPhaMoi,
   nhanLoiMoi, tuChoiLoiMoi, rutDonXinVao, roiCay, dsThanhVien,
-  xinXoaCay, huyXinXoaCay,
+  xinXoaCay, huyXinXoaCay, xinDoiVai,
 } from '../../services/sb.js';
 import { sinhMaCay } from '../../utils/id.js';
 import { duongDan } from './trang-chi-tiet.js';
 import { hoi, bao } from './hop-thoai.js';
 import {
   TEN_VAI, td, span, tenVaPhu, huyHieu, nut, nutMo, lienKet, chuaCo, hangNut,
-  menuTuyChon, dongTrong, dongLoi,
+  menuTuyChon, mucMenu, dongTrong, dongLoi,
 } from './o-bang.js';
 
 /** Số cột của từng bảng — phải khớp `<thead>` trong QuanTri.html. */
@@ -54,8 +40,6 @@ const SO_COT = { manage: 9, member: 7, available: 6 };
 
 const LY_DO_CONG_KHAI =
   'Công khai theo từng trường thông tin chưa có ở máy chủ — việc riêng, làm sau b120.';
-const LY_DO_DOI_QUYEN =
-  'Máy chủ chưa nhận đơn xin đổi quyền — làm ở bước b118b.';
 const LY_DO_QUYEN_DE_NGHI =
   'Máy chủ chưa ghi quyền đề nghị vào đơn — người duyệt chọn quyền lúc duyệt (đổi ở b118b).';
 
@@ -174,7 +158,7 @@ function dongQuanLy(c, phien, napLai) {
   const lkDon = lienKet('Xem đơn →', '#' + duongDan('gia-pha', 'cay', c.treeCode, 'don-xin-vao'));
   const oDon = td(lkDon);
 
-  const oXoa = td(oXoaCay(c, duocDieuHanh, napLai));
+  const oXoa = td(oXoaCay(c, duocDieuHanh, Boolean(phien.laQuanTriHeThong), napLai));
 
   tr.append(oTen, oQuyen, oTV, oCongKhai, oLa, oHienThi, oMoi, oDon, oXoa);
   demThanhVien(c, lkTV, phuTV, lkDon);
@@ -277,27 +261,27 @@ function oCayHienThi(c, phien, chu) {
 }
 
 /**
- * Cột *Xóa*. ⚠ Máy chủ ĐANG CHẠY luật cũ (`16`): đây là ĐƠN xin xoá, cây vẫn
- * dùng bình thường tới khi Quản trị hệ thống duyệt ở tab *Thùng rác*. Luật
- * *"xoá thì ẩn ngay"* (11.9) vào máy chủ ở b118b — câu trong hộp phải nói
- * đúng máy chủ hôm nay, không nói trước.
+ * Cột *Xóa*. Từ `23` (b118c) — luật 4: xoá có hiệu lực NGAY, gia phả ẩn với
+ * mọi người (trừ Quản trị hệ thống) từ giây bấm. *Rút đơn* chỉ còn dành cho
+ * Quản trị hệ thống — chủ cây không tự trả lại được nữa (`huyXinXoaCay()`
+ * đổi tập người gọi ở b118c).
  */
-function oXoaCay(c, duocDieuHanh, napLai) {
+function oXoaCay(c, duocDieuHanh, laQT, napLai) {
   if (!duocDieuHanh) return span('muted', 'Không phải chủ');
 
   if (c.xinXoaLuc) {
-    const b = nut('Rút đơn xoá');
+    const b = laQT ? nut('Trả lại cho chủ') : nutMo('Trả lại cho chủ', 'Chỉ Quản trị hệ thống.');
     b.addEventListener('click', async () => {
       const kq = await hoi({
-        tua: 'Rút đơn xin xoá',
-        chu: 'Rút đơn xin xoá “' + (c.ten || 'gia phả này') + '”? Gia phả giữ nguyên.',
-        nutOk: 'Rút đơn',
+        tua: 'Trả lại cho chủ',
+        chu: 'Mở lại “' + (c.ten || 'gia phả này') + '” — hết ẩn, dùng bình thường như trước.',
+        nutOk: 'Trả lại',
         lam: () => huyXinXoaCay(c.fileId),
       });
       if (kq) napLai();
     });
     const hop = document.createElement('div');
-    hop.append(huyHieu('Đang chờ duyệt xoá', 'wait'), document.createElement('br'), b);
+    hop.append(huyHieu('Đang ẨN, chờ Quản trị hệ thống', 'wait'), document.createElement('br'), b);
     return hop;
   }
 
@@ -305,10 +289,10 @@ function oXoaCay(c, duocDieuHanh, napLai) {
   b.addEventListener('click', async () => {
     const kq = await hoi({
       tua: 'Xóa cây',
-      chu: 'Gửi đơn xoá “' + (c.ten || 'gia phả này') + '”. Gia phả vẫn dùng bình ' +
-           'thường cho tới khi Quản trị hệ thống duyệt đưa vào thùng rác.',
+      chu: '⚠️ “' + (c.ten || 'gia phả này') + '” sẽ ẨN NGAY với mọi người (trừ Quản trị hệ ' +
+           'thống) — không còn "vẫn dùng được trong lúc chờ".',
       oNhap: { nhieuDong: true, goiY: 'Vì sao xoá? Ví dụ: dựng nhầm, đã gộp vào cây khác.' },
-      nutOk: 'Gửi đơn xoá',
+      nutOk: 'Xoá ngay',
       kieuOk: 'danger',
       lam: (lyDo) => xinXoaCay(c.fileId, lyDo),
     });
@@ -373,11 +357,29 @@ function oNhanLoiMoi(c, napLai) {
   return hang;
 }
 
+/**
+ * Nộp đơn xin đổi sang một vai khác trong cây này. Việc xin **không đổi gì
+ * cả** — chỉ ghi một lá đơn; chủ gia phả hoặc Quản trị hệ thống duyệt ở bảng
+ * *Thành viên & quyền* (`23` mục 10, b118c).
+ */
+async function hoiXinDoiVai(c, vai, napLai) {
+  const kq = await hoi({
+    tua: 'Xin đổi quyền',
+    chu: 'Nộp đơn xin đổi vai của bạn trong “' + (c.ten || 'gia phả này') + '” sang ' +
+      (TEN_VAI[vai] || vai).toLowerCase() + '. Chủ gia phả hoặc Quản trị hệ thống sẽ duyệt.',
+    oNhap: { goiY: 'Vì sao xin đổi? (không bắt buộc)' },
+    nutOk: 'Nộp đơn',
+    lam: (lyDo) => xinDoiVai(c.fileId, vai, lyDo),
+  });
+  if (kq) napLai();
+}
+
 /** Menu *Tùy chọn ▾* của quantri3: hai dòng xin đổi quyền + Thoát khỏi gia phả. */
 function oTuyChonThanhVien(c, napLai) {
   const khac = ['quan_tri', 'sua', 'xem'].filter((v) => v !== c.vaiCuaToi);
   const dsNut = khac.map((v) =>
-    nutMo('Xin đổi sang quyền ' + (TEN_VAI[v] || v).toLowerCase(), LY_DO_DOI_QUYEN));
+    mucMenu('Xin đổi sang quyền ' + (TEN_VAI[v] || v).toLowerCase(), '',
+      () => hoiXinDoiVai(c, v, napLai)));
 
   // ⚠ CHỦ CÂY không rời được (`roi_cay()` chặn, `luoc-do/22`).
   const bThoat = c.toiLaChu
