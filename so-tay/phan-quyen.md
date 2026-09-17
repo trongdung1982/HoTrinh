@@ -22,6 +22,17 @@ Liên quan: `THIET-KE-NHIEU-CAY.md` mục 11 · `DU-LIEU.md` mục 2 · `HUONG-D
 
 ## Bài học
 
+### Luật đọc gọi hàm cho TỪNG DÒNG là chậm — viết `cột in (select ds_…())`
+
+Hàm `security definer` viết bằng SQL không được Postgres gộp vào câu truy vấn,
+nên `using (co_the_xem_cay(tree_id))` lập kế hoạch lại mỗi dòng (~8ms trên bàn
+thử). Bản đầu của `26`: đọc cây 740 người 11 giây, luật hôn nhân nối bằng `or`
+treo **15 phút** — mà đúng về kết quả, bảng tự kiểm vẫn 8/8. `26` chữa bằng hàm
+trả DANH SÁCH (`ds_cay_xem_duoc` · `ds_nguoi_xem_duoc` · `ds_hon_nhan_xem_duoc`):
+không phụ thuộc dòng nên tính một lần mỗi câu → 1,2 giây. ⚠ Bảy luật của `11`
+trên `trees` · `sources` · `change_log`… vẫn gọi-từng-dòng — chưa đo, đừng coi
+là nhanh. Gác: `do-b121.mjs` R7.
+
 ### Một nới ở hàm nền móng chỉ an toàn nhờ một hàng rào ở ĐẦU KIA
 
 `23` thêm `not bi_khoa()` vào `la_thanh_vien()` — đúng hàm mà `16` dặn *"đừng

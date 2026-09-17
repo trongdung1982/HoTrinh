@@ -282,7 +282,7 @@ thống có nhiều hơn một cây.
 
 > Thay hẳn thiết kế b120 (mỗi cây một bản ghi riêng, nối nhau bằng `noi_ve`).
 > Bản cũ và lý do cũ nằm trong git: `git log -p THIET-KE-NHIEU-CAY.md`.
-> **Chưa viết mã.** Còn ba câu mở ở cuối mục.
+> Lược đồ dựng ở b121 (`26`, chưa dán); hàm và JS là b122.
 
 ### Chủ dự án chốt gì
 
@@ -303,7 +303,13 @@ thống có nhiều hơn một cây.
 6. Người **có tài khoản** gắn mã người ở hai cây thì tự biết là một người —
    không cần báo trùng. Báo trùng chủ yếu cho người đã mất.
 
-### Hình dạng dữ liệu (dự kiến, chưa dán)
+### Hình dạng dữ liệu — b121 đã dựng: `luoc-do/26-mot-nguoi-mot-ban-ghi.sql`
+
+> Đã làm (17/09, bàn thử): `persons` · `unions` · `union_children` · `media`
+> bỏ `tree_id` · `tree_persons` · mã P/U/M toàn cục, đổi mã ghi ở
+> `doi_ma_toan_cuc` (cây tạo trước giữ mã, cây sau nhận số mới) · `cap_ma()` ·
+> `revision` trên từng bản ghi + trigger `chan_ghi_de_ban_ghi`. `sources` VẪN
+> theo cây (không ai trỏ tới nó). Bảng đề xuất trùng là việc b124.
 
 | Thay đổi | Vì sao |
 |---|---|
@@ -327,9 +333,10 @@ chung bản ghi thì:
 3. Chị Lan lưu cây B → `revision` B khớp → **ngày mất cũ đè lên**, không ai
    biết.
 
-Hướng xử lý phải chọn: số chống ghi đè đặt **trên từng người** (`persons.revision`),
-hoặc `luu_cay()` chỉ gửi những người đã sửa thay vì cả cây. Phải có phép kiểm
-đúng kịch bản ba bước trên, đo trên bàn thử SQL.
+**✓ Đã chọn (b121):** số chống ghi đè **trên từng bản ghi** — cột `revision`
+ở bốn bảng dùng chung, trigger từ chối lệnh ghi mang số cũ (`GP409`). Kịch bản
+ba bước đo ở `kiem-thu/ban-thu-sql/do-b121.mjs` phần G: bước 3 bị từ chối,
+ngày mất của anh Minh còn nguyên.
 
 ### ✓ Ba câu đã chốt — chủ dự án chấp nhận cả ba đề xuất lẫn cái giá, 17/09/2026
 
@@ -348,6 +355,7 @@ hoặc `luu_cay()` chỉ gửi những người đã sửa thay vì cả cây. P
 | **b122** | `luu_cay()` · đọc cây · `pham_vi_sua()` · kiểm duyệt theo mô hình mới; bỏ `noiVe` ở JS | Mở ba cây, sửa một người, lưu, mở lại đúng |
 | **b123** | Thêm người: ô *"đã có trong phần mềm chưa"* tìm trong các cây được xem, chọn thì thêm vào cây | Thêm một người cây A vào cây B, sửa ở B thấy ở A |
 | **b124** | Mục *Báo trùng người giữa các cây* (trang Gia phả) + QTHT duyệt gộp | Gửi một báo trùng, QTHT duyệt, mã thua trỏ về mã giữ |
+
 
 ### ⚠ Mã cây KHÔNG phải dòng họ — chủ dự án chốt 17/09/2026
 

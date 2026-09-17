@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 17/09/2026 · Bước gần nhất: **b120 — `25` đã dán, tự kiểm ĐẠT** ·
-CHỜ chủ dự án bấm ĐÚNG điểm dừng (lần thử 17/09 nhầm sang tính năng khác)*
+*Cập nhật 17/09/2026 · Bước gần nhất: **b121 — `26` xanh trên bàn thử, CHƯA
+dán** (dán cùng b122)*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -20,13 +20,9 @@ thừa ở đây nhân với số phiên còn lại. Vượt trần là có th�
 
 **App chạy thật tại `https://nguyentrongbac.io.vn`** từ 03/09/2026 *(chứng chỉ
 Let's Encrypt hạn 02/12/2026; địa chỉ cũ `301` về đây)*. Máy chủ thật nay có
-**BA cây** — NTB 59 người · Nguyễn Phúc Giáo 681 người · **LVT433** *(mới,
-chủ dự án làm chủ, lộ ra 17/09 lúc thử b120)* — mã cây 3 chữ số. Trang
-`QuanTri.html` là khung **bốn khu**, cộng lớp **trang chi tiết** từ b115 —
-Gia phả (b116) · Tài khoản (b117) · Kiểm duyệt (đã có từ trước) · Quản trị hệ
-thống (b118) đều đã nối, mỗi khu ít nhất một việc thật. Phân quyền đã đo bằng
-REST, 5/5 hàng rào đạt (b94, b96). Chặng đã đóng: **b87 → b118e** — mỗi bước
-một file `nhat-ky/`.
+**BA cây** — NTB 59 người · Nguyễn Phúc Giáo 681 người · **LVT433** *(chủ dự
+án làm chủ)* — mã cây 3 chữ số. Trang `QuanTri.html` bốn khu đều đã nối. Phân
+quyền đã đo bằng REST, 5/5 hàng rào đạt (b94, b96).
 
 ⚠⚠ **Từ b118d trang Quản trị LÀ nguyên file prototype quantri3**, dựng bằng máy,
 mọi trang con gắn chức năng thật, không còn chỗ vẽ tạm — luật và bẫy ở
@@ -58,15 +54,17 @@ Quản trị hệ thống**.
 **Đã dán lên CẢ HAI Supabase (thật + Staging): `01` → `21`, không sót file
 nào.** `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
 
-**`22`→`24` — ĐÃ DÁN lên THẬT, mỗi file tự kiểm/điểm dừng đều ĐẠT.** Chưa rõ
-đã dán lên Staging chưa — hỏi lại trước khi coi hai máy chủ đã đồng bộ.
+**`22`→`25` — ĐÃ DÁN lên THẬT, tự kiểm ĐẠT.** Chưa rõ Staging — hỏi lại trước
+khi coi hai máy chủ đã đồng bộ.
 
-**`25-noi-ve.sql` (b120) — ĐÃ DÁN lên THẬT 17/09/2026**, tự kiểm 8/8 ĐẠT (bàn
-thử trước đó 25/25). Chưa rõ Staging. ⚠ **Điểm dừng UI CHƯA bấm** — mục b120.
+**`26-mot-nguoi-mot-ban-ghi.sql` (b121) — CHƯA DÁN**, bàn thử xanh. Dán cùng
+buổi với file b122 — lý do ở mục *Một người một bản ghi*.
 
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
 `11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18` ·
 `03`/`08`**→`25`** *(bản đứng cuối của `luu_cay` + `tu_choi_thay_doi`)*.
+⚠ **Sau `26` KHÔNG dán lại `02`/`11`** — luật đọc trên bảng người của chúng
+hỏi `tree_id` đã bỏ; bản đứng cuối của bốn luật ấy ở `26` mục 5.
 `23` đứng CUỐI mọi chuỗi: nó là bản đứng cuối của 13 hàm, trong đó có
 `la_quan_tri_he_thong()` · `la_thanh_vien()` · `co_the_xem_cay()` ·
 `co_the_sua()`. Quên nó là mở lại khoá mềm, mở lại lời mời QTHT thành quyền
@@ -91,9 +89,6 @@ hàng rào thật, luật trực hệ chỉ còn là bộ lọc** giúp admin đ
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
 
-**Còn một bước:** đóng `b120` — `25` đã dán, chờ chủ dự án bấm ĐÚNG điểm dừng
-(mục b120 dưới — lần thử 17/09 nhầm tính năng).
-
 Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc nào đụng
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
@@ -104,15 +99,28 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 `sb.js` không phải danh sách hàm máy chủ (`THIET-KE-QUAN-TRI.md` 9.5).
 ⚠ Khung KHÔNG đổi sang tab ngang: thanh trái, dưới 850px mới thành hàng thẻ.
 
-### ⚠⚠ Một người một bản ghi toàn phần mềm — CHỐT 17/09, chưa viết mã
+### ⚠⚠ Một người một bản ghi toàn phần mềm — b121 → b124
 
-`THIET-KE-NHIEU-CAY.md` mục 6. **Thay b120**: `noi_ve` (`25` đã dán, mã
-`noiVe` ở `hinh-dang.js` · `domains/person.js` · form Sửa hồ sơ · thẻ ⓘ) sẽ
-bỏ — **đừng nghiệm thu b120 nữa**. Mã người bỏ tiền tố cây.
+`THIET-KE-NHIEU-CAY.md` mục 6 (thay b120, `noi_ve` bỏ). **b121 xanh trên bàn
+thử** (`do-b121.mjs`). ⚠⚠ **`26` ĐỪNG dán riêng** — app ngừng đọc/ghi cây tới
+khi có file b122.
 
-Ba câu mở đã chốt. Bốn bước **b121 → b124** kèm điểm dừng ở mục 6. **Kế tiếp:
-b121 — lược đồ** (Opus), đo kịch bản ghi đè xuyên cây trên bàn thử SQL trước
-khi đưa file dán.
+**Kế tiếp: b122** (Opus, nên chia a·SQL / b·JS). Việc `26` để lại, đủ cả:
+
+- **20 hàm còn hỏi `tree_id` trên bảng người**: `luu_cay` · `tu_choi_thay_doi` ·
+  `pham_vi_sua` · `khoa_cua` · `ds_kiem_duyet` · `chi_tiet_kiem_duyet` ·
+  `ds_gia_pha` · `dem_du_lieu` · `don_thung_rac` · `xin_xoa_cay` ·
+  `duyet_thanh_vien` · `gan_nguoi_cho_thanh_vien` · `ds_thanh_vien` ·
+  `ds_tai_khoan_he_thong` · `ds_cay_cua_tai_khoan` · `tim_tai_khoan` ·
+  `tim_nguoi_trong_cay` · `nop_de_xuat_gan` · `ds_de_xuat_gan` · `de_xuat_gan_cua_toi`
+- ⚠ `luu_cay`: `on conflict (id) do update set … revision = excluded.revision`
+  — thiếu là chống ghi đè vô hiệu, im lặng. Bắt `GP409` (hint
+  `xungdot`/`trungma`) thành câu tiếng Việt. Bản ghi mới gửi `revision = 0`.
+- ⚠ `tu_choi_thay_doi`: TỪ CHỐI nhật ký cũ hơn `doi_ma_toan_cuc.luc`.
+- ⚠ `don_thung_rac` xoá cây nay chỉ cắt `tree_persons` — người không còn cây
+  nào thì sao? **Chưa chốt, hỏi chủ dự án.**
+- JS: `sb.js` đọc qua `tree_persons` · `hinh-dang.js` thêm `revision`, bỏ
+  `noi_ve`/`tree_id` · `id.js` xin mã bằng `cap_ma()` · bỏ `noiVe` ở JS.
 
 ### Sau đó — chưa đặt số, chưa chốt
 
@@ -138,7 +146,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 
 | Việc | Ghi ở đâu |
 |---|---|
-| ⚠ **Hai hàm của `16` nay LỆCH NGHĨA với tên của chúng**: `xin_xoa_cay()` không còn là "xin" — nó ẩn cây ngay; `huy_xin_xoa_cay()` nay chỉ QTHT gọi được và nghĩa thật là *trả lại cho chủ*. Giữ tên cũ ở b118b là **cố ý** (đổi tên kéo theo `sb.js` · `sb-gia.mjs` · `trang-cay.js` · bộ ảnh). Đổi tên là một bước riêng, làm cùng hay ngay sau b118c | `luoc-do/23-bon-luat-moi.sql` khối đầu |
+| ⚠ **Hai hàm của `16` nay LỆCH NGHĨA với tên của chúng**: `xin_xoa_cay()` không còn là "xin" — nó ẩn cây ngay; `huy_xin_xoa_cay()` nay chỉ QTHT gọi được và nghĩa thật là *trả lại cho chủ*. Giữ tên cũ ở b118b là **cố ý** (đổi tên kéo theo `sb.js` · `sb-gia.mjs` · `trang-cay.js` · bộ ảnh). Đổi tên là một bước riêng | `luoc-do/23-bon-luat-moi.sql` khối đầu |
 | ⚠ **`ds_kiem_duyet()` chưa trả người duyệt · lúc duyệt · lý do từ chối** — hai tab lịch sử của Kiểm duyệt để trống ba cột (cột có trong `change_log`, hàm chưa đọc). Sửa hàm là `drop` → chép cả `grant` | `so-tay/trang-quan-tri.md` |
 | ⚠ **`xem-khung-quan-tri.mjs` (ngoài repo) còn kịch bản bấm của giao diện cũ** — viết lại theo cảnh của `so-quantri3.mjs`, hoặc bỏ | `so-tay/trang-quan-tri.md` |
 | ⚠ **Hai việc của điểm dừng b106 chưa nghiệm thu bằng mắt**: gắn được mã người · đăng nhập bằng vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |

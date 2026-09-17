@@ -47,7 +47,7 @@ lại từng cột.
 | `tree_members` | **Ai được vào cây nào** — vai `quan_tri_he_thong`/`quan_tri`/`sua`/`xem`/`sao_luu`, cộng `person_id` + `approved` + `tin_cay` + `moi_boi`/`moi_luc`/`moi_vai` | Thay danh sách chia sẻ Drive · xem mục 2b. ⚠⚠ **BA trạng thái, không phải hai**: `approved`=true là thành viên · `moi_luc` trống + chưa duyệt là **đơn xin vào** · `moi_luc` CÓ + chưa duyệt là **lời mời chưa nhận**, và không cửa nào được ghi vào dòng ấy (`18-hai-chu-ky.sql`, `THIET-KE-NHIEU-CAY.md` mục 11.8) |
 | `branches` | Chi/nhánh | ⚠ **TỪ NAY KHÔNG DÙNG** — luật trực hệ thay chỗ, xem mục 2b |
 | `branch_access` | Ai được sửa nhánh nào | ⚠ **TỪ NAY KHÔNG DÙNG** — xem mục 2b |
-| `persons` | Một dòng một người | Khoá chính `(tree_id, id)` |
+| `persons` | Một dòng một người | Khoá chính `(tree_id, id)` · ⚠ `26` (b121, chưa dán) đổi thành `id` toàn cục, ai-thuộc-cây-nào sang bảng `tree_persons` — `so-tay/luu-du-lieu.md` |
 | `unions` | Một dòng một cuộc hôn nhân | `partners` là **mảng** |
 | `union_children` | Quan hệ cha mẹ–con | Bảng THẬT, không phải jsonb |
 | `media` | Ảnh | `drive_file_id` nay là đường dẫn kho Supabase |
