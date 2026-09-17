@@ -70,3 +70,9 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   cột và hình dạng dữ liệu không khớp một lá đơn xin đổi vai của người ĐÃ ở
   trong cây. Dựng thêm một tab mới cần sửa prototype trước (luật HTML tĩnh ở
   trên) — không phải việc một phiên tự quyết được, nên chọn chỗ có sẵn.
+- **Tab Sao lưu: *Lịch sử sao lưu* + nút *"Sao lưu ngay"* không làm được**
+  (b119) — trình duyệt không có đường gọi Google Drive/Apps Script (không
+  OAuth, `CLAUDE.md` mục 3), không phải "chưa tới lượt". Chỉ bảng *Đối chiếu
+  dữ liệu* làm được, vì nó chỉ cần đọc Supabase (`dem_du_lieu`). Đừng tưởng
+  thêm khoá bí mật hay Edge Function là "cho gọn" — xem `sao-luu/SaoLuu.gs`
+  đã đâm vào đúng bức tường ấy một lần rồi.

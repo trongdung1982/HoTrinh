@@ -1,9 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 17/09/2026 · Bước gần nhất: **b119 — mã xong, CHỜ dán SQL.** `dem_du_lieu(p_tree)`
-(`24-dem-du-lieu.sql`) + bảng Đối chiếu dữ liệu (`khu-sao-luu.js`) viết xong, bàn thử tại chỗ 10/10
-đạt — CHƯA dán lên Supabase nào, CHƯA bấm điểm dừng
-· Việc kế tiếp sau khi đóng b119: **b120** — Mã người xuyên cây*
+*Cập nhật 17/09/2026 · Bước gần nhất: **b119 ĐÃ ĐÓNG** — `dem_du_lieu(p_tree)` +
+bảng Đối chiếu dữ liệu (`khu-sao-luu.js`) đã dán lên Supabase, chủ dự án bấm điểm dừng ĐẠT
+· Việc kế tiếp: **b120** — Mã người xuyên cây*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -68,11 +67,9 @@ dự án chốt 16/09). Bàn thử 5433 trước đó: 107/107 đạt. REST xác
 qua tài khoản thử: khoá→mở khoá, mời QTHT (chữ ký 1)→huỷ, xoá cây→trả lại —
 cả ba ĐẠT. b118c đóng.
 
-**`24-dem-du-lieu.sql` (b119) — VIẾT XONG, CHƯA dán lên Supabase nào** (thật
-lẫn Staging). Bàn thử 5433: 10/10 đạt (`kiem-thu/ban-thu-sql/do-b119.mjs`) —
-QTHT đọc đúng 5 số, thành viên thường đọc ra rỗng, `anon` bị chặn. Không đụng
-hàm nào của chuỗi dán lại mục trên, không cần dán lại gì khác trước nó ngoài
-`11-quyen-he-thong.sql` (đã dán từ lâu).
+**`24-dem-du-lieu.sql` (b119) — ĐÃ DÁN, điểm dừng ĐẠT** (chủ dự án xác nhận
+17/09/2026, số trên màn hình khớp file sao lưu đêm gần nhất). Bàn thử 5433
+trước đó: 10/10 đạt. Chưa rõ đã dán lên Staging chưa. b119 đóng.
 
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
 `11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18`.
@@ -100,9 +97,9 @@ hàng rào thật, luật trực hệ chỉ còn là bộ lọc** giúp admin đ
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
 
-**Còn hai bước, theo đúng thứ tự này:** `b119` *(Sonnet)* → `b120` *(Sonnet)*.
-⚠ `KE-HOACH.md` là nguồn đúng cho SỐ BƯỚC — `b119`/`b120` vốn mang số
-`b112`/`b113`, chưa bước nào bắt tay làm nên đổi số không cắt lịch sử của ai.
+**Còn một bước:** `b120` *(Sonnet)*.
+⚠ `KE-HOACH.md` là nguồn đúng cho SỐ BƯỚC — `b120` vốn mang số `b113`, chưa
+bước nào bắt tay làm trước b119 nên đổi số không cắt lịch sử của ai.
 
 Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc nào đụng
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
@@ -113,16 +110,6 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 ⚠ Nói *"hàm máy chủ này thiếu"* thì grep `luoc-do/` trước — `export` của
 `sb.js` không phải danh sách hàm máy chủ (`THIET-KE-QUAN-TRI.md` 9.5).
 ⚠ Khung KHÔNG đổi sang tab ngang: thanh trái, dưới 850px mới thành hàng thẻ.
-
-### b119 — Khu Sao lưu + Số đếm đối chiếu
-
-| | |
-|---|---|
-| **Trạng thái** | Mã xong (`24-dem-du-lieu.sql` · `khu-sao-luu.js`), bàn thử 10/10 đạt. **CHỜ chủ dự án dán `24` lên Supabase thật rồi bấm điểm dừng** |
-| **Đã làm** | `dem_du_lieu(p_tree)` — 5 số đếm SỐNG, chỉ QTHT đọc được · `khu-sao-luu.js` — bảng Đối chiếu dữ liệu, một khối theo mỗi cây |
-| **⚠ Không làm được** | *Lịch sử sao lưu* + nút *"Sao lưu ngay"* — trình duyệt không có đường gọi Google Drive/Apps Script (không OAuth, `CLAUDE.md` mục 3). Đã nói thẳng trong giao diện, không giả vờ chạy |
-| **⚠ Không làm (cố ý)** | **Không vẽ nút Khôi phục** — máy chủ chưa khôi phục được |
-| **Điểm dừng** | Dán `24`, mở khu Sao lưu, số trên màn hình khớp số đếm được trong file sao lưu đêm gần nhất (mở tay trên Drive) |
 
 ### b120 — Mã người xuyên cây
 
