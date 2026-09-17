@@ -537,8 +537,8 @@ export function getAlternateNames(person) {
 // ============================================================
 //
 // Mã người là DUY NHẤT trên toàn ứng dụng — `<mã cây>_P####`, mã cây không
-// trùng — nên một chuỗi là đủ nói cây nào, người nào. Mã cây trong mã là DÒNG
-// HỌ của người ấy. Nghĩa: *"cùng một con người"*, không phải *"cùng một gia
+// trùng — nên một chuỗi là đủ nói cây nào, người nào. ⚠ Mã cây KHÔNG phải dòng
+// họ: dòng họ do người ấy tự chọn. Nghĩa: *"cùng một con người"*, không phải *"cùng một gia
 // đình"* — không nối quan hệ nào qua hai cây (`THIET-KE-NHIEU-CAY.md` mục 6).
 //
 // Máy chủ chặn lại hai luật đầu và luật trùng (`luoc-do/25-noi-ve.sql`); hàm
@@ -562,7 +562,7 @@ export function loiNoiVe(tree, personId, ma) {
     return 'Ô "Cũng có trong gia phả khác" nhận đúng MỘT mã người, ví dụ ' +
            'NTB417_P0013 — bạn đang gõ "' + chu + '".';
   }
-  // Mã cũ không mang mã cây thì không nói được dòng họ nào — không nhận.
+  // Mã cũ không mang mã cây thì không nói được gia phả nào — không nhận.
   if (!t.maCay) {
     return 'Mã ' + chu + ' là mã kiểu cũ, không có mã cây nên không biết thuộc ' +
            'gia phả nào. Gõ mã đầy đủ, ví dụ NTB417_P0013.';

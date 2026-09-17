@@ -15,10 +15,10 @@
 // --- MÃ CHUẨN CÓ MÃ CÂY; MÃ CŨ LÀ DỮ LIỆU SẼ DỌN ------------------------
 //
 // Mã chuẩn `NTB417_P0060` DUY NHẤT toàn ứng dụng (mã cây không trùng, `12`);
-// mã cây trong nó là DÒNG HỌ. Mã cũ `P0004` (trước 29/08/2026) không nói được
-// dòng họ — chủ dự án chốt 17/09/2026: dữ liệu KHÔNG hợp lệ, xoá khi vận hành
-// chính thức. Hàm ở đây còn đọc được nó chỉ cho dữ liệu giả hôm nay; chỗ cần
-// dòng họ (`noiVe`) thì từ chối — đừng thêm đường lùi chiều nó.
+// mã cây trong nó chỉ nói CÂY NÀO SINH RA MÃ — ⚠ KHÔNG nói dòng họ (dòng họ do
+// chính người ấy chọn). Mã cũ `P0004` (trước 29/08/2026) không nói được cây
+// nào — chủ dự án chốt 17/09/2026: KHÔNG hợp lệ, xoá khi vận hành chính thức.
+// Chỗ cần biết cây (`noiVe`) thì từ chối nó — đừng thêm đường lùi chiều nó.
 //
 // Khuôn tiền tố hợp lệ ở CẢ HAI bản chuẩn GEDCOM (5.5.1 và 7.0): chỉ chữ hoa,
 // chữ số và gạch dưới. Gạch nối `-` thì 7.0 không nhận — đừng đổi sang.

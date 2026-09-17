@@ -43,6 +43,7 @@ file `luoc-do/`, không riêng `01`.
 ## `noi_ve` — nghĩa
 
 Một mã người đầy đủ ở gia phả KHÁC (`NTB417_P0013`) chỉ **cùng một con người**,
-không nối quan hệ nào. Mã người duy nhất toàn ứng dụng, mã cây trong nó là dòng
-họ — nên một chuỗi là đủ. Mã cũ `P####` bị từ chối. Luật: `domains/person.js`
+không nối quan hệ nào. Mã người duy nhất toàn ứng dụng, mã cây trong nó nói cây
+nào — nên một chuỗi là đủ. Mã cũ `P####` bị từ chối. ⚠ Mã cây KHÔNG phải dòng
+họ (dòng họ do người ấy tự chọn). Luật: `domains/person.js`
 `loiNoiVe()` nói trước; máy chủ chặn khuôn + trùng trong một cây.

@@ -113,9 +113,8 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 
 ### b120 — Mã người xuyên cây
 
-Mã xong: cột + khuôn + chặn trùng (`25`) · `hinh-dang.js` · `domains/person.js`
-`loiNoiVe()` · ô *Cũng có trong gia phả khác* (form Sửa hồ sơ) · dòng + nút nhảy
-ở thẻ thông tin. Bẫy và cách làm: `so-tay/luu-du-lieu.md`.
+Mã xong (`25` · `hinh-dang.js` · `domains/person.js` · form Sửa hồ sơ · thẻ ⓘ).
+Bẫy và cách làm: `so-tay/luu-du-lieu.md`.
 **Điểm dừng:** Sửa hồ sơ một người **cây NTB** → gõ `NPG473_P0001` → Lưu → mở lại: ô **còn
 nguyên**; thẻ ⓘ hiện dòng *"Người này cũng có trong…"*. ⚠ Nút nhảy CHƯA ai bấm
 — dữ liệu hai cây còn mã cũ `P####`, không có người nào để nhảy tới.
@@ -126,7 +125,7 @@ nguyên**; thẻ ⓘ hiện dòng *"Người này cũng có trong…"*. ⚠ Nút
 `service_role`, chỉ qua Edge Function, khoá **không bao giờ** vào repo Public)* ·
 chặn đăng nhập thật cho tài khoản bị khoá *(`auth.users.banned_until`, cùng
 đường với trên)* · **dọn mã người cũ `P####` trước vận hành chính thức** *(chủ dự
-án chốt 17/09: không hợp lệ; mã cây trong mã người = dòng họ)* · nhập GEDCOM/Excel qua máy chủ · **khôi phục thật** *(việc
+án chốt 17/09: không hợp lệ)* · **dòng họ + cây chính do người tự chọn** *(`THIET-KE-NHIEU-CAY.md` 6)* · nhập GEDCOM/Excel qua máy chủ · **khôi phục thật** *(việc
 nguy hiểm nhất: phải đo bằng vòng sao lưu → đổi → khôi phục → về đúng trạng
 thái cũ, không phải bằng việc có file JSON)* · nối **quan hệ** bắc qua hai cây
 *(`noi_ve` chỉ nói "cùng một con người", không nói "cùng một gia đình")*.

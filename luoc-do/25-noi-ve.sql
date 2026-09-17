@@ -14,8 +14,8 @@
 -- Mã người là DUY NHẤT trên toàn ứng dụng: `<mã cây>_P####`, và
 -- `trees.tree_code` là `unique` (`12`). Nên `noi_ve` giữ ĐÚNG MỘT chuỗi —
 -- mã người nguyên văn ở cây kia — và tự nó nói cây nào. Không có cột mã cây
--- thứ hai. Mã cây trong mã người là DÒNG HỌ của người ấy (chủ dự án chốt
--- 17/09/2026); mã cũ `P####` không mang dòng họ nên KHÔNG được nhận.
+-- thứ hai. Mã cũ `P####` không nói được cây nào nên KHÔNG được nhận.
+-- ⚠ Mã cây KHÔNG phải dòng họ — dòng họ do người ấy tự chọn (chốt 17/09/2026).
 --
 -- `noi_ve` nói *"cùng một con người"*, KHÔNG nói *"cùng một gia đình"* —
 -- không nối quan hệ nào bắc qua hai cây (`THIET-KE-NHIEU-CAY.md` mục 6).

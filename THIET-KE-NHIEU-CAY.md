@@ -321,6 +321,20 @@ Nối **quan hệ** giữa hai cây (ông A ở cây này là con ông B ở câ
 đồ thị bắc qua hai cây, và `pham_vi_sua()` sẽ phải đi theo. Chưa ai cần. Cột
 `noi_ve` nói *"cùng một con người"*, không nói *"cùng một gia đình"*.
 
+### ⚠ Mã cây KHÔNG phải dòng họ — chủ dự án chốt 17/09/2026
+
+Mã cây trong mã người chỉ nói **cây nào sinh ra mã**. Hai phản ví dụ:
+
+- Nhà vợ thêm người này vào cây của họ TRƯỚC nhà bố mẹ đẻ → mã mang cây nhà vợ.
+- Cho người ấy tự chọn CÂY cũng sai: một cây 17 đời có thể tách thành 3 dòng
+  họ từ đời 7.
+
+**Kết luận:** một người thuộc dòng họ nào là **do chính người ấy chọn**, không
+phụ thuộc cây họ nằm trong; người ấy **khai được cây chính** của mình.
+**Chưa thiết kế** — còn mở: dòng họ lưu thành gì (danh mục hay chữ tự do), ai
+khai thay cho người đã mất, cây chính có phải một trong các cây `noi_ve` nối
+tới không. Đừng suy dòng họ từ mã cây hay từ cây đang mở.
+
 ---
 
 ## 7. Tạo cây mới
