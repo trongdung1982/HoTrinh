@@ -117,8 +117,8 @@ khi có file b122.
   — thiếu là chống ghi đè vô hiệu, im lặng. Bắt `GP409` (hint
   `xungdot`/`trungma`) thành câu tiếng Việt. Bản ghi mới gửi `revision = 0`.
 - ⚠ `tu_choi_thay_doi`: TỪ CHỐI nhật ký cũ hơn `doi_ma_toan_cuc.luc`.
-- ⚠ `don_thung_rac` xoá cây nay chỉ cắt `tree_persons` — người không còn cây
-  nào thì sao? **Chưa chốt, hỏi chủ dự án.**
+- ✓ Người không còn thuộc cây nào (xoá cây chỉ cắt `tree_persons`) → hiện
+  thành danh sách ở khu **Quản trị hệ thống** (chốt 17/09).
 - JS: `sb.js` đọc qua `tree_persons` · `hinh-dang.js` thêm `revision`, bỏ
   `noi_ve`/`tree_id` · `id.js` xin mã bằng `cap_ma()` · bỏ `noiVe` ở JS.
 
@@ -130,7 +130,8 @@ chặn đăng nhập thật cho tài khoản bị khoá *(`auth.users.banned_unt
 đường với trên)* · **dòng họ + cây chính do người tự chọn**
 *(`THIET-KE-NHIEU-CAY.md` 6)* · nhập GEDCOM/Excel qua máy chủ · **khôi phục
 thật** *(việc nguy hiểm nhất: phải đo bằng vòng sao lưu → đổi → khôi phục → về
-đúng trạng thái cũ, không phải bằng việc có file JSON)*.
+đúng trạng thái cũ, không phải bằng việc có file JSON)* · **tối ưu tốc độ đọc**
+— để khi mọi chức năng đã chạy *(đọc cây 740 người: ~0,4s truy vấn)*.
 
 ⚠ **17/09 — hai việc mới, chủ dự án nêu:** ① huy hiệu số đếm + bấm tên mở cây
 ở khu Gia phả, an toàn *(`THIET-KE-QUAN-TRI.md` 9.6)* ② ⚠⚠ **CẦN CHỐT HƯỚNG
@@ -157,7 +158,6 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Ai gọi `don_thung_rac()`** — nút bấm tay hay trigger Apps Script đêm? Chưa hỏi chủ dự án | `THIET-KE-NHIEU-CAY.md` mục 11.6 |
 | ⚠ **`settings.js` vẫn gọi thứ này là *Quyền*** trong khi khu Quản trị đã đổi hết sang **Vai trò** (b109c). Chính luật *"hai màn hình gọi một thứ bằng hai tên"* là lý do đổi tên lần ấy | `nhat-ky/b109c-o-vai-tro.md` |
 | ⚠ **b103 → b105 của Antigravity vẫn nằm NGOÀI repo**, trong `codex/`, mới dán lên Staging. Soi lướt: `12` và `13` không thêm luật ghi nào — nhưng chưa rà kỹ, chưa đo | `PHOI-HOP-AI.md` |
-| ⚠ **Tên gọi chưa chốt**: hai thứ khác hẳn nhau cùng tên *"quản trị hệ thống"* | `THIET-KE-NHIEU-CAY.md` mục 11 |
 | ⚠ **Bộ bất biến bố cục đang gác nhầm nhánh** — xem ngay dưới bảng | `/kiem-tra` phép 9 |
 | ⚠ **Sao lưu KHÔNG chép ảnh** — chỉ liệt kê. Ảnh vẫn nằm đúng một chỗ | `KIEN-TRUC.md` mục 7 |
 | ⚠ **Chưa ai thử KHÔI PHỤC từ file sao lưu** — *có file* khác *khôi phục được* | `sao-luu/HUONG-DAN-SAO-LUU.md` |

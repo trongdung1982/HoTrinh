@@ -1,5 +1,5 @@
 {
-  "capNhat": "17/09/2026 20:23",
+  "capNhat": "17/09/2026 20:59",
   "ghiChu": "Hạ bằng --ha-moc.",
   "no": {
     "dau-file:js/domains/so-sanh.js": 36,
@@ -23,7 +23,7 @@
     "dau-file:js/utils/id.js": 53,
     "dau-file:js/utils/image.js": 37,
     ".claude/memory/MEMORY.md:dai": 292,
-    "supabase/CHI-DAN.md:byte": 8330,
+    "supabase/CHI-DAN.md:byte": 8135,
     "supabase/CHI-DAN.md:dai": 784,
     "index:dong-dai": 29,
     "ten-sai": 2

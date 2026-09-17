@@ -2,9 +2,9 @@
 
 *Nhánh Supabase · cập nhật 16/09/2026 (b118b)*
 
-⚠ **TRẦN CỨNG 80 DÒNG · 8 KB · mỗi dòng ≤ 400 ký tự** — đo: `kiem-thu/do-gon.mjs`
-*(đếm dòng bằng mắt thì dòng dài ra)*. Vượt là có thứ đứng nhầm chỗ — chuyển ra
-file riêng, **đừng nới trần**.
+⚠ **TRẦN CỨNG 80 DÒNG · 8 KB · mỗi dòng ≤ 400 ký tự** — đo: `kiem-thu/do-gon.mjs`.
+Vượt trần (file này hay `KE-HOACH.md`) thì **CẮT việc đã xong** — không dời
+kế hoạch đang dùng sang file khác, **đừng nới trần**.
 
 ## Việc hôm nay → đọc file nào
 
@@ -41,10 +41,8 @@ file riêng, **đừng nới trần**.
 1. **`domains/` không được sửa.** Cả mười file chép nguyên từ bản Apps Script.
    Thấy mình đang sửa `domains/` là dừng lại hỏi vì sao — `BAT-DAU.md` mục 1.
 2. **Chỉ `services/sb.js` được chạm `window.supabase`.** Không file nào khác.
-3. **Đã chạy thật, và phân quyền đã kiểm chứng.** 59 người vào bảng 04/09;
-   luật trực hệ + hàng chờ duyệt đo bằng REST, **5/5 hàng rào đạt** (b94,
-   b96). Máy chủ thật nay có **HAI cây**, mã cây **3 chữ số** (`NPG473`),
-   khung Quản trị bốn khu. `KIEN-TRUC.md` mục 6: còn gì dở.
+3. **Đã chạy thật, phân quyền đã đo bằng REST: 5/5 hàng rào đạt** (b94, b96).
+   `KIEN-TRUC.md` mục 6: còn gì dở.
    ⚠ **File SQL nào đã dán, file nào chưa — hỏi `KE-HOACH.md`.** Không giữ
    bản thứ hai ở đây: nó đổi mỗi bước, và hai chỗ ghi là hai chỗ để lệch nhau.
    ⚠ **Chuỗi dán lại:** `11`/`10`→`14`→`16`→`18`→**`23`** ·
