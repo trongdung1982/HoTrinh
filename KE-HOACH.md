@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 17/09/2026 · Bước gần nhất: **b121 — `26` xanh trên bàn thử, CHƯA
-dán** (dán cùng b122)*
+*Cập nhật 17/09/2026 · Bước gần nhất: **b122a — `27` xanh trên bàn thử (62/62),
+CHƯA dán** (`26`+`27` dán cùng b122b)*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -57,12 +57,13 @@ nào.** `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
 **`22`→`25` — ĐÃ DÁN lên THẬT, tự kiểm ĐẠT.** Chưa rõ Staging — hỏi lại trước
 khi coi hai máy chủ đã đồng bộ.
 
-**`26-mot-nguoi-mot-ban-ghi.sql` (b121) — CHƯA DÁN**, bàn thử xanh. Dán cùng
-buổi với file b122 — lý do ở mục *Một người một bản ghi*.
+**`26-mot-nguoi-mot-ban-ghi.sql` (b121) + `27-ham-mot-nguoi.sql` (b122a) — CHƯA
+DÁN**, bàn thử xanh (`do-b121` · `do-b122`). Dán `26`→`27` liền nhau,
+SAU b122b — lý do ở mục *Một người một bản ghi*.
 
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
 `11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18` ·
-`03`/`08`**→`25`** *(bản đứng cuối của `luu_cay` + `tu_choi_thay_doi`)*.
+`03`/`06`/`08`/`13`→`25`**→`27`** *(bản đứng cuối của 21 hàm, kê ở đầu `27`)*.
 ⚠ **Sau `26` KHÔNG dán lại `02`/`11`** — luật đọc trên bảng người của chúng
 hỏi `tree_id` đã bỏ; bản đứng cuối của bốn luật ấy ở `26` mục 5.
 `23` đứng CUỐI mọi chuỗi: nó là bản đứng cuối của 13 hàm, trong đó có
@@ -101,26 +102,23 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 
 ### ⚠⚠ Một người một bản ghi toàn phần mềm — b121 → b124
 
-`THIET-KE-NHIEU-CAY.md` mục 6 (thay b120, `noi_ve` bỏ). **b121 xanh trên bàn
-thử** (`do-b121.mjs`). ⚠⚠ **`26` ĐỪNG dán riêng** — app ngừng đọc/ghi cây tới
-khi có file b122.
+`THIET-KE-NHIEU-CAY.md` mục 6 (thay b120, `noi_ve` bỏ). **b121 + b122a xanh
+trên bàn thử**. ⚠⚠ **`26`/`27` ĐỪNG dán trước b122b** — `sb.js` còn đọc bảng
+người bằng `tree_id`, app ngừng mở cây.
 
-**Kế tiếp: b122** (Opus, nên chia a·SQL / b·JS). Việc `26` để lại, đủ cả:
+**Kế tiếp: b122b — JS** (Opus). Máy chủ sẵn ở `27` (đọc đầu file):
 
-- **20 hàm còn hỏi `tree_id` trên bảng người**: `luu_cay` · `tu_choi_thay_doi` ·
-  `pham_vi_sua` · `khoa_cua` · `ds_kiem_duyet` · `chi_tiet_kiem_duyet` ·
-  `ds_gia_pha` · `dem_du_lieu` · `don_thung_rac` · `xin_xoa_cay` ·
-  `duyet_thanh_vien` · `gan_nguoi_cho_thanh_vien` · `ds_thanh_vien` ·
-  `ds_tai_khoan_he_thong` · `ds_cay_cua_tai_khoan` · `tim_tai_khoan` ·
-  `tim_nguoi_trong_cay` · `nop_de_xuat_gan` · `ds_de_xuat_gan` · `de_xuat_gan_cua_toi`
-- ⚠ `luu_cay`: `on conflict (id) do update set … revision = excluded.revision`
-  — thiếu là chống ghi đè vô hiệu, im lặng. Bắt `GP409` (hint
-  `xungdot`/`trungma`) thành câu tiếng Việt. Bản ghi mới gửi `revision = 0`.
-- ⚠ `tu_choi_thay_doi`: TỪ CHỐI nhật ký cũ hơn `doi_ma_toan_cuc.luc`.
-- ✓ Người không còn thuộc cây nào (xoá cây chỉ cắt `tree_persons`) → hiện
-  thành danh sách ở khu **Quản trị hệ thống** (chốt 17/09).
-- JS: `sb.js` đọc qua `tree_persons` · `hinh-dang.js` thêm `revision`, bỏ
-  `noi_ve`/`tree_id` · `id.js` xin mã bằng `cap_ma()` · bỏ `noiVe` ở JS.
+- `sb.js layDong()`: bốn bảng dùng chung đọc bằng **`doc_cay(p_tree)`**; bỏ
+  `docNguoiCayKhac()`. `hinh-dang.js`: thêm `revision` (mới `0`), bỏ `noi_ve`/`tree_id`
+  — lưu xong NẠP LẠI số, không thì lần lưu thứ hai `xungdot`. `id.js` → `cap_ma()`.
+- `repo.js` câu cho `lyDo` mới: `ngoaicay` · `trungma` · `truocdoima`. Kiểm duyệt:
+  `lechSo` · `truocDoiMa` khoá nút Từ chối. QTHT: `ds_nguoi_mo_coi()`.
+- `don_thung_rac` nay trả `dsAnh` LUÔN rỗng — đừng xoá file ảnh.
+- ⚠ `sb-gia.mjs` thêm `doc_cay` · `ds_nguoi_mo_coi` · `cap_ma`.
+- ⚠ `sao-luu/SaoLuu.gs` dòng 67–70 còn khoá `tree_id,id` cho bốn bảng, thiếu `tree_persons`.
+- Điểm dừng: dán `26`→`27`, mở ba cây, sửa một người, lưu, lưu lần hai, mở lại đúng.
+- ⚠ Để b123 (chưa lộ vì mỗi cây còn tự đứng riêng): cờ `deleted` và xoá cứng hôn
+  nhân là CHUNG mọi cây · `doc_cay` bỏ cạnh con có một đầu ngoài cây.
 
 ### Sau đó — chưa đặt số, chưa chốt
 

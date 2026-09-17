@@ -22,6 +22,17 @@ Liên quan: `THIET-KE-NHIEU-CAY.md` mục 11 · `DU-LIEU.md` mục 2 · `HUONG-D
 
 ## Bài học
 
+### Gốc phạm vi trực hệ phải THUỘC CÂY (b122a)
+
+`pham_vi_sua()` bản `06` nhận `p_goc` vô điều kiện — an toàn khi khoá ngoại
+`(tree_id, person_id)` của `tree_members` bảo đảm gốc nằm trong cây. `26` bỏ khoá
+ấy, nên gốc trỏ sang người cây khác thì chính người đó lọt vào phạm vi sửa từ cây
+này. `27` chữa ở hai đầu: `pham_vi_sua` gốc ngoài cây → rỗng, và bốn cửa gắn mã
+(`moi_vao_cay` · `gan_nguoi_cho_thanh_vien` · `duyet_thanh_vien` ·
+`nop_de_xuat_gan`) hỏi `tree_persons`. ⚠ Bỏ một khoá ngoại là phải đi tìm mọi
+hàm từng dựa vào nó — `moi_vao_cay` không có trong danh sách 20 hàm của b121.
+Đo: `do-b122.mjs` L9 · G1–G5.
+
 ### Luật đọc gọi hàm cho TỪNG DÒNG là chậm — viết `cột in (select ds_…())`
 
 Hàm `security definer` viết bằng SQL không được Postgres gộp vào câu truy vấn,

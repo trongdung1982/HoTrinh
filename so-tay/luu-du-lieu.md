@@ -14,7 +14,7 @@ Cột mới phải có tên ở **BỐN chỗ**. Thiếu chỗ nào thì hỏng 
 | `tu_choi_thay_doi()` — cùng danh sách ấy | từ chối một thay đổi không trả lại cột ấy |
 
 ⚠ Hai hàm máy chủ **liệt kê tên cột**, không `set *`. Bẫy thứ ba và thứ tư tìm ra
-ở b120, trước đó tài liệu chỉ ghi bẫy thứ nhất.
+ở b120, trước đó tài liệu chỉ ghi bẫy thứ nhất. Bản đứng cuối của cả hai: `luoc-do/27`.
 
 ## Khoá vắng mặt trong JSON gửi lên
 
@@ -62,6 +62,26 @@ thiếu nó thì không mất dữ liệu mà mất hàng rào.
 ⚠ Trigger BEFORE INSERT chạy **trước** khi Postgres xét `on conflict`, và
 `excluded` mang giá trị SAU trigger — nên trigger không được đặt số cho dòng
 sắp đụng mã đã có. Đo: `kiem-thu/ban-thu-sql/do-b121.mjs` phần G.
+
+⚠ **Ngược lại ở `tu_choi_thay_doi()`: KHÔNG đặt `revision = excluded.revision`.**
+Ảnh chụp `cu` mang số CŨ — đặt vào là trigger từ chối chính lần hoàn tác. Ở đó
+để trigger tự tăng số (b122a).
+
+## Hoàn tác XUYÊN CÂY — `dung_do_sau()` không đủ (b122a)
+
+`dung_do_sau()` chỉ so nhật ký cùng cây. Ông X sửa tiếp từ cây A thì từ chối lần
+lưu cũ ở cây B vẫn dán đè — bàn thử T2 bắt được. `luu_cay()` nay ghi
+`truoc.rev_sau` (số từng bản ghi NGAY SAU lần lưu); `ban_ghi_lech_so()` so với
+số hiện tại, lệch là từ chối. Cộng: nhật ký cũ hơn `doi_ma_toan_cuc.luc` bị từ
+chối (ảnh chụp mang mã cũ). Đo: `do-b122.mjs` phần T.
+
+## Bản ghi phải THUỘC CÂY đang lưu (b122a)
+
+Mã toàn cục + phạm vi `null` của quản trị = quản trị cây B sửa được MỌI người
+trong phần mềm chỉ bằng cách gửi mã. Hàng rào 3b của `luu_cay()` chặn: người ∈
+`tree_persons`, hôn nhân có vợ/chồng hay con thuộc cây, ảnh gắn vào hai loại ấy
+— áp cho cả sửa, xoá, và kéo người cây khác làm vợ/chồng/con. Xoá người = rút
+khỏi cây này; bản ghi chỉ xoá khi không cây nào giữ. Đo: `do-b122.mjs` L3–L11.
 
 ## Mã toàn cục — xin bằng `cap_ma()`
 
