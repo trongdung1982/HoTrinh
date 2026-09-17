@@ -92,3 +92,10 @@ nhật ký trước `doi_ma_toan_cuc.luc` nói bằng mã cũ của cây ấy.
 
 ⚠ `photo_file_id` của dữ liệu di dời từ Drive có ca chứa MÃ FILE DRIVE, không
 phải mã `M…` (bàn thử: NPG `P0553`). Có từ trước `26`, đừng tưởng `26` làm lạc.
+
+## Ảnh mồ côi = rác — so cả mã HÔN NHÂN (b122a, chốt 17/09)
+
+`don_thung_rac()` (`27`) xoá bản ghi ảnh có `subject_id` không khớp mã người
+NÀO **và** mã hôn nhân NÀO, trả file vào `dsAnh` (trừ file còn bản ghi khác
+dùng chung), xoá trắng `photo_file_id` trỏ vào nó. ⚠ Ảnh cưới gắn vào `U…` —
+so riêng mã người là xoá oan. Đo: `do-b122.mjs` O2 · O5.
