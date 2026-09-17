@@ -331,17 +331,23 @@ Hướng xử lý phải chọn: số chống ghi đè đặt **trên từng ng�
 hoặc `luu_cay()` chỉ gửi những người đã sửa thay vì cả cây. Phải có phép kiểm
 đúng kịch bản ba bước trên, đo trên bàn thử SQL.
 
-### Ba câu còn mở
+### ✓ Ba câu đã chốt — chủ dự án chấp nhận cả ba đề xuất lẫn cái giá, 17/09/2026
 
-1. **Quan hệ (hôn nhân, cha mẹ–con) chung hay theo cây?** Đề xuất: **chung** —
-   cha của ông X là sự thật về ông X, không thể khác nhau giữa hai cây. Cây chỉ
-   quyết định *hiện* những ai. Hệ quả: người sửa ở cây B thêm nhầm cha thì cây
-   A cũng thấy — chặn bằng kiểm duyệt như điều 3.
-2. **Phạm vi trực hệ (`pham_vi_sua()`)** đi theo đồ thị chung hay chỉ trong
-   những người thuộc cây đang sửa? Đề xuất: trong cây đang sửa, vì quyền `sua`
-   cấp theo cây.
-3. **Người xem cây B thấy cả trường nhập từ cây A.** Dùng chung bản ghi thì
-   không giấu được từng trường theo cây. Chấp nhận, hay cần giấu gì?
+1. **Quan hệ (hôn nhân, cha mẹ–con) dùng CHUNG.** Cha của ông X là sự thật về
+   ông X. Cây chỉ quyết định *hiện* những ai. Cái giá: cây B thêm nhầm cha thì
+   cây A cũng thấy — chặn bằng kiểm duyệt như điều 3.
+2. **Phạm vi trực hệ (`pham_vi_sua()`) tính trong những người thuộc cây đang
+   sửa**, vì quyền `sua` cấp theo cây.
+3. **Người xem cây B thấy cả trường nhập từ cây A.** Không giấu theo cây.
+
+### Chia bước (mỗi bước một phiên, có điểm dừng)
+
+| Bước | Việc | Điểm dừng |
+|---|---|---|
+| **b121** | Lược đồ: `persons` khoá `id` · `tree_persons` · quan hệ bỏ `tree_id` · mã `P` toàn cục · chống ghi đè theo người. Chuyển dữ liệu giả hiện có. Chạy trên bàn thử SQL, gồm kịch bản ghi đè ba bước | Bàn thử xanh, rồi mới đưa file dán |
+| **b122** | `luu_cay()` · đọc cây · `pham_vi_sua()` · kiểm duyệt theo mô hình mới; bỏ `noiVe` ở JS | Mở ba cây, sửa một người, lưu, mở lại đúng |
+| **b123** | Thêm người: ô *"đã có trong phần mềm chưa"* tìm trong các cây được xem, chọn thì thêm vào cây | Thêm một người cây A vào cây B, sửa ở B thấy ở A |
+| **b124** | Mục *Báo trùng người giữa các cây* (trang Gia phả) + QTHT duyệt gộp | Gửi một báo trùng, QTHT duyệt, mã thua trỏ về mã giữ |
 
 ### ⚠ Mã cây KHÔNG phải dòng họ — chủ dự án chốt 17/09/2026
 

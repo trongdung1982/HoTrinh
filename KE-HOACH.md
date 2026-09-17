@@ -110,10 +110,9 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 `noiVe` ở `hinh-dang.js` · `domains/person.js` · form Sửa hồ sơ · thẻ ⓘ) sẽ
 bỏ — **đừng nghiệm thu b120 nữa**. Mã người bỏ tiền tố cây.
 
-Trước khi viết mã: ① chủ dự án trả lời **ba câu mở** cuối mục 6 ② chọn cách
-chống **ghi đè xuyên cây** (`revision` theo cây không đủ) và đo trên bàn thử
-SQL. Rồi chia bước: lược đồ `persons` + `tree_persons` → `luu_cay()` → ô tìm
-"đã có trong phần mềm chưa" → mục *Báo trùng người giữa các cây* ở trang Gia phả.
+Ba câu mở đã chốt. Bốn bước **b121 → b124** kèm điểm dừng ở mục 6. **Kế tiếp:
+b121 — lược đồ** (Opus), đo kịch bản ghi đè xuyên cây trên bàn thử SQL trước
+khi đưa file dán.
 
 ### Sau đó — chưa đặt số, chưa chốt
 
