@@ -254,6 +254,9 @@ Supabase, dùng để RLS giới hạn người biên tập theo chi. Bỏ nó r
 thì mỗi lần lưu sẽ ghi `null` đè lên, tức **âm thầm gỡ mọi người ra khỏi nhánh
 của họ** — và không có gì báo lỗi khi điều đó xảy ra. Nó nằm trong bảng tên
 `TEN_PERSON` của `hinh-dang.js` đúng vì lý do này.
+⚠ Cột mới còn phải có tên ở **ba chỗ nữa** — `domains/person.js`, và danh sách
+`on conflict do update` của `luu_cay()` + `tu_choi_thay_doi()` (b120,
+`so-tay/luu-du-lieu.md`).
 
 ---
 

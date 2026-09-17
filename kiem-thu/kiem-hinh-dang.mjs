@@ -26,7 +26,7 @@
 //   để dựng và kiểm phần mềm. Dữ liệu trong đó **toàn bộ là GIẢ**
 //   (`CLAUDE.md` mục 9). Bài kiểm CHỈ ĐỌC, không ghi gì vào file ấy.
 
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { rapCay, boCay, soSanh, coGiDeGhi } from '../js/services/hinh-dang.js';
@@ -236,6 +236,17 @@ function cotBatBuoc(tenBang) {
     if (ten[1] === 'tree_id') continue;        // `luu_cay()` tự gắn, không đi qua veBang
     ra.push(ten[1]);
   }
+  // Cột `not null` thêm SAU `01` (`alter table … add column`) — `noi_ve` của
+  // `25` là cột đầu tiên loại ấy trên bảng dữ liệu. Không đọc thì nó lọt lưới.
+  for (const f of readdirSync(dirname(FILE_SQL)).filter((x) => x.endsWith('.sql'))) {
+    const van = readFileSync(resolve(dirname(FILE_SQL), f), 'utf8');
+    const re = new RegExp('alter table public\\.' + tenBang + '\\s+([^;]*);', 'g');
+    for (const khoi of van.matchAll(re)) {
+      for (const c of khoi[1].matchAll(/add column if not exists ([a-z_]+)([^,]*)/g)) {
+        if (/not null/i.test(c[2]) && !ra.includes(c[1])) ra.push(c[1]);
+      }
+    }
+  }
   return ra;
 }
 
@@ -297,6 +308,9 @@ for (const [tenBang, tenOps] of BANG) {
     }
   }
 }
+
+kiem('cột not null thêm sau 01 cũng được đọc (persons.noi_ve của 25)',
+     (cotBatBuoc('persons') || []).includes('noi_ve'), demCot);
 
 kiem('không dòng nào có null ở cột not null', nullSai.length === 0,
      [...new Set(nullSai)].slice(0, 8).join('\n        '));

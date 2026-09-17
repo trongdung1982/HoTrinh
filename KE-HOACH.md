@@ -1,8 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 17/09/2026 · Bước gần nhất: **b119 ĐÃ ĐÓNG** — `dem_du_lieu(p_tree)` +
-bảng Đối chiếu dữ liệu (`khu-sao-luu.js`) đã dán lên Supabase, chủ dự án bấm điểm dừng ĐẠT
-· Việc kế tiếp: **b120** — Mã người xuyên cây*
+*Cập nhật 17/09/2026 · Bước gần nhất: **b120 MÃ XONG** — `noi_ve` (mã người xuyên
+cây) · CHỜ chủ dự án dán `25-noi-ve.sql` rồi bấm điểm dừng*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -67,12 +66,15 @@ dự án chốt 16/09). Bàn thử 5433 trước đó: 107/107 đạt. REST xác
 qua tài khoản thử: khoá→mở khoá, mời QTHT (chữ ký 1)→huỷ, xoá cây→trả lại —
 cả ba ĐẠT. b118c đóng.
 
-**`24-dem-du-lieu.sql` (b119) — ĐÃ DÁN, điểm dừng ĐẠT** (chủ dự án xác nhận
-17/09/2026, số trên màn hình khớp file sao lưu đêm gần nhất). Bàn thử 5433
-trước đó: 10/10 đạt. Chưa rõ đã dán lên Staging chưa. b119 đóng.
+**`24-dem-du-lieu.sql` (b119) — ĐÃ DÁN, điểm dừng ĐẠT** 17/09/2026. Chưa rõ
+đã dán lên Staging chưa.
+
+**`25-noi-ve.sql` (b120) — CHƯA DÁN.** Bàn thử 5433: `do-b120.mjs` 25/25 đạt.
+Mã JS đẩy trước dán vẫn an toàn (khoá `noi_ve` lạ thì máy chủ bỏ qua).
 
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
-`11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18`.
+`11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18` ·
+`03`/`08`**→`25`** *(bản đứng cuối của `luu_cay` + `tu_choi_thay_doi`)*.
 `23` đứng CUỐI mọi chuỗi: nó là bản đứng cuối của 13 hàm, trong đó có
 `la_quan_tri_he_thong()` · `la_thanh_vien()` · `co_the_xem_cay()` ·
 `co_the_sua()`. Quên nó là mở lại khoá mềm, mở lại lời mời QTHT thành quyền
@@ -97,9 +99,7 @@ hàng rào thật, luật trực hệ chỉ còn là bộ lọc** giúp admin đ
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
 
-**Còn một bước:** `b120` *(Sonnet)*.
-⚠ `KE-HOACH.md` là nguồn đúng cho SỐ BƯỚC — `b120` vốn mang số `b113`, chưa
-bước nào bắt tay làm trước b119 nên đổi số không cắt lịch sử của ai.
+**Còn một bước:** đóng `b120` — chủ dự án dán `25` rồi bấm điểm dừng.
 
 Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc nào đụng
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
@@ -113,19 +113,20 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 
 ### b120 — Mã người xuyên cây
 
-| | |
-|---|---|
-| **Làm** | `persons.noi_ve` · thêm tên cột vào bảng `TEN_PERSON` của `hinh-dang.js` · ô nhập trong màn hồ sơ · dòng *"Người này cũng có trong gia phả …"* + nút nhảy sang **chỉ khi người xem truy cập được cây kia** |
-| **⚠ Bẫy** | Cột không có tên trong `TEN_PERSON` thì mỗi lần lưu ghi `null` đè lên, **và không có gì báo lỗi** — `DU-LIEU.md` mục 3 điều 7 |
-| **Đứng cuối vì** | Chưa ai dựng cây thứ ba. Cột này chỉ có việc khi có người dựng cây cho bên nhà họ |
-| **Điểm dừng** | Lưu một vòng rồi đọc lại, `noi_ve` **còn nguyên** |
+Mã xong: cột + khuôn + chặn trùng (`25`) · `hinh-dang.js` · `domains/person.js`
+`loiNoiVe()` · ô *Cũng có trong gia phả khác* (form Sửa hồ sơ) · dòng + nút nhảy
+ở thẻ thông tin. Bẫy và cách làm: `so-tay/luu-du-lieu.md`.
+**Điểm dừng:** Sửa hồ sơ một người **cây NTB** → gõ `NPG473_P0001` → Lưu → mở lại: ô **còn
+nguyên**; thẻ ⓘ hiện dòng *"Người này cũng có trong…"*. ⚠ Nút nhảy CHƯA ai bấm
+— dữ liệu hai cây còn mã cũ `P####`, không có người nào để nhảy tới.
 
 ### Sau b120 — chưa đặt số, chưa chốt
 
 **Nhóm E của quantri3** *(`THIET-KE-QUAN-TRI.md` 9.5 — ⚠ tạo tài khoản cần khoá
 `service_role`, chỉ qua Edge Function, khoá **không bao giờ** vào repo Public)* ·
 chặn đăng nhập thật cho tài khoản bị khoá *(`auth.users.banned_until`, cùng
-đường với trên)* · nhập GEDCOM/Excel qua máy chủ · **khôi phục thật** *(việc
+đường với trên)* · **dọn mã người cũ `P####` trước vận hành chính thức** *(chủ dự
+án chốt 17/09: không hợp lệ; mã cây trong mã người = dòng họ)* · nhập GEDCOM/Excel qua máy chủ · **khôi phục thật** *(việc
 nguy hiểm nhất: phải đo bằng vòng sao lưu → đổi → khôi phục → về đúng trạng
 thái cũ, không phải bằng việc có file JSON)* · nối **quan hệ** bắc qua hai cây
 *(`noi_ve` chỉ nói "cùng một con người", không nói "cùng một gia đình")*.

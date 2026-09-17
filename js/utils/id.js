@@ -3,9 +3,7 @@
 // Vai trò  : Sinh ID bất biến cho person / union / media / source
 // Lớp      : utils — được gọi bởi: services, domains, pages
 // Phụ thuộc: utils/text.js
-// Phiên bản: 1.3.0 · Cập nhật: 08/09/2026 15:01
-//            1.3.0 (b104) phần phân biệt của mã cây đổi từ bốn ký tự xen kẽ
-//            chữ–số sang BA CHỮ SỐ. Chủ dự án chốt 08/09/2026.
+// Phiên bản: 1.4.0 · Cập nhật: 17/09/2026 14:38
 // ============================================================
 //
 // HÀM THUẦN. Không đọc đồng hồ máy, không sinh số ngẫu nhiên: cùng một cây thì
@@ -14,18 +12,13 @@
 // chuỗi hạt giống người gọi đưa vào, nên hai máy khác nhau cùng đưa một hạt
 // giống thì ra cùng một mã.
 //
-// --- HAI DẠNG MÃ, CẢ HAI ĐỀU ĐÚNG ---------------------------------------
+// --- MÃ CHUẨN CÓ MÃ CÂY; MÃ CŨ LÀ DỮ LIỆU SẼ DỌN ------------------------
 //
-// Từ 29/08/2026 mã người có tiền tố mã cây:  `NTBK7R3_P0060`
-// Mã sinh trước ngày ấy KHÔNG có tiền tố:    `P0004`
-//
-// Chủ dự án chốt 29/08/2026: **mã đang có để nguyên, chỉ mã sinh MỚI mang
-// tiền tố.** Nên một cây chạy lâu sẽ chứa cả hai dạng, và đó là trạng thái
-// bình thường chứ không phải dữ liệu hỏng. Mọi hàm ở đây đọc được cả hai.
-//
-// Vì sao có tiền tố: hai gia phả khác nhau đều bắt đầu từ `P0001`, nên khi
-// xuất ra GEDCOM rồi nhập vào nhau, mã của cây này đụng mã của cây kia. Tiền
-// tố làm mã **tự nó** nói nó sinh ra ở cây nào. Xem `NK-B59` mục 4.
+// Mã chuẩn `NTB417_P0060` DUY NHẤT toàn ứng dụng (mã cây không trùng, `12`);
+// mã cây trong nó là DÒNG HỌ. Mã cũ `P0004` (trước 29/08/2026) không nói được
+// dòng họ — chủ dự án chốt 17/09/2026: dữ liệu KHÔNG hợp lệ, xoá khi vận hành
+// chính thức. Hàm ở đây còn đọc được nó chỉ cho dữ liệu giả hôm nay; chỗ cần
+// dòng họ (`noiVe`) thì từ chối — đừng thêm đường lùi chiều nó.
 //
 // Khuôn tiền tố hợp lệ ở CẢ HAI bản chuẩn GEDCOM (5.5.1 và 7.0): chỉ chữ hoa,
 // chữ số và gạch dưới. Gạch nối `-` thì 7.0 không nhận — đừng đổi sang.

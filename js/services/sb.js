@@ -5,7 +5,7 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.22.0 · Cập nhật: 17/09/2026 (b119)
+// Phiên bản: 0.23.0 · Cập nhật: 17/09/2026 14:38 (b120)
 //            0.22.0 thêm `demDuLieu(treeId)` — 5 số đếm thô cho khu Quản trị
 //            hệ thống · Sao lưu (`24-dem-du-lieu.sql`). Lịch sử các bản
 //            trước: `git log -p js/services/sb.js`.
@@ -70,6 +70,16 @@ function cauLoi(e) {
   }
   if (/Invalid login credentials/i.test(m)) {
     return 'Email hoặc mật khẩu không đúng.';
+  }
+  // Hai luật của `luoc-do/25-noi-ve.sql`. Form đã nói trước bằng
+  // `domains/person.loiNoiVe`; tới được đây là hai người sửa cùng lúc.
+  if (/persons_noi_ve_duy_nhat/.test(m)) {
+    return 'Trong gia phả này đã có người khác nối về đúng mã ấy. Tải lại ' +
+           'trang để thấy bản mới nhất.';
+  }
+  if (/persons_noi_ve_hop_le/.test(m)) {
+    return 'Ô "Cũng có trong gia phả khác" phải là mã người đầy đủ, có mã cây, ' +
+           'ví dụ NTB417_P0013.';
   }
   if (/Email not confirmed/i.test(m)) {
     return 'Tài khoản chưa xác nhận. Mở hộp thư và bấm đường liên kết ' +
@@ -496,6 +506,24 @@ export async function datNguoiTrungTamMacDinh(treeId, personId) {
     user_id: nguoi.id, tree_id: treeId, focus_person_id: personId,
   });
   return error ? { ok: false, loi: cauLoi(error) } : { ok: true, loi: null };
+}
+
+/**
+ * Một người ở gia phả KHÁC, đọc qua RLS — cho dòng *"Cũng có trong gia phả …"*
+ * của thẻ thông tin (b120). Người đang xem không xem được cây ấy thì RLS trả
+ * rỗng, và `null` là đúng câu trả lời: không có nút nhảy sang.
+ *
+ * @returns {Promise<{id:string, names:Array, deleted:boolean}|null>}
+ */
+export async function docNguoiCayKhac(treeId, personId) {
+  const k = layKhach();
+  if (!k || !treeId || !personId) return null;
+  const { data, error } = await k.from('persons')
+    .select('id, names, deleted')
+    .eq('tree_id', treeId).eq('id', personId)
+    .maybeSingle();
+  if (error || !data) return null;
+  return { id: data.id, names: data.names || [], deleted: data.deleted === true };
 }
 
 /** Xoá giá trị đã đặt, quay về gốc cây ghi trong file. */

@@ -4,7 +4,7 @@
 //            Ráp dòng thành cây, và so hai cây ra danh sách phép ghi.
 // Lớp      : services — được gọi bởi: services/repo · gọi: utils/date
 // Phụ thuộc: utils/date.js
-// Phiên bản: 0.2.0 · Cập nhật: 03/09/2026 14:24
+// Phiên bản: 0.3.0 · Cập nhật: 17/09/2026 14:38
 // ============================================================
 //
 // ═══ FILE NÀY LÀ CHỖ DUY NHẤT HAI THẾ GIỚI GẶP NHAU ═══
@@ -43,6 +43,10 @@ const TEN_PERSON = {
   //   hình cây thì mỗi lần lưu sẽ ghi `null` đè lên, tức là **âm thầm gỡ mọi
   //   người ra khỏi nhánh của họ**. Không có gì báo lỗi khi điều đó xảy ra.
   branchId: 'branch_id',
+  // ⚠ Cùng loại bẫy với `branchId` ngay trên. Máy chủ còn một chỗ thứ hai phải
+  //   biết tên cột này: danh sách `on conflict do update` của `luu_cay()` —
+  //   bản đứng cuối ở `luoc-do/25-noi-ve.sql`.
+  noiVe: 'noi_ve',
 };
 
 const TEN_UNION = {
@@ -98,7 +102,7 @@ const MAC_DINH_PERSON = {
   title: '', occupation: '', education: '', religion: '',
   residence: '', nationality: '',
   living: true, photoFileId: '', note: '', deleted: false,
-  vn: {}, meta: {},
+  vn: {}, meta: {}, noiVe: '',
 };
 
 const MAC_DINH_UNION = {

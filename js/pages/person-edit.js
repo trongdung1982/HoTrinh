@@ -8,7 +8,7 @@
 //            xoa,anh}.js, state,
 //            domains/{person,union,validate,media,purge,render},
 //            services/{repo,gas}, utils/{graph,text,date,image,avatar}, config
-// Phiên bản: 1.41.1 · Cập nhật: 08/09/2026 07:05
+// Phiên bản: 1.42.0 · Cập nhật: 17/09/2026 14:38
 // ============================================================
 //
 // NGƯỢC với hai màn hình kia: form HIỆN ĐỦ MỌI Ô, kèm chữ mờ gợi ý.
@@ -226,7 +226,7 @@ import { donDepGop } from './form-gop.js';
 import { donDepXoa, xoaNguoi } from './form-xoa.js';
 import { donDepAnh, veKhoiAnh, apThayDoiAnh, keThayDoiAnh } from './form-anh.js';
 import { state } from '../state.js';
-import { updatePerson, createPerson,
+import { updatePerson, createPerson, loiNoiVe,
          softDeletePerson, restorePerson } from '../domains/person.js';
 import { createUnion, addChild, addPartner, removeChild, removePartner,
          softDeleteUnion, restoreUnion, conLyDoTonTai, reorderChildren,
@@ -751,6 +751,14 @@ function veCacO(nguoi) {
   ra.push(oChu('residence',  'Quê quán / nơi ở (khác nơi sinh)', nguoi.residence,
                'Hà Nam — nơi sống lâu nhất'));
   ra.push(oChu('nationality', 'Dân tộc',            nguoi.nationality, 'Kinh'));
+
+  // NỐI VỀ GIA PHẢ KHÁC (b120). Chỉ ở chế độ SỬA, cùng lý do với khối ảnh:
+  // thêm người xong, mở lại hồ sơ rồi nối. Gõ tay MỘT mã người đầy đủ — mã ấy
+  // tự nói gia phả nào (`domains/person.loiNoiVe`).
+  if (N.cheDo === 'sua') {
+    ra.push(veNhan('Cũng có trong gia phả khác'));
+    ra.push(oChu('noiVe', 'Mã người ở gia phả khác', nguoi.noiVe, 'NTB417_P0013'));
+  }
 
   // ⚠ Chữ mờ của ô này đã ĐỔI ngày 21/08/2026, và lý do đáng ghi lại: bản cũ
   // mời người dùng gõ *"Chức tước, quê quán"* vào đây — đúng hai thứ vừa có ô
@@ -1634,9 +1642,15 @@ async function handleSave(nguoi) {
   const loiDoi = viSaoDoiSai(docO('doi'));
   if (loiDoi) { hienNhan(loiDoi, true); return; }
 
+  // Cùng lý do với ô Đời: máy chủ cũng chặn (`25`), nhưng bằng tên luật tiếng
+  // Anh — nói ra ở đây trước, bằng câu người đọc được.
+  const thayDoi = gomThayDoi();
+  const loiNoi = loiNoiVe(state.tree, nguoi.id, thayDoi.noiVe);
+  if (loiNoi) { hienNhan(loiNoi, true); return; }
+
   // Bản ghi mới tính đúng MỘT lần, dùng cho cả phép rà lẫn lần ghi — luật 1 ở
   // đầu file. `updatePerson` là hàm thuần, `state.tree` không bị đụng tới.
-  const kq = updatePerson(state.tree, nguoi.id, gomThayDoi(), { boi, luc });
+  const kq = updatePerson(state.tree, nguoi.id, thayDoi, { boi, luc });
   if (!kq) { hienNhan('Không tìm thấy bản ghi của người này nữa. Tải lại trang rồi thử lại.', true); return; }
 
   // Ảnh áp SAU hồ sơ, trên chính cây mà `updatePerson` vừa trả về — xem
@@ -2221,6 +2235,9 @@ function gomThayDoi() {
     religion:    docO('religion'),
     residence:   docO('residence'),
     nationality: docO('nationality'),
+    // Mã chỉ có chữ hoa — gõ thường thì nâng lên, đừng bắt người ta gõ lại.
+    // Không có ô (chế độ thêm người) thì KHÔNG gửi khoá, để khỏi đụng tới.
+    noiVe:       o.noiVe ? docO('noiVe').trim().toUpperCase() : undefined,
     doi:         docO('doi'),
     chi:         docO('chi'),
     birth: { raw: docO('birth'), place: docO('birthPlace') },
