@@ -780,3 +780,34 @@ viết mã**, vì bốn mục đánh dấu ⚠⚠ (1, 2, 3, 4) mâu thuẫn th�
 có (không phải chỗ thiếu hàm mà là chọn lại luật), và ba mục 9, 10, 11 nên
 tách thành bước riêng sau b120 vì mỗi mục là một lược đồ bảng mới, không
 phải một hàm lẻ.
+
+### 9.6 CHƯA VIẾT (17/09/2026, chủ dự án nêu) — huy hiệu số đếm + bấm tên mở cây
+
+**Bài toán:** khu 1 (Gia phả), chip *Tôi quản lý*, mỗi dòng cây đã có "Xem
+đơn →" kèm huy hiệu số đơn xin vào (`demThanhVien()`, `khu-gia-pha.js` dòng
+~175). Nhưng **hai hàng đợi khác không có huy hiệu nào**, nên quản trị viên
+không biết có việc mà vào xử lý:
+
+- Đề xuất gắn mã người đang chờ (`dsDeXuatGan(treeId)`, dùng ở `trang-cay.js`
+  nhưng chưa đếm ra ở khu 1) — đúng thứ chủ dự án nộp 17/09 rồi không thấy đâu.
+- Nội dung chờ kiểm duyệt của TỪNG CÂY (`dsChoDuyet`/`demChoKiemDuyet` — khu 3
+  hôm nay chỉ đếm theo cây ĐANG MỞ, `khung.js` luật 5a, không theo từng dòng ở khu 1).
+
+**Đề xuất:** một cột (hoặc một cụm huy hiệu cạnh tên cây) gộp ba con số —
+đơn xin vào · đề xuất gắn mã người · nội dung chờ duyệt — mỗi con số bấm được,
+nhảy thẳng tới đúng hàng đợi ấy của đúng cây ấy (dùng `duongDan()` có sẵn).
+Cây không có gì chờ thì không hiện gì — luật "trường trống thì không vẽ hàng
+đó" áp cho cả huy hiệu.
+
+⚠ **Ba lời gọi mạng cho MỖI dòng cây** (thành viên, đề xuất, kiểm duyệt) —
+đúng bẫy `layDanhSachGiaPha()` đã sửa ở b103 (mục "vì sao MỘT lời gọi RPC").
+Bàn quản lý vài cây thì không sao; đừng lặp lại cái giá N+1 nếu sau này có
+hàng chục cây. Cân nhắc gộp ba câu đếm vào một hàm máy chủ mới nếu cần.
+
+**Bấm TÊN gia phả (cột đầu, `oTen`) hiện KHÔNG làm gì** — chỉ là chữ tĩnh.
+Cơ chế mở cây đã có sẵn, chỉ chưa nối vào tên: `oCayHienThi()` (dòng ~232)
+đã làm đúng việc *hỏi trước rồi `chonGiaPha()` + `location.reload()`*. Bấm
+tên thì gọi lại đúng luồng ấy (đang mở thì thôi, không hỏi lại).
+
+**Việc kế tiếp:** một bước riêng sau b120, chỉ đụng `khu-gia-pha.js` — không
+đụng SQL, không đụng vai. An toàn để làm sớm.

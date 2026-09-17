@@ -335,6 +335,36 @@ phụ thuộc cây họ nằm trong; người ấy **khai được cây chính**
 khai thay cho người đã mất, cây chính có phải một trong các cây `noi_ve` nối
 tới không. Đừng suy dòng họ từ mã cây hay từ cây đang mở.
 
+### ⚠ `noi_ve` gõ tay bị nghi ngờ — chủ dự án nêu 17/09/2026
+
+**Câu nêu:** *"tôi thuộc nhiều sơ đồ nên việc gắn ở đây là vô nghĩa, nhưng có
+1 thứ duy nhất đó là email tài khoản, id tài khoản, chỗ này mới là chỗ cần
+gắn và nó sẽ xuyên suốt các cây."*
+
+**Đúng một nửa, và nửa kia vẫn cần `noi_ve`:**
+
+- Một TÀI KHOẢN đã có `tree_members(tree_id, user_id) → person_id` cho từng
+  cây nó là thành viên. Tài khoản ấy là thành viên của cả cây A lẫn cây B thì
+  **suy ra được ngay, không cần gõ gì**: người P0005 ở A và P0012 ở B là cùng
+  một người — chung một `user_id`. Đây đúng là chỗ chủ dự án chỉ ra, và app
+  **CHƯA làm** — không màn hình nào đang gộp hai dòng `tree_members` của
+  cùng một tài khoản lại thành một câu "người này cũng là ai ở cây khác".
+- `noi_ve` (b120) giải một bài toán KHÁC: người **KHÔNG có tài khoản** — phần
+  lớn tổ tiên trong một gia phả. Không có `user_id` nào để soi, nên không có
+  gì "suy ra được" — phải có người gõ tay xác nhận.
+
+**Kết luận:** hai cơ chế bổ sung nhau, không cái nào thay được cái nào —
+**"xuyên suốt các cây qua tài khoản"** cho người CÒN SỐNG có đăng nhập,
+`noi_ve` cho người ĐÃ MẤT. `noi_ve` không sai, nhưng b120 mới làm được nửa
+bài toán.
+
+**Việc kế tiếp:** thêm màn hình/hàm "một tài khoản, các mã người theo từng
+cây" — dữ liệu đã có sẵn (`tree_members`), chỉ cần một hàm `security definer`
+đọc CHÍNH các dòng của `auth.uid()` (không cần `la_quan_tri_he_thong()`, vì
+mỗi người chỉ đọc của chính mình) và một chỗ hiển thị. Rẻ hơn `noi_ve` nhiều
+vì không cần gõ tay, không cần khuôn mã, không cần chặn trùng. Nên làm
+TRƯỚC khi mở rộng `noi_ve` sang việc gì khác.
+
 ---
 
 ## 7. Tạo cây mới
@@ -878,3 +908,46 @@ khoá, tài khoản có đăng nhập được không *(prototype ngầm định
 đăng nhập phải đụng `auth.users`, cân nhắc giống việc tạo tài khoản ở
 `THIET-KE-QUAN-TRI.md` mục 9.5; ③ QTHT cuối cùng có bị khoá được không *(luật
 "không tắt người cuối cùng" của 11.5 nên áp sang)*.
+
+### 10. ⚠⚠ CÂU HỎI TREO 17/09/2026 — QTHT tự duyệt đề xuất gắn mã người của mình?
+
+**Chủ dự án nêu:** "quản trị hệ thống xử lý việc gì phải để quản trị hệ thống
+khác duyệt rất khó chịu trong thực tế quản trị" — đề nghị QTHT tự duyệt được
+hành vi của chính mình, không cần chữ ký thứ hai.
+
+**Đây KHÔNG phải chỗ thiếu, mà là xin gỡ một luật đã chốt HAI LẦN, chính bằng
+lời chủ dự án:**
+
+> *(08/09/2026, mục 3 trên)* "quy tắc không được đặt quyền cho chính bản thân
+> để không bao giờ có thể leo thang quyền, chiếm quyền cao hơn trong hệ thống."
+
+> *(`luoc-do/21-de-xuat-gan-nguoi.sql` dòng 432, cửa thứ TÁM)* "Luật không có
+> ngoại lệ, kể cả cho Quản trị hệ thống — họ đã có mọi quyền ở mọi cây qua cờ
+> `tai_khoan`, nên chặn họ tự xét đơn của chính mình không lấy đi khả năng
+> nào. Một luật không ngoại lệ thì kiểm được."
+
+**Điều quan trọng cần biết trước khi quyết:** gắn mã người **không mở thêm
+quyền sửa nào** cho QTHT — họ đã sửa được mọi cây, không giới hạn trực hệ
+(`luu_cay()` hàng rào 4: vai `quan_tri_he_thong`/`quan_tri` thì
+`v_pham_vi := null`). Chữ ký thứ hai ở đây bảo vệ một thứ KHÁC: **tính xác
+thực của ghi nhận danh tính** — "tài khoản này đúng là cụ X" là một khẳng
+định về CON NGƯỜI THẬT trong họ, có sức nặng ngoài đời thật, không phải một
+khẳng định về quyền hạn. Một QTHT bị chiếm đoạt tài khoản (hay hành xử sai)
+vẫn có thể tự nhận mình là bất cứ ai trong gia phả nếu không có người thứ hai
+xác nhận.
+
+**Ba hướng, chưa chọn hướng nào:**
+
+1. **Giữ nguyên**, giải quyết bằng QUY TRÌNH: luôn có ≥ 2 tài khoản QTHT hoạt
+   động, đúng để xét chéo cho nhau — không sửa mã, chỉ cần chủ dự án duy trì
+   thói quen ấy.
+2. **Nới hẹp, không bỏ luật**: quan_tri/QTHT gắn mã người cho CHÍNH HỌ, TRONG
+   CÂY HỌ ĐÃ LÀ chủ/quan_tri, được TỰ DUYỆT — vì ở đó họ vốn đã toàn quyền,
+   nên tự duyệt không leo thang gì thêm. Đơn ở NHỮNG CÂY KHÁC (nơi họ chưa có
+   vai gì) vẫn cần chữ ký thứ hai, vì lúc đó việc gắn mã MỞ RA quyền mới.
+3. **Bỏ hẳn chữ ký thứ hai** cho mọi QTHT ở mọi cây — đúng như câu chủ dự án
+   vừa nêu, chấp nhận đánh đổi ở trên.
+
+**Việc kế tiếp:** hỏi lại chủ dự án chọn 1/2/3 (hoặc phương án khác), rồi mới
+viết SQL. Đụng `duyet_de_xuat_gan()` và `gan_nguoi_cho_thanh_vien()` — cả hai
+đã có bảng tự kiểm canh đúng câu `la_chinh_minh`, sửa thì phải sửa cả bảng ấy.

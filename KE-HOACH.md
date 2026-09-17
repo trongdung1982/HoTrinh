@@ -32,8 +32,8 @@ một file `nhat-ky/`.
 mọi trang con gắn chức năng thật, không còn chỗ vẽ tạm — luật và bẫy ở
 `so-tay/trang-quan-tri.md`. Chưa ai bấm trên máy chủ thật.
 
-⚠ **`domains/` chưa sửa một dòng nào** trong cả mười file, suốt cả cuộc chuyển
-nhà từ Drive sang Supabase. Đó là nghiệm thu của luật phân lớp, giữ nguyên.
+⚠ **`domains/` giữ nguyên chín file** (mười, trừ `person.js` sửa ở b120, chủ
+dự án cho phép) suốt cuộc chuyển nhà — hệ quả ở phần "Bộ bất biến" dưới.
 
 ### Điểm dừng chưa bấm thử — trang Quản trị đã xong (b118d), nay bấm được
 
@@ -42,11 +42,11 @@ Quản trị hệ thống**.
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b111** — kiểm duyệt TRƯỚC/SAU | Một lần Lưu "chờ duyệt" thật. ⚠ Quản trị luôn `ghi_thang()`, nên tự gắn mã người cho tài khoản CỦA MÌNH **không** tạo ra hàng chờ — phải Lưu bằng tài khoản KHÔNG quản trị cây ấy |
-| **b111b** — gắn mã người từ cả hai tấm, đổi cây ở ô chọn | Mã xong, `20` đã dán |
-| **b111c** — nộp đề xuất · tự duyệt bị từ chối · người khác duyệt được | ✓ ② nộp đơn đã bấm 17/09 (LVT433). Còn ① Nhận lời mời QTHT · ③ tự duyệt ở *Gia phả→LVT433→Đơn đề xuất gắn mã người* bị từ chối · ④ QTHT khác duyệt được |
-| **b117** — khu Tài khoản trên máy chủ thật | ① bảng *Các gia phả tôi tham gia* hiện đúng mã người đã gắn — bằng tài khoản **thành viên thường**, vì nó đọc qua RLS chứ không qua hàm Quản trị; ② *Đổi mật khẩu* với mật khẩu cũ SAI phải bị từ chối, với mật khẩu cũ đúng thì đổi được |
-| **b118d** — cả trang Quản trị trên máy chủ thật | Mở từng trang con; bấm mỗi menu *Chọn hành động* / *Chọn ▾* một lần; một lần Duyệt và một lần Từ chối ở *Kiểm duyệt › Xem trước / sau*. Ảnh chụp mới chỉ trên máy chủ giả |
+| **b111** — kiểm duyệt TRƯỚC/SAU | Lưu "chờ duyệt" thật, bằng tài khoản KHÔNG quản trị cây ấy (quản trị luôn `ghi_thang()`, không vào hàng chờ) |
+| **b111b** — gắn mã người, đổi cây ở ô chọn | Mã xong, `20` đã dán |
+| **b111c** — nộp · tự duyệt bị từ chối · người khác duyệt được | ✓② nộp đã bấm 17/09 (LVT433). Còn ①Nhận lời mời QTHT ③tự duyệt bị từ chối ④QTHT khác duyệt được |
+| **b117** — khu Tài khoản | ①bảng *Các gia phả tôi tham gia* đúng mã (tài khoản thường, qua RLS) ②Đổi mật khẩu: sai bị từ chối, đúng thì đổi |
+| **b118d** — cả trang Quản trị | Mở từng trang con; mỗi menu *Chọn ▾* một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
 
 
 ---
@@ -130,6 +130,13 @@ GEDCOM/Excel qua máy chủ · **khôi phục thật** *(việc
 nguy hiểm nhất: phải đo bằng vòng sao lưu → đổi → khôi phục → về đúng trạng
 thái cũ, không phải bằng việc có file JSON)* · nối **quan hệ** bắc qua hai cây
 *(`noi_ve` chỉ nói "cùng một con người", không nói "cùng một gia đình")*.
+
+⚠ **17/09 — ba việc mới, chủ dự án nêu:** ① huy hiệu số đếm + bấm tên mở cây
+ở khu Gia phả, an toàn *(`THIET-KE-QUAN-TRI.md` 9.6)* ② ⚠⚠ **CẦN CHỐT HƯỚNG
+TRƯỚC KHI VIẾT MÃ** — QTHT tự duyệt đề xuất gắn mã người của mình? xin gỡ
+luật "không ngoại lệ" đã chốt hai lần *(`THIET-KE-NHIEU-CAY.md` 11.10)* ③
+"xuyên cây" nên qua TÀI KHOẢN, `noi_ve` chỉ còn cần cho người không tài
+khoản *(`THIET-KE-NHIEU-CAY.md` 6)*
 
 ---
 
