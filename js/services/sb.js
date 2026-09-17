@@ -5,14 +5,10 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.21.0 · Cập nhật: 16/09/2026 (b118c)
-//            0.21.0 chín cửa mới của `23-bon-luat-moi.sql` (b118c): khoá mềm
-//            tài khoản (`khoaTaiKhoan` · `moKhoaTaiKhoan`) · lời mời Quản trị
-//            hệ thống hai chữ ký (`loiMoiQthtCuaToi` · `nhanQuyenQtht` ·
-//            `tuChoiQuyenQtht`) · xin đổi quyền (`xinDoiVai` · `rutXinDoiVai` ·
-//            `duyetXinDoiVai` · `dsXinDoiVai`). `layPhien()` mang thêm cờ
-//            `biKhoa` (đọc `bi_khoa()`, cùng lượt Promise.all cũ). Lịch sử các
-//            bản trước: `git log -p js/services/sb.js`.
+// Phiên bản: 0.22.0 · Cập nhật: 17/09/2026 (b119)
+//            0.22.0 thêm `demDuLieu(treeId)` — 5 số đếm thô cho khu Quản trị
+//            hệ thống · Sao lưu (`24-dem-du-lieu.sql`). Lịch sử các bản
+//            trước: `git log -p js/services/sb.js`.
 // ============================================================
 //
 // ĐÂY LÀ RANH GIỚI GIỮA TRÌNH DUYỆT VÀ MÁY CHỦ — đúng vai `services/gas.js`
@@ -1169,6 +1165,31 @@ export async function demChoKiemDuyet(treeId) {
   if (!k || !treeId) return 0;
   const { data, error } = await k.rpc('dem_cho_kiem_duyet', { p_tree: treeId });
   return error ? 0 : (Number(data) || 0);
+}
+
+/**
+ * Năm số đếm thô của một cây (persons · unions · union_children · tree_members
+ * · change_log) — khu Quản trị hệ thống · Sao lưu đối chiếu bằng mắt với khối
+ * "dem" của file sao lưu đêm gần nhất (`24-dem-du-lieu.sql`). Chỉ Quản trị hệ
+ * thống đọc được; người khác nhận `ds: []` (0 dòng), không phải lỗi.
+ */
+export async function demDuLieu(treeId) {
+  const k = layKhach();
+  if (!k || !treeId) return { ok: false, loi: 'Chưa nối được máy chủ.', dem: null };
+  const { data, error } = await k.rpc('dem_du_lieu', { p_tree: treeId });
+  if (error) return { ok: false, loi: cauLoi(error), dem: null };
+  const r = (data || [])[0];
+  if (!r) return { ok: true, dem: null };   // không phải QTHT — hàm trả 0 dòng, không phải lỗi
+  return {
+    ok: true,
+    dem: {
+      persons: Number(r.persons) || 0,
+      unions: Number(r.unions) || 0,
+      unionChildren: Number(r.union_children) || 0,
+      treeMembers: Number(r.tree_members) || 0,
+      changeLog: Number(r.change_log) || 0,
+    },
+  };
 }
 
 /**

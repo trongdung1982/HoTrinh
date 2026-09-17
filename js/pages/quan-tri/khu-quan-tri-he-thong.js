@@ -5,11 +5,9 @@
 //            `#sys-default-tree-selector`.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang
-// Phiên bản: 1.2.0 · Cập nhật: 16/09/2026 (b118c)
-//            1.2.0 Sổ tài khoản nối bốn luật mới của `23`: khoá mềm/mở khoá
-//            tài khoản thật (không còn mờ) · Bổ nhiệm QTHT đổi thành lời mời
-//            hai chữ ký · Xoá tài khoản đòi đã khoá đủ 60 ngày · thùng rác
-//            120 ngày (đổi `NGAY_THUNG_RAC`).
+// Phiên bản: 1.3.0 · Cập nhật: 17/09/2026 (b119)
+//            1.3.0 tab Sao lưu: bảng Đối chiếu dữ liệu nay đọc SỐNG qua
+//            `khu-sao-luu.js` (`dem_du_lieu`). Lịch sử trước: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -17,16 +15,15 @@
 //   máy chủ lọc: người không có cờ gõ thẳng `#quan-tri-he-thong` thì mọi hàm
 //   ở đây trả rỗng, và màn hình nói đúng thế.
 //
-// ⚠ Gắn thật: *Tổng quan* · *Sổ tài khoản* (bảng quantri3, b118d) · *Cây mặc
-//   định* (+ trang chọn cây) · *Thùng rác*. Ba tab máy chủ chưa có gì —
-//   *Tạo tài khoản* · *Sao lưu* · *Nhật ký* — vẽ đúng HTML quantri3 nhưng mờ,
-//   kèm câu nói thẳng việc ấy làm ở bước nào.
+// ⚠ Gắn thật: *Tổng quan* · *Sổ tài khoản* · *Cây mặc định* · *Thùng rác* ·
+//   *Sao lưu* (bảng Đối chiếu, `khu-sao-luu.js`). Hai tab còn trống — *Tạo
+//   tài khoản* · *Nhật ký* — vẽ đúng HTML quantri3 nhưng mờ kèm lý do. Tab
+//   *Sao lưu* cũng còn hai phần mờ (lịch sử · nút "Sao lưu ngay"): không
+//   phải "chưa tới lượt", mà trình duyệt không gọi được Drive/Apps Script.
 //
-// ⚠ Sổ tài khoản: cột *Bổ nhiệm QTHT* của quantri3 nay là LỜI MỜI hai chữ ký
-//   thật (`23` mục 6, b118c) — bấm chỉ GỬI lời mời, người kia tự bấm Chấp
-//   nhận ở khu Tài khoản mới thật sự có cờ · *Khóa tài khoản* (khoá mềm 60
-//   ngày) đã nối · *Xóa tài khoản* nay ĐÒI đã khoá đủ 60 ngày, không xoá
-//   thẳng được nữa.
+// ⚠ Sổ tài khoản: *Bổ nhiệm QTHT* là LỜI MỜI hai chữ ký (`23` mục 6) — bấm
+//   chỉ GỬI, người kia tự Chấp nhận ở khu Tài khoản mới có cờ thật · *Khóa
+//   tài khoản* (mềm 60 ngày) đã nối · *Xóa* nay ĐÒI đã khoá đủ 60 ngày.
 
 import {
   layDanhSachGiaPha, layCayMacDinh, datCayMacDinh, dsTaiKhoanHeThong, dsThanhVien,
@@ -35,6 +32,7 @@ import {
 } from '../../services/sb.js';
 import { duongDan } from './trang-chi-tiet.js';
 import { hoi, bao } from './hop-thoai.js';
+import { veKhuSaoLuu } from './khu-sao-luu.js';
 import {
   td, span, tenVaPhu, huyHieu, nut, nutNho, nutMo, lienKet, hangNut, dongTrong,
   chepKieu, ngay, ngayGio,
@@ -73,10 +71,12 @@ export async function mountKhuQuanTriHeThong(sec, phien) {
   if (window.location.hash !== hashLuc) return;
 
   const ds = kq.ok ? (kq.ds || []) : [];
+  const dsSong = ds.filter((c) => !c.daXoaLuc);
   veTongQuan(sec, ds, cmd, tk);
   veSoTaiKhoan(sec, tk, napLai);
-  veCayMacDinh(sec, ds.filter((c) => !c.daXoaLuc), cmd, napLai);
+  veCayMacDinh(sec, dsSong, cmd, napLai);
   veThungRac(sec, kq, napLai);
+  veKhuSaoLuu(sec, dsSong);
 }
 
 // ============================================================
@@ -115,10 +115,17 @@ function veChuaCo(sec) {
   dat('ttk-chua-co', LY_TAO);
   mo('#form-tao-tai-khoan input, #form-tao-tai-khoan select, #btn-reset-form-tao-tk, #btn-submit-tao-tk', LY_TAO);
 
-  const LY_SL = 'Chưa làm: lịch sử sao lưu và bảng đối chiếu 5 số đếm là bước b119. Màn hình này ' +
-    'chưa đọc được kết quả các lần sao lưu đêm.';
+  // ⚠ b119: bảng đối chiếu 5 số đếm nay đọc SỐNG (`veKhuSaoLuu`, dưới). Hai
+  //   thứ còn lại vẫn không làm được — không phải "chưa tới lượt" mà là app
+  //   chạy trong trình duyệt, không có đường nào gọi tới Google Drive/Apps
+  //   Script (không OAuth, `CLAUDE.md` mục 3).
+  const LY_SL = 'Máy chủ này (Supabase/trình duyệt) không nối được tới Google Drive hay Apps Script — ' +
+    'không đọc được danh sách file hay kết quả từng lần sao lưu đêm. Xem lịch sử tại script.google.com ' +
+    '→ Executions, hoặc mở thư mục "Sao lưu gia phả (Supabase)" trên Drive. Bảng Đối chiếu dữ liệu bên ' +
+    'dưới đọc SỐNG từ cơ sở dữ liệu — cột "Bản sao lưu" phải tự mở file sao lưu mới nhất ra so bằng mắt.';
   dat('sl-chua-co', LY_SL);
-  mo('#btn-sao-luu-ngay', LY_SL);
+  mo('#btn-sao-luu-ngay', 'Nút này cần gọi Apps Script từ trình duyệt, mà dự án sao lưu không có địa ' +
+    'chỉ web để gọi tới — chạy hàm saoLuuNgay tại script.google.com.');
 
   const LY_NK = 'Chưa làm: nhật ký hệ thống cần một bảng mới ở máy chủ — việc riêng, làm sau b120. ' +
     'Lịch sử sửa dữ liệu cây vẫn xem ở khu Kiểm duyệt.';
@@ -129,8 +136,9 @@ function veChuaCo(sec) {
   mo('#btn-don-tai-khoan-60ngay', 'Xoá mềm 60 ngày chưa có ở máy chủ — làm ở b118b.');
   mo('#btn-save-default-tree-fields', 'Công khai theo từng trường chưa có ở máy chủ — làm sau b120.');
 
-  dongTrong(sec.querySelector('#sl-lich-su-tbody'), 5, 'Chưa đọc được lịch sử sao lưu (b119).');
-  dongTrong(sec.querySelector('#sl-doi-chieu-tbody'), 5, 'Chưa có số đếm đối chiếu (b119).');
+  dongTrong(sec.querySelector('#sl-lich-su-tbody'), 5,
+    'Không đọc được — máy chủ này không nối tới Google Drive. Xem tại script.google.com → Executions.');
+  // `#sl-doi-chieu-tbody` không mờ ở đây nữa — `veKhuSaoLuu()` tự vẽ số thật.
   dongTrong(sec.querySelector('#sys-log-tbody'), 5, 'Chưa có nhật ký hệ thống ở máy chủ.');
   dongTrong(sec.querySelector('#trash-logs-tbody'), 6, 'Chưa có nhật ký hệ thống ở máy chủ.');
   dongTrong(sec.querySelector('#default-tree-fields-tbody'), 4,
@@ -167,7 +175,7 @@ function veTongQuan(sec, ds, cmd, tk) {
     : 'Người chưa có quyền chưa mở được cây nào.');
 
   dat('tq-sl-luc', 'Chưa có');
-  dat('tq-sl-mo-ta', 'Màn hình Sao lưu làm ở b119.');
+  dat('tq-sl-mo-ta', 'Không nối được tới Drive/Apps Script — xem bảng đối chiếu số đếm ở khu Sao lưu.');
 
   const rac = ds.filter((c) => c.daXoaLuc);
   const xin = ds.filter((c) => c.xinXoaLuc && !c.daXoaLuc);

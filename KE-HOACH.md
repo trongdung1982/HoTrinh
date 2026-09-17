@@ -1,9 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 17/09/2026 · Bước gần nhất: **b118c ĐÃ ĐÓNG** — bốn luật mới của `23-bon-luat-moi.sql`
-đã dán lên THẬT, nối xong `sb.js` + giao diện, đo đạt cả bằng REST (tài khoản thử) lẫn bấm thật
-(chủ dự án tự Nhận lời mời QTHT thành công 17/09/2026)
-· Việc kế tiếp: **b119** — Khu Sao lưu + Số đếm đối chiếu*
+*Cập nhật 17/09/2026 · Bước gần nhất: **b119 — mã xong, CHỜ dán SQL.** `dem_du_lieu(p_tree)`
+(`24-dem-du-lieu.sql`) + bảng Đối chiếu dữ liệu (`khu-sao-luu.js`) viết xong, bàn thử tại chỗ 10/10
+đạt — CHƯA dán lên Supabase nào, CHƯA bấm điểm dừng
+· Việc kế tiếp sau khi đóng b119: **b120** — Mã người xuyên cây*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -68,6 +68,12 @@ dự án chốt 16/09). Bàn thử 5433 trước đó: 107/107 đạt. REST xác
 qua tài khoản thử: khoá→mở khoá, mời QTHT (chữ ký 1)→huỷ, xoá cây→trả lại —
 cả ba ĐẠT. b118c đóng.
 
+**`24-dem-du-lieu.sql` (b119) — VIẾT XONG, CHƯA dán lên Supabase nào** (thật
+lẫn Staging). Bàn thử 5433: 10/10 đạt (`kiem-thu/ban-thu-sql/do-b119.mjs`) —
+QTHT đọc đúng 5 số, thành viên thường đọc ra rỗng, `anon` bị chặn. Không đụng
+hàm nào của chuỗi dán lại mục trên, không cần dán lại gì khác trước nó ngoài
+`11-quyen-he-thong.sql` (đã dán từ lâu).
+
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
 `11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18`.
 `23` đứng CUỐI mọi chuỗi: nó là bản đứng cuối của 13 hàm, trong đó có
@@ -112,10 +118,11 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 
 | | |
 |---|---|
-| **Làm** | `dem_du_lieu(p_tree)` · `khu-sao-luu.js` — trạng thái lần sao lưu gần nhất + bảng đối chiếu 5 con số |
-| **Sản phẩm** | Khu 4 ở trạng thái **chỉ đọc**, và nói thẳng *"sao lưu không chép nội dung ảnh"* |
-| **⚠ Không làm** | **Không vẽ nút Khôi phục.** Máy chủ chưa khôi phục được; vẽ nút là giả vờ giải quyết bằng giao diện |
-| **Điểm dừng** | Số trên màn hình khớp số đếm được trong file sao lưu đêm gần nhất |
+| **Trạng thái** | Mã xong (`24-dem-du-lieu.sql` · `khu-sao-luu.js`), bàn thử 10/10 đạt. **CHỜ chủ dự án dán `24` lên Supabase thật rồi bấm điểm dừng** |
+| **Đã làm** | `dem_du_lieu(p_tree)` — 5 số đếm SỐNG, chỉ QTHT đọc được · `khu-sao-luu.js` — bảng Đối chiếu dữ liệu, một khối theo mỗi cây |
+| **⚠ Không làm được** | *Lịch sử sao lưu* + nút *"Sao lưu ngay"* — trình duyệt không có đường gọi Google Drive/Apps Script (không OAuth, `CLAUDE.md` mục 3). Đã nói thẳng trong giao diện, không giả vờ chạy |
+| **⚠ Không làm (cố ý)** | **Không vẽ nút Khôi phục** — máy chủ chưa khôi phục được |
+| **Điểm dừng** | Dán `24`, mở khu Sao lưu, số trên màn hình khớp số đếm được trong file sao lưu đêm gần nhất (mở tay trên Drive) |
 
 ### b120 — Mã người xuyên cây
 
