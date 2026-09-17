@@ -40,10 +40,8 @@ rồi đọc lại · dòng thiếu khoá không xoá dữ liệu · từ chối
 `kiem-thu/kiem-hinh-dang.mjs` phép 4 nay đọc cả `add column … not null` ở mọi
 file `luoc-do/`, không riêng `01`.
 
-## `noi_ve` — nghĩa
+## `noi_ve` — ⚠ SẮP BỎ (chốt 17/09/2026)
 
-Một mã người đầy đủ ở gia phả KHÁC (`NTB417_P0013`) chỉ **cùng một con người**,
-không nối quan hệ nào. Mã người duy nhất toàn ứng dụng, mã cây trong nó nói cây
-nào — nên một chuỗi là đủ. Mã cũ `P####` bị từ chối. ⚠ Mã cây KHÔNG phải dòng
-họ (dòng họ do người ấy tự chọn). Luật: `domains/person.js`
-`loiNoiVe()` nói trước; máy chủ chặn khuôn + trùng trong một cây.
+Còn trong mã (`domains/person.js` `loiNoiVe()`, `luoc-do/25`) nhưng thiết kế đã
+đổi: một người một bản ghi dùng chung mọi cây, mã không mang tiền tố cây —
+`THIET-KE-NHIEU-CAY.md` mục 6. Đừng xây thêm gì lên `noi_ve`.

@@ -104,39 +104,31 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 `sb.js` không phải danh sách hàm máy chủ (`THIET-KE-QUAN-TRI.md` 9.5).
 ⚠ Khung KHÔNG đổi sang tab ngang: thanh trái, dưới 850px mới thành hàng thẻ.
 
-### b120 — Mã người xuyên cây
+### ⚠⚠ Một người một bản ghi toàn phần mềm — CHỐT 17/09, chưa viết mã
 
-Mã xong, `25` đã dán (`hinh-dang.js` · `domains/person.js` · form Sửa hồ sơ ·
-thẻ ⓘ). Bẫy và cách làm: `so-tay/luu-du-lieu.md`.
+`THIET-KE-NHIEU-CAY.md` mục 6. **Thay b120**: `noi_ve` (`25` đã dán, mã
+`noiVe` ở `hinh-dang.js` · `domains/person.js` · form Sửa hồ sơ · thẻ ⓘ) sẽ
+bỏ — **đừng nghiệm thu b120 nữa**. Mã người bỏ tiền tố cây.
 
-⚠ **17/09: chủ dự án thử NHẦM tính năng** — *Tài khoản của tôi → Đề xuất mã
-người* là b111c (đăng ký "tôi là ai"), không phải `noiVe`. Đơn ấy hiện ở khu
-Gia phả → LVT433 → *Đơn đề xuất gắn mã người*, KHÔNG ở Kiểm duyệt — hai hàng
-đợi khác nhau, không phải lỗi.
+Trước khi viết mã: ① chủ dự án trả lời **ba câu mở** cuối mục 6 ② chọn cách
+chống **ghi đè xuyên cây** (`revision` theo cây không đủ) và đo trên bàn thử
+SQL. Rồi chia bước: lược đồ `persons` + `tree_persons` → `luu_cay()` → ô tìm
+"đã có trong phần mềm chưa" → mục *Báo trùng người giữa các cây* ở trang Gia phả.
 
-**Điểm dừng THẬT:** mở thẻ một người → **Sửa hồ sơ** → ô **"Cũng có trong gia
-phả khác"** → gõ mã đầy đủ (`LVT433_P0001`) → Lưu → mở lại: ô **còn nguyên**.
-⚠ Nút nhảy chưa bấm tới nơi có người thật được — ba cây còn mã cũ `P####`
-hoặc chưa ai nối `noiVe` thật.
-
-### Sau b120 — chưa đặt số, chưa chốt
+### Sau đó — chưa đặt số, chưa chốt
 
 **Nhóm E của quantri3** *(`THIET-KE-QUAN-TRI.md` 9.5 — ⚠ tạo tài khoản cần khoá
 `service_role`, chỉ qua Edge Function, khoá **không bao giờ** vào repo Public)* ·
 chặn đăng nhập thật cho tài khoản bị khoá *(`auth.users.banned_until`, cùng
-đường với trên)* · **dọn mã người cũ `P####`** *(chốt 17/09: không hợp lệ)* ·
-**dòng họ + cây chính do người tự chọn** *(`THIET-KE-NHIEU-CAY.md` 6)* · nhập
-GEDCOM/Excel qua máy chủ · **khôi phục thật** *(việc
-nguy hiểm nhất: phải đo bằng vòng sao lưu → đổi → khôi phục → về đúng trạng
-thái cũ, không phải bằng việc có file JSON)* · nối **quan hệ** bắc qua hai cây
-*(`noi_ve` chỉ nói "cùng một con người", không nói "cùng một gia đình")*.
+đường với trên)* · **dòng họ + cây chính do người tự chọn**
+*(`THIET-KE-NHIEU-CAY.md` 6)* · nhập GEDCOM/Excel qua máy chủ · **khôi phục
+thật** *(việc nguy hiểm nhất: phải đo bằng vòng sao lưu → đổi → khôi phục → về
+đúng trạng thái cũ, không phải bằng việc có file JSON)*.
 
-⚠ **17/09 — ba việc mới, chủ dự án nêu:** ① huy hiệu số đếm + bấm tên mở cây
+⚠ **17/09 — hai việc mới, chủ dự án nêu:** ① huy hiệu số đếm + bấm tên mở cây
 ở khu Gia phả, an toàn *(`THIET-KE-QUAN-TRI.md` 9.6)* ② ⚠⚠ **CẦN CHỐT HƯỚNG
 TRƯỚC KHI VIẾT MÃ** — QTHT tự duyệt đề xuất gắn mã người của mình? xin gỡ
-luật "không ngoại lệ" đã chốt hai lần *(`THIET-KE-NHIEU-CAY.md` 11.10)* ③
-"xuyên cây" nên qua TÀI KHOẢN, `noi_ve` chỉ còn cần cho người không tài
-khoản *(`THIET-KE-NHIEU-CAY.md` 6)*
+luật "không ngoại lệ" đã chốt hai lần *(`THIET-KE-NHIEU-CAY.md` 11.10)*
 
 ---
 

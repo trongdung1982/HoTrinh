@@ -278,52 +278,75 @@ thống có nhiều hơn một cây.
 
 ---
 
-## 6. Mã người xuyên cây — cột `noi_ve`
+## 6. ✓ CHỐT 17/09/2026 — MỘT NGƯỜI, MỘT BẢN GHI, CHUNG TOÀN PHẦN MỀM
 
-### Bài toán chủ dự án nêu
+> Thay hẳn thiết kế b120 (mỗi cây một bản ghi riêng, nối nhau bằng `noi_ve`).
+> Bản cũ và lý do cũ nằm trong git: `git log -p THIET-KE-NHIEU-CAY.md`.
+> **Chưa viết mã.** Còn ba câu mở ở cuối mục.
 
-Ông `NTBK7R3_P0013` dựng cây cho bên nhà vợ, mã cây mới là `LBT…`. Trong cây
-mới ông ấy phải nối được về cây cũ.
+### Chủ dự án chốt gì
 
-### Cách chốt
+1. **Mã người không mang mã cây.** Gắn mã cây vào thì một người nằm ở ba cây
+   sẽ có ba mã. Mã người duy nhất toàn phần mềm, như mã tài khoản.
+2. **Phương án A: một bản ghi dùng chung.** Người nằm ở nhiều cây vẫn chỉ là
+   MỘT dòng `persons`. Cây chỉ giữ danh sách *những ai thuộc cây này*.
+3. **Thao tác sửa gắn với cây, sản phẩm sửa về chung phần mềm.** Sửa từ cây
+   nào thì đi qua quyền và kiểm duyệt của cây ấy; duyệt xong thì mọi cây chứa
+   người đó cùng thấy. Lý do chủ dự án chấp nhận: đã có cửa quản trị cây và
+   Quản trị hệ thống duyệt.
+4. **Thêm người mới — hỏi "đã có trong phần mềm chưa"**: ô tìm chỉ tìm trong
+   những cây người nhập có quyền **xem trở lên**. Không lộ tên người ở cây họ
+   không được vào.
+5. **Báo trùng người giữa các cây** — không thuật toán nào chắc chắn, người
+   dùng tự phát hiện rồi gửi đề xuất. Đặt ở **trang Gia phả, mục *Báo trùng
+   người giữa các cây***.
+6. Người **có tài khoản** gắn mã người ở hai cây thì tự biết là một người —
+   không cần báo trùng. Báo trùng chủ yếu cho người đã mất.
 
-```sql
-alter table public.persons add column noi_ve text not null default '';
--- 'NTBK7R3_P0013' — mã người ở cây kia, nguyên văn
-```
+### Hình dạng dữ liệu (dự kiến, chưa dán)
 
-Trong cây `LBT9X2` ông ấy là `LBT9X2_P0001`, `noi_ve = 'NTBK7R3_P0013'`.
-App hiện một dòng dưới hồ sơ: *"Người này cũng có trong gia phả Nguyễn Trọng
-Bác"* + nút nhảy sang — **nút chỉ hiện nếu người đang xem truy cập được cây
-kia**, nếu không thì hiện chữ mà không hiện nút.
+| Thay đổi | Vì sao |
+|---|---|
+| `persons` khoá chính `(tree_id, id)` → **`id`**. Mã `P` + số chạy toàn phần mềm, không tiền tố | Điều 1 |
+| Bảng mới **`tree_persons(tree_id, person_id)`** — ai thuộc cây nào | Điều 2. Xoá người khỏi một cây = xoá dòng này, **không** đụng bản ghi người |
+| Cột `persons.noi_ve` (`luoc-do/25`) **bỏ** | Hai cây trỏ cùng một dòng, không còn gì để nối |
+| Đề xuất trùng: bảng mới, mỗi dòng `(ma_giu?, ma_x, ma_y, ly_do, nguoi_gui, trang_thai, nguoi_duyet)` | Điều 5 |
+| Quản trị hệ thống duyệt trùng → chọn mã giữ; mã thua đặt `deleted` + trỏ về mã giữ, **chuyển** các dòng `tree_persons` · quan hệ · ảnh của nó sang mã giữ, ghi `change_log` | Luật không xoá cứng. Trường nào lệch nhau thì giữ bản của mã giữ, QTHT sửa sau — dựng bản gọn trước |
 
-### Vì sao KHÔNG chép nguyên mã cũ sang cây mới
+Người gửi báo trùng chỉ thấy được cây mình được xem, nên **chỉ người ở cả hai
+cây mới báo được**. Quản trị hệ thống thấy hết khi duyệt.
 
-Chép nguyên thì hai cây có hai bản ghi mang cùng một mã, và chúng **lệch nhau
-dần**: sửa ngày mất ở cây này, cây kia không biết. Rồi phải trả lời tiếp — ai
-sửa được? xoá bên này thì bên kia sao? Đó là bài toán đồng bộ hai chiều giữa
-hai cây **hai chủ khác nhau, hai chính sách kiểm duyệt khác nhau**. Dự án này
-không có chỗ chứa nó, và nhu cầu thật chỉ là *nối được khi cần* — tức **liên
-kết**, không phải **dùng chung bản ghi**.
+### ⚠⚠ Cái bẫy phải giải TRƯỚC khi viết mã — ghi đè xuyên cây
 
-### ⚠ Cái bẫy đã có sẵn lời cảnh báo, phải áp ngay
+`luu_cay()` chống ghi đè bằng `trees.revision` — **số của TỪNG cây**. Dùng
+chung bản ghi thì:
 
-`DU-LIEU.md` mục 3 điều 7 kể chuyện `branch_id`: **một cột không có tên trong
-bảng `TEN_PERSON` của `hinh-dang.js` thì mỗi lần lưu sẽ bị ghi `null` đè lên,
-và không có gì báo lỗi khi điều đó xảy ra.** `noi_ve` là đúng loại cột ấy.
+1. Chị Lan mở cây B, trình duyệt giữ bản ông X cũ.
+2. Anh Minh sửa ngày mất ông X từ cây A, được duyệt. `revision` của **A** tăng,
+   của **B** không.
+3. Chị Lan lưu cây B → `revision` B khớp → **ngày mất cũ đè lên**, không ai
+   biết.
 
-Nên bước làm việc này phải có một phép kiểm: **lưu một vòng rồi đọc lại,
-`noi_ve` còn nguyên**. Không có phép kiểm ấy thì cột này sẽ âm thầm rỗng.
+Hướng xử lý phải chọn: số chống ghi đè đặt **trên từng người** (`persons.revision`),
+hoặc `luu_cay()` chỉ gửi những người đã sửa thay vì cả cây. Phải có phép kiểm
+đúng kịch bản ba bước trên, đo trên bàn thử SQL.
 
-### Chưa làm trong đợt này
+### Ba câu còn mở
 
-Nối **quan hệ** giữa hai cây (ông A ở cây này là con ông B ở cây kia) — đó là
-đồ thị bắc qua hai cây, và `pham_vi_sua()` sẽ phải đi theo. Chưa ai cần. Cột
-`noi_ve` nói *"cùng một con người"*, không nói *"cùng một gia đình"*.
+1. **Quan hệ (hôn nhân, cha mẹ–con) chung hay theo cây?** Đề xuất: **chung** —
+   cha của ông X là sự thật về ông X, không thể khác nhau giữa hai cây. Cây chỉ
+   quyết định *hiện* những ai. Hệ quả: người sửa ở cây B thêm nhầm cha thì cây
+   A cũng thấy — chặn bằng kiểm duyệt như điều 3.
+2. **Phạm vi trực hệ (`pham_vi_sua()`)** đi theo đồ thị chung hay chỉ trong
+   những người thuộc cây đang sửa? Đề xuất: trong cây đang sửa, vì quyền `sua`
+   cấp theo cây.
+3. **Người xem cây B thấy cả trường nhập từ cây A.** Dùng chung bản ghi thì
+   không giấu được từng trường theo cây. Chấp nhận, hay cần giấu gì?
 
 ### ⚠ Mã cây KHÔNG phải dòng họ — chủ dự án chốt 17/09/2026
 
-Mã cây trong mã người chỉ nói **cây nào sinh ra mã**. Hai phản ví dụ:
+*(Từ 17/09 mã người không còn mang mã cây, nhưng luật dưới đây vẫn đúng: cây
+đang mở hay cây sinh ra người ấy đều không nói lên dòng họ.)* Hai phản ví dụ:
 
 - Nhà vợ thêm người này vào cây của họ TRƯỚC nhà bố mẹ đẻ → mã mang cây nhà vợ.
 - Cho người ấy tự chọn CÂY cũng sai: một cây 17 đời có thể tách thành 3 dòng
@@ -334,36 +357,6 @@ phụ thuộc cây họ nằm trong; người ấy **khai được cây chính**
 **Chưa thiết kế** — còn mở: dòng họ lưu thành gì (danh mục hay chữ tự do), ai
 khai thay cho người đã mất, cây chính có phải một trong các cây `noi_ve` nối
 tới không. Đừng suy dòng họ từ mã cây hay từ cây đang mở.
-
-### ⚠ `noi_ve` gõ tay bị nghi ngờ — chủ dự án nêu 17/09/2026
-
-**Câu nêu:** *"tôi thuộc nhiều sơ đồ nên việc gắn ở đây là vô nghĩa, nhưng có
-1 thứ duy nhất đó là email tài khoản, id tài khoản, chỗ này mới là chỗ cần
-gắn và nó sẽ xuyên suốt các cây."*
-
-**Đúng một nửa, và nửa kia vẫn cần `noi_ve`:**
-
-- Một TÀI KHOẢN đã có `tree_members(tree_id, user_id) → person_id` cho từng
-  cây nó là thành viên. Tài khoản ấy là thành viên của cả cây A lẫn cây B thì
-  **suy ra được ngay, không cần gõ gì**: người P0005 ở A và P0012 ở B là cùng
-  một người — chung một `user_id`. Đây đúng là chỗ chủ dự án chỉ ra, và app
-  **CHƯA làm** — không màn hình nào đang gộp hai dòng `tree_members` của
-  cùng một tài khoản lại thành một câu "người này cũng là ai ở cây khác".
-- `noi_ve` (b120) giải một bài toán KHÁC: người **KHÔNG có tài khoản** — phần
-  lớn tổ tiên trong một gia phả. Không có `user_id` nào để soi, nên không có
-  gì "suy ra được" — phải có người gõ tay xác nhận.
-
-**Kết luận:** hai cơ chế bổ sung nhau, không cái nào thay được cái nào —
-**"xuyên suốt các cây qua tài khoản"** cho người CÒN SỐNG có đăng nhập,
-`noi_ve` cho người ĐÃ MẤT. `noi_ve` không sai, nhưng b120 mới làm được nửa
-bài toán.
-
-**Việc kế tiếp:** thêm màn hình/hàm "một tài khoản, các mã người theo từng
-cây" — dữ liệu đã có sẵn (`tree_members`), chỉ cần một hàm `security definer`
-đọc CHÍNH các dòng của `auth.uid()` (không cần `la_quan_tri_he_thong()`, vì
-mỗi người chỉ đọc của chính mình) và một chỗ hiển thị. Rẻ hơn `noi_ve` nhiều
-vì không cần gõ tay, không cần khuôn mã, không cần chặn trùng. Nên làm
-TRƯỚC khi mở rộng `noi_ve` sang việc gì khác.
 
 ---
 
