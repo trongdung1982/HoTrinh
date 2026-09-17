@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 17/09/2026 · Bước gần nhất: **b120 MÃ XONG** — `noi_ve` (mã người xuyên
-cây) · CHỜ chủ dự án dán `25-noi-ve.sql` rồi bấm điểm dừng*
+*Cập nhật 17/09/2026 · Bước gần nhất: **b120 — `25` đã dán, tự kiểm ĐẠT** ·
+CHỜ chủ dự án bấm ĐÚNG điểm dừng (lần thử 17/09 nhầm sang tính năng khác)*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -19,8 +19,9 @@ thừa ở đây nhân với số phiên còn lại. Vượt trần là có th�
 ## Đang ở đâu
 
 **App chạy thật tại `https://nguyentrongbac.io.vn`** từ 03/09/2026 *(chứng chỉ
-Let's Encrypt hạn 02/12/2026; địa chỉ cũ `301` về đây)*. Máy chủ thật có **hai
-cây** — NTB 59 người và Nguyễn Phúc Giáo 681 người — mã cây **3 chữ số**. Trang
+Let's Encrypt hạn 02/12/2026; địa chỉ cũ `301` về đây)*. Máy chủ thật nay có
+**BA cây** — NTB 59 người · Nguyễn Phúc Giáo 681 người · **LVT433** *(mới,
+chủ dự án làm chủ, lộ ra 17/09 lúc thử b120)* — mã cây 3 chữ số. Trang
 `QuanTri.html` là khung **bốn khu**, cộng lớp **trang chi tiết** từ b115 —
 Gia phả (b116) · Tài khoản (b117) · Kiểm duyệt (đã có từ trước) · Quản trị hệ
 thống (b118) đều đã nối, mỗi khu ít nhất một việc thật. Phân quyền đã đo bằng
@@ -43,7 +44,7 @@ Quản trị hệ thống**.
 |---|---|
 | **b111** — kiểm duyệt TRƯỚC/SAU | Một lần Lưu "chờ duyệt" thật. ⚠ Quản trị luôn `ghi_thang()`, nên tự gắn mã người cho tài khoản CỦA MÌNH **không** tạo ra hàng chờ — phải Lưu bằng tài khoản KHÔNG quản trị cây ấy |
 | **b111b** — gắn mã người từ cả hai tấm, đổi cây ở ô chọn | Mã xong, `20` đã dán |
-| **b111c** — nộp đề xuất · tự duyệt bị từ chối · người khác duyệt được | Mã + giao diện mới xong (b117), `21` đã dán 14/09: ① nút **Nhận** lời mời bằng tài khoản Quản trị hệ thống *(vá 14/09)*; ② nộp ở khu **Tài khoản** → bảng các gia phả → *Đề xuất mã người*; ③ tự duyệt ở `#gia-pha/cay/<mã>/de-xuat-gan` bị máy chủ từ chối; ④ một Quản trị hệ thống KHÁC duyệt được |
+| **b111c** — nộp đề xuất · tự duyệt bị từ chối · người khác duyệt được | ✓ ② nộp đơn đã bấm 17/09 (LVT433). Còn ① Nhận lời mời QTHT · ③ tự duyệt ở *Gia phả→LVT433→Đơn đề xuất gắn mã người* bị từ chối · ④ QTHT khác duyệt được |
 | **b117** — khu Tài khoản trên máy chủ thật | ① bảng *Các gia phả tôi tham gia* hiện đúng mã người đã gắn — bằng tài khoản **thành viên thường**, vì nó đọc qua RLS chứ không qua hàm Quản trị; ② *Đổi mật khẩu* với mật khẩu cũ SAI phải bị từ chối, với mật khẩu cũ đúng thì đổi được |
 | **b118d** — cả trang Quản trị trên máy chủ thật | Mở từng trang con; bấm mỗi menu *Chọn hành động* / *Chọn ▾* một lần; một lần Duyệt và một lần Từ chối ở *Kiểm duyệt › Xem trước / sau*. Ảnh chụp mới chỉ trên máy chủ giả |
 
@@ -57,20 +58,11 @@ Quản trị hệ thống**.
 **Đã dán lên CẢ HAI Supabase (thật + Staging): `01` → `21`, không sót file
 nào.** `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
 
-**`22-rut-don-roi-cay.sql` (b116) — ĐÃ DÁN lên Supabase THẬT 15/09/2026,
-bảng tự kiểm đạt hết.** Chưa rõ đã dán lên Staging chưa — hỏi lại trước khi
-coi cả hai máy chủ đã đồng bộ tới `22`.
+**`22`→`24` — ĐÃ DÁN lên THẬT, mỗi file tự kiểm/điểm dừng đều ĐẠT.** Chưa rõ
+đã dán lên Staging chưa — hỏi lại trước khi coi hai máy chủ đã đồng bộ.
 
-**`23-bon-luat-moi.sql` — ĐÃ DÁN lên THẬT 17/09/2026** (bỏ qua Staging, chủ
-dự án chốt 16/09). Bàn thử 5433 trước đó: 107/107 đạt. REST xác nhận 17/09
-qua tài khoản thử: khoá→mở khoá, mời QTHT (chữ ký 1)→huỷ, xoá cây→trả lại —
-cả ba ĐẠT. b118c đóng.
-
-**`24-dem-du-lieu.sql` (b119) — ĐÃ DÁN, điểm dừng ĐẠT** 17/09/2026. Chưa rõ
-đã dán lên Staging chưa.
-
-**`25-noi-ve.sql` (b120) — CHƯA DÁN.** Bàn thử 5433: `do-b120.mjs` 25/25 đạt.
-Mã JS đẩy trước dán vẫn an toàn (khoá `noi_ve` lạ thì máy chủ bỏ qua).
+**`25-noi-ve.sql` (b120) — ĐÃ DÁN lên THẬT 17/09/2026**, tự kiểm 8/8 ĐẠT (bàn
+thử trước đó 25/25). Chưa rõ Staging. ⚠ **Điểm dừng UI CHƯA bấm** — mục b120.
 
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
 `11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18` ·
@@ -99,7 +91,8 @@ hàng rào thật, luật trực hệ chỉ còn là bộ lọc** giúp admin đ
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
 
-**Còn một bước:** đóng `b120` — chủ dự án dán `25` rồi bấm điểm dừng.
+**Còn một bước:** đóng `b120` — `25` đã dán, chờ chủ dự án bấm ĐÚNG điểm dừng
+(mục b120 dưới — lần thử 17/09 nhầm tính năng).
 
 Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc nào đụng
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
@@ -113,19 +106,27 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 
 ### b120 — Mã người xuyên cây
 
-Mã xong (`25` · `hinh-dang.js` · `domains/person.js` · form Sửa hồ sơ · thẻ ⓘ).
-Bẫy và cách làm: `so-tay/luu-du-lieu.md`.
-**Điểm dừng:** Sửa hồ sơ một người **cây NTB** → gõ `NPG473_P0001` → Lưu → mở lại: ô **còn
-nguyên**; thẻ ⓘ hiện dòng *"Người này cũng có trong…"*. ⚠ Nút nhảy CHƯA ai bấm
-— dữ liệu hai cây còn mã cũ `P####`, không có người nào để nhảy tới.
+Mã xong, `25` đã dán (`hinh-dang.js` · `domains/person.js` · form Sửa hồ sơ ·
+thẻ ⓘ). Bẫy và cách làm: `so-tay/luu-du-lieu.md`.
+
+⚠ **17/09: chủ dự án thử NHẦM tính năng** — *Tài khoản của tôi → Đề xuất mã
+người* là b111c (đăng ký "tôi là ai"), không phải `noiVe`. Đơn ấy hiện ở khu
+Gia phả → LVT433 → *Đơn đề xuất gắn mã người*, KHÔNG ở Kiểm duyệt — hai hàng
+đợi khác nhau, không phải lỗi.
+
+**Điểm dừng THẬT:** mở thẻ một người → **Sửa hồ sơ** → ô **"Cũng có trong gia
+phả khác"** → gõ mã đầy đủ (`LVT433_P0001`) → Lưu → mở lại: ô **còn nguyên**.
+⚠ Nút nhảy chưa bấm tới nơi có người thật được — ba cây còn mã cũ `P####`
+hoặc chưa ai nối `noiVe` thật.
 
 ### Sau b120 — chưa đặt số, chưa chốt
 
 **Nhóm E của quantri3** *(`THIET-KE-QUAN-TRI.md` 9.5 — ⚠ tạo tài khoản cần khoá
 `service_role`, chỉ qua Edge Function, khoá **không bao giờ** vào repo Public)* ·
 chặn đăng nhập thật cho tài khoản bị khoá *(`auth.users.banned_until`, cùng
-đường với trên)* · **dọn mã người cũ `P####` trước vận hành chính thức** *(chủ dự
-án chốt 17/09: không hợp lệ)* · **dòng họ + cây chính do người tự chọn** *(`THIET-KE-NHIEU-CAY.md` 6)* · nhập GEDCOM/Excel qua máy chủ · **khôi phục thật** *(việc
+đường với trên)* · **dọn mã người cũ `P####`** *(chốt 17/09: không hợp lệ)* ·
+**dòng họ + cây chính do người tự chọn** *(`THIET-KE-NHIEU-CAY.md` 6)* · nhập
+GEDCOM/Excel qua máy chủ · **khôi phục thật** *(việc
 nguy hiểm nhất: phải đo bằng vòng sao lưu → đổi → khôi phục → về đúng trạng
 thái cũ, không phải bằng việc có file JSON)* · nối **quan hệ** bắc qua hai cây
 *(`noi_ve` chỉ nói "cùng một con người", không nói "cùng một gia đình")*.
@@ -175,5 +176,8 @@ Bộ kiểm 66 phép / 51.250 phép so trên 214 sơ đồ — thứ bảo vệ 
 `supabase/js/domains/`, bộ kiểm ấy **vẫn chạy xanh** vì đang đo file khác.
 *(Lý lẽ đầy đủ: `/kiem-tra` phép 9.)* Ba đường chưa chọn: (a) biến môi trường
 chọn gốc cho 58 file kiểm; (b) chép bộ kiểm vào `supabase/kiem-thu/`; (c) sống
-bằng phép 9. **Chỉ phải quyết khi thật sự cần sửa `domains/`** — mà ngày ấy
-`BAT-DAU.md` mục 1 đằng nào cũng bắt dừng lại hỏi vì sao.
+bằng phép 9.
+
+⚠ **17/09 (b120): thành sự thật** — `domains/person.js` đã sửa (`noiVe`,
+chủ dự án cho phép), phép 9 báo LỖI đúng dự đoán. Chưa nguy hiểm: `layout.js`
+vẫn giống hệt bản đóng băng. Quyết (a)/(b)/(c) để phiên khác.
