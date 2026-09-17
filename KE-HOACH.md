@@ -113,7 +113,7 @@ người bằng `tree_id`, app ngừng mở cây.
   — lưu xong NẠP LẠI số, không thì lần lưu thứ hai `xungdot`. `id.js` → `cap_ma()`.
 - `repo.js` câu cho `lyDo` mới: `ngoaicay` · `trungma` · `truocdoima`. Kiểm duyệt:
   `lechSo` · `truocDoiMa` khoá nút Từ chối. QTHT: `ds_nguoi_mo_coi()`.
-- `don_thung_rac`: `dsAnh` = file của ảnh RÁC (mã chủ thể không khớp người/hôn nhân nào).
+- `don_thung_rac`: `dsAnh` = file ảnh RÁC (chủ thể không khớp mã nào).
 - ⚠ `sb-gia.mjs` thêm `doc_cay` · `ds_nguoi_mo_coi` · `cap_ma`.
 - ⚠ `sao-luu/SaoLuu.gs` dòng 67–70 còn khoá `tree_id,id` cho bốn bảng, thiếu `tree_persons`.
 - Điểm dừng: dán `26`→`27`, mở ba cây, sửa một người, lưu, lưu lần hai, mở lại đúng.
