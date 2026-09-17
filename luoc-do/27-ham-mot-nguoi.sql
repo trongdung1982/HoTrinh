@@ -1239,9 +1239,14 @@ end;
 $$;
 
 -- ⚠ Đổi NGHĨA: xoá cây chỉ cắt `tree_persons` (cascade). Người · hôn nhân ·
---   ảnh Ở LẠI và hiện trong `ds_nguoi_mo_coi()` nếu không cây nào giữ.
---   Nên `dsAnh` nay LUÔN rỗng — không file ảnh nào mồ côi vì xoá cây. Khoá
---   giữ lại để màn hình cũ không vỡ; `soNguoiMoCoi` là khoá mới.
+--   ảnh của họ Ở LẠI và hiện trong `ds_nguoi_mo_coi()` nếu không cây nào giữ.
+-- ⚠ ẢNH MỒ CÔI = RÁC (chủ dự án chốt 17/09): bản ghi ảnh có `subject_id`
+--   không khớp mã người NÀO và mã hôn nhân NÀO → xoá bản ghi, trả đường dẫn
+--   file vào `dsAnh` cho `xoaAnhThat()`. So cả mã HÔN NHÂN: ảnh cưới gắn vào
+--   `U…`, so riêng mã người là xoá oan ảnh cưới. Quét TOÀN phần mềm, không
+--   theo cây — sau `26` ảnh không còn cột cây, và rác thì ở đâu cũng là rác.
+--   File còn bản ghi ảnh khác trỏ tới thì KHÔNG trả. `photo_file_id` trỏ vào
+--   ảnh bị xoá thì xoá trắng (luật 2 của `media.js`).
 create or replace function public.don_thung_rac(p_ds uuid[])
 returns jsonb
 language plpgsql
@@ -1254,6 +1259,8 @@ declare
   v_ten      text[];
   v_nguoi    bigint;
   v_mo_coi   bigint;
+  v_rac      text[];
+  v_anh      text[];
 begin
   if not public.la_quan_tri_he_thong() then
     return jsonb_build_object('ok', false, 'loi',
@@ -1302,13 +1309,31 @@ begin
 
   delete from public.trees where id = any(v_du);
 
+  -- Ảnh mồ côi: đọc mã + đường dẫn TRƯỚC khi xoá bản ghi.
+  v_rac := array(select m.id from public.media m
+                  where not exists (select 1 from public.persons p where p.id = m.subject_id)
+                    and not exists (select 1 from public.unions  u where u.id = m.subject_id));
+
+  select coalesce(array_agg(distinct d), '{}'::text[]) into v_anh
+    from (select unnest(array[m.drive_file_id, m.drive_file_id_lon]) as d
+            from public.media m where m.id = any(v_rac)) x
+   where nullif(d, '') is not null
+     and not exists (select 1 from public.media m2
+                      where not (m2.id = any(v_rac))
+                        and d in (m2.drive_file_id, m2.drive_file_id_lon));
+
+  update public.persons set photo_file_id = ''
+   where photo_file_id = any(v_rac);
+  delete from public.media where id = any(v_rac);
+
   return jsonb_build_object(
     'ok',           true,
     'soCay',        array_length(v_du, 1),
     'tenCay',       to_jsonb(v_ten),
     'soNguoi',      v_nguoi,
     'soNguoiMoCoi', v_mo_coi,
-    'dsAnh',        '[]'::jsonb,
+    'soAnhRac',     coalesce(array_length(v_rac, 1), 0),
+    'dsAnh',        to_jsonb(v_anh),
     'boQua',        v_chua
   );
 end;
