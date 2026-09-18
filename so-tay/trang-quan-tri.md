@@ -66,6 +66,15 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   18/09/2026). Vá bằng nút `.qt-menu` mở `aside` thành khay — `khung.js` mục
   *Khay điều hướng*, CSS ở cuối `quan-tri.css`. KHÔNG dùng cử chỉ vuốt-mép:
   trùng cử chỉ "quay lại" có sẵn của trình duyệt điện thoại.
+- **`style=` inline chép từ quantri3 đè cả media query trên điện thoại** —
+  hai khối `.cards` của *Tổng quan* (Quản trị hệ thống) mang
+  `style="grid-template-columns:repeat(3,1fr)…"`; CSS gốc có
+  `.cards{grid-template-columns:1fr}` dưới 850px nhưng inline luôn thắng, ba
+  cột kẹt cứng, chữ vỡ dòng (chủ dự án chụp ảnh báo 18/09/2026). Vá: bỏ đúng
+  `grid-template-columns` khỏi inline, giữ `gap`/`margin-bottom`. ⚠ **Còn hai
+  chỗ y hệt CHƯA vá** — `<div style="display:grid;grid-template-columns:1fr
+  1fr…">` dòng ~306/317, form *Tạo tài khoản* (khu Quản trị hệ thống, tab
+  chưa nối máy chủ thật nên chưa ai thấy trên điện thoại) — sửa khi chạm tới.
 - **`o-goi-y.js` chọn dòng gợi ý "không được" trên điện thoại** — nghi vấn:
   bàn phím ảo mở ra không bắn `resize` của `window`, toạ độ `position:fixed`
   đo trước đó lệch. Vá bằng nghe thêm `window.visualViewport` (bẫy 4 trong

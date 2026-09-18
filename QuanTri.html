@@ -3,8 +3,10 @@
      giapha-supabase · QuanTri.html
      Vai trò  : Trang QUẢN TRỊ — NGUYÊN FILE prototype `quantri3.html` chủ dự
                 án đã chốt 13/09/2026, bỏ dữ liệu giả, gắn chức năng thật.
-     Phiên bản: 2.1.0 · Cập nhật: 18/09/2026 — thêm nút khay điều hướng cho
-     điện thoại (xem so-tay/trang-quan-tri.md), không đụng phần chép nguyên.
+     Phiên bản: 2.1.1 · Cập nhật: 18/09/2026 — thêm nút khay điều hướng cho
+     điện thoại (xem so-tay/trang-quan-tri.md); bỏ `grid-template-columns:
+     repeat(3,1fr)` khỏi `style=` inline của hai khối `.cards` (Tổng quan
+     Quản trị hệ thống) — inline đè cả media query, mobile kẹt 3 cột.
 
      ⚠⚠ DỰNG BẰNG MÁY TỪ CẢ FILE PROTOTYPE, KHÔNG CHÉP TỪNG KHU. Thân trang là
        mọi `section` của quantri3 theo đúng thứ tự; chỉ bỏ: dòng dữ liệu mẫu
@@ -132,7 +134,7 @@
 <div class="head"><div><h1>Kiểm duyệt nội dung</h1><p class="lead">Xét duyệt các lần lưu dữ liệu từ thành viên họ tộc. Đơn vị duyệt là một lần bấm Lưu.</p></div><div class="scope"><small>Phạm vi quản trị</small><strong>Tất cả gia phả bạn quản lý</strong></div></div>
 
 <!-- Khối thống kê tổng quan -->
-<div class="cards" style="grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+<div class="cards" style="gap:14px;margin-bottom:20px">
 <div class="card" style="margin-bottom:0;padding:16px 18px">
 <span class="sub" style="font-size:12px;text-transform:uppercase;letter-spacing:.04em">Gia phả có thay đổi</span>
 <strong style="font-size:24px;display:block;margin:4px 0 2px;color:var(--accent)" id="stat-tree-count"></strong>
@@ -212,7 +214,7 @@
 <div class="head"><div><h1>Quản trị hệ thống</h1><p class="lead">Chỉ dành cho tài khoản có cờ Quản trị hệ thống. Các chức năng ở đây áp dụng toàn ứng dụng.</p></div><span class="badge">Toàn hệ thống</span></div>
 <div class="tabs"><button class="chip active" data-sys-tab="tong-quan">Tổng quan</button><button class="chip" data-sys-tab="so-tai-khoan">Sổ tài khoản</button><button class="chip" data-sys-tab="tao-tai-khoan">+ Tạo tài khoản mới</button><button class="chip" data-sys-tab="cay-mac-dinh">Cây mặc định</button><button class="chip" data-sys-tab="sao-luu">Sao lưu &amp; khôi phục</button><button class="chip" data-sys-tab="thung-rac">Thùng rác</button><button class="chip" data-sys-tab="nhat-ky">Nhật ký</button></div>
 <div data-sys-pane="tong-quan">
-<div class="cards" style="grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+<div class="cards" style="gap:14px;margin-bottom:20px">
 <div class="card" style="margin-bottom:0;padding:16px 18px">
 <span class="sub" style="font-size:12px;text-transform:uppercase;letter-spacing:.04em">Sổ tài khoản toàn hệ thống</span>
 <strong style="font-size:24px;display:block;margin:4px 0 2px;color:var(--ink)" id="tq-tk-so"></strong>
