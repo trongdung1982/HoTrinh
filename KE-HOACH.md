@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 18/09/2026 · Bước gần nhất: **b122b — JS xong, `26`+`27` VẪN CHƯA
-DÁN**. Dán rồi bấm thử là việc mở đầu phiên sau.*
+*Cập nhật 18/09/2026 · Bước gần nhất: **b122c — `26`+`27` ĐÃ DÁN, CHƯA BẤM
+THỬ**. Bấm thử (mở ba cây, Lưu hai lần liền) là việc mở đầu phiên sau.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -57,10 +57,9 @@ nào.** `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
 **`22`→`25` — ĐÃ DÁN lên THẬT, tự kiểm ĐẠT.** Chưa rõ Staging — hỏi lại trước
 khi coi hai máy chủ đã đồng bộ.
 
-**`26-mot-nguoi-mot-ban-ghi.sql` (b121) + `27-ham-mot-nguoi.sql` (b122a) — CHƯA
-DÁN**, bàn thử xanh (`do-b121` · `do-b122`). JS đã sẵn sàng từ b122b, nên nay
-**dán được**: `26` rồi `27`, liền nhau, cùng một buổi. Dán `26` mà chưa dán `27`
-thì app ngừng mở cây.
+**`26-mot-nguoi-mot-ban-ghi.sql` (b121) + `27-ham-mot-nguoi.sql` (b122a) — ĐÃ
+DÁN lên THẬT** (b122c, 18/09/2026). ⚠ Bảng tự kiểm cuối mỗi file **chưa có ai
+đọc lại** — làm ở đầu phiên sau, trước khi bấm thử. Chưa rõ Staging.
 
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
 `11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18` ·
@@ -93,13 +92,14 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 ### ⚠⚠ Một người một bản ghi toàn phần mềm — b121 → b124
 
 `THIET-KE-NHIEU-CAY.md` mục 6 (thay b120, `noi_ve` bỏ). **b121 · b122a · b122b
-xong**; sổ tay: `so-tay/luu-du-lieu.md`.
+· b122c (dán) xong**; sổ tay: `so-tay/luu-du-lieu.md`.
 
-**Kế tiếp: b122c — DÁN VÀ BẤM THỬ**, không viết mã mới. Dán `26` rồi `27` cùng
-một buổi, đúng thứ tự, đọc bảng tự kiểm cuối mỗi file. Rồi bấm: ba cây đều mở ·
-sửa một người, Lưu · **Lưu lần thứ hai ngay sau đó** (phép canh của cả bước) ·
-tải lại, xem đúng · thêm một người mới, mã do `cap_ma()` cấp · trang Quản trị
-còn mở, nút Từ chối khoá đúng lúc. ⚠ Dán xong thì Staging lệch máy chủ thật.
+**Kế tiếp: b122d — BẤM THỬ**, không viết mã mới nếu không hỏng gì. Đầu tiên đọc
+lại bảng tự kiểm cuối `26` và `27` trên Supabase (chưa ai đọc từ lúc dán). Rồi
+bấm: ba cây đều mở · sửa một người, Lưu · **Lưu lần thứ hai ngay sau đó** (phép
+canh của cả bước) · tải lại, xem đúng · thêm một người mới, mã do `cap_ma()`
+cấp · trang Quản trị còn mở, nút Từ chối khoá đúng lúc. ⚠ Staging lệch máy chủ
+thật cho tới khi dán `26`+`27` sang đó.
 
 - ⚠ Để b123 (chưa lộ vì mỗi cây còn tự đứng riêng): cờ `deleted` và xoá cứng hôn
   nhân là CHUNG mọi cây · `doc_cay` bỏ cạnh con có một đầu ngoài cây.
