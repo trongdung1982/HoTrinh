@@ -3,14 +3,16 @@
 // Vai trò  : Nghiệp vụ hồ sơ cá nhân — tạo, sửa, đọc thông tin một người
 // Lớp      : domains — HÀM THUẦN. Không gọi services, không chạm DOM.
 // Phụ thuộc: utils/{text,date,id}
-// Phiên bản: 1.9.0 · Cập nhật: 17/09/2026 14:38
+// Phiên bản: 2.0.0 · Cập nhật: 18/09/2026 (b122b)
 // ============================================================
-// ⚠ File đầu tiên của `domains/` sửa trên nền Supabase (b120, chủ dự án cho
-//   phép 17/09/2026): thêm TRƯỜNG nghiệp vụ `noiVe`, không phải vì đổi tầng
-//   lưu trữ. Đổi tầng lưu trữ mà phải sửa ở đây vẫn là dấu hiệu sai.
+// ⚠ File duy nhất của `domains/` từng sửa trên nền Supabase, và cả hai lần đều
+//   là vì NGHIỆP VỤ chứ không vì đổi tầng lưu trữ: b120 thêm trường `noiVe`,
+//   b122b bỏ nó đi. `noiVe` sinh ra để nối hai bản ghi của cùng một người ở
+//   hai cây; từ `luoc-do/26` người ấy chỉ còn MỘT bản ghi nên không còn gì để
+//   nối. Đổi tầng lưu trữ mà phải sửa ở đây vẫn là dấu hiệu sai.
 import { fullName, coGiaTri, removeDiacritics, doiSongNguoi } from '../utils/text.js';
 import { parseLooseDate } from '../utils/date.js';
-import { nextId, sinhUid, maCayCuaCay, tachMa } from '../utils/id.js';
+import { nextId, sinhUid, maCayCuaCay } from '../utils/id.js';
 
 /**
  * Tạo bản ghi người mới với đầy đủ trường mặc định.
@@ -72,7 +74,6 @@ export function createPerson(tree, data, ghiNhan) {
     photoFileId: '',
     note:        '',
     deleted:     false,
-    noiVe:       '',
     meta:        { createdAt: luc, updatedAt: luc, updatedBy: boi },
   };
 
@@ -94,7 +95,6 @@ export function createPerson(tree, data, ghiNhan) {
  *          altNames: [ { type, surname, middle, given } ],  // TÊN PHỤ, CẢ danh sách
  *          sex, living, burialPlace, note,
  *          title, occupation, education, religion, residence, nationality,
- *          noiVe,                                // mã người ở gia phả khác
  *          birth: { raw, place, iso? },
  *          death: { raw, place, iso? },
  *          gio,                                  // ngày giỗ ÂM LỊCH -> vn.gio
@@ -165,10 +165,6 @@ export function updatePerson(tree, personId, changes, ghiNhan) {
   datChuoi(moi, 'religion',    ch.religion,    ghi);
   datChuoi(moi, 'residence',   ch.residence,   ghi);
   datChuoi(moi, 'nationality', ch.nationality, ghi);
-
-  // `noiVe` — mã người ở gia phả KHÁC chỉ cùng con người này. Hàm này chỉ ghi;
-  // mã có dùng được không là việc của `loiNoiVe()`, nơi gọi hỏi trước.
-  datChuoi(moi, 'noiVe', ch.noiVe, ghi);
 
   if (ch.living !== undefined) {
     const sau = ch.living === true;
@@ -530,57 +526,6 @@ export function getAlternateNames(person) {
     ra.push({ loai: coGiaTri(n.type) ? String(n.type) : '', ten });
   });
   return ra;
-}
-
-// ============================================================
-// NỐI VỀ GIA PHẢ KHÁC — `noiVe` (b120)
-// ============================================================
-//
-// Mã người là DUY NHẤT trên toàn ứng dụng — `<mã cây>_P####`, mã cây không
-// trùng — nên một chuỗi là đủ nói cây nào, người nào. ⚠ Mã cây KHÔNG phải dòng
-// họ: dòng họ do người ấy tự chọn. Nghĩa: *"cùng một con người"*, không phải *"cùng một gia
-// đình"* — không nối quan hệ nào qua hai cây (`THIET-KE-NHIEU-CAY.md` mục 6).
-//
-// Máy chủ chặn lại hai luật đầu và luật trùng (`luoc-do/25-noi-ve.sql`); hàm
-// này nói ra TRƯỚC, bằng câu người đọc được.
-
-/**
- * Mã `noiVe` có dùng được cho người này không.
- *
- * @param {object} tree
- * @param {string|null} personId  người đang sửa; null khi chưa có mã
- * @param {string} ma             chữ trong ô, đã cắt khoảng trắng
- * @returns {string|null} câu lỗi, hoặc null nếu dùng được. Chuỗi rỗng là
- *          "không nối về đâu" — luôn dùng được.
- */
-export function loiNoiVe(tree, personId, ma) {
-  const chu = String(ma == null ? '' : ma).trim();
-  if (chu === '') return null;
-
-  const t = tachMa(chu);
-  if (!t || t.loai !== 'P') {
-    return 'Ô "Cũng có trong gia phả khác" nhận đúng MỘT mã người, ví dụ ' +
-           'NTB417_P0013 — bạn đang gõ "' + chu + '".';
-  }
-  // Mã cũ không mang mã cây thì không nói được gia phả nào — không nhận.
-  if (!t.maCay) {
-    return 'Mã ' + chu + ' là mã kiểu cũ, không có mã cây nên không biết thuộc ' +
-           'gia phả nào. Gõ mã đầy đủ, ví dụ NTB417_P0013.';
-  }
-  const maCayNay = maCayCuaCay(tree);
-  if (maCayNay && t.maCay === maCayNay) {
-    return 'Mã ' + chu + ' thuộc chính gia phả này. Ô này chỉ để nối sang một ' +
-           'gia phả KHÁC.';
-  }
-  const ds = (tree && Array.isArray(tree.persons)) ? tree.persons : [];
-  const trung = ds.find((p) => p && p.id !== personId && p.deleted !== true && p.noiVe === chu);
-  if (trung) {
-    const ten = fullName(trung);
-    return (coGiaTri(ten) ? ten + ' (' + trung.id + ')' : trung.id) +
-           ' trong gia phả này đã nối về ' + chu + '. Một người bên kia chỉ ' +
-           'ứng với một người bên này.';
-  }
-  return null;
 }
 
 // ============================================================

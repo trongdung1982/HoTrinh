@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 17/09/2026 · Bước gần nhất: **b122a — `27` xanh trên bàn thử (62/62),
-CHƯA dán** (`26`+`27` dán cùng b122b)*
+*Cập nhật 18/09/2026 · Bước gần nhất: **b122b — JS xong, `26`+`27` VẪN CHƯA
+DÁN**. Dán rồi bấm thử là việc mở đầu phiên sau.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -58,8 +58,9 @@ nào.** `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
 khi coi hai máy chủ đã đồng bộ.
 
 **`26-mot-nguoi-mot-ban-ghi.sql` (b121) + `27-ham-mot-nguoi.sql` (b122a) — CHƯA
-DÁN**, bàn thử xanh (`do-b121` · `do-b122`). Dán `26`→`27` liền nhau,
-SAU b122b — lý do ở mục *Một người một bản ghi*.
+DÁN**, bàn thử xanh (`do-b121` · `do-b122`). JS đã sẵn sàng từ b122b, nên nay
+**dán được**: `26` rồi `27`, liền nhau, cùng một buổi. Dán `26` mà chưa dán `27`
+thì app ngừng mở cây.
 
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
 `11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18` ·
@@ -69,22 +70,11 @@ hỏi `tree_id` đã bỏ; bản đứng cuối của bốn luật ấy ở `26`
 `23` đứng CUỐI mọi chuỗi: nó là bản đứng cuối của 13 hàm, trong đó có
 `la_quan_tri_he_thong()` · `la_thanh_vien()` · `co_the_xem_cay()` ·
 `co_the_sua()`. Quên nó là mở lại khoá mềm, mở lại lời mời QTHT thành quyền
-thật, và mở lại cây đã xoá — cả ba đều **im lặng**. Ba luật nữa,
-và cả ba đều đã có người trả giá:
+thật, và mở lại cây đã xoá — cả ba đều **im lặng**.
 
-- ⚠ **`05` phải đứng trước `06`.** `05` đặt lại ràng buộc vai **thiếu
-  `quan_tri`** (nó có trước khi vai ấy ra đời), `06` mới thêm vào. Đảo hai file
-  là tự tay bỏ vai quản trị viên khỏi danh sách hợp lệ.
-- ⚠ **Dán lại riêng `06` hay `07` sẽ âm thầm mở rộng `quan_tri` trở lại** —
-  `08` mục 8 định nghĩa lại ba hàm của hai file ấy cho hẹp hơn. Dán lại chúng
-  thì dán lại cả `08` *(rồi `18` theo chuỗi trên)*.
-- ⚠ **`drop function` XOÁ CẢ `grant`.** Dựng lại một hàm đã có thì chép theo cả
-  dòng `grant` của nó, không thì nó lặng lẽ rơi về mặc định Postgres *ai cũng
-  gọi được, kể cả `anon`* — `15` đã vấp, `20` vá.
-
-⚠ **Và một câu về phân quyền hay bị mô tả ngược:** từ b94, **admin duyệt là
-hàng rào thật, luật trực hệ chỉ còn là bộ lọc** giúp admin đỡ phải đọc những
-đề nghị chắc chắn bị từ chối. Đừng viết ngược lại.
+⚠ Ba luật dán lại nữa, cả ba đều đã có người trả giá — `05` phải đứng trước
+`06` · dán lại riêng `06`/`07` là mở rộng `quan_tri` trở lại · `drop function`
+xoá cả `grant`: nay ở **`so-tay/phan-quyen.md`**, mục *Luật chung*.
 
 ---
 
@@ -102,21 +92,15 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 
 ### ⚠⚠ Một người một bản ghi toàn phần mềm — b121 → b124
 
-`THIET-KE-NHIEU-CAY.md` mục 6 (thay b120, `noi_ve` bỏ). **b121 + b122a xanh
-trên bàn thử**. ⚠⚠ **`26`/`27` ĐỪNG dán trước b122b** — `sb.js` còn đọc bảng
-người bằng `tree_id`, app ngừng mở cây.
+`THIET-KE-NHIEU-CAY.md` mục 6 (thay b120, `noi_ve` bỏ). **b121 · b122a · b122b
+xong**; sổ tay: `so-tay/luu-du-lieu.md`.
 
-**Kế tiếp: b122b — JS** (Opus). Máy chủ sẵn ở `27` (đọc đầu file):
+**Kế tiếp: b122c — DÁN VÀ BẤM THỬ**, không viết mã mới. Dán `26` rồi `27` cùng
+một buổi, đúng thứ tự, đọc bảng tự kiểm cuối mỗi file. Rồi bấm: ba cây đều mở ·
+sửa một người, Lưu · **Lưu lần thứ hai ngay sau đó** (phép canh của cả bước) ·
+tải lại, xem đúng · thêm một người mới, mã do `cap_ma()` cấp · trang Quản trị
+còn mở, nút Từ chối khoá đúng lúc. ⚠ Dán xong thì Staging lệch máy chủ thật.
 
-- `sb.js layDong()`: bốn bảng dùng chung đọc bằng **`doc_cay(p_tree)`**; bỏ
-  `docNguoiCayKhac()`. `hinh-dang.js`: thêm `revision` (mới `0`), bỏ `noi_ve`/`tree_id`
-  — lưu xong NẠP LẠI số, không thì lần lưu thứ hai `xungdot`. `id.js` → `cap_ma()`.
-- `repo.js` câu cho `lyDo` mới: `ngoaicay` · `trungma` · `truocdoima`. Kiểm duyệt:
-  `lechSo` · `truocDoiMa` khoá nút Từ chối. QTHT: `ds_nguoi_mo_coi()`.
-- `don_thung_rac`: `dsAnh` = file ảnh RÁC (chủ thể không khớp mã nào).
-- ⚠ `sb-gia.mjs` thêm `doc_cay` · `ds_nguoi_mo_coi` · `cap_ma`.
-- ⚠ `sao-luu/SaoLuu.gs` dòng 67–70 còn khoá `tree_id,id` cho bốn bảng, thiếu `tree_persons`.
-- Điểm dừng: dán `26`→`27`, mở ba cây, sửa một người, lưu, lưu lần hai, mở lại đúng.
 - ⚠ Để b123 (chưa lộ vì mỗi cây còn tự đứng riêng): cờ `deleted` và xoá cứng hôn
   nhân là CHUNG mọi cây · `doc_cay` bỏ cạnh con có một đầu ngoài cây.
 
@@ -145,6 +129,9 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 
 | Việc | Ghi ở đâu |
 |---|---|
+| ⚠ **Nhập GEDCOM/Excel chưa nối vào kho mã** — `capMaHangLoat()` hỏi `nextId` một lần rồi tự đếm tiếp, nên từ mã thứ hai đã ra ngoài phần máy chủ đặt trước. Hỏng to tiếng (`trungma`), không lặng lẽ. Đường sửa: `pages/import-export.js` gọi `repo.xinMa(loai, so)` trước khi nhập | `so-tay/luu-du-lieu.md` |
+| ⚠ **`di-doi/sinh-sql-di-doi.mjs` lạc hậu từ `26`** — SQL nó sinh còn gắn `tree_id` vào bốn bảng dùng chung. Ba cây đã di dời xong nên chưa có việc; chạy sẽ lỗi to tiếng | đầu chính file ấy |
+| ⚠ **Bốn bảng CHƯA được sao lưu**: `cau_hinh` · `tai_khoan` · `de_xuat_gan_nguoi` · `doi_ma_toan_cuc`. Ba bảng đầu giữ cờ QTHT, khoá mềm, đơn đề xuất; `doi_ma_toan_cuc` giữ cặp mã cũ→mới vĩnh viễn. Cần xem RLS có cho vai `sao_luu` đọc không trước khi thêm | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
 | ⚠ **Hai hàm của `16` nay LỆCH NGHĨA với tên của chúng**: `xin_xoa_cay()` không còn là "xin" — nó ẩn cây ngay; `huy_xin_xoa_cay()` nay chỉ QTHT gọi được và nghĩa thật là *trả lại cho chủ*. Giữ tên cũ ở b118b là **cố ý** (đổi tên kéo theo `sb.js` · `sb-gia.mjs` · `trang-cay.js` · bộ ảnh). Đổi tên là một bước riêng | `luoc-do/23-bon-luat-moi.sql` khối đầu |
 | ⚠ **`ds_kiem_duyet()` chưa trả người duyệt · lúc duyệt · lý do từ chối** — hai tab lịch sử của Kiểm duyệt để trống ba cột (cột có trong `change_log`, hàm chưa đọc). Sửa hàm là `drop` → chép cả `grant` | `so-tay/trang-quan-tri.md` |
 | ⚠ **`xem-khung-quan-tri.mjs` (ngoài repo) còn kịch bản bấm của giao diện cũ** — viết lại theo cảnh của `so-quantri3.mjs`, hoặc bỏ | `so-tay/trang-quan-tri.md` |
@@ -174,14 +161,13 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 
 ### ⚠ Bộ bất biến bố cục đang gác nhầm nhánh
 
-Bộ kiểm 66 phép / 51.250 phép so trên 214 sơ đồ — thứ bảo vệ `domains/layout.js`
-— nằm ngoài repo này, ở `Claude_Code/kiem-thu/`, và **58 trong 142 file của nó
-`import` từ `../giapha/js/`**, tức bản đã đóng băng. Ngày ai đó sửa
-`supabase/js/domains/`, bộ kiểm ấy **vẫn chạy xanh** vì đang đo file khác.
-*(Lý lẽ đầy đủ: `/kiem-tra` phép 9.)* Ba đường chưa chọn: (a) biến môi trường
-chọn gốc cho 58 file kiểm; (b) chép bộ kiểm vào `supabase/kiem-thu/`; (c) sống
-bằng phép 9.
+Bộ kiểm 66 phép / 51.250 phép so — thứ bảo vệ `domains/layout.js` — nằm ở
+`Claude_Code/kiem-thu/`, và **58 trong 142 file của nó `import` từ
+`../giapha/js/`**, tức bản đã đóng băng: sửa `supabase/js/domains/` thì nó vẫn
+xanh vì đang đo file khác. *(Lý lẽ đầy đủ: `/kiem-tra` phép 9.)* Ba đường chưa
+chọn: (a) biến môi trường chọn gốc; (b) chép bộ kiểm vào `supabase/kiem-thu/`;
+(c) sống bằng phép 9.
 
-⚠ **17/09 (b120): thành sự thật** — `domains/person.js` đã sửa (`noiVe`,
-chủ dự án cho phép), phép 9 báo LỖI đúng dự đoán. Chưa nguy hiểm: `layout.js`
-vẫn giống hệt bản đóng băng. Quyết (a)/(b)/(c) để phiên khác.
+⚠ **Đã thành sự thật** — `domains/person.js` sửa ở b120 (thêm `noiVe`) và b122b
+(bỏ đi), chủ dự án cho phép cả hai lần; phép 9 báo LỖI đúng dự đoán. Chưa nguy
+hiểm: `layout.js` vẫn giống hệt bản đóng băng. Quyết (a)/(b)/(c) để phiên khác.

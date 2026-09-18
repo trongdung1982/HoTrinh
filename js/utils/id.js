@@ -3,54 +3,32 @@
 // Vai trò  : Sinh ID bất biến cho person / union / media / source
 // Lớp      : utils — được gọi bởi: services, domains, pages
 // Phụ thuộc: utils/text.js
-// Phiên bản: 1.4.0 · Cập nhật: 17/09/2026 14:38
+// Phiên bản: 2.0.0 · Cập nhật: 18/09/2026 (b122b)
+// Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
-// HÀM THUẦN. Không đọc đồng hồ máy, không sinh số ngẫu nhiên: cùng một cây thì
-// luôn ra cùng một mã. Nhờ vậy bài kiểm so được kết quả với một chuỗi cố định.
-// `sinhMaCay()` cũng thuần — phần "ngẫu nhiên" của nó là một phép băm trên
-// chuỗi hạt giống người gọi đưa vào, nên hai máy khác nhau cùng đưa một hạt
-// giống thì ra cùng một mã.
+// HÀM THUẦN, trừ đúng một chỗ: **kho mã** ở giữa file — xem khối ⚠ tại đó.
 //
-// --- MÃ CHUẨN CÓ MÃ CÂY; MÃ CŨ LÀ DỮ LIỆU SẼ DỌN ------------------------
+// --- MÃ P/U/M KHÔNG CÒN MANG MÃ CÂY (b121, `luoc-do/26`) -----------------
 //
-// Mã chuẩn `NTB417_P0060` DUY NHẤT toàn ứng dụng (mã cây không trùng, `12`);
-// mã cây trong nó chỉ nói CÂY NÀO SINH RA MÃ — ⚠ KHÔNG nói dòng họ (dòng họ do
-// chính người ấy chọn). Mã cũ `P0004` (trước 29/08/2026) không nói được cây
-// nào — chủ dự án chốt 17/09/2026: KHÔNG hợp lệ, xoá khi vận hành chính thức.
-// Chỗ cần biết cây (`noiVe`) thì từ chối nó — đừng thêm đường lùi chiều nó.
+// Một người nằm ở ba cây vẫn chỉ MỘT bản ghi, nên mã phải duy nhất toàn phần
+// mềm chứ không duy nhất trong một cây: `P0060`, không phải `NTB417_P0060`.
+// Khuôn đọc dưới đây VẪN nhận dạng có tiền tố, vì `change_log` cũ còn nói
+// bằng mã cũ — nhận để ĐỌC, không bao giờ sinh ra nữa. Nguồn (`S`) là ngoại
+// lệ: `sources` vẫn khoá `(tree_id, id)` nên vẫn đếm tại chỗ.
 //
 // Khuôn tiền tố hợp lệ ở CẢ HAI bản chuẩn GEDCOM (5.5.1 và 7.0): chỉ chữ hoa,
 // chữ số và gạch dưới. Gạch nối `-` thì 7.0 không nhận — đừng đổi sang.
-// Thân mã trong xref 5.5.1 tối đa 20 ký tự; `NTBK7R3_P0060` là 13.
 //
-// --- VÌ SAO PHẢI QUÉT CẢ `changeLog` ------------------------------------
+// ⚠ QUÉT CẢ `changeLog` khi đếm tại chỗ, và quét `target` + khoá của `diff`,
+// KHÔNG quét `note`. Cấp lại một mã đã dùng là kiểu hỏng tệ nhất trong gia
+// phả: không gì báo lỗi, chỉ là chuyện cũ lặng lẽ dính sang người khác. Lý lẽ
+// đầy đủ ở `so-tay/luu-du-lieu.md`.
 //
-// App KHÔNG xoá cứng (chốt 17/08/2026, chat 2.1): xoá là đặt cờ `deleted`, bản
-// ghi vẫn nằm nguyên trong mảng. Nên chỉ quét `persons` là đã tránh được phần
-// lớn chuyện trùng mã — nhưng chưa đủ.
-//
-// Chỗ hở là những bản ghi đã rời khỏi mảng bằng đường KHÁC: người biên tập sửa
-// tay file JSON trên Drive rồi xoá hẳn một dòng (lỗ hổng đã biết, CLAUDE.md mục
-// 11), hoặc một lần nhập file ở giai đoạn 3 thay cả mảng. Dấu vết duy nhất còn
-// lại của những bản ghi ấy là `changeLog` — thứ CỐ Ý không bao giờ cắt bớt.
-//
-// Cấp lại một mã đã dùng là kiểu hỏng tệ nhất trong gia phả: không có gì báo
-// lỗi, chỉ là mọi câu chuyện cũ về mã ấy lặng lẽ dính sang một người khác.
-//
-// Quét `target` và các khoá của `diff`, KHÔNG quét `note`. `note` là văn xuôi
-// người viết; một câu như "gộp nhánh P0033–P0053" thì hai mã ấy đằng nào cũng
-// nằm trong mảng, còn một câu bàn về mã tưởng tượng thì đẩy bộ đếm nhảy vọt vô
-// cớ. `target` và khoá `diff` là chỗ mã ĐƯỢC GHI CÓ CẤU TRÚC, nên chỉ quét đó.
-//
-// ⚠ BỘ ĐẾM KHÔNG ĐẶT LẠI THEO TIỀN TỐ. Cây đang có `P0059` thì người tiếp theo
-// là `NTBK7R3_P0060`, không phải `NTBK7R3_P0001`. Đánh số lại từ đầu là cấp một
-// con số đã dùng cho một người khác — chỉ khác cái tiền tố, mà hai mã trông
-// khác nhau thì không ai đi kiểm xem chúng có cùng một số hay không.
-//
-// ⚠ `nextId()` đọc CÂY, nên gọi hai lần trên CÙNG một cây ra CÙNG một mã. Thêm
-// hai bản ghi liền nhau thì phải chèn cái thứ nhất vào cây rồi mới sinh mã cho
-// cái thứ hai — đó là lý do `createPerson`/`createUnion` đều trả về CÂY MỚI.
+// ⚠ BỘ ĐẾM KHÔNG ĐẶT LẠI THEO TIỀN TỐ, và `nextId()` đọc CÂY khi kho mã rỗng
+// — nên gọi hai lần trên cùng một cây ra cùng một mã. Thêm hai bản ghi liền
+// nhau thì phải chèn cái thứ nhất vào cây rồi mới sinh mã cho cái thứ hai; đó
+// là lý do `createPerson`/`createUnion` đều trả về CÂY MỚI.
 
 import { removeDiacritics } from './text.js';
 
@@ -110,21 +88,63 @@ export function maCayCua(id) {
   return p ? p.maCay : '';
 }
 
+// ============================================================
+// KHO MÃ — máy chủ cấp, trình duyệt tiêu
+// ============================================================
+//
+// ⚠⚠ ĐÂY LÀ CHỖ DUY NHẤT TRONG FILE NÀY CÓ TRẠNG THÁI, và nó bắt buộc phải
+//   có. Từ `26`, mã P/U/M dùng chung toàn phần mềm: đếm `max(id) + 1` trong
+//   CÂY ĐANG MỞ là cấp một mã cây khác đang giữ. Cây NTB có tới `P0059` thì
+//   `P0060` của nó là người thứ nhất của cây Nguyễn Phúc — và hai cây cứ thế
+//   đá nhau mãi, tải lại trang cũng ra đúng con số ấy.
+//
+//   Máy chủ đếm hộ bằng `cap_ma(loai, so)` (`26` mục 6) — một sổ đếm Postgres,
+//   chỉ tiến không lùi. `services/repo.js` xin theo lô rồi đổ vào đây;
+//   `nextId()` tiêu dần. File này KHÔNG gọi mạng: `utils` không được phép gọi
+//   `services`, và đó là lý do kho được ĐỔ VÀO chứ không tự đi lấy.
+//
+// ⚠ Kho rỗng thì `nextId()` rơi về phép đếm trong cây — biết là có thể trùng.
+//   Không ném lỗi, vì cái giá của hai đường khác nhau: đếm nhầm thì trigger
+//   `chan_ghi_de_ban_ghi` từ chối bằng `trungma` ngay lúc Lưu, người dùng tải
+//   lại trang (kho được đổ đầy lại) rồi làm lại là xong; còn ném lỗi giữa form
+//   là mất cả những gì họ vừa gõ.
+//
+// ⚠ Mã lấy ra khỏi kho mà KHÔNG lưu xuống thì mất luôn — sổ đếm không lùi.
+//   Đó là chủ ý: một mã bỏ phí rẻ hơn nhiều một mã cấp cho hai người.
+
+const KHO = { P: [], U: [], M: [] };
+
+/**
+ * Đổ mã máy chủ vừa cấp vào kho. Chỉ `services/repo.js` gọi.
+ *
+ * @param {'P'|'U'|'M'} loai
+ * @param {Array<string>} ds  mã theo đúng thứ tự máy chủ cấp
+ */
+export function napKho(loai, ds) {
+  const chu = String(loai == null ? '' : loai).trim().toUpperCase();
+  if (!KHO[chu] || !Array.isArray(ds)) return;
+  for (const ma of ds) if (typeof ma === 'string' && KHUON_ID.test(ma)) KHO[chu].push(ma);
+}
+
+/** Còn bao nhiêu mã chưa tiêu. `repo.js` nhìn số này để biết khi nào xin thêm. */
+export function soMaTrongKho(loai) {
+  const chu = String(loai == null ? '' : loai).trim().toUpperCase();
+  return KHO[chu] ? KHO[chu].length : 0;
+}
+
 /**
  * Sinh ID kế tiếp chưa từng dùng.
  *
  * @param {'P'|'U'|'M'|'S'} prefix
  * @param {object} tree  cây gia phả (object gốc của file JSON)
- * @returns {string} ví dụ 'NTBK7R3_P0060', hoặc 'P0060' nếu cây chưa có mã cây
+ * @returns {string} ví dụ 'P0060'
  * @throws {Error} khi tiền tố không phải một trong bốn chữ đã quy ước
  *
  * Ném lỗi chứ không lặng lẽ rơi về 'P': gõ nhầm tiền tố mà vẫn sinh ra mã thì
  * bản ghi hôn nhân mang mã người, và cái sai ấy chỉ lộ ra rất lâu sau đó.
  *
- * Cây thiếu `tree.treeCode` thì sinh mã đời cũ, không tự bịa ra một mã cây.
- * Việc điền mã cây là của `services/repo.js` lúc nạp, nơi biết đủ thứ để điền
- * một lần rồi ghi xuống — chứ không phải của một hàm thuần gọi mỗi lần thêm
- * người, vì mỗi lần đoán một kiểu là mỗi lần một tiền tố khác.
+ * P/U/M lấy từ kho (máy chủ cấp, duy nhất toàn phần mềm). `S` thì không: bảng
+ * `sources` vẫn khoá `(tree_id, id)` nên đếm trong cây là đủ và đúng.
  */
 export function nextId(prefix, tree) {
   const chu = String(prefix == null ? '' : prefix).trim().toUpperCase();
@@ -132,12 +152,12 @@ export function nextId(prefix, tree) {
     throw new Error('Tiền tố ID không hợp lệ: "' + prefix + '". ' +
                     'Chỉ có P (người), U (hôn nhân), M (ảnh), S (nguồn).');
   }
+  if (KHO[chu] && KHO[chu].length) return KHO[chu].shift();
+
   const so = soLonNhatDaDung(chu, tree) + 1;
   let phanSo = String(so);
   while (phanSo.length < SO_CHU_SO) phanSo = '0' + phanSo;
-
-  const maCay = maCayCuaCay(tree);
-  return (maCay ? maCay + '_' : '') + chu + phanSo;
+  return chu + phanSo;
 }
 
 /**

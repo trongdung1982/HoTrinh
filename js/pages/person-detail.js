@@ -4,7 +4,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, domains/{person,union,render}, services/{repo,sb},
 //            utils/{text,date,image,avatar,glyph,id}, config
-// Phiên bản: 1.31.0 · Cập nhật: 17/09/2026 14:38
+// Phiên bản: 1.32.0 · Cập nhật: 18/09/2026 (b122b) — bỏ khối `noiVe`
 // ============================================================
 //
 // --- HAI MÀN HÌNH, HAI CÂU HỎI (chốt 20/08/2026) ------------------------
@@ -112,9 +112,6 @@ import { formatDate, calcAge } from '../utils/date.js';
 import { driveThumbUrl } from '../utils/image.js';
 import { anhMacDinhUri } from '../utils/avatar.js';
 import { veBieuTuongTron } from '../utils/glyph.js';
-import { maCayCua } from '../utils/id.js';
-import { layDanhSachGiaPha, chonGiaPha, datNguoiTrungTamMacDinh,
-         docNguoiCayKhac } from '../services/sb.js';
 import { nhanLoaiTenPhu, chuThichQuanHe,
          rongHop, caoHop, leLopPhu } from '../config.js';
 
@@ -213,7 +210,7 @@ export function openPersonDetail(personId, xuLy = {}) {
 
   theDangMo = { loai: 'nguoi', ma: personId, xuLy };
 
-  the.append(...veDauThe(p), ...veHangThongTin(p), ...veNoiVe(p));
+  the.append(...veDauThe(p), ...veHangThongTin(p));
   the.append(...veDaiAnhThe(personId, p));
   the.append(...veQuanHe(index, p, xuLy));
   the.append(veChanThe(p, xuLy));
@@ -961,77 +958,6 @@ function veHangThongTin(p) {
   }
 
   return ra;
-}
-
-// ============================================================
-// NỐI VỀ GIA PHẢ KHÁC — `noiVe` (b120)
-// ============================================================
-//
-// `noiVe` là MỘT mã người đầy đủ ở cây khác; mã cây trong nó nói cây nào
-// (`THIET-KE-NHIEU-CAY.md` mục 6). Ba mức, theo đúng thứ người xem được phép:
-//
-//   · không thấy cây ấy        → chỉ chữ, kể MÃ CÂY — không nút, không tên
-//   · thấy tên cây, không vào  → chữ kể TÊN cây, không nút
-//   · vào được, người có thật  → chữ + nút mở cây ấy, đứng ở đúng người ấy
-//
-// ⚠ Nút nhảy GHI người trung tâm mặc định của cây kia cho tài khoản này, rồi
-//   đổi cây và tải lại trang — đúng đường `chon-gia-pha.js` đã chạy. Lần sau
-//   mở cây kia vẫn đứng ở người ấy; muốn khác thì đặt lại trong Cài đặt.
-
-function veNoiVe(p) {
-  const ma = coGiaTri(p.noiVe) ? String(p.noiVe) : '';
-  const maCay = ma ? maCayCua(ma) : '';
-  if (!maCay) return [];
-
-  const khoi = document.createElement('div');
-  khoi.style.cssText =
-    'margin-top:12px;padding:9px 11px;font-size:13px;line-height:1.5;' +
-    'color:#5c554e;background:#faf8f5;border:1px solid #f0ebe4;border-radius:8px';
-  const chu = document.createElement('div');
-  chu.textContent = 'Người này cũng có trong một gia phả khác · mã ' + ma;
-  khoi.append(chu);
-
-  napNoiVe(p.id, ma, maCay, khoi, chu);
-  return [khoi];
-}
-
-async function napNoiVe(personId, ma, maCay, khoi, chu) {
-  const conMo = () => khoi.isConnected && theDangMo && theDangMo.ma === personId;
-
-  let kq;
-  try { kq = await layDanhSachGiaPha(); } catch (e) { return; }
-  if (!conMo() || !kq || !kq.ok) return;
-
-  const cay = (kq.ds || []).find((c) => c && c.treeCode === maCay);
-  if (!cay || !coGiaTri(cay.ten)) return;
-  chu.textContent = 'Người này cũng có trong gia phả ' + cay.ten + ' · mã ' + ma;
-  if (!cay.coTheXem || cay.fileId === state.treeId) return;
-
-  const nguoi = await docNguoiCayKhac(cay.fileId, ma);
-  if (!conMo() || !nguoi || nguoi.deleted) return;
-
-  const ten = fullName(nguoi);
-  const nut = document.createElement('button');
-  nut.type = 'button';
-  nut.textContent = 'Mở gia phả ấy, đứng ở ' + (coGiaTri(ten) ? ten : ma);
-  nut.style.cssText =
-    'display:block;margin-top:8px;padding:0;font:inherit;font-size:13px;' +
-    'color:#8a6a3a;background:none;border:none;text-decoration:underline;' +
-    'cursor:pointer;touch-action:manipulation;text-align:left';
-  const tin = document.createElement('div');
-  tin.textContent = 'Trang sẽ tải lại. Gia phả đang mở không bị đụng tới.';
-  tin.style.cssText = 'font-size:12px;color:#8a8078;margin-top:2px';
-
-  nut.addEventListener('click', async () => {
-    nut.disabled = true;
-    tin.textContent = 'Đang mở ' + cay.ten + '…';
-    const dat = await datNguoiTrungTamMacDinh(cay.fileId, ma);
-    const doi = dat.ok ? await chonGiaPha(cay.fileId) : dat;
-    if (doi.ok) { location.reload(); return; }
-    nut.disabled = false;
-    tin.textContent = 'Chưa mở được: ' + (doi.loi || 'máy chủ không trả lời.');
-  });
-  khoi.append(nut, tin);
 }
 
 /**

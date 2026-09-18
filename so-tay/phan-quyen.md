@@ -10,12 +10,21 @@ Liên quan: `THIET-KE-NHIEU-CAY.md` mục 11 · `DU-LIEU.md` mục 2 · `HUONG-D
   sửa + duyệt nội dung, KHÔNG đổi quyền** · Được dựng cây = cờ `duoc_tao_cay`,
   **không mẩu quyền nào** trên cây đang có.
 - **Không ai đặt quyền cho chính mình.** Mọi cửa đổi quyền hỏi `la_chinh_minh()`.
+- **Từ b94, admin duyệt là hàng rào THẬT; luật trực hệ chỉ còn là bộ lọc** giúp
+  admin đỡ phải đọc những đề nghị chắc chắn bị từ chối. Câu này hay bị mô tả
+  ngược — đừng viết ngược lại.
 - **Hàm gác cửa viết dạng KHẲNG ĐỊNH và bọc `coalesce(…, false)`.** Không có
   dòng thì `select` trả `null`, và `null` trong `and`/`or` cho ra `null` chứ
   không cho ra `false`. Lỗ leo quyền 04/09 sinh ra đúng từ đó, 57 phép kiểm báo
   xanh suốt.
 - **`drop function` xoá cả `grant`.** Dựng lại hàm đã có thì chép theo cả dòng
   `grant`, không thì nó rơi về mặc định Postgres *ai cũng gọi được, kể cả `anon`*.
+- **`05` phải đứng TRƯỚC `06`.** `05` đặt lại ràng buộc vai **thiếu `quan_tri`**
+  (nó có trước khi vai ấy ra đời), `06` mới thêm vào. Đảo hai file là tự tay bỏ
+  vai quản trị viên khỏi danh sách hợp lệ.
+- **Dán lại riêng `06` hay `07` sẽ âm thầm mở rộng `quan_tri` trở lại** — `08`
+  mục 8 định nghĩa lại ba hàm của hai file ấy cho hẹp hơn. Dán lại chúng thì dán
+  lại cả `08`, rồi `18`, rồi `23`.
 - **`23` đứng CUỐI mọi chuỗi dán lại.** Dán lại `11`/`14`/`16`/`18`/`20` mà quên
   `23` là mở lại khoá mềm, mở lại lời mời QTHT thành quyền thật, mở lại cây đã
   xoá — cả ba đều **im lặng**.

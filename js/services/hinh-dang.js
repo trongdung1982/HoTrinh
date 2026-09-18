@@ -4,7 +4,8 @@
 //            Ráp dòng thành cây, và so hai cây ra danh sách phép ghi.
 // Lớp      : services — được gọi bởi: services/repo · gọi: utils/date
 // Phụ thuộc: utils/date.js
-// Phiên bản: 0.3.0 · Cập nhật: 17/09/2026 14:38
+// Phiên bản: 0.4.0 · Cập nhật: 18/09/2026 (b122b)
+// Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
 // ═══ FILE NÀY LÀ CHỖ DUY NHẤT HAI THẾ GIỚI GẶP NHAU ═══
@@ -43,16 +44,19 @@ const TEN_PERSON = {
   //   hình cây thì mỗi lần lưu sẽ ghi `null` đè lên, tức là **âm thầm gỡ mọi
   //   người ra khỏi nhánh của họ**. Không có gì báo lỗi khi điều đó xảy ra.
   branchId: 'branch_id',
-  // ⚠ Cùng loại bẫy với `branchId` ngay trên. Máy chủ còn một chỗ thứ hai phải
-  //   biết tên cột này: danh sách `on conflict do update` của `luu_cay()` —
-  //   bản đứng cuối ở `luoc-do/25-noi-ve.sql`.
-  noiVe: 'noi_ve',
+  // ⚠⚠ SỐ CHỐNG GHI ĐÈ THEO BẢN GHI (`luoc-do/26`). Nó phải đi TRÒN một vòng
+  //   — đọc về, nằm trong cây, gửi lại nguyên vẹn — vì trigger
+  //   `chan_ghi_de_ban_ghi` so số gửi lên với số đang có. Bỏ nó ra khỏi bảng
+  //   tên thì mọi bản ghi đang có gửi lên với `revision = 0` (mặc định dưới
+  //   đây), và máy chủ trả `trungma` cho MỌI lần sửa. Xem `MAC_DINH_PERSON`.
+  revision: null,
 };
 
 const TEN_UNION = {
   id: null, uid: null, partners: null,
   partnerOrder: 'partner_order',
   ranks: null, status: null, marriage: null, note: null, deleted: null,
+  revision: null,
   // `children` KHÔNG nằm đây — nó là bảng riêng, xem `rapCon`/`soSanhCon`.
 };
 
@@ -62,6 +66,7 @@ const TEN_MEDIA = {
   driveFileId: 'drive_file_id',
   driveFileIdLon: 'drive_file_id_lon',
   caption: null, year: null, deleted: null, meta: null,
+  revision: null,
 };
 
 const TEN_SOURCE = { id: null, title: null, author: null, note: null };
@@ -96,23 +101,30 @@ const TEN_SOURCE = { id: null, title: null, author: null, note: null };
 
 const NGAY_RONG = { iso: null, raw: '', place: '' };
 
+// ⚠ `revision: 0` nghĩa là **bản ghi MỚI**, không phải "chưa biết số". Đó là
+//   giao ước với trigger `chan_ghi_de_ban_ghi` (`luoc-do/26` mục 4): gửi 0 mà
+//   mã chưa ai giữ thì lưu thành 1; gửi 0 mà mã ĐÃ có người giữ thì `GP409`
+//   gợi ý `trungma` — hai cây sinh trùng mã không lặng lẽ ghi đè nhau. Bản ghi
+//   `domains/` vừa dựng không có khoá `revision`, nên nó rơi đúng vào đây.
+
 const MAC_DINH_PERSON = {
   uid: '', names: [], sex: 'U', birth: NGAY_RONG, death: NGAY_RONG,
   burialPlace: '',
   title: '', occupation: '', education: '', religion: '',
   residence: '', nationality: '',
   living: true, photoFileId: '', note: '', deleted: false,
-  vn: {}, meta: {}, noiVe: '',
+  vn: {}, meta: {}, revision: 0,
 };
 
 const MAC_DINH_UNION = {
   uid: '', partners: [], partnerOrder: [], ranks: {},
   status: 'unknown', marriage: NGAY_RONG, note: '', deleted: false,
+  revision: 0,
 };
 
 const MAC_DINH_MEDIA = {
   subjectId: '', driveFileId: '', driveFileIdLon: '', caption: '',
-  deleted: false, meta: {},
+  deleted: false, meta: {}, revision: 0,
 };
 
 const MAC_DINH_SOURCE = { title: '', author: '', note: '' };
@@ -181,6 +193,7 @@ export function rapCay(dong) {
       personId: c.person_id,
       relation: c.relation,
       order:    c.ord,          // `order` là từ khoá SQL nên trong bảng tên `ord`
+      revision: c.revision,     // đi tròn một vòng, xem `TEN_PERSON.revision`
     });
   }
   for (const ds of conTheoUnion.values()) {
@@ -258,8 +271,13 @@ function dauThoiGian(iso) {
  *    không cần dựng một Supabase thật. Sót một trường thì dữ liệu của trường
  *    ấy im lặng biến mất ở lần lưu đầu tiên — không có lỗi nào báo.
  *
+ * ⚠ Bốn bảng dùng chung (`persons` · `unions` · `union_children` · `media`)
+ *   KHÔNG mang `tree_id` nữa từ `luoc-do/26`: một người nằm ở ba cây vẫn chỉ
+ *   một dòng, và "ai thuộc cây nào" nằm ở bảng riêng `tree_persons`. Chỉ
+ *   `sources` · `imports` · `change_log` còn theo cây.
+ *
  * @param {object} cay     hình JSON như `rapCay` trả về
- * @param {string} treeId  mã cây (uuid) để gắn vào mọi dòng
+ * @param {string} treeId  mã cây (uuid), gắn vào những bảng CÒN theo cây
  */
 export function boCay(cay, treeId) {
   const children = [];
@@ -268,14 +286,16 @@ export function boCay(cay, treeId) {
     for (const c of u.children || []) {
       if (!c || !c.personId) continue;
       children.push({
-        tree_id: treeId, union_id: u.id, person_id: c.personId,
+        union_id: u.id, person_id: c.personId,
         relation: c.relation || 'birth',
         ord: Number.isFinite(c.order) ? c.order : 1,
+        revision: Number.isFinite(c.revision) ? c.revision : 0,
       });
     }
   }
 
-  const gan = (bang, mac, ds) =>
+  const gan = (bang, mac, ds) => (ds || []).map((b) => veBang(bang, mac, b));
+  const ganCay = (bang, mac, ds) =>
     (ds || []).map((b) => ({ tree_id: treeId, ...veBang(bang, mac, b) }));
 
   return {
@@ -293,7 +313,11 @@ export function boCay(cay, treeId) {
     unions:   gan(TEN_UNION,  MAC_DINH_UNION,  cay.unions),
     children,
     media:    gan(TEN_MEDIA,  MAC_DINH_MEDIA,  cay.media),
-    sources:  gan(TEN_SOURCE, MAC_DINH_SOURCE, cay.sources),
+    sources:  ganCay(TEN_SOURCE, MAC_DINH_SOURCE, cay.sources),
+    // Ai thuộc cây này — bảng mới của `26`, thay cho cột `persons.tree_id`.
+    treePersons: (cay.persons || [])
+      .filter((p) => p && p.id)
+      .map((p) => ({ tree_id: treeId, person_id: p.id })),
     imports: (cay.imports || []).map((e) => ({
       tree_id: treeId, by_email: e.by || '', file: e.file || '',
       source: e.source || '', source_name: e.sourceName || '',
@@ -351,6 +375,60 @@ export function coGiDeGhi(ops) {
     if (o && (o.luu.length || o.xoa.length)) return true;
   }
   return false;
+}
+
+/**
+ * Đặt lại số chống ghi đè trên bản sao cây, SAU khi máy chủ đã gật.
+ *
+ * ⚠⚠ THIẾU BƯỚC NÀY THÌ LẦN LƯU THỨ HAI LUÔN HỎNG. `repo.luuCay()` cố ý không
+ *   nạp lại cây từ máy chủ — bản sao trong tay chính là thứ vừa được ghi
+ *   xuống. Nhưng trigger `chan_ghi_de_ban_ghi` (`luoc-do/26`) đã tăng số của
+ *   từng dòng nó vừa ghi, nên bản sao đang giữ số CŨ; gửi số cũ lên lần sau là
+ *   `GP409` → `lyDo: 'xungdot'`, với câu "người khác vừa sửa" trong khi không
+ *   có người khác nào cả.
+ *
+ * Số mới suy ra được, không cần hỏi lại máy chủ, vì trigger chỉ có hai luật:
+ * dòng mới (gửi `0`) thành `1`, dòng đang có thành `số gửi lên + 1`. Và máy
+ * chủ vừa gật nghĩa là không ai chen ngang giữa chừng — chen ngang thì chính
+ * trigger ấy đã từ chối cả lần lưu.
+ *
+ * @param {object} cay  bản sao cây vừa được ghi xuống (sửa TẠI CHỖ)
+ * @param {object} ops  đúng thứ đã gửi lên, do `soSanh()` sinh ra
+ */
+export function tangSoSauKhiLuu(cay, ops) {
+  if (!cay || !ops) return;
+
+  const sauKhiGhi = (r) => (Number(r && r.revision) || 0) + 1;
+
+  const apDung = (dsCay, dsOps, khoaCua) => {
+    if (!Array.isArray(dsCay) || !dsOps || !Array.isArray(dsOps.luu)) return;
+    const so = new Map();
+    for (const r of dsOps.luu) so.set(khoaCua(r), sauKhiGhi(r));
+    for (const b of dsCay) {
+      if (!b) continue;
+      const v = so.get(khoaCua(b));
+      if (v !== undefined) b.revision = v;
+    }
+  };
+
+  const theoId = (r) => r.id;
+  apDung(cay.persons, ops.persons, theoId);
+  apDung(cay.unions,  ops.unions,  theoId);
+  apDung(cay.media,   ops.media,   theoId);
+
+  // Con nằm trong `unions[].children`, khoá là CẶP — không phải một mã.
+  if (ops.children && Array.isArray(ops.children.luu) && ops.children.luu.length) {
+    const so = new Map();
+    for (const r of ops.children.luu) so.set(r.union_id + '|' + r.person_id, sauKhiGhi(r));
+    for (const u of cay.unions || []) {
+      if (!u || !u.id || !Array.isArray(u.children)) continue;
+      for (const c of u.children) {
+        if (!c || !c.personId) continue;
+        const v = so.get(u.id + '|' + c.personId);
+        if (v !== undefined) c.revision = v;
+      }
+    }
+  }
 }
 
 function soSanhKhoiCay(cu, moi) {
@@ -411,6 +489,7 @@ function soSanhCon(dsCu, dsMoi) {
           union_id: u.id, person_id: c.personId,
           relation: c.relation || 'birth',
           ord: Number.isFinite(c.order) ? c.order : 1,
+          revision: Number.isFinite(c.revision) ? c.revision : 0,
         });
       }
     }

@@ -8,6 +8,16 @@
 //            `quan_tri_he_thong`, và đặt `trees.chu_so_huu` (b105)
 // ============================================================
 //
+// ⚠⚠ **FILE NÀY ĐÃ LẠC HẬU TỪ `luoc-do/26` (b121) — ĐỪNG CHẠY.** SQL nó sinh
+//   ra còn gắn `tree_id` vào `persons` · `unions` · `union_children` · `media`
+//   và còn gọi `gan_ma_cay()` cho bảng người; bốn bảng ấy nay không có cột
+//   `tree_id`, và "ai thuộc cây nào" nằm ở bảng mới `tree_persons`. Chạy thì
+//   Postgres báo lỗi cột không tồn tại — to tiếng, không lặng lẽ, nên không
+//   sửa vội. `boCay()` đã trả sẵn mảng `treePersons` cho ngày viết lại.
+//
+//   Cả ba cây trên máy chủ thật đã di dời xong từ 03–17/09/2026, nên file này
+//   hiện không có việc. Ghi ở `KE-HOACH.md` mục *Còn treo*.
+//
 // ═══ VÌ SAO KHÔNG ĐI ĐƯỜNG GEDCOM ═══
 //
 // Chủ dự án hỏi đúng câu (04/09/2026): *"chỉ cần nhập file GEDCOM xuất từ app

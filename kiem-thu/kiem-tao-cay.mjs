@@ -2,7 +2,8 @@
 // giapha-supabase · kiem-thu/kiem-tao-cay.mjs
 // Vai trò  : Gác bước b104 — `luoc-do/12-tao-cay.sql` và ba file JS đi kèm.
 // Chạy     : cd supabase/kiem-thu && node kiem-tao-cay.mjs
-// Phiên bản: 0.2.0 · Cập nhật: 15/09/2026 (b118c)
+// Phiên bản: 0.2.1 · Cập nhật: 18/09/2026 (b122b) — nới phép đọc dòng
+//            import của repo.js cho khỏi khớp cứng danh sách tên
 //            0.2.0 Chip *Tạo gia phả mới* nay là form của prototype quantri3:
 //            nút *Tạo gia phả* (`#tao-nut` trong QuanTri.html) và KHÔNG có ô gõ
 //            mã — *"Mã cây do hệ thống sinh"*. Hai phép bám form cũ được đính
@@ -167,7 +168,10 @@ kiem('repo.taoGiaPhaMoi() thôi trả "chualam"',
      'vẫn còn chốt chặn cũ — nút Dựng sẽ báo "chưa làm xong"');
 
 kiem('repo dùng lại sinhMaCay() của utils, không tự viết phép sinh mã',
-     /import\s*\{\s*sinhMaCay\s*\}\s*from\s*'\.\.\/utils\/id\.js'/.test(JS_REPO),
+     // Khớp LỎNG danh sách tên: b122b nhập thêm `napKho`/`soMaTrongKho` cùng
+     // dòng ấy. Điều phép này hỏi là "có dùng lại hàm của utils không", không
+     // phải "dòng import có đúng một tên không".
+     /import\s*\{[^}]*\bsinhMaCay\b[^}]*\}\s*from\s*'\.\.\/utils\/id\.js'/.test(JS_REPO),
      'viết lại phép sinh mã là đẻ ra bản thứ hai sẽ lệch dần');
 
 // ⚠ Điểm dừng b104 viết thành chữ: *"một tài khoản không được cấp bấm vào thì

@@ -4,7 +4,8 @@
 //            Script — bằng cách chạy CHÍNH file ấy trong Node, với một
 //            Supabase giả và một Google Drive giả.
 // Chạy     : cd supabase/kiem-thu && node kiem-sao-luu.mjs
-// Phiên bản: 0.2.0 · Cập nhật: 04/09/2026 00:04
+// Phiên bản: 0.3.0 · Cập nhật: 18/09/2026 (b122b) — phép 1 đọc cả thư mục
+//            `luoc-do/`, không riêng `01-bang.sql`
 // ============================================================
 //
 // ═══ VÌ SAO BÀI KIỂM NÀY TỒN TẠI ═══
@@ -22,7 +23,7 @@
 //
 // Bài kiểm KHÔNG cần mạng, KHÔNG cần Supabase, KHÔNG cần tài khoản Google.
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
@@ -264,16 +265,31 @@ function cayGia({ soNguoi = 5, soNhatKy = 3 } = {}) {
 console.log('KIỂM SAO LƯU — chạy thẳng sao-luu/SaoLuu.gs trong Node\n');
 
 // ---- 1. Danh sách bảng khớp lược đồ ---------------------------------
+//
+// ⚠ Đọc CẢ thư mục `luoc-do/`, không riêng `01-bang.sql` (đổi ở b122b). Bảng
+//   mọc thêm ở file sau — `tree_persons` của `26` là ví dụ, và thiếu nó thì
+//   bản sao lưu có đủ người mà không biết người nào của cây nào.
+//
+// ⚠ CHUA_SAO_LUU là danh sách những bảng CỐ Ý chưa sao lưu, không phải chỗ
+//   giấu rác. Mỗi tên ở đây là một lỗ đã biết, có ghi ở `KE-HOACH.md`; thêm
+//   một tên vào đây mà không ghi ra là biến bộ kiểm thành thứ gật bừa.
+const CHUA_SAO_LUU = ['cau_hinh', 'tai_khoan', 'de_xuat_gan_nguoi', 'doi_ma_toan_cuc'];
 {
-  const sql = readFileSync(FILE_SQL, 'utf8');
-  const trongSql = [...sql.matchAll(/create table if not exists public\.(\w+)/g)]
-    .map((m) => m[1]).sort();
+  const thuMuc = dirname(FILE_SQL);
+  const trongSql = [];
+  for (const f of readdirSync(thuMuc).filter((x) => x.endsWith('.sql')).sort()) {
+    const van = readFileSync(resolve(thuMuc, f), 'utf8');
+    for (const m of van.matchAll(/create table if not exists public\.(\w+)/g)) {
+      if (!trongSql.includes(m[1])) trongSql.push(m[1]);
+    }
+  }
+  trongSql.sort();
   const { api } = dungMoiTruong();
   const trongGs = Object.keys(api.THU_TU_DOC).sort();
-  const thieu = trongSql.filter((t) => !trongGs.includes(t));
+  const thieu = trongSql.filter((t) => !trongGs.includes(t) && !CHUA_SAO_LUU.includes(t));
   const thua = trongGs.filter((t) => !trongSql.includes(t));
-  kiem('mọi bảng của 01-bang.sql đều được sao lưu, không thừa bảng nào',
-       thieu.length === 0 && thua.length === 0 && trongSql.length === 12,
+  kiem('mọi bảng của luoc-do/ đều được sao lưu, không thừa bảng nào',
+       thieu.length === 0 && thua.length === 0 && trongSql.length === 17,
        `sql=${trongSql.length} gs=${trongGs.length}` +
        (thieu.length ? ' · THIẾU: ' + thieu.join(',') : '') +
        (thua.length ? ' · THỪA: ' + thua.join(',') : ''));

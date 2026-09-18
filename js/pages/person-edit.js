@@ -8,7 +8,7 @@
 //            xoa,anh}.js, state,
 //            domains/{person,union,validate,media,purge,render},
 //            services/{repo,gas}, utils/{graph,text,date,image,avatar}, config
-// Phiên bản: 1.42.0 · Cập nhật: 17/09/2026 14:38
+// Phiên bản: 1.43.0 · Cập nhật: 18/09/2026 (b122b) — bỏ ô `noiVe`
 // ============================================================
 //
 // NGƯỢC với hai màn hình kia: form HIỆN ĐỦ MỌI Ô, kèm chữ mờ gợi ý.
@@ -226,7 +226,7 @@ import { donDepGop } from './form-gop.js';
 import { donDepXoa, xoaNguoi } from './form-xoa.js';
 import { donDepAnh, veKhoiAnh, apThayDoiAnh, keThayDoiAnh } from './form-anh.js';
 import { state } from '../state.js';
-import { updatePerson, createPerson, loiNoiVe,
+import { updatePerson, createPerson,
          softDeletePerson, restorePerson } from '../domains/person.js';
 import { createUnion, addChild, addPartner, removeChild, removePartner,
          softDeleteUnion, restoreUnion, conLyDoTonTai, reorderChildren,
@@ -751,14 +751,6 @@ function veCacO(nguoi) {
   ra.push(oChu('residence',  'Quê quán / nơi ở (khác nơi sinh)', nguoi.residence,
                'Hà Nam — nơi sống lâu nhất'));
   ra.push(oChu('nationality', 'Dân tộc',            nguoi.nationality, 'Kinh'));
-
-  // NỐI VỀ GIA PHẢ KHÁC (b120). Chỉ ở chế độ SỬA, cùng lý do với khối ảnh:
-  // thêm người xong, mở lại hồ sơ rồi nối. Gõ tay MỘT mã người đầy đủ — mã ấy
-  // tự nói gia phả nào (`domains/person.loiNoiVe`).
-  if (N.cheDo === 'sua') {
-    ra.push(veNhan('Cũng có trong gia phả khác'));
-    ra.push(oChu('noiVe', 'Mã người ở gia phả khác', nguoi.noiVe, 'NTB417_P0013'));
-  }
 
   // ⚠ Chữ mờ của ô này đã ĐỔI ngày 21/08/2026, và lý do đáng ghi lại: bản cũ
   // mời người dùng gõ *"Chức tước, quê quán"* vào đây — đúng hai thứ vừa có ô
@@ -1642,11 +1634,7 @@ async function handleSave(nguoi) {
   const loiDoi = viSaoDoiSai(docO('doi'));
   if (loiDoi) { hienNhan(loiDoi, true); return; }
 
-  // Cùng lý do với ô Đời: máy chủ cũng chặn (`25`), nhưng bằng tên luật tiếng
-  // Anh — nói ra ở đây trước, bằng câu người đọc được.
   const thayDoi = gomThayDoi();
-  const loiNoi = loiNoiVe(state.tree, nguoi.id, thayDoi.noiVe);
-  if (loiNoi) { hienNhan(loiNoi, true); return; }
 
   // Bản ghi mới tính đúng MỘT lần, dùng cho cả phép rà lẫn lần ghi — luật 1 ở
   // đầu file. `updatePerson` là hàm thuần, `state.tree` không bị đụng tới.
@@ -1779,7 +1767,8 @@ async function handleSave(nguoi) {
   N.nutLuu.style.opacity = '1';
 
   if (ketQua && ketQua.lyDo === 'xungdot') {
-    hienNhan('Người khác vừa sửa gia phả trong lúc bạn đang gõ, nên app KHÔNG ' +
+    hienNhan('Người khác vừa sửa đúng bản ghi này trong lúc bạn đang gõ — có ' +
+             'thể họ sửa từ một gia phả khác cùng chứa người ấy — nên app KHÔNG ' +
              'ghi đè lên bản của họ. Thay đổi của bạn chưa được lưu. Chép lại ' +
              'phần vừa gõ ra chỗ khác, tải lại trang, rồi sửa lại.', true);
     return;
@@ -1910,7 +1899,8 @@ async function handleAddChild() {
   N.nutLuu.style.opacity = '1';
 
   if (ketQua && ketQua.lyDo === 'xungdot') {
-    hienNhan('Người khác vừa sửa gia phả trong lúc bạn đang gõ, nên app KHÔNG ' +
+    hienNhan('Người khác vừa sửa đúng bản ghi này trong lúc bạn đang gõ — có ' +
+             'thể họ sửa từ một gia phả khác cùng chứa người ấy — nên app KHÔNG ' +
              'ghi đè lên bản của họ. Người con này CHƯA được thêm. Chép lại ' +
              'phần vừa gõ ra chỗ khác, tải lại trang, rồi thêm lại.', true);
     return;
@@ -2017,7 +2007,8 @@ async function handleAddDauTien() {
   N.nutLuu.style.opacity = '1';
 
   if (ketQua && ketQua.lyDo === 'xungdot') {
-    hienNhan('Người khác vừa sửa gia phả trong lúc bạn đang gõ, nên app KHÔNG ' +
+    hienNhan('Người khác vừa sửa đúng bản ghi này trong lúc bạn đang gõ — có ' +
+             'thể họ sửa từ một gia phả khác cùng chứa người ấy — nên app KHÔNG ' +
              'ghi đè lên bản của họ. Người này CHƯA được thêm. Tải lại trang ' +
              'rồi xem lại — có thể họ đã thêm người đầu tiên rồi.', true);
     return;
@@ -2235,9 +2226,6 @@ function gomThayDoi() {
     religion:    docO('religion'),
     residence:   docO('residence'),
     nationality: docO('nationality'),
-    // Mã chỉ có chữ hoa — gõ thường thì nâng lên, đừng bắt người ta gõ lại.
-    // Không có ô (chế độ thêm người) thì KHÔNG gửi khoá, để khỏi đụng tới.
-    noiVe:       o.noiVe ? docO('noiVe').trim().toUpperCase() : undefined,
     doi:         docO('doi'),
     chi:         docO('chi'),
     birth: { raw: docO('birth'), place: docO('birthPlace') },
@@ -2389,7 +2377,8 @@ async function ghiMotNguoi(nguoiMoi, moTa) {
  */
 function hienLoiGhi(ketQua, hienTrang) {
   if (ketQua && ketQua.lyDo === 'xungdot') {
-    hienNhan('Người khác vừa sửa gia phả trong lúc hộp này đang mở, nên app KHÔNG ' +
+    hienNhan('Người khác vừa sửa đúng bản ghi này trong lúc hộp này đang mở — ' +
+             'có thể từ một gia phả khác cùng chứa người ấy — nên app KHÔNG ' +
              'ghi đè lên bản của họ. ' + hienTrang + ' Tải lại trang rồi làm lại.', true);
     return;
   }

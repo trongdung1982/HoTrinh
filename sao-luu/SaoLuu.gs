@@ -10,7 +10,8 @@
 //            EMAIL_SAO_LUU · MAT_KHAU_SAO_LUU (bắt buộc),
 //            THU_MUC_DRIVE · SO_BAN_GIU (tuỳ chọn)
 //            SQL — luoc-do/05-sao-luu.sql phải chạy trước
-// Phiên bản: 0.2.0 · Cập nhật: 04/09/2026 00:04
+// Phiên bản: 0.3.0 · Cập nhật: 18/09/2026 (b122b) — khoá đọc theo lược đồ
+//            `26`: bốn bảng dùng chung bỏ `tree_id`, thêm `tree_persons`
 // ============================================================
 //
 // ⚠ ĐÂY KHÔNG PHẢI dự án Apps Script cũ. Dự án cũ (`giapha/gas/`) vẫn đang
@@ -49,25 +50,34 @@
 // ------------------------------------------------------------
 // Danh sách bảng và cột dùng để sắp thứ tự khi đọc theo trang
 // ------------------------------------------------------------
-// ⚠ Phải khớp ĐÚNG danh sách bảng của `luoc-do/01-bang.sql` — không thiếu,
-//   không thừa. `kiem-thu/kiem-sao-luu.mjs` phép 1 đọc thẳng file SQL ấy và
-//   so với bảng dưới đây, nên ngày ai đó thêm một bảng mà quên sao lưu nó thì
-//   bộ kiểm đỏ ngay, chứ không phải phát hiện vào ngày cần khôi phục.
+// ⚠ Phải khớp ĐÚNG danh sách bảng dựng trong `luoc-do/` — không thiếu, không
+//   thừa. `kiem-thu/kiem-sao-luu.mjs` phép 1 đọc thẳng CẢ thư mục SQL ấy và so
+//   với bảng dưới đây, nên ngày ai đó thêm một bảng mà quên sao lưu nó thì bộ
+//   kiểm đỏ ngay, chứ không phải phát hiện vào ngày cần khôi phục. Bốn bảng cố
+//   ý CHƯA sao lưu nêu đích danh ở `CHUA_SAO_LUU` trong bộ kiểm ấy.
 //
 // Vì sao phải nêu cột sắp thứ tự: đọc theo trang (`limit`/`offset`) mà không
 // sắp thứ tự thì Postgres không hứa hai trang liên tiếp không trùng nhau và
 // không bỏ sót. Với 681 người thì một trang là đủ và lỗi ấy không bao giờ lộ
 // ra — cho tới ngày `change_log` vượt một nghìn dòng. Cột nêu ở đây là khoá
 // chính của từng bảng, tức thứ tự luôn xác định.
+//
+// ⚠ Bốn bảng dùng chung BỎ `tree_id` ở `luoc-do/26` (b121) — khoá của chúng
+//   nay chỉ còn mã bản ghi, và bảng MỚI `tree_persons` giữ "ai thuộc cây nào".
+//   Để nguyên `tree_id,id` thì Supabase từ chối câu `order` vì cột không tồn
+//   tại, và bản sao lưu đêm hỏng lặng lẽ — sai đúng vào thứ chỉ lộ ra ngày
+//   cần khôi phục. Thiếu `tree_persons` thì bản sao lưu có đủ người mà không
+//   biết người nào của cây nào.
 var THU_TU_DOC = {
   trees:          'id',
   tree_members:   'tree_id,user_id',
   branches:       'tree_id,id',
   branch_access:  'tree_id,user_id,branch_id',
-  persons:        'tree_id,id',
-  unions:         'tree_id,id',
-  union_children: 'tree_id,union_id,person_id',
-  media:          'tree_id,id',
+  tree_persons:   'tree_id,person_id',
+  persons:        'id',
+  unions:         'id',
+  union_children: 'union_id,person_id',
+  media:          'id',
   sources:        'tree_id,id',
   change_log:     'id',
   imports:        'id',

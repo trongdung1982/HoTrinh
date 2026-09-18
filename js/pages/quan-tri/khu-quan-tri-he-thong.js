@@ -5,7 +5,8 @@
 //            `#sys-default-tree-selector`.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang
-// Phiên bản: 1.3.0 · Cập nhật: 17/09/2026 (b119)
+// Phiên bản: 1.4.0 · Cập nhật: 18/09/2026 (b122b) — dọn thùng rác nói đúng
+//            nghĩa mới: người còn ở cây khác thì bản ghi ở lại
 //            1.3.0 tab Sao lưu: bảng Đối chiếu dữ liệu nay đọc SỐNG qua
 //            `khu-sao-luu.js` (`dem_du_lieu`). Lịch sử trước: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
@@ -594,13 +595,32 @@ async function donVaXoaAnh(ids) {
   return kq;
 }
 
-/** Máy chủ BỎ QUA cây chưa đủ ngày và kể tên ở `boQua` — phải nói ra. */
-function baoBoQua(kq) {
-  const bo = kq && kq.kq && kq.kq.boQua;
+/**
+ * Ba điều người bấm không đoán được, nên máy chủ kể lại và màn hình phải nói ra:
+ *
+ *   · cây chưa đủ ngày bị BỎ QUA — im lặng là tưởng đã dọn hết;
+ *   · người nay không còn thuộc gia phả nào — bản ghi họ VẪN CÒN (`27` mục 8),
+ *     khác hẳn cái người bấm vừa đọc là "xoá hẳn";
+ *   · ảnh mất chủ bị xoá cứng.
+ */
+function baoKetQuaDon(r) {
+  const kq = r && r.kq;
+  if (!kq) return;
+
+  const phan = [];
+  if (Number(kq.soNguoiMoCoi) > 0) {
+    phan.push(Number(kq.soNguoiMoCoi) + ' người nay không còn thuộc gia phả nào; ' +
+      'bản ghi của họ vẫn còn và chỉ Quản trị hệ thống nhìn thấy.');
+  }
+  if (Number(kq.soAnhRac) > 0) {
+    phan.push(Number(kq.soAnhRac) + ' tấm ảnh không còn ai nhận đã bị xoá hẳn.');
+  }
+  const bo = kq.boQua;
   if (Array.isArray(bo) && bo.length) {
-    bao('Có gia phả chưa dọn được', 'Máy chủ bỏ qua ' + bo.length +
+    phan.push('Máy chủ bỏ qua ' + bo.length +
       ' gia phả chưa đủ ' + NGAY_THUNG_RAC + ' ngày trong thùng rác.');
   }
+  if (phan.length) bao('Đã dọn thùng rác', phan.join(' '));
 }
 
 function veThungRac(sec, kq, napLai) {
@@ -638,12 +658,14 @@ function veThungRac(sec, kq, napLai) {
     const r = await hoi({
       tua: 'Dọn dẹp thùng rác',
       chu: 'Xoá hẳn ' + duDon.length + ' gia phả (' + duDon.map((c) => c.ten).join(' · ') +
-           '), tổng ' + soNguoi + ' người, cùng toàn bộ hôn nhân, ảnh và nhật ký thay đổi. ' +
+           '), đang chứa ' + soNguoi + ' người, cùng nguồn và nhật ký thay đổi của chúng. ' +
+           'Người nào CÒN mặt trong một gia phả khác thì bản ghi của họ vẫn ở lại; ' +
+           'người không còn ở đâu cả thì chỉ Quản trị hệ thống thấy. ' +
            'Việc này KHÔNG hoàn tác được — sau đây chỉ còn bản sao lưu đêm.',
       nutOk: 'Xoá hẳn', kieuOk: 'danger',
       lam: () => donVaXoaAnh(duDon.map((c) => c.fileId)),
     });
-    if (r) { baoBoQua(r); napLai(); }
+    if (r) { baoKetQuaDon(r); napLai(); }
   };
 
   if (!rac.length) {
@@ -670,12 +692,13 @@ function veThungRac(sec, kq, napLai) {
       bXoa.addEventListener('click', async () => {
         const r = await hoi({
           tua: 'Xóa vĩnh viễn',
-          chu: 'Xoá hẳn “' + c.ten + '” (' + c.soNguoi + ' người) cùng hôn nhân, ảnh và nhật ký ' +
-               'thay đổi. KHÔNG hoàn tác được — sau đây chỉ còn bản sao lưu đêm.',
+          chu: 'Xoá hẳn “' + c.ten + '” (đang chứa ' + c.soNguoi + ' người) cùng nguồn và ' +
+               'nhật ký thay đổi của nó. Người nào còn mặt ở gia phả khác thì bản ghi của ' +
+               'họ vẫn ở lại. KHÔNG hoàn tác được — sau đây chỉ còn bản sao lưu đêm.',
           nutOk: 'Xoá hẳn', kieuOk: 'danger',
           lam: () => donVaXoaAnh([c.fileId]),
         });
-        if (r) { baoBoQua(r); napLai(); }
+        if (r) { baoKetQuaDon(r); napLai(); }
       });
 
       const tr = document.createElement('tr');

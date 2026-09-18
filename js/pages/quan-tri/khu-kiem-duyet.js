@@ -6,7 +6,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, domains/so-sanh, quan-tri/trang-chi-tiet ·
 //            hop-thoai · o-bang
-// Phiên bản: 1.0.0 · Cập nhật: 16/09/2026 (b118d)
+// Phiên bản: 1.1.0 · Cập nhật: 18/09/2026 (b122b) — khoá nút Từ chối theo
+//            `lechSo` · `truocDoiMa` của `luoc-do/27`
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -309,20 +310,43 @@ export async function mountChiTietKiemDuyet(sec, ctx) {
     }
   }
 
-  const biKhoa = ct && ct.ok && ct.biKhoa;
+  // BA lý do khoá nút "Từ chối và hoàn tác", và cả ba đều do máy chủ chấm —
+  // `tu_choi_thay_doi()` tự hỏi đúng ba câu này rồi mới ghi, `chi_tiet_kiem_
+  // duyet()` trả trước để khoá nút SỚM thay vì để người ta bấm rồi mới biết.
+  //
+  // ⚠ `lechSo` là câu mà `biKhoa` KHÔNG trả lời được: `biKhoa` (`dung_do_sau`)
+  //   chỉ soi nhật ký CÙNG cây, nên ông X sửa tiếp từ cây khác thì nó vẫn báo
+  //   "không ai đụng". Số `revision` trên từng bản ghi mới thấy (`luoc-do/27`).
+  const biKhoa     = ct && ct.ok && ct.biKhoa;
+  const lechSo     = ct && ct.ok && ct.lechSo;
+  const truocDoiMa = Boolean(ct && ct.ok && ct.truocDoiMa);
+  const canChan    = Boolean(biKhoa) || Boolean(lechSo) || truocDoiMa;
+
+  let coChan = '';
   if (biKhoa) {
-    banner.style.display = 'block';
-    $('kd-conflict-text').textContent = (biKhoa.byEmail || 'Người khác') + ' đã sửa tiếp lên dữ liệu ' +
+    coChan = (biKhoa.byEmail || 'Người khác') + ' đã sửa tiếp lên dữ liệu ' +
       'này lúc ' + ngayGio(biKhoa.ts) + '. Nút "Từ chối và hoàn tác" bị khóa để tránh xóa mất công ' +
       'của người sau. Hãy xử lý thay đổi mới hơn trước, hoặc sửa tay trực tiếp trên sơ đồ.';
+  } else if (lechSo) {
+    coChan = 'Bản ghi ' + String(lechSo).slice(2) + ' đã được sửa tiếp sau lần Lưu này, ' +
+      'có thể từ một gia phả khác cùng chứa nó. Hoàn tác bây giờ là xóa mất công của ' +
+      'người sau, nên nút "Từ chối và hoàn tác" bị khóa. Sửa tay trực tiếp trên sơ đồ nếu cần.';
+  } else if (truocDoiMa) {
+    coChan = 'Lần Lưu này có từ trước khi phần mềm đổi sang mã người dùng chung, nên ảnh ' +
+      'chụp dữ liệu cũ của nó mang mã cũ — hoàn tác tự động có thể dán lên người khác. ' +
+      'Nút "Từ chối và hoàn tác" bị khóa. Sửa tay trực tiếp trên sơ đồ nếu cần.';
+  }
+  if (coChan) {
+    banner.style.display = 'block';
+    $('kd-conflict-text').textContent = coChan;
   }
 
   const laCho = d.trang_thai === 'cho';
   const daXong = 'Lần Lưu này đã được xử lý.';
   bDuyet.disabled = !laCho;
   bDuyet.title = laCho ? '' : daXong;
-  bTuChoi.disabled = !laCho || Boolean(biKhoa);
-  bTuChoi.title = !laCho ? daXong : biKhoa ? 'Không thể hoàn tác: đã có người sửa tiếp.' : '';
+  bTuChoi.disabled = !laCho || canChan;
+  bTuChoi.title = !laCho ? daXong : canChan ? 'Không hoàn tác được — xem lời cảnh báo ở trên.' : '';
   const veKhu = () => { window.location.hash = 'kiem-duyet'; };
   bDuyet.onclick = () => hoiDuyet(d, veKhu);
   bTuChoi.onclick = () => hoiTuChoi(d, veKhu);

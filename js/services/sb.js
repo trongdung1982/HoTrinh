@@ -5,10 +5,12 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.23.0 · Cập nhật: 17/09/2026 14:38 (b120)
-//            0.22.0 thêm `demDuLieu(treeId)` — 5 số đếm thô cho khu Quản trị
-//            hệ thống · Sao lưu (`24-dem-du-lieu.sql`). Lịch sử các bản
-//            trước: `git log -p js/services/sb.js`.
+// Phiên bản: 0.24.0 · Cập nhật: 18/09/2026 (b122b)
+//            0.24.0 mô hình MỘT NGƯỜI MỘT BẢN GHI (`luoc-do/26`+`27`):
+//            `layDong()` đọc bốn bảng dùng chung bằng `doc_cay()`; thêm
+//            `capMa()` · `dsNguoiMoCoi()`; bỏ `docNguoiCayKhac()` và hai câu
+//            lỗi của `noi_ve`. Lịch sử: `git log -p js/services/sb.js`.
+// Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
 // ĐÂY LÀ RANH GIỚI GIỮA TRÌNH DUYỆT VÀ MÁY CHỦ — đúng vai `services/gas.js`
@@ -70,16 +72,6 @@ function cauLoi(e) {
   }
   if (/Invalid login credentials/i.test(m)) {
     return 'Email hoặc mật khẩu không đúng.';
-  }
-  // Hai luật của `luoc-do/25-noi-ve.sql`. Form đã nói trước bằng
-  // `domains/person.loiNoiVe`; tới được đây là hai người sửa cùng lúc.
-  if (/persons_noi_ve_duy_nhat/.test(m)) {
-    return 'Trong gia phả này đã có người khác nối về đúng mã ấy. Tải lại ' +
-           'trang để thấy bản mới nhất.';
-  }
-  if (/persons_noi_ve_hop_le/.test(m)) {
-    return 'Ô "Cũng có trong gia phả khác" phải là mã người đầy đủ, có mã cây, ' +
-           'ví dụ NTB417_P0013.';
   }
   if (/Email not confirmed/i.test(m)) {
     return 'Tài khoản chưa xác nhận. Mở hộp thư và bấm đường liên kết ' +
@@ -508,24 +500,6 @@ export async function datNguoiTrungTamMacDinh(treeId, personId) {
   return error ? { ok: false, loi: cauLoi(error) } : { ok: true, loi: null };
 }
 
-/**
- * Một người ở gia phả KHÁC, đọc qua RLS — cho dòng *"Cũng có trong gia phả …"*
- * của thẻ thông tin (b120). Người đang xem không xem được cây ấy thì RLS trả
- * rỗng, và `null` là đúng câu trả lời: không có nút nhảy sang.
- *
- * @returns {Promise<{id:string, names:Array, deleted:boolean}|null>}
- */
-export async function docNguoiCayKhac(treeId, personId) {
-  const k = layKhach();
-  if (!k || !treeId || !personId) return null;
-  const { data, error } = await k.from('persons')
-    .select('id, names, deleted')
-    .eq('tree_id', treeId).eq('id', personId)
-    .maybeSingle();
-  if (error || !data) return null;
-  return { id: data.id, names: data.names || [], deleted: data.deleted === true };
-}
-
 /** Xoá giá trị đã đặt, quay về gốc cây ghi trong file. */
 export async function xoaNguoiTrungTamMacDinh(treeId) {
   return datNguoiTrungTamMacDinh(treeId, null);
@@ -536,13 +510,22 @@ export async function xoaNguoiTrungTamMacDinh(treeId) {
 // ============================================================
 
 /**
- * Đọc TOÀN BỘ cây, mỗi bảng một lần gọi, chạy song song.
+ * Đọc TOÀN BỘ cây. Bốn bảng dùng chung đi bằng MỘT lời gọi `doc_cay()`; ba
+ * thứ còn theo cây (`trees` · `sources` · `imports`) và view mã nhật ký vẫn
+ * đọc thẳng, tất cả chạy song song.
  *
- * ⚠ **`.limit()` mặc định của Supabase là 1.000 dòng.** Cây 681 người lọt,
- *   nhưng gia phả Nguyễn Phúc mà chủ dự án đang dùng để đo có lúc vượt — và
- *   khi vượt thì **không có lỗi nào cả**, chỉ đơn giản là mất người ở cuối.
- *   Đó là kiểu hỏng tệ nhất: sơ đồ vẫn vẽ, vẫn đẹp, chỉ thiếu vài chi. Nên
- *   `.range(0, GIOI_HAN)` được viết ra tường minh và kiểm số dòng trả về.
+ * ⚠⚠ **Vì sao bốn bảng ấy phải qua hàm máy chủ** (b122b). Từ `luoc-do/26`,
+ *   `persons` · `unions` · `union_children` · `media` không còn cột `tree_id`
+ *   — một người nằm ở ba cây vẫn chỉ một dòng. "Thuộc cây nào" nay là bảng
+ *   `tree_persons`, và câu hỏi *"hôn nhân nào thuộc cây này"* là một phép nối
+ *   mà PostgREST không diễn đạt được bằng đường dẫn URL. Nhét 700 mã người
+ *   vào một `.in(...)` thì URL vượt giới hạn. Cổng vẫn là `co_the_xem_cay()`,
+ *   nằm trong chính hàm ấy.
+ *
+ * ⚠ **`.limit()` mặc định của Supabase là 1.000 dòng** — vẫn đúng với ba câu
+ *   đọc thẳng còn lại. Khi vượt thì **không có lỗi nào cả**, chỉ đơn giản là
+ *   mất dòng ở cuối. Nên `.range(0, GIOI_HAN)` được viết ra tường minh.
+ *   `doc_cay()` không dính luật ấy: nó trả về MỘT giá trị `jsonb`.
  *
  * @returns {Promise<{ok:boolean, loi:string|null, dong:object|null}>}
  *          `dong` là các mảng THÔ theo tên cột snake_case. Việc ráp chúng
@@ -555,48 +538,42 @@ export async function layDong(treeId) {
   const k = layKhach();
   if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', dong: null };
 
-  const bang = (ten) => k.from(ten).select('*').eq('tree_id', treeId).range(0, GIOI_HAN);
-
   try {
-    const [cay, persons, unions, children, media, sources, imports, maNhatKy] =
-      await Promise.all([
-        k.from('trees').select('*').eq('id', treeId).maybeSingle(),
-        bang('persons'), bang('unions'), bang('union_children'),
-        bang('media'), bang('sources'),
-        k.from('imports').select('*').eq('tree_id', treeId)
-          .order('at', { ascending: true }).range(0, GIOI_HAN),
-        // Chỉ MÃ, không phải cả nhật ký — xem `04-view-ma-da-dung.sql` để
-        // biết vì sao thứ này phải nạp ở mọi lần mở app, và vì sao nó lại
-        // được rút gọn tới mức chỉ còn một cột.
-        k.from('v_ma_nhat_ky').select('ma').eq('tree_id', treeId).range(0, GIOI_HAN),
-      ]);
+    const [cay, chung, sources, imports, maNhatKy] = await Promise.all([
+      k.from('trees').select('*').eq('id', treeId).maybeSingle(),
+      k.rpc('doc_cay', { p_tree: treeId }),
+      k.from('sources').select('*').eq('tree_id', treeId).range(0, GIOI_HAN),
+      k.from('imports').select('*').eq('tree_id', treeId)
+        .order('at', { ascending: true }).range(0, GIOI_HAN),
+      // Chỉ MÃ, không phải cả nhật ký — xem `04-view-ma-da-dung.sql` để
+      // biết vì sao thứ này phải nạp ở mọi lần mở app, và vì sao nó lại
+      // được rút gọn tới mức chỉ còn một cột.
+      k.from('v_ma_nhat_ky').select('ma').eq('tree_id', treeId).range(0, GIOI_HAN),
+    ]);
 
-    for (const kq of [cay, persons, unions, children, media, sources,
-                      imports, maNhatKy]) {
+    for (const kq of [cay, chung, sources, imports, maNhatKy]) {
       if (kq.error) return { ok: false, loi: cauLoi(kq.error), dong: null };
+    }
+    // Hàm máy chủ tự viết câu từ chối khi người này không xem được cây —
+    // in thẳng câu ấy ra, đừng chế câu khác.
+    if (!chung.data || chung.data.ok !== true) {
+      return { ok: false, dong: null,
+               loi: (chung.data && chung.data.loi) ||
+                    'Máy chủ không trả về dữ liệu gia phả này.' };
     }
     if (!cay.data) {
       return { ok: false, loi: 'Không đọc được gia phả này. Có thể bạn đã ' +
                               'bị gỡ khỏi danh sách người được xem.', dong: null };
-    }
-    for (const [ten, kq] of [['persons', persons], ['unions', unions],
-                             ['union_children', children]]) {
-      if (kq.data && kq.data.length > GIOI_HAN - 1) {
-        return { ok: false, dong: null, loi:
-          'Bảng ' + ten + ' vượt quá ' + GIOI_HAN + ' dòng nên bản đọc về ' +
-          'chắc chắn còn THIẾU. Không mở gia phả với dữ liệu thiếu — nâng ' +
-          'GIOI_HAN trong js/services/sb.js rồi thử lại.' };
-      }
     }
 
     return {
       ok: true, loi: null,
       dong: {
         tree:     cay.data,
-        persons:  persons.data  || [],
-        unions:   unions.data   || [],
-        children: children.data || [],
-        media:    media.data    || [],
+        persons:  chung.data.persons  || [],
+        unions:   chung.data.unions   || [],
+        children: chung.data.children || [],
+        media:    chung.data.media    || [],
         sources:  sources.data  || [],
         imports:  imports.data  || [],
         maNhatKy: (maNhatKy.data || []).map((r) => r.ma),
@@ -605,6 +582,50 @@ export async function layDong(treeId) {
   } catch (e) {
     return { ok: false, loi: cauLoi(e), dong: null };
   }
+}
+
+/**
+ * Xin máy chủ cấp mã mới cho người / hôn nhân / ảnh — `cap_ma()` của
+ * `luoc-do/26` mục 6.
+ *
+ * ⚠ Mã P/U/M duy nhất trên TOÀN phần mềm từ `26`, nên trình duyệt không được
+ *   tự đếm `max(id) + 1` trong cây đang mở nữa: cây khác có thể đang giữ đúng
+ *   con số ấy. Sổ đếm nằm ở Postgres, chỉ tiến không lùi.
+ *
+ * ⚠ Mã xin rồi mà không lưu xuống thì mất luôn. Xin đúng lô vừa đủ.
+ *
+ * @param {'P'|'U'|'M'} loai
+ * @param {number} so  1…5000
+ * @returns {Promise<{ok:boolean, loi:string|null, ds:Array<string>}>}
+ */
+export async function capMa(loai, so = 1) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', ds: [] };
+  const { data, error } = await k.rpc('cap_ma', { p_loai: loai, p_so: so });
+  if (error) return { ok: false, loi: cauLoi(error), ds: [] };
+  return { ok: true, loi: null, ds: Array.isArray(data) ? data : [] };
+}
+
+/**
+ * Người không thuộc cây nào — `ds_nguoi_mo_coi()` của `luoc-do/27` mục 3.
+ * Xoá một gia phả chỉ cắt `tree_persons`; bản ghi người ở lại, và từ đó chỉ
+ * khu Quản trị hệ thống mới nhìn thấy họ. Người khác gọi nhận mảng rỗng.
+ */
+export async function dsNguoiMoCoi() {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', ds: [] };
+  const { data, error } = await k.rpc('ds_nguoi_mo_coi');
+  if (error) return { ok: false, loi: cauLoi(error), ds: [] };
+  const ds = (data || []).map((r) => ({
+    maNguoi: r.id,
+    ten: r.ten || '',
+    namSinh: r.nam_sinh || '',
+    namMat: r.nam_mat || '',
+    gioi: r.gioi || '',
+    daXoa: Boolean(r.da_xoa),
+    soHonNhan: Number(r.so_hon_nhan) || 0,
+  }));
+  return { ok: true, loi: null, ds };
 }
 
 // ============================================================
@@ -1623,13 +1644,15 @@ export async function chanCuaToi() {
     .eq('user_id', nguoi.id).eq('approved', true);
   if (error) return { ok: false, loi: cauLoi(error), ds: [] };
 
+  // ⚠ Tra tên theo MÃ NGƯỜI thôi, không theo cặp (cây, mã) nữa: từ `26` mã
+  //   người duy nhất toàn phần mềm và bảng `persons` không còn cột `tree_id`.
   const coMa = (data || []).filter((r) => r.person_id);
   const ten = new Map();
   if (coMa.length) {
     const { data: ng } = await k.from('persons')
-      .select('tree_id, id, names')
+      .select('id, names')
       .in('id', [...new Set(coMa.map((r) => r.person_id))]);
-    for (const p of ng || []) ten.set(p.tree_id + '|' + p.id, fullName(p));
+    for (const p of ng || []) ten.set(p.id, fullName(p));
   }
 
   const ds = (data || []).map((r) => ({
@@ -1638,7 +1661,7 @@ export async function chanCuaToi() {
     maNguoi: r.person_id || '',
     // Không đọc được tên (người đã xoá, lỗi mạng) thì để TRỐNG, màn hình vẽ
     // mã trần — đừng bịa chữ thay thế, `CLAUDE.md` mục 7.
-    tenNguoi: (r.person_id && ten.get(r.tree_id + '|' + r.person_id)) || '',
+    tenNguoi: (r.person_id && ten.get(r.person_id)) || '',
     tinCay: Boolean(r.tin_cay),
   }));
   return { ok: true, loi: null, ds };

@@ -67,6 +67,16 @@ sắp đụng mã đã có. Đo: `kiem-thu/ban-thu-sql/do-b121.mjs` phần G.
 Ảnh chụp `cu` mang số CŨ — đặt vào là trigger từ chối chính lần hoàn tác. Ở đó
 để trigger tự tăng số (b122a).
 
+### ⚠⚠ Và một chỗ nữa ở TRÌNH DUYỆT: đặt lại số sau mỗi lần Lưu (b122b)
+
+`repo.luuCay()` CỐ Ý không nạp lại cây — bản sao vừa gửi chính là thứ máy chủ
+vừa ghi. Nhưng trigger đã tăng số của từng dòng, nên bản sao ấy còn mang số CŨ:
+**lần Lưu thứ hai liền sau đó bị từ chối**, và màn hình nói *"người khác vừa
+sửa"* trong khi không có người khác nào. `hinh-dang.tangSoSauKhiLuu(cay, ops)`
+đặt lại, suy thẳng từ hai luật của trigger (mới `0` → `1`; đang có → `+1`), nên
+không tốn thêm vòng mạng nào. Đo: `kiem-hinh-dang.mjs` phép 5, có kiểm chứng
+ngược — bỏ bước này thì lượt sau PHẢI hỏng.
+
 ## Hoàn tác XUYÊN CÂY — `dung_do_sau()` không đủ (b122a)
 
 `dung_do_sau()` chỉ so nhật ký cùng cây. Ông X sửa tiếp từ cây A thì từ chối lần
@@ -90,8 +100,66 @@ lớn nhất trong cây đang mở là cấp trùng mã cây khác → `cap_ma(l
 Mã cũ → mới lúc chuyển: `doi_ma_toan_cuc`. `change_log` KHÔNG viết lại —
 nhật ký trước `doi_ma_toan_cuc.luc` nói bằng mã cũ của cây ấy.
 
+⚠ **Đếm tại chỗ không chỉ "có thể" trùng, mà trùng MÃI MÃI.** Cây NTB đang có
+tới `P0059`; `max + 1` của nó là `P0060`, mã cây Nguyễn Phúc đang giữ. Tải lại
+trang rồi thử lại vẫn ra đúng con số ấy — không có đường nào thoát, nên `cap_ma`
+là bắt buộc chứ không phải cho chắc.
+
+### Kho mã — đường đi từ máy chủ tới `nextId()` (b122b)
+
+`utils/id.js` giữ một **kho mã**; `services/repo.js` xin theo lô rồi đổ vào
+(`napKho`), `nextId()` tiêu dần. Đi vòng thế vì `utils` không được gọi
+`services` — và vì `nextId()` là hàm ĐỒNG BỘ, gọi từ trong `domains/`
+(`createPerson` · `createUnion` · `createMedia`), nơi không await được gì.
+
+| Lúc nào | Ai gọi |
+|---|---|
+| mở cây (song song với lần đọc) | `repo.napCay()` → `dayKhoMa()`, chỉ khi `suaDuoc()` |
+| sau mỗi lần Lưu | `repo.luuCay()` → `dayKhoMa()`, không chờ |
+| thêm hàng loạt | nơi gọi tự `await repo.xinMa(loai, so)` |
+
+⚠ **Lô nhỏ là cố ý** (`KHO_MOI_LO`, hiện P5 · U3 · M3). Sổ đếm Postgres chỉ
+tiến: mã xin mà không dùng là mất luôn, nên xin thừa mỗi lần mở app sẽ đẩy mã
+lên `P30000` trong khi cây có bảy trăm người.
+
+⚠ **Kho rỗng thì `nextId()` rơi về đếm trong cây** — cố ý không ném lỗi: ném
+giữa form là mất những gì người ta vừa gõ, còn đếm nhầm thì trigger từ chối
+bằng `trungma` và tải lại trang (kho đầy lại) là làm được.
+
+⚠ **Nhập GEDCOM/Excel CHƯA nối vào kho.** `domains/gedcom.js capMaHangLoat()`
+hỏi `nextId` đúng một lần rồi tự đếm tiếp, nên từ mã thứ hai trở đi nó ra ngoài
+phần đã đặt trước. Hỏng to tiếng (`trungma`), không lặng lẽ. Ghi ở `KE-HOACH.md`.
+
+## Đọc cây đi qua `doc_cay()`, không đọc thẳng bốn bảng (b122b)
+
+`sb.layDong()` cũ gọi `.eq('tree_id', …)` cho `persons` · `unions` ·
+`union_children` · `media`. Bốn bảng ấy không còn cột `tree_id`. PostgREST
+không diễn đạt được câu *"hôn nhân nào thuộc cây này"* bằng đường dẫn URL, và
+nhét 700 mã người vào một `.in(...)` thì vượt giới hạn URL — nên một hàm máy
+chủ (`27` mục 2). Ba thứ còn theo cây (`trees` · `sources` · `imports`) và view
+mã nhật ký vẫn đọc thẳng, tất cả chạy song song.
+
+⚠ `doc_cay()` trả `{ok:false, loi}` khi người gọi không xem được cây. In thẳng
+câu ấy ra, đừng chế câu khác.
+
+## Bỏ `noiVe` khỏi JS (b122b)
+
+`noiVe` (b120) nối hai bản ghi của cùng một người ở hai cây. Từ `26` người ấy
+chỉ còn MỘT bản ghi nên không còn gì để nối: bỏ ô ở form sửa, bỏ khối *"Cũng có
+trong gia phả khác"* ở thẻ thông tin, bỏ `loiNoiVe()` và `docNguoiCayKhac()`.
+`domains/person.js` sửa lần thứ hai, và cả hai lần đều vì NGHIỆP VỤ.
+
 ⚠ `photo_file_id` của dữ liệu di dời từ Drive có ca chứa MÃ FILE DRIVE, không
 phải mã `M…` (bàn thử: NPG `P0553`). Có từ trước `26`, đừng tưởng `26` làm lạc.
+
+### Vì sao phép đếm tại chỗ phải quét cả `changeLog`
+
+App không xoá cứng, nên quét `persons` đã tránh được phần lớn chuyện trùng mã.
+Chỗ hở là bản ghi rời khỏi mảng bằng đường KHÁC: sửa tay file JSON trên Drive,
+hoặc một lần nhập file thay cả mảng. Dấu vết duy nhất còn lại là `changeLog` —
+thứ cố ý không bao giờ cắt bớt. Quét `target` và các KHOÁ của `diff`, **không**
+quét `note`: `note` là văn xuôi, một câu bàn về mã tưởng tượng sẽ đẩy bộ đếm
+nhảy vọt vô cớ.
 
 ## Ảnh mồ côi = rác — so cả mã HÔN NHÂN (b122a, chốt 17/09)
 

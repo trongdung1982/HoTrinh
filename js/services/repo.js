@@ -4,41 +4,35 @@
 // Lớp      : services — được gọi bởi: pages · gọi: services/sb,
 //            services/hinh-dang, utils, state
 // Phụ thuộc: services/sb.js, services/hinh-dang.js, utils/graph.js, state.js
-// Phiên bản: 0.3.0 · Cập nhật: 08/09/2026 15:01
-//            0.3.0 (b104) `taoGiaPhaMoi()` thôi trả `'chualam'` — máy chủ nay
-//            có hàm `tao_gia_pha_moi()`.
+// Phiên bản: 0.4.0 · Cập nhật: 18/09/2026 (b122b)
+//            0.4.0 mô hình một người một bản ghi: kho mã xin của máy chủ
+//            (`dayKhoMa`/`xinMa`) · đặt lại số chống ghi đè sau mỗi lần Lưu.
+// Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
 // ═══ RANH GIỚI ĐỔI KHO LƯU TRỮ ═══
 //
 // File này và `sb.js` là **hai file duy nhất** phải viết lại khi đổi Drive
-// sang Supabase. `domains/` và `pages/` không đổi một dòng.
+// sang Supabase; `domains/` và `pages/` không đổi một dòng. Đó không phải may
+// mắn mà là luật phân lớp của `CLAUDE.md` mục 5 trả công.
 //
-// Đó không phải may mắn — luật phân lớp `config → utils → services →
-// domains → pages` của `CLAUDE.md` mục 5 sinh ra chính là để hôm nay đỡ được
-// việc này. `BAT-DAU.md` mục 1 nói thẳng: *"Ngày nào thấy mình đang sửa
-// `domains/` là ngày phải dừng lại hỏi vì sao."*
-//
-// ═══ NHỮNG CHỮ KÝ HÀM Ở ĐÂY LÀ HỢP ĐỒNG, KHÔNG PHẢI CHI TIẾT ═══
+// ═══ CHỮ KÝ HÀM Ở ĐÂY LÀ HỢP ĐỒNG ═══
 //
 // `khoiTao` · `napCay` · `luuCay(apDung, moTa)` · `suaDuoc` · `docDuoc` giữ
-// **đúng** hình dạng của bản Apps Script. Mười ba file trong `pages/` gọi
-// chúng. Đổi một tham số ở đây là đổi mười ba file kia — và mười ba file kia
-// là phần đã chạy đúng suốt 84 bước.
+// ĐÚNG hình dạng của bản Apps Script. Mười ba file trong `pages/` gọi chúng,
+// và mười ba file ấy là phần đã chạy đúng suốt 84 bước.
 //
 // ═══ CHỖ DUY NHẤT KHÁC HÌNH SO VỚI BẢN CŨ ═══
 //
-// `state.headRevisionId` (chuỗi vân tay của Google Drive) đổi thành
-// `state.revision` (số nguyên của bảng `trees`). Cùng vai trò: biết có ai vừa
-// sửa trước mình hay không. Khác chỗ: số ấy là của ta, tăng bên trong cùng
-// một giao dịch với lần ghi, nên không có khe hở giữa lúc kiểm và lúc ghi —
-// khe hở mà cơ chế trên Drive buộc phải sống chung.
+// `state.headRevisionId` (vân tay Drive) đổi thành `state.revision` (số
+// nguyên của `trees`). Cùng vai trò, khác chỗ: số ấy tăng bên trong cùng giao
+// dịch với lần ghi, nên không có khe hở giữa lúc kiểm và lúc ghi.
 
 import * as sb from './sb.js';
-import { rapCay, soSanh, coGiDeGhi } from './hinh-dang.js';
+import { rapCay, soSanh, coGiDeGhi, tangSoSauKhiLuu } from './hinh-dang.js';
 import { state, notify } from '../state.js';
 import { buildIndex } from '../utils/graph.js';
-import { sinhMaCay } from '../utils/id.js';
+import { sinhMaCay, napKho, soMaTrongKho } from '../utils/id.js';
 import { DATA_VERSION } from '../config.js';
 
 /**
@@ -79,7 +73,9 @@ export async function napCay() {
   const treeId = state.phien && state.phien.treeId;
   if (!treeId) throw new Error('Chưa biết đang mở gia phả nào.');
 
-  const kq = await sb.layDong(treeId);
+  // Xin mã ĐI CÙNG CHUYẾN với lần đọc cây — hai việc không phụ thuộc nhau, nối
+  // tiếp là cộng thêm một vòng mạng vào đúng chỗ người dùng đang chờ màn hình.
+  const [kq] = await Promise.all([sb.layDong(treeId), dayKhoMa()]);
   if (!kq)    throw new Error('Máy chủ không trả về gì khi đọc cây gia phả.');
   if (!kq.ok) throw new Error(kq.loi || 'Máy chủ từ chối trả cây gia phả.');
 
@@ -102,6 +98,60 @@ export async function napCay() {
 
   canhBaoThieuUid(cay);
   return cay;
+}
+
+// ============================================================
+// KHO MÃ — xin của máy chủ, đổ vào `utils/id.js`
+// ============================================================
+//
+// Từ `luoc-do/26`, mã người/hôn nhân/ảnh duy nhất trên TOÀN phần mềm, nên
+// `nextId()` không được tự đếm trong cây đang mở nữa (lý lẽ đầy đủ ở khối
+// "KHO MÃ" của `utils/id.js`). File này là chỗ duy nhất được gọi `sb.js`, nên
+// nó là chỗ duy nhất đi xin.
+//
+// ⚠ Lô nhỏ, và có CHỦ Ý. Sổ đếm của Postgres chỉ tiến: mã xin mà không dùng
+//   là mất luôn, nên xin thừa một lô lớn ở mỗi lần mở app sẽ đẩy số mã vọt
+//   lên trong khi cây chỉ có bảy trăm người. Xin đủ cho một lượt sửa tay, rồi
+//   đổ đầy lại sau mỗi lần Lưu.
+//
+// ⚠ Nhập GEDCOM/Excel thêm hàng trăm người một lúc thì lô này KHÔNG đủ —
+//   đường ấy phải tự gọi `xinMa()` với đúng số bản ghi sắp thêm trước khi bắt
+//   đầu. Chưa nối; xem `KE-HOACH.md` mục "Còn treo".
+const KHO_MOI_LO = { P: 5, U: 3, M: 3 };
+
+/**
+ * Đổ đầy những loại mã đã cạn. Người chỉ có quyền xem thì không xin gì —
+ * họ không tạo được bản ghi nào, xin là đốt mã suông.
+ *
+ * Không bao giờ ném lỗi: hết mã thì `nextId()` rơi về phép đếm trong cây và
+ * máy chủ chặn bằng `trungma` nếu trùng — còn ném lỗi ở đây là chặn cả việc
+ * mở gia phả chỉ vì một sổ đếm.
+ */
+async function dayKhoMa() {
+  if (!suaDuoc()) return;
+  const can = Object.keys(KHO_MOI_LO).filter((l) => soMaTrongKho(l) === 0);
+  if (!can.length) return;
+  try {
+    const kq = await Promise.all(can.map((l) => sb.capMa(l, KHO_MOI_LO[l])));
+    can.forEach((l, i) => { if (kq[i] && kq[i].ok) napKho(l, kq[i].ds); });
+  } catch (e) {
+    console.warn('[repo] chưa xin được mã mới: ' + (e && e.message ? e.message : e));
+  }
+}
+
+/**
+ * Xin trước một lô mã — cho đường thêm hàng loạt (nhập GEDCOM/Excel), nơi
+ * biết trước sẽ tạo bao nhiêu bản ghi.
+ *
+ * @param {'P'|'U'|'M'} loai
+ * @param {number} so
+ * @returns {Promise<{ok:boolean, loi:string|null, so:number}>}
+ */
+export async function xinMa(loai, so) {
+  const kq = await sb.capMa(loai, so);
+  if (!kq.ok) return { ok: false, loi: kq.loi, so: 0 };
+  napKho(loai, kq.ds);
+  return { ok: true, loi: null, so: kq.ds.length };
 }
 
 /**
@@ -194,6 +244,11 @@ export async function luuCay(apDung, moTa) {
   banNhap.tree.updatedAt = (kq.tree && kq.tree.updated_at) || banNhap.tree.updatedAt;
   banNhap.tree.updatedBy = (kq.tree && kq.tree.updated_by) || banNhap.tree.updatedBy;
 
+  // ⚠ Số của CÂY ở trên chưa đủ từ `luoc-do/26`: mỗi bản ghi có số riêng, và
+  //   trigger vừa tăng chúng. Không đặt lại thì lần Lưu thứ hai gửi số cũ lên
+  //   và bị từ chối bằng `xungdot` — xem `hinh-dang.tangSoSauKhiLuu()`.
+  tangSoSauKhiLuu(banNhap, ops);
+
   // Mục nhật ký mới, ở dạng rút gọn đúng như lúc nạp — chỉ đủ cho
   // `utils/id.js` không cấp lại mã. Xem lời cảnh báo ở `hinh-dang.rapCay`.
   if (moTa && moTa.target) {
@@ -206,6 +261,11 @@ export async function luuCay(apDung, moTa) {
   state.revision = kq.revision;
   state.dirty    = false;
   notify();
+
+  // Đổ đầy kho mã cho lượt sửa sau. KHÔNG chờ: lần Lưu đã xong rồi, bắt màn
+  // hình đứng thêm một vòng mạng nữa chỉ để chuẩn bị cho việc chưa xảy ra là
+  // trả tiền sai lúc.
+  dayKhoMa().catch(() => {});
 
   console.log('[repo] đã lưu: revision ' + kq.revision + ' · ' + tomTat(ops));
   return kq;

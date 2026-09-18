@@ -3,10 +3,10 @@
 // Vai trò  : Kiểm `services/hinh-dang.js` bằng gia phả thật, chạy trong Node.
 //            Không cần Supabase, không cần mạng, không cần trình duyệt.
 // Chạy     : cd supabase/kiem-thu && node kiem-hinh-dang.mjs
-// Phiên bản: 0.2.0 · Cập nhật: 03/09/2026 14:24
+// Phiên bản: 0.3.0 · Cập nhật: 18/09/2026 (b122b)
 // ============================================================
 //
-// ═══ BA CÂU HỎI BÀI KIỂM NÀY TRẢ LỜI ═══
+// ═══ BỐN CÂU HỎI BÀI KIỂM NÀY TRẢ LỜI ═══
 //
 // 1. **Bảng tên có sót trường nào không?** `boCay()` rồi `rapCay()` phải ra
 //    lại đúng cây ban đầu. Sót một trường thì dữ liệu của trường ấy im lặng
@@ -22,6 +22,11 @@
 //
 // 3. **Sửa một chỗ có ra đúng một chỗ không?** Không thừa, không thiếu.
 //
+// 4. **Lưu hai lần liền nhau có được không?** (b122b) Số chống ghi đè của
+//    từng bản ghi phải đi tròn một vòng và được đặt lại sau mỗi lần Lưu, nếu
+//    không thì lần thứ hai bị máy chủ từ chối bằng một câu nói sai sự thật:
+//    *"người khác vừa sửa"*. Phép 5 ở cuối file.
+//
 // ⚠ Bài kiểm đọc `tai-lieu/giapha-nguyen-trong-bac.json` — gia phả đang dùng
 //   để dựng và kiểm phần mềm. Dữ liệu trong đó **toàn bộ là GIẢ**
 //   (`CLAUDE.md` mục 9). Bài kiểm CHỈ ĐỌC, không ghi gì vào file ấy.
@@ -29,7 +34,7 @@
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { rapCay, boCay, soSanh, coGiDeGhi } from '../js/services/hinh-dang.js';
+import { rapCay, boCay, soSanh, coGiDeGhi, tangSoSauKhiLuu } from '../js/services/hinh-dang.js';
 
 const DAY = dirname(fileURLToPath(import.meta.url));
 const FILE = resolve(DAY, '../../tai-lieu/giapha-nguyen-trong-bac.json');
@@ -236,14 +241,24 @@ function cotBatBuoc(tenBang) {
     if (ten[1] === 'tree_id') continue;        // `luu_cay()` tự gắn, không đi qua veBang
     ra.push(ten[1]);
   }
-  // Cột `not null` thêm SAU `01` (`alter table … add column`) — `noi_ve` của
-  // `25` là cột đầu tiên loại ấy trên bảng dữ liệu. Không đọc thì nó lọt lưới.
-  for (const f of readdirSync(dirname(FILE_SQL)).filter((x) => x.endsWith('.sql'))) {
+  // Cột `not null` THÊM VÀO hay BỎ ĐI sau `01`. Đọc các file theo ĐÚNG thứ tự
+  // số, vì thứ tự chính là lịch sử: `25` thêm `noi_ve`, `26` bỏ nó đi — đọc
+  // ngược thì bộ kiểm đòi một cột đã chết.
+  //
+  // ⚠ Chỉ đọc `add column` thì lỗi đi theo chiều kia: bộ kiểm bắt `hinh-dang.js`
+  //   khai một cột máy chủ không còn, tức bắt app ghi rác. Đã xảy ra ở b122b.
+  const dsFile = readdirSync(dirname(FILE_SQL))
+    .filter((x) => x.endsWith('.sql')).sort();
+  for (const f of dsFile) {
     const van = readFileSync(resolve(dirname(FILE_SQL), f), 'utf8');
     const re = new RegExp('alter table public\\.' + tenBang + '\\s+([^;]*);', 'g');
     for (const khoi of van.matchAll(re)) {
       for (const c of khoi[1].matchAll(/add column if not exists ([a-z_]+)([^,]*)/g)) {
         if (/not null/i.test(c[2]) && !ra.includes(c[1])) ra.push(c[1]);
+      }
+      for (const c of khoi[1].matchAll(/drop column (?:if exists )?([a-z_]+)/g)) {
+        const i = ra.indexOf(c[1]);
+        if (i !== -1) ra.splice(i, 1);
       }
     }
   }
@@ -309,8 +324,13 @@ for (const [tenBang, tenOps] of BANG) {
   }
 }
 
-kiem('cột not null thêm sau 01 cũng được đọc (persons.noi_ve của 25)',
-     (cotBatBuoc('persons') || []).includes('noi_ve'), demCot);
+kiem('cột not null thêm sau 01 cũng được đọc (persons.revision của 26)',
+     (cotBatBuoc('persons') || []).includes('revision'), demCot);
+
+// Chiều ngược, và nó cũng đắt như chiều kia: đòi một cột máy chủ đã bỏ nghĩa
+// là bắt `hinh-dang.js` ghi rác xuống. `25` thêm `noi_ve`, `26` bỏ đi.
+kiem('cột đã bị bỏ sau đó thì thôi đòi (persons.noi_ve bỏ ở 26)',
+     !(cotBatBuoc('persons') || []).includes('noi_ve'), demCot);
 
 kiem('không dòng nào có null ở cột not null', nullSai.length === 0,
      [...new Set(nullSai)].slice(0, 8).join('\n        '));
@@ -327,6 +347,104 @@ if (opsThem.persons.luu.length === 1) {
   kiem('vn của người mới là {} chứ không phải null',
        a.vn !== null && typeof a.vn === 'object' && Object.keys(a.vn).length === 0,
        JSON.stringify(a.vn));
+}
+
+// ------------------------------------------------------------
+// 5. Số chống ghi đè — LƯU HAI LẦN LIỀN NHAU
+// ------------------------------------------------------------
+//
+// ⚠ ĐÂY LÀ PHÉP CANH ĐIỂM DỪNG CỦA b122b. Máy chủ `luoc-do/26` tăng `revision`
+//   của từng dòng nó vừa ghi. `repo.luuCay()` CỐ Ý không nạp lại cây, nên bản
+//   sao trong tay còn mang số CŨ — gửi lên lần thứ hai là `GP409`, và màn hình
+//   nói "người khác vừa sửa" trong khi không có người khác nào cả.
+//
+//   Bài kiểm dựng lại đúng vòng ấy mà không cần Supabase: lưu → giả lập máy
+//   chủ tăng số → `tangSoSauKhiLuu()` → so lại. Số trong tay phải KHỚP số máy
+//   chủ đang giữ, không thì lần lưu thứ hai hỏng.
+console.log('\n5. Số chống ghi đè qua hai lần lưu');
+
+/** Đúng hai luật của trigger `chan_ghi_de_ban_ghi`, không hơn. */
+function mayChuGhi(kho, khoa, dong) {
+  const cu = kho.get(khoa);
+  if (cu === undefined) {           // dòng mới: gửi 0, lưu thành 1
+    kho.set(khoa, 1);
+    return dong.revision === 0;
+  }
+  if (dong.revision !== cu) return false;   // GP409 — số cũ hoặc thiếu
+  kho.set(khoa, cu + 1);
+  return true;
+}
+
+{
+  // Kho số của "máy chủ": mọi bản ghi đang có, theo đúng số cây thử mang sẵn.
+  const kho = new Map();
+  for (const p of lai.persons) kho.set('p:' + p.id, p.revision);
+  for (const u of lai.unions) {
+    kho.set('u:' + u.id, u.revision);
+    for (const c of u.children || []) kho.set('c:' + u.id + '|' + c.personId, c.revision);
+  }
+
+  const trongTay = JSON.parse(JSON.stringify(lai));
+  const uCon = trongTay.unions.find((u) => (u.children || []).length > 0);
+
+  const motLuot = (n) => {
+    const sua = JSON.parse(JSON.stringify(trongTay));
+    sua.persons[0].note = 'ghi chú lượt ' + n;
+    const u = sua.unions.find((x) => uCon && x.id === uCon.id);
+    if (u) u.children[0].order = (u.children[0].order || 1) + n;
+
+    const ops = soSanh(trongTay, sua);
+    let mayChuGat = true;
+    for (const d of ops.persons.luu)  if (!mayChuGhi(kho, 'p:' + d.id, d)) mayChuGat = false;
+    for (const d of ops.unions.luu)   if (!mayChuGhi(kho, 'u:' + d.id, d)) mayChuGat = false;
+    for (const d of ops.children.luu) {
+      if (!mayChuGhi(kho, 'c:' + d.union_id + '|' + d.person_id, d)) mayChuGat = false;
+    }
+    if (mayChuGat) tangSoSauKhiLuu(sua, ops);
+    // Máy chủ gật thì bản sao mới thành bản đang giữ — đúng `repo.luuCay()`.
+    if (mayChuGat) { trongTay.persons = sua.persons; trongTay.unions = sua.unions; }
+    return { ops, mayChuGat };
+  };
+
+  const l1 = motLuot(1);
+  kiem('lượt 1 — máy chủ nhận', l1.mayChuGat, keOps(l1.ops));
+  kiem('lượt 1 — có gửi kèm số chống ghi đè',
+       l1.ops.persons.luu.length > 0 &&
+       Number.isFinite(l1.ops.persons.luu[0].revision),
+       JSON.stringify(l1.ops.persons.luu[0] && l1.ops.persons.luu[0].revision));
+
+  const l2 = motLuot(2);
+  kiem('lượt 2 — máy chủ VẪN nhận (không xungdot)', l2.mayChuGat, keOps(l2.ops));
+
+  if (uCon) {
+    kiem('con cũng mang số qua được hai lượt',
+         l2.ops.children.luu.length === 1 &&
+         Number.isFinite(l2.ops.children.luu[0].revision),
+         keOps(l2.ops));
+  }
+
+  // Người MỚI phải gửi `0` — giao ước "dòng này chưa ai giữ".
+  const themMoi = JSON.parse(JSON.stringify(trongTay));
+  themMoi.persons.push({ id: 'P9998', names: [], sex: 'U' });
+  const opsMoi = soSanh(trongTay, themMoi).persons.luu.find((d) => d.id === 'P9998');
+  kiem('người mới gửi revision = 0', opsMoi && opsMoi.revision === 0,
+       opsMoi ? String(opsMoi.revision) : 'không thấy dòng P9998');
+
+  // Và chiều ngược: KHÔNG đặt lại số thì lượt sau phải HỎNG. Không có phép
+  // này thì phép trên có thể xanh vì một lý do chẳng liên quan gì.
+  const kho2 = new Map(kho);
+  const banCu = JSON.parse(JSON.stringify(trongTay));
+  const suaTiep = JSON.parse(JSON.stringify(banCu));
+  suaTiep.persons[0].note = 'ghi chú lượt 3';
+  const ops5 = soSanh(banCu, suaTiep);
+  for (const d of ops5.persons.luu) mayChuGhi(kho2, 'p:' + d.id, d);   // máy chủ tăng số
+  const suaNua = JSON.parse(JSON.stringify(suaTiep));                   // KHÔNG tangSoSauKhiLuu
+  suaNua.persons[0].note = 'ghi chú lượt 4';
+  const ops6 = soSanh(suaTiep, suaNua);
+  let hongNhuMongDoi = false;
+  for (const d of ops6.persons.luu) if (!mayChuGhi(kho2, 'p:' + d.id, d)) hongNhuMongDoi = true;
+  kiem('bỏ bước đặt lại số thì lượt sau HỎNG (kiểm chứng ngược)', hongNhuMongDoi,
+       'máy chủ vẫn nhận — nghĩa là phép kiểm trên không chứng minh được gì');
 }
 
 // ------------------------------------------------------------

@@ -7,7 +7,8 @@
 //            `trang-tai-khoan.js`, và những cửa của chúng trong
 //            `js/services/sb.js` (b98 + b101 + b106 + b109 + b117 + b118).
 // Chạy     : cd supabase/kiem-thu && node kiem-trang-quan-tri.mjs
-// Phiên bản: 0.11.0 · Cập nhật: 16/09/2026 (b118d)
+// Phiên bản: 0.11.1 · Cập nhật: 18/09/2026 (b122b) — vá phép `layPhien()`
+//            đứng đỏ từ b118c vì khớp cứng danh sách cột
 //            0.11.0 Trang Quản trị nay dựng từ NGUYÊN FILE quantri3, không còn
 //            `#khu-tam`: mọi khu và trang chi tiết vẽ vào section của nó. Chín
 //            phép bám hình dạng cũ được đính chính theo đúng ĐIỀU phép canh
@@ -1203,7 +1204,10 @@ kiem('chanCuaToi() chỉ đọc chân ĐÃ DUYỆT của chính mình',
 
 kiem('layPhien() mang userId · duocTaoCay, không thêm vòng mạng',
      /userId: nguoi\.id, duocTaoCay/.test(JS_SB) &&
-     /select\('ho_ten, duoc_tao_cay'\)/.test(JS_SB),
+     // ⚠ Khớp LỎNG phần đuôi: `khoa_ly_do` nhập bọn vào câu này ở b118c và
+     //   phép kiểm đứng đỏ từ đó mà không ai thấy. Điều phép này hỏi là "còn
+     //   đi chung một câu truy vấn không", không phải danh sách cột.
+     /select\('ho_ten, duoc_tao_cay[^']*'\)/.test(JS_SB),
      'thiếu trường, hoặc hỏi thêm một vòng');
 
 // ⚠⚠ PHÉP ĐẮT NHẤT CỦA PHẦN NÀY. Thiếu một tên ở `sb-gia.mjs` là `SyntaxError`
