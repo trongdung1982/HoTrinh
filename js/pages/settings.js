@@ -4,13 +4,8 @@
 //            đường sang Chọn gia phả · Sao lưu & khôi phục · Xuất/Nhập GEDCOM
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, services/tuong-thich, services/sb, utils/text, pages/export-image
-// Phiên bản: 1.32.2 · Cập nhật: 14/09/2026 (b113)
-//            1.32.0 (AGY, 12/09) thêm lại khối Chọn gia phả · 1.32.1 (b113,
-//            cùng phiên) gỡ vì đoán đó là tái sinh một quyết định b103 đã bỏ
-//            có chủ ý · 1.32.2 (b113, chủ dự án xác nhận cùng ngày): khối này
-//            CẦN có trong Cài đặt — lối tắt đổi cây, khác khu 1 QuanTri.html
-//            (quản lý đầy đủ: xin quyền, công tắc chủ cây). Phục hồi nguyên
-//            văn bản 1.32.0, không đổi `quantri.html`/khu 1.
+// Phiên bản: 1.32.3 · Cập nhật: 18/09/2026
+//            1.32.3 (AGY): đổi 'Tài khoản và quyền' thành 'Tài khoản và vai trò' (b109c).
 // ============================================================
 //
 // Màn hình này tồn tại vì MỘT việc: đặt và bỏ người trung tâm mặc định của
@@ -1074,7 +1069,7 @@ function veKhoiQuanLy(vao) {
 //   nội dung*. Khu 2 hỏi `co_the_quan_tri()` rồi mờ sẵn nút, kèm câu vì sao.
 
 // ============================================================
-// Khối "Tài khoản và quyền" — chỉ để đọc
+// Khối "Tài khoản và vai trò" — chỉ để đọc
 // ============================================================
 
 /**
@@ -1092,7 +1087,7 @@ function veKhoiPhien(vao) {
 
   const khoi = document.createElement('div');
   khoi.style.cssText = 'margin-top:20px';
-  khoi.append(veNhanKhoi('Tài khoản và quyền'));
+  khoi.append(veNhanKhoi('Tài khoản và vai trò'));
 
   const bang = document.createElement('div');
   bang.style.cssText = 'display:flex;flex-direction:column;gap:1px';
@@ -1161,7 +1156,7 @@ function veKhoiPhien(vao) {
 }
 
 /**
- * Nút Đăng xuất. Đứng ở CUỐI khối "Tài khoản và quyền" — cùng chỗ với dòng
+ * Nút Đăng xuất. Đứng ở CUỐI khối "Tài khoản và vai trò" — cùng chỗ với dòng
  * `Đăng nhập: <email>` mà nó huỷ, nên không phải đi tìm.
  *
  * ⚠ Cố ý KHÔNG đặt thành nút tròn thứ sáu ở cụm nút trên màn hình sơ đồ:
