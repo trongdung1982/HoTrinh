@@ -1,6 +1,6 @@
 # Hướng dẫn phân quyền — dành cho chủ dự án
 
-*Cập nhật 04/09/2026 22:20 · Luật trực hệ + hàng chờ duyệt + kiểm duyệt nội dung*
+*Cập nhật 18/09/2026 · Thao tác trên trang Quản trị thay cho SQL Editor (b106) · Luật trực hệ + hàng chờ duyệt*
 
 > File này viết cho người **không lập trình**. Mỗi bước ghi rõ bấm gì, và
 > ghi rõ **nhìn thấy gì thì biết là xong**.
@@ -64,92 +64,65 @@ không hỏng đằng cho qua. Dán nốt file thứ hai là hết.)
 
 ---
 
-## 3. Gắn và duyệt một tài khoản
+## 3. Gắn mã người, duyệt đơn và đổi vai trò — làm trên màn hình Quản trị
 
-Vẫn ở **SQL Editor** → **New query**. Dán đoạn dưới, **sửa hai chỗ có ghi chú**
-rồi Run:
+⚠ **KHÔNG dùng SQL Editor để gõ lệnh `update` nữa.** Trước b106, app chưa có
+màn hình quản lý nên phải gõ SQL thủ công. Từ b106, toàn bộ việc duyệt đơn,
+gắn mã người, đổi vai trò và bật tin cậy **được làm trực tiếp trên giao diện
+trang Quản trị (`QuanTri.html`)**. Thao tác trên giao diện vừa nhanh, vừa được
+máy chủ kiểm tra bảo đảm toàn vẹn dữ liệu (không gắn trùng mã người, không tự
+đổi vai trò của chính mình, đúng thẩm quyền chủ cây / Quản trị hệ thống).
 
-```sql
-update public.tree_members
-   set person_id = 'P0012',      -- mã người trong gia phả
-       approved  = true          -- true = duyệt, false = gỡ duyệt
- where tree_id = (select id from public.trees where tree_code = 'NTB')
-   and lower(email) = lower('nguoi-can-duyet@gmail.com')   -- email tài khoản
-   and exists (select 1 from public.persons p
-                where p.tree_id = tree_members.tree_id
-                  and p.id = 'P0012');
+### Các bước thao tác trên giao diện:
 
-select email, role, coalesce(person_id, '(chua gan)') as ma, approved
-  from public.tree_members
- order by role;
-```
-
-*Xong đúng khi:* bảng in ra ở dưới có đúng dòng ấy mang mã người và `approved`
-bằng `true`.
-
-**Không đổi gì cả** thì một trong hai điều sau sai, và dòng `exists` cố ý làm
-nó không đổi thay vì gắn bừa: email không có trong gia phả này, hoặc mã người
-gõ sai. Đối chiếu bằng mục 4 ngay dưới.
-
-⚠ **Vì sao dùng `update` chứ không gọi hàm `duyet_thanh_vien()`.** Hàm ấy có
-thật và vẫn dùng được — nhưng chỉ khi người gọi **đang đăng nhập** bằng tài
-khoản `quan_tri_he_thong`, tức từ màn hình duyệt trong app. *(Tới 04/09/2026 nó nhận cả
-`quan_tri`; `08-kiem-duyet.sql` mục 4 thu hẹp lại — xem cuối mục 3 này.)* Cửa sổ SQL
-Editor không mang danh nghĩa tài khoản nào cả, nên với hàm ấy nó là *"người
-ngoài"* và bị từ chối.
-
-Bản đầu của hàm **không** từ chối — và đó chính là lỗ hổng phép thử H9 bắt được
-ngày 04/09/2026: cửa kiểm quyền không đóng với người ngoài, nên ai cũng duyệt
-được cho tài khoản khác. Vá xong thì SQL Editor mất luôn đường tắt ấy. Đổi lại
-là đúng, và `update` ở trên làm được y hệt việc cần làm.
+1. **Mở trang Quản trị**: Trên thanh menu hoặc Cài đặt, bấm vào **Quản trị**
+   (địa chỉ `…/QuanTri.html`). Chọn gia phả cần thao tác.
+2. **Duyệt đơn xin vào và gắn mã người**:
+   - Chọn tab **Đơn xin vào** (nơi gom các tài khoản đã đăng ký và xin vào cây).
+   - Với mỗi đơn, nhập hoặc chọn **mã người** trong gia phả (ví dụ `P0012`) vào ô tương ứng.
+   - Bấm **Duyệt** — tài khoản được nhận vào cây, mang vai trò *Thành viên* và được sửa trực hệ của mã người ấy.
+   - Nếu không muốn nhận, bấm **Từ chối** (hệ thống hỏi xác nhận lại một nhịp rồi mới xoá).
+   - Nếu duyệt cho vào nhưng **để trống mã người**, họ sẽ vào với vai trò *Khách* (chỉ xem, không sửa được gì).
+3. **Đổi vai trò hoặc gắn lại mã người cho tài khoản đã vào cây**:
+   - Chọn tab **Thành viên** (hoặc *Tất cả*).
+   - Bấm vào nút hành động (`...` hoặc menu) trên dòng tài khoản cần chỉnh:
+     - **Đổi vai trò**: Chọn một trong ba vai trò: *Quản trị viên* · *Thành viên* · *Khách*.
+     - **Gắn mã người**: Cập nhật hoặc đổi mã người liên kết với tài khoản này.
+     - **Tin cậy**: Bật/tắt cờ tin cậy (bật cờ này thì thành viên được ghi thẳng dữ liệu mà không cần qua hàng chờ duyệt nội dung).
+     - **Gỡ khỏi gia phả**: Gỡ quyền truy cập của tài khoản khỏi cây.
 
 ⚠ **Một người trong gia phả chỉ gắn được với một tài khoản.** Gắn `P0012` cho
-người thứ hai thì cơ sở dữ liệu từ chối. Đó là chủ ý: nếu không, hai người
-cùng nhận mình là một cụ và cả hai cùng sửa được trực hệ của cụ, mà không có
-gì bất thường hiện lên màn hình.
+người thứ hai thì máy chủ từ chối. Đó là chủ ý: nếu không, hai người cùng nhận
+mình là một cụ và cả hai cùng sửa được trực hệ của cụ, mà không có gì bất thường
+hiện lên màn hình.
 
-### Cấp quyền quản trị viên cho ai đó
+⚠ **Luật "không ai tự đặt quyền cho chính mình":** Nút đổi vai trò trên dòng
+của chính bạn sẽ bị khoá mờ sẵn kèm lý do — chủ cây hay quản trị viên không tự
+hạ hoặc tự nâng vai trò của chính mình được.
 
-```sql
-update public.tree_members
-   set role = 'quan_tri'
- where tree_id = (select id from public.trees where tree_code = 'NTB')
-   and user_id = (select id from auth.users where email = 'nguoi-do@gmail.com');
-```
+### Bảng phân định vai trò trong gia phả:
 
-Quản trị viên **không cần gắn mã người** — họ sửa được cả cây.
-
-⚠ **`quan_tri` KHÔNG phải "chủ thứ hai" nữa** *(đổi 04/09/2026,
-`08-kiem-duyet.sql` mục 4)*. Chủ dự án chốt tách hai hạng:
-
-| Hạng | Mã trong bảng | Sửa dữ liệu | Duyệt nội dung | Nhận người vào cây · gắn mã người |
+| Hạng | Mã trong bảng | Sửa dữ liệu | Duyệt nội dung | Duyệt đơn · Đổi vai trò · Gắn mã |
 |---|---|---|---|---|
-| **Quản trị hệ thống** | `quan_tri_he_thong` | ghi thẳng | ✓ | ✓ |
+| **Quản trị hệ thống** | `quan_tri_he_thong` | ghi thẳng | ✓ | ✓ (mọi cây) |
+| **Chủ cây** *(cột chu_so_huu)* | `quan_tri` hoặc `sua` | ghi thẳng | ✓ | ✓ (cây của mình) |
 | **Quản trị viên** | `quan_tri` | ghi thẳng | ✓ | ✗ |
 | **Thành viên** | `sua` | theo trực hệ, chờ duyệt | ✗ | ✗ |
 | **Khách** | `xem` | ✗ | ✗ | ✗ |
 
-Nghĩa là **quản trị viên** là người kiểm duyệt nội dung, không phải người
-quản trị hệ thống.
-
-⚠ **Bốn tên trên là cách gọi chốt 04/09/2026**, và mã `chu` đã được đổi thành
-`quan_tri_he_thong` cùng ngày — bạn sẽ không còn gặp chữ `chu` ở đâu nữa. Việc
-đổi ấy làm bằng `luoc-do/09-doi-ma-vai.sql`; xem mục 8.
-
-Chỗ dịch mã sang tên hiển thị nằm ở `js/pages/settings.js` hàm
-`vaiTroBangChu()`, và chỉ có một chỗ ấy.
-
-**Cụ thể quản trị viên mất gì:** ba hàm `duyet_thanh_vien()`,
-`tu_choi_thanh_vien()`, `ds_cho_duyet()` từ nay chỉ quản trị hệ thống gọi được
-— khối *"Đơn chờ duyệt"* trong màn Cài đặt cũng vậy, máy chủ trả về rỗng cho
-quản trị viên.
-
-Lý do: hai hàm đầu **đổi được ai có quyền gì**. Một người kiểm duyệt nội dung
-không cần tới chúng, mà có chúng thì họ tự cấp được quyền sửa cho bất kỳ ai.
+- **Quản trị viên (`quan_tri`)** là người kiểm duyệt nội dung của cây, **không**
+  phải người quản trị hệ thống và không đổi được quyền thành viên khác.
+- **Chủ cây (`chu_so_huu`)** là người lập ra cây, nắm toàn quyền phân quyền trên cây đó.
 
 ---
 
 ## 4. Xem hiện ai đang có quyền gì
+
+Cách xem nhanh và chuẩn xác nhất là mở trang **Quản trị** → chọn gia phả → tab
+**Thành viên**. Bảng hiển thị đầy đủ mọi tài khoản, vai trò, mã người được gắn,
+trạng thái duyệt và cờ tin cậy.
+
+Nếu cần tra cứu trực tiếp bằng SQL trong **SQL Editor** (chỉ để kiểm tra tầng dữ liệu):
 
 ```sql
 select m.email, m.role, m.person_id, m.approved,
@@ -172,10 +145,10 @@ Hỏi họ **câu báo lỗi hiện trên màn hình**, rồi tra bảng này:
 
 | Câu họ thấy | Nghĩa là | Cách gỡ |
 |---|---|---|
-| *"chưa được gắn với một người trong gia phả, hoặc quản trị viên chưa duyệt"* | Chưa qua cửa 1 hoặc cửa 2 | Làm mục 3 |
+| *"chưa được gắn với một người trong gia phả, hoặc quản trị viên chưa duyệt"* | Chưa qua cửa 1 hoặc cửa 2 | Vào trang Quản trị duyệt đơn hoặc gắn mã người (mục 3) |
 | *"Người P00xx không thuộc trực hệ của bạn"* | Đúng luật, không phải lỗi | Nhờ người khác trong trực hệ, hoặc nhờ quản trị viên |
 | *"Hôn nhân U00xx ngoài trực hệ của bạn"* | Họ đang cố thêm/bớt con của một cặp không thuộc trực hệ họ | Như trên |
-| *"Bạn chỉ có quyền xem gia phả này"* | Vai là `xem` | Đổi `role` sang `sua` rồi làm mục 3 |
+| *"Bạn chỉ có quyền xem gia phả này"* | Vai là `xem` | Vào trang Quản trị đổi vai sang Thành viên (`sua`) và gắn mã người (mục 3) |
 | *"Người khác vừa sửa gia phả trong lúc bạn đang mở"* | Không liên quan phân quyền | Tải lại trang rồi sửa lại |
 
 ---
@@ -189,7 +162,7 @@ Người trong họ **tự xin vào**, bạn không phải đi thêm tay từng 
 1. Họ tự đăng ký tài khoản, đăng nhập.
 2. Màn hình hiện **"Bạn chưa được cấp quyền xem"** kèm ô tự giới thiệu và
    nút **Xin vào gia phả**. Bấm xong, đơn vào hàng chờ.
-3. Bạn mở app → nút **⚙ Cài đặt** → khối **"Đơn chờ duyệt (n)"**. Mỗi đơn
+3. Bạn mở trang **Quản trị** (`QuanTri.html`) → chọn gia phả → tab **Đơn xin vào**. Mỗi đơn
    hiện email, lời họ tự giới thiệu, giờ gửi.
 4. Điền **mã người** trong gia phả rồi bấm **Duyệt** — họ vào xem được, và
    sửa được trực hệ của mã ấy. **Để trống mã** thì họ chỉ xem, không sửa gì.
