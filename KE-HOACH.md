@@ -98,15 +98,13 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 sửa một người, **Lưu hai lần liền** · tải lại xem đúng · nút Từ chối khoá
 đúng lúc. ⚠ Staging lệch thật tới khi dán `26`+`27` sang đó.
 
-**Ba việc mới nổi ra lúc bấm thử 18/09** (chi tiết `so-tay/trang-quan-tri.md`),
-**hai đã vá, chưa ai xác nhận lại trên điện thoại**:
-1. ✅ Điện thoại vào trang con không quay về sơ đồ được — vá bằng nút
-   `.qt-menu` mở khay.
-2. ✅ Ô gợi ý mời thành viên chọn không được trên điện thoại — nghi bàn phím
-   ảo lệch toạ độ, vá bằng nghe `visualViewport`.
-3. ⏳ **Chưa làm** — người trùng giữa các cây: thêm người mới không gợi ý "đã
-   có ở cây khác"; sửa người cần mục *người này ở cây khác* để QTHT hợp nhất.
-   Gộp câu hỏi thiết kế treo 17/09 dưới — chốt hướng trước, chưa phải 1 phiên.
+**Nổi ra lúc bấm thử 18/09** (chi tiết `so-tay/trang-quan-tri.md`): khay điều
+hướng điện thoại + ba lỗi bố cục mobile **đã vá, chủ dự án xác nhận đạt**. Còn
+⏳ **chưa làm — người trùng giữa các cây**: thêm người mới không gợi ý "đã có ở
+cây khác"; sửa người cần mục *người này ở cây khác* để QTHT hợp nhất. Gộp câu
+hỏi thiết kế treo 17/09 dưới — chốt hướng trước, chưa phải việc một phiên.
+⚠ Ô gợi ý mời thành viên trên điện thoại: đã vá `visualViewport`, **chưa ai
+bấm lại** để xác nhận.
 
 - ⚠ Để b123 (chưa lộ vì mỗi cây còn tự đứng riêng): cờ `deleted` và xoá cứng hôn
   nhân là CHUNG mọi cây · `doc_cay` bỏ cạnh con có một đầu ngoài cây.
@@ -130,6 +128,10 @@ gắn mã của mình? xin gỡ luật "không ngoại lệ" đã chốt hai l�
 
 *Việc đã đóng thì **xoá khỏi bảng**, đừng gạch ngang giữ lại — nhật ký bước đã
 là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừng chép số lần trước.*
+
+⚠ **18/09: bốn việc đã GIAO phụ tá** (nợ b105 · *Quyền*/*Vai trò* · hướng dẫn
+phân quyền mục 3 · `xem-khung-quan-tri.mjs`) — phân công vùng: **`../GEMINI.md`
+mục 2c**. Đừng làm trùng; rà lại việc họ làm ở phiên sau.
 
 | Việc | Ghi ở đâu |
 |---|---|
@@ -161,7 +163,6 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | Chưa mở file `.ged` xuất ra bằng một phần mềm gia phả thật | `BAT-DAU.md` mục 5 |
 | **Ảnh: kho công khai hay kho kín?** Hiện công khai — đường dẫn khó đoán, nhưng *"khó đoán"* không phải *"được bảo vệ"* | `KIEN-TRUC.md` mục 7 |
 | **`branches` / `branch_access` dựng từ `01-bang.sql` nay KHÔNG dùng** — luật đi theo trực hệ, không chia chi *(chốt 04/09/2026)* | `06-quyen-truc-he.sql` mục 2 |
-| **`GEMINI.md` vẫn bảo Antigravity chạy *"7 phép rà"*** — nay 10; AGY sửa mã thì cũng phải chạy `do-gon.mjs` | `../GEMINI.md` dòng 138 |
 
 ### ⚠ Bộ bất biến bố cục đang gác nhầm nhánh
 
