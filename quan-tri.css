@@ -2,9 +2,10 @@
    giapha-supabase · quan-tri.css
    Vai trò  : Giao diện trang Quản trị — CHÉP NGUYÊN VĂN CSS của prototype
               `quantri3.html` chủ dự án đã chốt 13/09/2026.
-   Phiên bản: 1.1.0 · Cập nhật: 18/09/2026 — thêm khay điều hướng điện thoại
+   Phiên bản: 1.1.1 · Cập nhật: 18/09/2026 — khay điều hướng điện thoại
               (`.qt-menu`/`.qt-man`, khối riêng SAU "HẾT BẢN CHÉP", không đụng
-              khối chép nguyên). Lịch sử cũ:
+              khối chép nguyên); trong khay trả `nav` về mỗi mục một hàng
+              (chủ dự án báo bốn nút dồn một hàng khó bấm). Lịch sử cũ:
               1.0.0 (b118c) BỎ toàn bộ bộ `.qt-*` tự vẽ của b101–b117, thay
               bằng CSS nguyên văn của quantri3. Khối "TẠM" ở cuối file giữ
               lại những class `.qt-*` mà các khu CHƯA chuyển sang giao diện
@@ -76,4 +77,9 @@ td .link { text-align:left; }
   }
   aside.qt-mo{ transform:translateX(0); }
   aside .back{ display:block; }
+  /* CSS gốc quantri3 xếp 4 nút thành một hàng cuộn ngang (`nav{display:flex;
+     overflow:auto}` ở khối chép nguyên) — hợp lý khi aside nằm ngang đầu
+     trang, nhưng trong khay trượt đứng thì trả về mỗi mục một hàng. */
+  aside nav{ display:grid; gap:5px; }
+  aside .nav{ width:100%; white-space:normal; }
 }
