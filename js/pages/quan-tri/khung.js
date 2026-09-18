@@ -7,27 +7,27 @@
 // Phụ thuộc: services/sb, pages/dang-nhap, quan-tri/khu-kiem-duyet ·
 //            khu-gia-pha · khu-tai-khoan · khu-quan-tri-he-thong · trang-cay ·
 //            trang-tai-khoan · trang-moi · trang-chi-tiet · o-bang
-// Phiên bản: 1.1.0 · Cập nhật: 16/09/2026 (b118d)
+// Phiên bản: 1.2.0 · Cập nhật: 18/09/2026 (khay điều hướng điện thoại)
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
-// ═══ BA LUẬT CỦA KHUNG NÀY, VÀ VÌ SAO ═══
+// ═══ BỐN LUẬT CỦA KHUNG NÀY, VÀ VÌ SAO ═══
 //
 //   1. **Thanh điều hướng mang con số cần nhìn.** Số đơn chờ duyệt và số thay
 //      đổi chờ kiểm duyệt đứng trong `<b>` của chính nút ấy (kiểu quantri3).
 //   2. **Mỗi lần chỉ hiện MỘT section, và chỉ khu ấy gọi máy chủ.**
 //   3. **Khu đang mở ghi vào `#` của địa chỉ.** Tải lại về đúng chỗ cũ, gửi
 //      link cho nhau được, nút Back chạy đúng.
+//   4. **Điện thoại: `aside` là khay đóng sẵn, `.qt-menu` mở ra** — CSS gốc
+//      ẩn `.back` ở khổ hẹp. Khay đóng khi đổi khu hoặc bấm ra ngoài; JS
+//      không tự hỏi bề ngang, CSS lo hết (`@media(max-width:850px)`).
 //
 // ⚠ Từ b118d MỌI khu và trang vẽ vào section quantri3 của nó — không còn
 //   `#khu-tam`. Một trang chi tiết có nhiều mục thì mục nào khác section của
 //   trang thì khai `view` ngay trên mục ấy (ví dụ `MUC_TRANG_CAY`).
 //
-// ⚠ **Không có kết cục "không đủ quyền".** Trang này KHÔNG phải hàng rào —
-//   hàng rào nằm ở Postgres. Gõ thẳng `#quan-tri-he-thong` vẫn mở được, và
-//   máy chủ trả về rỗng.
-//
-// ⚠ Không hỏi bề ngang màn hình — việc của `@media(max-width:850px)` trong CSS.
+// ⚠ **Không có kết cục "không đủ quyền".** Postgres là hàng rào, không phải
+//   trang này — gõ thẳng `#quan-tri-he-thong` vẫn mở, máy chủ trả về rỗng.
 
 import { layPhien, dsChoDuyet, demChoKiemDuyet } from '../../services/sb.js';
 import { mountDangNhap } from '../dang-nhap.js';
@@ -119,11 +119,43 @@ export async function mountKhung(appEl) {
     b.addEventListener('click', () => { window.location.hash = b.dataset.back; });
   }
 
-  const veKhuDangMo = () => veKhu(app, nutTheoMa, phien);
+  ganKhay(app);
+
+  const veKhuDangMo = () => { dongKhay(); veKhu(app, nutTheoMa, phien); };
   window.addEventListener('hashchange', veKhuDangMo);
   veKhuDangMo();
 
   napSoDem(phien.treeId, nutTheoMa);
+}
+
+// ============================================================
+// Khay điều hướng trên điện thoại — luật 4 ở đầu file
+// ============================================================
+
+/** Gắn nút Menu + lớp phủ. Chỉ có tác dụng dưới 850px — CSS ẩn cả hai ở trên. */
+function ganKhay(app) {
+  const nut = app.querySelector('.qt-menu');
+  const man = app.querySelector('.qt-man');
+  const aside = app.querySelector('aside');
+  if (!nut || !man || !aside) return;
+  nut.addEventListener('click', () => {
+    if (aside.classList.contains('qt-mo')) dongKhay(); else moKhay();
+  });
+  man.addEventListener('click', dongKhay);
+}
+
+function moKhay() {
+  const aside = document.querySelector('aside');
+  const man = document.querySelector('.qt-man');
+  if (aside) aside.classList.add('qt-mo');
+  if (man) man.classList.add('qt-mo');
+}
+
+function dongKhay() {
+  const aside = document.querySelector('aside');
+  const man = document.querySelector('.qt-man');
+  if (aside) aside.classList.remove('qt-mo');
+  if (man) man.classList.remove('qt-mo');
 }
 
 // ============================================================

@@ -3,7 +3,8 @@
      giapha-supabase · QuanTri.html
      Vai trò  : Trang QUẢN TRỊ — NGUYÊN FILE prototype `quantri3.html` chủ dự
                 án đã chốt 13/09/2026, bỏ dữ liệu giả, gắn chức năng thật.
-     Phiên bản: 2.0.0 · Cập nhật: 16/09/2026 (b118d)
+     Phiên bản: 2.1.0 · Cập nhật: 18/09/2026 — thêm nút khay điều hướng cho
+     điện thoại (xem so-tay/trang-quan-tri.md), không đụng phần chép nguyên.
 
      ⚠⚠ DỰNG BẰNG MÁY TỪ CẢ FILE PROTOTYPE, KHÔNG CHÉP TỪNG KHU. Thân trang là
        mọi `section` của quantri3 theo đúng thứ tự; chỉ bỏ: dòng dữ liệu mẫu
@@ -49,6 +50,10 @@
 <div id="app"></div>
 
 <div class="app" hidden>
+<!-- Nút khay điều hướng — chỉ hiện trên điện thoại, KHÔNG có trong quantri3.
+     Xem vì sao ở so-tay/trang-quan-tri.md. -->
+<button type="button" class="qt-menu" aria-label="Mở thanh điều hướng">☰</button>
+<div class="qt-man"></div>
 <aside>
 <div class="logo"><i>G</i> Quản trị gia phả</div>
 <nav>

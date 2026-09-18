@@ -3,13 +3,24 @@
 Gồm      : `QuanTri.html` — NGUYÊN FILE prototype quantri3, dựng bằng máy · `quan-tri.css` — CSS nguyên văn quantri3 + vài dòng app · `js/pages/quan-tri/khung.js` — `#` → section · `khu-gia-pha.js` · `khu-tai-khoan.js` · `khu-kiem-duyet.js` · `khu-quan-tri-he-thong.js` · `khu-sao-luu.js` (b119, gọi từ tab Sao lưu của khu trên) · `trang-cay.js` · `trang-moi.js` · `trang-tai-khoan.js` — đổ dữ liệu vào section của mình · `hop-thoai.js` — hộp hỏi + ô nhập · `o-bang.js` — mẩu ô bảng · `o-goi-y.js` — ô gợi ý
 Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài repo: `../kiem-thu/sb-gia.mjs` · `trang-quan-tri-gia.html` · `so-quantri3.mjs` · `xem-khung-quan-tri.mjs` · prototype `../codex/dua_claude.ai/quantri3.html`
 
+## Đính chính
+
+- **"Đổi giao diện thì sửa prototype trước rồi dựng lại" — chủ dự án bác bỏ
+  18/09/2026**: *"tôi không có quy định luật nào phải sửa quantri3.html trước,
+  tôi chỉ nói copy nó về để làm tiếp cho nhanh"*. Luật thật chỉ là: **bản đầu
+  phải chép nguyên** (đừng vẽ lại bằng JS như b115–b118 làm), không phải "mọi
+  hành vi mới sau này đều phải quay lại sửa file prototype trước". Thêm hành
+  vi mới (nút, khay…) làm thẳng ở `QuanTri.html`/CSS/JS được, miễn không vẽ
+  lại các mảng đã chép nguyên. Mục *Luật chung* dưới đã sửa lại theo ý này.
+
 ## Luật chung
 
-- **Giao diện = NGUYÊN FILE prototype quantri3.** Đổi giao diện thì sửa prototype
-  trước, rồi DỰNG LẠI cả `QuanTri.html` bằng kịch bản — không chép từng khu, không
-  vẽ bằng JS. Chỉ được bỏ: dòng mẫu trong `tbody`, khối *"Ghi chú cho Claude
-  Code"*, `datalist` mẫu, nút *mô phỏng*, `<script>` giả lập; chữ mẫu thay bằng ô
-  trống có `id`.
+- **Giao diện = NGUYÊN FILE prototype quantri3, cho phần ĐÃ CÓ trong đó.**
+  Bản đầu (b118c–d) chép nguyên, không chép từng khu, không vẽ bằng JS — xem
+  *Đính chính* trên. Muốn ĐỔI một mảng đã chép nguyên (màu, bố cục, chữ) thì
+  sửa prototype trước rồi dựng lại. **Thêm hành vi mới mà prototype không có**
+  (khay điều hướng điện thoại…) thì làm thẳng ở đây, ghi rõ "không có trong
+  quantri3" ngay tại chỗ thêm.
 - **Mỗi khu/trang vẽ vào section của nó** — `view` trong `KHU`/`TRANG` của
   `khung.js`; mục nào khác section của trang thì khai `view` trên mục
   (`MUC_TRANG_CAY`). Không có chỗ vẽ tạm.
@@ -50,6 +61,16 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
 - **Phép kiểm xanh "ăn may"** — *"trang tài khoản CHỈ ĐỌC"* vẫn đạt sau khi trang
   đổi vai được, vì nó gọi hộp hỏi chứ không gọi thẳng cửa. Hình dạng mã đổi thì
   đính chính theo ĐIỀU phép canh — đọc thân phép trước, đừng chỉ đọc tên.
+- **`.back` (Về sơ đồ) bị chính CSS gốc quantri3 ẩn dưới 850px** — trang con
+  trên điện thoại không còn đường quay về sơ đồ hay về khu cha (chủ dự án báo
+  18/09/2026). Vá bằng nút `.qt-menu` mở `aside` thành khay — `khung.js` mục
+  *Khay điều hướng*, CSS ở cuối `quan-tri.css`. KHÔNG dùng cử chỉ vuốt-mép:
+  trùng cử chỉ "quay lại" có sẵn của trình duyệt điện thoại.
+- **`o-goi-y.js` chọn dòng gợi ý "không được" trên điện thoại** — nghi vấn:
+  bàn phím ảo mở ra không bắn `resize` của `window`, toạ độ `position:fixed`
+  đo trước đó lệch. Vá bằng nghe thêm `window.visualViewport` (bẫy 4 trong
+  file). **Chưa xác nhận trên điện thoại thật** — chủ dự án mới thử điện
+  thoại, chưa thử máy tính; bấm lại sau khi vá rồi báo còn lệch không.
 
 ## Vì sao làm thế này
 

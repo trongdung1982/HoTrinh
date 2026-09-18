@@ -6,7 +6,7 @@
 // Lớp      : pages — được gọi bởi: pages/quan-tri/* · được phép gọi: services
 // Phụ thuộc: (không) — nơi gọi truyền hàm tìm vào, file này không biết
 //            Supabase là gì
-// Phiên bản: 0.1.0 · Cập nhật: 09/09/2026 12:40
+// Phiên bản: 0.2.0 · Cập nhật: 18/09/2026 — nghe thêm `visualViewport` (bẫy 4)
 // ============================================================
 //
 // ═══ VÌ SAO MỘT BẢN CHO BA CHỖ ═══
@@ -19,24 +19,24 @@
 // File này **không biết gì về dữ liệu**. Nơi gọi truyền vào một hàm `tim` và
 // một hàm `ve`; đổi nguồn dữ liệu không phải sửa file này.
 //
-// ═══ BA CÁI BẪY ĐÃ TÍNH TRƯỚC ═══
+// ═══ BỐN CÁI BẪY ĐÃ TÍNH TRƯỚC ═══
 //
-//  1. **Danh sách phải nổi trên `body`, không nằm trong ô cha.** Cả ba chỗ gọi
-//     đều ở trong một cái bảng có `min-width` và cuộn ngang được. Thả danh
-//     sách vào trong ấy là nó bị cắt ở mép bảng, hoặc tệ hơn: nó làm bảng
-//     phình ra và đẩy cột nút rơi khỏi mép màn hình — đúng ba chỗ hỏng mà
-//     b106 và b109 đều chỉ nhìn bằng mắt mới thấy. Nên `position:fixed`, gắn
-//     thẳng vào `document.body`, toạ độ đo bằng `getBoundingClientRect()`.
+//  1. **Danh sách phải nổi trên `body`, không nằm trong ô cha.** Cả ba chỗ ở
+//     trong bảng cuộn ngang được — thả vào trong ấy bị cắt mép, hoặc đẩy cột
+//     nút ra khỏi màn hình (b106, b109, chỉ nhìn bằng mắt mới thấy). Nên
+//     `position:fixed`, gắn vào `document.body`, đo bằng `getBoundingClientRect()`.
 //
-//  2. **Câu trả lời về CHẬM hơn câu hỏi sau.** Gõ `ngu` rồi gõ tiếp thành
-//     `nguyen`: hai lời gọi chạy song song, và không có gì bảo đảm cái nào về
-//     trước. Không đánh số thì có lúc danh sách của `ngu` đè lên danh sách của
-//     `nguyen` — người ta thấy kết quả của chữ mình vừa xoá. Mỗi lời gọi mang
-//     một số thứ tự; chỉ số MỚI NHẤT được vẽ.
+//  2. **Câu trả lời về CHẬM hơn câu hỏi sau.** Gõ `ngu` rồi gõ tiếp `nguyen`:
+//     hai lời gọi chạy song song, không gì bảo đảm cái nào về trước — thấy
+//     kết quả của chữ mình vừa xoá. Mỗi lời gọi mang một số thứ tự; chỉ số
+//     MỚI NHẤT được vẽ.
 //
 //  3. **`blur` xảy ra TRƯỚC `click`.** Đóng danh sách ở `blur` thì cú bấm vào
 //     một dòng gợi ý không bao giờ tới nơi. Nên chọn bằng `mousedown` +
 //     `preventDefault()`: ô chữ không mất tiêu điểm, và cú bấm chạy.
+//
+//  4. **Bàn phím ảo mở ra không bắn `resize` của `window`.** Toạ độ đo trước
+//     đó lệch, chạm hụt dòng gợi ý (b122d) — nghe thêm `window.visualViewport`.
 
 /** Bao lâu sau khi ngừng gõ thì mới hỏi máy chủ (mili giây). */
 const CHO_GO = 180;
@@ -192,6 +192,8 @@ export function ganGoiY(oNhap, { tim, ve, giaTri, khiChon }) {
 
   const khiRoi = () => dong();
   const khiCuon = () => { if (bang) datCho(); };
+  // Bẫy 4 — bàn phím ảo đổi `visualViewport`, không đổi `window`.
+  const vv = window.visualViewport;
 
   oNhap.addEventListener('input', khiGo);
   oNhap.addEventListener('keydown', khiPhim);
@@ -199,6 +201,10 @@ export function ganGoiY(oNhap, { tim, ve, giaTri, khiChon }) {
   // `true` = bắt ở pha bắt giữ, để nghe được cả những khối cuộn bên trong.
   window.addEventListener('scroll', khiCuon, true);
   window.addEventListener('resize', khiCuon);
+  if (vv) {
+    vv.addEventListener('resize', khiCuon);
+    vv.addEventListener('scroll', khiCuon);
+  }
 
   return function go() {
     if (dongHo) clearTimeout(dongHo);
@@ -208,6 +214,10 @@ export function ganGoiY(oNhap, { tim, ve, giaTri, khiChon }) {
     oNhap.removeEventListener('blur', khiRoi);
     window.removeEventListener('scroll', khiCuon, true);
     window.removeEventListener('resize', khiCuon);
+    if (vv) {
+      vv.removeEventListener('resize', khiCuon);
+      vv.removeEventListener('scroll', khiCuon);
+    }
   };
 }
 

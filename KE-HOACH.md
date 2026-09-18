@@ -1,7 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 18/09/2026 · Bước gần nhất: **b122c — `26`+`27` ĐÃ DÁN, CHƯA BẤM
-THỬ**. Bấm thử (mở ba cây, Lưu hai lần liền) là việc mở đầu phiên sau.*
+*Cập nhật 18/09/2026 · Bước gần nhất: **b122d** — chủ dự án đã bấm thử (cây
+T388, thêm người, mời thành viên), tự kiểm `26`+`27` đạt hết. Ba việc mới nổi
+ra lúc bấm thử, xem mục *Kế tiếp* dưới.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -44,7 +45,6 @@ Quản trị hệ thống**.
 | **b117** — khu Tài khoản | ①bảng *Các gia phả tôi tham gia* đúng mã (tài khoản thường, qua RLS) ②Đổi mật khẩu: sai bị từ chối, đúng thì đổi |
 | **b118d** — cả trang Quản trị | Mở từng trang con; mỗi menu *Chọn ▾* một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
 
-
 ---
 
 ## SQL — đã dán gì, và luật dán lại
@@ -58,8 +58,8 @@ nào.** `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
 khi coi hai máy chủ đã đồng bộ.
 
 **`26-mot-nguoi-mot-ban-ghi.sql` (b121) + `27-ham-mot-nguoi.sql` (b122a) — ĐÃ
-DÁN lên THẬT** (b122c, 18/09/2026). ⚠ Bảng tự kiểm cuối mỗi file **chưa có ai
-đọc lại** — làm ở đầu phiên sau, trước khi bấm thử. Chưa rõ Staging.
+DÁN lên THẬT** (b122c, 18/09/2026). Bảng tự kiểm cuối mỗi file: **chủ dự án
+đọc lại 18/09/2026, tất cả các dòng đạt.** Chưa rõ Staging.
 
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
 `11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18` ·
@@ -94,31 +94,35 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 `THIET-KE-NHIEU-CAY.md` mục 6 (thay b120, `noi_ve` bỏ). **b121 · b122a · b122b
 · b122c (dán) xong**; sổ tay: `so-tay/luu-du-lieu.md`.
 
-**Kế tiếp: b122d — BẤM THỬ**, không viết mã mới nếu không hỏng gì. Đầu tiên đọc
-lại bảng tự kiểm cuối `26` và `27` trên Supabase (chưa ai đọc từ lúc dán). Rồi
-bấm: ba cây đều mở · sửa một người, Lưu · **Lưu lần thứ hai ngay sau đó** (phép
-canh của cả bước) · tải lại, xem đúng · thêm một người mới, mã do `cap_ma()`
-cấp · trang Quản trị còn mở, nút Từ chối khoá đúng lúc. ⚠ Staging lệch máy chủ
-thật cho tới khi dán `26`+`27` sang đó.
+**b122d — bấm một phần** (tạo cây, thêm người, mời thành viên). Còn thiếu:
+sửa một người, **Lưu hai lần liền** · tải lại xem đúng · nút Từ chối khoá
+đúng lúc. ⚠ Staging lệch thật tới khi dán `26`+`27` sang đó.
+
+**Ba việc mới nổi ra lúc bấm thử 18/09** (chi tiết `so-tay/trang-quan-tri.md`),
+**hai đã vá, chưa ai xác nhận lại trên điện thoại**:
+1. ✅ Điện thoại vào trang con không quay về sơ đồ được — vá bằng nút
+   `.qt-menu` mở khay.
+2. ✅ Ô gợi ý mời thành viên chọn không được trên điện thoại — nghi bàn phím
+   ảo lệch toạ độ, vá bằng nghe `visualViewport`.
+3. ⏳ **Chưa làm** — người trùng giữa các cây: thêm người mới không gợi ý "đã
+   có ở cây khác"; sửa người cần mục *người này ở cây khác* để QTHT hợp nhất.
+   Gộp câu hỏi thiết kế treo 17/09 dưới — chốt hướng trước, chưa phải 1 phiên.
 
 - ⚠ Để b123 (chưa lộ vì mỗi cây còn tự đứng riêng): cờ `deleted` và xoá cứng hôn
   nhân là CHUNG mọi cây · `doc_cay` bỏ cạnh con có một đầu ngoài cây.
 
 ### Sau đó — chưa đặt số, chưa chốt
 
-**Nhóm E của quantri3** *(`THIET-KE-QUAN-TRI.md` 9.5 — ⚠ tạo tài khoản cần khoá
-`service_role`, chỉ qua Edge Function, khoá **không bao giờ** vào repo Public)* ·
-chặn đăng nhập thật cho tài khoản bị khoá *(`auth.users.banned_until`, cùng
-đường với trên)* · **dòng họ + cây chính do người tự chọn**
-*(`THIET-KE-NHIEU-CAY.md` 6)* · nhập GEDCOM/Excel qua máy chủ · **khôi phục
-thật** *(việc nguy hiểm nhất: phải đo bằng vòng sao lưu → đổi → khôi phục → về
-đúng trạng thái cũ, không phải bằng việc có file JSON)* · **tối ưu tốc độ đọc**
-— để khi mọi chức năng đã chạy *(đọc cây 740 người: ~0,4s truy vấn)*.
+**Nhóm E quantri3** *(9.5 — ⚠ tạo tài khoản cần `service_role` qua Edge
+Function, **không bao giờ** vào repo Public)* · chặn đăng nhập tài khoản bị
+khoá *(`banned_until`)* · **dòng họ + cây chính do người tự chọn** (`6`) ·
+nhập GEDCOM/Excel qua máy chủ · **khôi phục thật** *(đo cả vòng sao lưu→đổi→
+khôi phục→về đúng cũ, không chỉ "có file")* · **tối ưu tốc độ đọc** khi mọi
+chức năng đã chạy *(681 người: ~0,4s)*. *(Số mục = `THIET-KE-QUAN-TRI.md`.)*
 
-⚠ **17/09 — hai việc mới, chủ dự án nêu:** ① huy hiệu số đếm + bấm tên mở cây
-ở khu Gia phả, an toàn *(`THIET-KE-QUAN-TRI.md` 9.6)* ② ⚠⚠ **CẦN CHỐT HƯỚNG
-TRƯỚC KHI VIẾT MÃ** — QTHT tự duyệt đề xuất gắn mã người của mình? xin gỡ
-luật "không ngoại lệ" đã chốt hai lần *(`THIET-KE-NHIEU-CAY.md` 11.10)*
+⚠ **17/09, chủ dự án nêu:** ① huy hiệu số đếm + bấm tên mở cây ở Gia phả, an
+toàn (`9.6`) ② ⚠⚠ **CẦN CHỐT HƯỚNG TRƯỚC KHI VIẾT MÃ** — QTHT tự duyệt đề xuất
+gắn mã của mình? xin gỡ luật "không ngoại lệ" đã chốt hai lần (`11.10`).
 
 ---
 

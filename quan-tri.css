@@ -2,7 +2,9 @@
    giapha-supabase · quan-tri.css
    Vai trò  : Giao diện trang Quản trị — CHÉP NGUYÊN VĂN CSS của prototype
               `quantri3.html` chủ dự án đã chốt 13/09/2026.
-   Phiên bản: 1.0.0 · Cập nhật: 15/09/2026 (b118c)
+   Phiên bản: 1.1.0 · Cập nhật: 18/09/2026 — thêm khay điều hướng điện thoại
+              (`.qt-menu`/`.qt-man`, khối riêng SAU "HẾT BẢN CHÉP", không đụng
+              khối chép nguyên). Lịch sử cũ:
               1.0.0 (b118c) BỎ toàn bộ bộ `.qt-*` tự vẽ của b101–b117, thay
               bằng CSS nguyên văn của quantri3. Khối "TẠM" ở cuối file giữ
               lại những class `.qt-*` mà các khu CHƯA chuyển sang giao diện
@@ -47,3 +49,31 @@ td .link { text-align:left; }
 /* Bảng đặt trong `.layout` (trang cây) phải cuộn TRONG `.panel`, không đẩy cột
    phải của lưới tràn khỏi mép — prototype không có bảng nào ở chỗ ấy. */
 .layout > div { min-width:0; }
+
+/* Khay điều hướng trên điện thoại — KHÔNG có trong quantri3. Trên di động,
+   `.back` (Về trang sơ đồ) bị chính CSS gốc ẩn đi và không còn đường quay
+   về sơ đồ/khu cha từ trang con; đây là nút Menu luôn hiện, mở `aside` ra
+   thành khay trượt. Không dùng cử chỉ vuốt-mép vì trùng cử chỉ "quay lại"
+   có sẵn của trình duyệt điện thoại (chủ dự án chốt 18/09/2026). */
+.qt-menu, .qt-man { display:none; }
+@media(max-width:850px){
+  .qt-menu{
+    display:flex; align-items:center; justify-content:center;
+    position:fixed; top:12px; left:12px; z-index:70;
+    width:38px; height:38px; border:1px solid var(--line); border-radius:10px;
+    background:var(--paper); color:var(--ink); font-size:18px; cursor:pointer;
+    box-shadow:0 4px 12px rgba(40,37,34,.18);
+  }
+  .qt-man{
+    display:block; position:fixed; inset:0; background:rgba(20,16,10,.32);
+    z-index:71; opacity:0; pointer-events:none; transition:opacity .2s ease;
+  }
+  .qt-man.qt-mo{ opacity:1; pointer-events:auto; }
+  aside{
+    position:fixed; top:0; left:0; bottom:0; z-index:72; width:245px;
+    max-width:82vw; transform:translateX(-100%); transition:transform .2s ease;
+    overflow-y:auto; box-shadow:6px 0 22px rgba(20,16,10,.3);
+  }
+  aside.qt-mo{ transform:translateX(0); }
+  aside .back{ display:block; }
+}
