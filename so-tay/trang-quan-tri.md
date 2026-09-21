@@ -90,8 +90,11 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   *"Thành viên và quyê ̀n"*, *"Gă ́n mã người trong sơ đô ̀"* — dấu rời hẳn ra.
   Đo bằng ba dòng cùng chuỗi chữ, ba font: Georgia vỡ, `system-ui` và
   `Times New Roman` đúng. **Không phải hiện tượng của ảnh headless** — người
-  thật trên Chrome/Windows thấy y hệt. Chưa sửa: đổi font là đổi một mảng đã
-  chép nguyên từ prototype, phải hỏi chủ dự án trước.
+  thật trên Chrome/Windows thấy y hệt. **ĐÃ SỬA cùng ngày, chủ dự án duyệt**:
+  một dòng ở phần app của `quan-tri.css` (1.1.3) đè `.logo, h1, .modal-title`
+  thành `Constantia, Cambria, Times New Roman, serif` — bản chép nguyên KHÔNG
+  bị đụng. ⚠ Không để Georgia sót lại trong chuỗi: macOS có Georgia mà không
+  có Constantia sẽ rơi về nó và vỡ y như cũ.
 - **Menu *Chọn hành động* của dòng CUỐI bảng bị cắt cụt** (đo b123) —
   `.panel{overflow:auto}` của quantri3 cắt menu ở mép bảng, người bấm phải
   cuộn trong bảng mới thấy mục. Nới khung ảnh không chữa được; ảnh
