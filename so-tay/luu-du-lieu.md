@@ -93,6 +93,29 @@ trong phần mềm chỉ bằng cách gửi mã. Hàng rào 3b của `luu_cay()`
 — áp cho cả sửa, xoá, và kéo người cây khác làm vợ/chồng/con. Xoá người = rút
 khỏi cây này; bản ghi chỉ xoá khi không cây nào giữ. Đo: `do-b122.mjs` L3–L11.
 
+## KÉO người cây khác VÀO cây này (b124a, `luoc-do/28`)
+
+Cửa 3b trên mở hé từ 21/09/2026: kéo được người đã có ở cây khác vào **khi và
+chỉ khi** mình xem được ít nhất một cây đang chứa họ. Thành viên thường cũng
+kéo được, miễn gắn vào đúng trực hệ. Đi bằng chính `luu_cay()`, không có hàm
+ghi thứ hai. **Bốn chỗ phải đi cùng nhau, sót chỗ nào cũng hỏng IM LẶNG:**
+
+1. **3b nới** — chỗ duy nhất kêu to khi sót (`ngoaicay`).
+2. **4a/4c: cộng `v_keo_vao` vào `v_pham_vi`** — trực hệ tính trong người ĐÃ
+   thuộc cây, nên chính người vừa kéo bị 4a đánh rớt (hoặc hôn nhân vừa khai
+   bị 4c), kèm câu *"ngoài trực hệ"* không dính gì tới việc vừa làm.
+3. **`insert tree_persons` cho cả `v_keo_vao`** — kéo qua QUAN HỆ mà không gửi
+   kèm bản ghi người thì họ đứng trong sơ đồ mà không thuộc cây.
+4. **`tu_choi_thay_doi()` cắt `tree_persons` của `v_truoc->'keo_vao'`** — họ CÓ
+   bản ghi cũ nên đường hoàn tác xếp vào nhóm *khôi phục*, tức trả họ VỀ cây:
+   bấm Từ chối xong người ấy vẫn nằm trong đó.
+
+⚠ `v_keo_vao` phải khởi tạo `'{}'`: `x = any(null)` ra `null`, `not null` cũng
+`null`, và cả hàng rào 3b lặng lẽ cho qua tất cả.
+
+Kéo người vào thì **đừng gửi kèm bản ghi người** — chỉ gửi quan hệ; bản ghi ấy
+thuộc cây kia, gửi lên là upsert đè. Đo: `../kiem-thu/ban-thu-sql/do-b124a.mjs`.
+
 ## Mã toàn cục — xin bằng `cap_ma()`
 
 Mã P/U/M duy nhất toàn phần mềm, không tiền tố cây (b121). Trình duyệt đếm số
@@ -144,10 +167,8 @@ câu ấy ra, đừng chế câu khác.
 
 ## Bỏ `noiVe` khỏi JS (b122b)
 
-`noiVe` (b120) nối hai bản ghi của cùng một người ở hai cây. Từ `26` người ấy
-chỉ còn MỘT bản ghi nên không còn gì để nối: bỏ ô ở form sửa, bỏ khối *"Cũng có
-trong gia phả khác"* ở thẻ thông tin, bỏ `loiNoiVe()` và `docNguoiCayKhac()`.
-`domains/person.js` sửa lần thứ hai, và cả hai lần đều vì NGHIỆP VỤ.
+`noiVe` (b120) nối hai bản ghi của cùng một người ở hai cây; từ `26` người ấy
+chỉ còn MỘT bản ghi nên không còn gì để nối — đã bỏ hết khỏi JS (`git log`).
 
 ⚠ `photo_file_id` của dữ liệu di dời từ Drive có ca chứa MÃ FILE DRIVE, không
 phải mã `M…` (bàn thử: NPG `P0553`). Có từ trước `26`, đừng tưởng `26` làm lạc.
