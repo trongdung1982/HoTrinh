@@ -100,6 +100,16 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   cuộn trong bảng mới thấy mục. Nới khung ảnh không chữa được; ảnh
   `kq-menu-saoluu.png` giữ lại đúng cảnh ấy.
 
+- **Đẩy CSS xong, máy chủ vẫn trả bản cũ trong 10 phút** (21/09/2026 — chủ dự
+  án chụp ảnh báo *"vẫn lỗi chữ quyền"* 8 phút sau khi đẩy bản vá font).
+  `?v=` chống đệm cho FILE CSS, nhưng chính `QuanTri.html` — nơi chứa con số
+  `?v=` ấy — bị GitHub Pages đệm `max-age=600`. Trang cũ còn ghi `?v=1.1.2`
+  nên vẫn gọi CSS cũ. **Cách đo trước khi nghi mã**, đủ ba bước, 30 giây:
+  `curl -s <trang>/QuanTri.html | grep -o 'quan-tri\.css?v=[0-9.]*'` ·
+  `curl -s <trang>/quan-tri.css | grep -n 'font-family: Constantia'` ·
+  `curl -sI <trang>/QuanTri.html | grep -i cache-control`. Máy chủ đúng mà
+  màn hình sai thì bảo chủ dự án bấm **Ctrl+F5**, đừng đi sửa lại CSS.
+
 ## Vì sao làm thế này
 
 - **HTML tĩnh, JS chỉ đổ dữ liệu**: giao diện có đúng MỘT bản — bản prototype. JS
