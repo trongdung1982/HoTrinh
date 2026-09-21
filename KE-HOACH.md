@@ -28,10 +28,12 @@ quyền đã đo bằng REST, 5/5 hàng rào đạt (b94, b96).
 
 ⚠⚠ **Từ b118d trang Quản trị LÀ nguyên file prototype quantri3**, dựng bằng máy,
 mọi trang con gắn chức năng thật, không còn chỗ vẽ tạm — luật và bẫy ở
-`so-tay/trang-quan-tri.md`. Chưa ai bấm trên máy chủ thật.
+`so-tay/trang-quan-tri.md`. ⚠ **Đã bấm trên máy chủ thật 21/09** (mục Thành
+viên & quyền của cây NTB) — mới một trang con, các trang khác chưa.
 
-⚠ **`domains/` giữ nguyên chín file** (mười, trừ `person.js` sửa ở b120, chủ
-dự án cho phép) suốt cuộc chuyển nhà — hệ quả ở phần "Bộ bất biến" dưới.
+⚠ **`domains/` giữ nguyên chín file** (mười, trừ `person.js` sửa ở b120 và
+b122b, chủ dự án cho phép cả hai lần) suốt cuộc chuyển nhà — hệ quả ở phần
+"Bộ bất biến" dưới.
 
 ### Điểm dừng chưa bấm thử — trang Quản trị đã xong (b118d), nay bấm được
 
@@ -44,7 +46,7 @@ Quản trị hệ thống**.
 | **b111b** — gắn mã người, đổi cây ở ô chọn | Mã xong, `20` đã dán |
 | **b111c** — nộp · tự duyệt bị từ chối · người khác duyệt được | ✓② nộp đã bấm 17/09 (LVT433). Còn ①Nhận lời mời QTHT ③tự duyệt bị từ chối ④QTHT khác duyệt được |
 | **b117** — khu Tài khoản | ①bảng *Các gia phả tôi tham gia* đúng mã (tài khoản thường, qua RLS) ②Đổi mật khẩu: sai bị từ chối, đúng thì đổi |
-| **b118d** — cả trang Quản trị | Mở từng trang con; mỗi menu *Chọn ▾* một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
+| **b118d** — cả trang Quản trị | ✓ Thành viên & quyền đã mở 21/09. Còn: từng trang con còn lại; menu *Chọn hành động* (trang cây) và *Chọn ▾* (trang tài khoản) mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
 
 ---
 
@@ -105,10 +107,11 @@ hướng điện thoại + ba lỗi bố cục mobile **đã vá, chủ dự án
 ⏳ **chưa làm — người trùng giữa các cây**: thêm người mới không gợi ý "đã có ở
 cây khác"; sửa người cần mục *người này ở cây khác* để QTHT hợp nhất. Gộp câu
 hỏi thiết kế treo 17/09 dưới — chốt hướng trước, chưa phải việc một phiên.
-⚠ Ô gợi ý mời thành viên trên điện thoại: đã vá `visualViewport`, **chưa ai
-bấm lại** để xác nhận.
+⚠ Ô gợi ý trên điện thoại: vá `visualViewport` đã có **ảnh 390px đạt**
+(`kq-gan-ma-390.png`, b123) — hộp mở gọn, không tràn. Nhưng đó là trang giả
+trên máy tính; **điện thoại thật vẫn chưa ai bấm lại**.
 
-- ⚠ Để b123 (chưa lộ vì mỗi cây còn tự đứng riêng): cờ `deleted` và xoá cứng hôn
+- ⚠ Để b124 (chưa lộ vì mỗi cây còn tự đứng riêng): cờ `deleted` và xoá cứng hôn
   nhân là CHUNG mọi cây · `doc_cay` bỏ cạnh con có một đầu ngoài cây.
 
 ### Sau đó — chưa đặt số, chưa chốt

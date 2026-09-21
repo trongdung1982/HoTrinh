@@ -35,6 +35,12 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
 - **Thêm cửa vào `sb.js` thì thêm ở `sb-gia.mjs`** — thiếu một tên là `SyntaxError`
   lúc nạp, cả bộ ảnh ra nền trơn (đã xảy ra b110b, b111). Tham số của bản giả
   phải cùng NGHĨA với máy chủ.
+- **Chữ ĐỎ ở đầu trang giả là lời của chính bản giả**, không phải lỗi bố cục:
+  nó kể cửa nào thiếu, dữ liệu nào bản giả không dựng được. Đọc nó trước, đừng
+  đi sửa CSS. *(chuyển từ `CHI-DAN.md` về đây b123 — file ấy chật trần.)*
+- **Ảnh 1280px KHÔNG phân giải được "đè" với "sát"** ở ô gợi ý: hai hộp cách
+  nhau 1px và chồng lên nhau trông như nhau. Đo bằng `node ../kiem-thu/do-goi-y.mjs`,
+  nó đọc toạ độ thật. *(cũng chuyển từ `CHI-DAN.md`, b123.)*
 - **Nhìn bằng mắt trước khi báo xong** — hai bộ ảnh, hai việc khác nhau:
   · `node ../kiem-thu/so-quantri3.mjs [lọc]` (cặp `sq-p-*` prototype /
   `sq-a-*` app) so giao diện, bắt *lệch so với prototype*.
@@ -45,10 +51,7 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
 
 ## Lỗi đã gặp — áp cho MỌI file trong "Gồm"
 
-- **Chép lắt nhắt từng khu (b118c)** — trang mang khung quantri3 nhưng ruột bốn
-  khu vẽ tạm bằng mã cũ trong `#khu-tam`, bốn section không được chép; chủ dự án
-  thấy `#gia-pha/cay/NTB/thanh-vien` khác hẳn prototype. Cách tránh: dựng nguyên
-  file bằng kịch bản mà mỗi phép thay khẳng định *khớp đúng 1 chỗ*. Phép bắt:
+- **Chép lắt nhắt từng khu (b118c)** — luật ở *Luật chung* đầu file. Phép bắt:
   PHẦN O *"đủ 13 section"* · *"không còn ô vẽ tạm"*.
 - **Dữ liệu thật dài hơn chữ mẫu** — nút trong ô gãy dòng và chữ `button` căn
   giữa; bảng đặt trong `.layout` đẩy cột phải tràn mép. Vá bằng CSS phần app:
