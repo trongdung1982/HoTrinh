@@ -103,10 +103,24 @@ sửa (21/09). Còn lẻ: nút Từ chối khoá đúng lúc — chưa ai bấm.
 ⚠ Staging vẫn lệch thật tới khi dán `26`+`27` sang đó.
 
 **Nổi ra lúc bấm thử 18/09** (chi tiết `so-tay/trang-quan-tri.md`): khay điều
-hướng điện thoại + ba lỗi bố cục mobile **đã vá, chủ dự án xác nhận đạt**. Còn
-⏳ **chưa làm — người trùng giữa các cây**: thêm người mới không gợi ý "đã có ở
-cây khác"; sửa người cần mục *người này ở cây khác* để QTHT hợp nhất. Gộp câu
-hỏi thiết kế treo 17/09 dưới — chốt hướng trước, chưa phải việc một phiên.
+hướng điện thoại + ba lỗi bố cục mobile **đã vá, chủ dự án xác nhận đạt**.
+
+**✓ HƯỚNG ĐÃ CHỐT 21/09 — `THIET-KE-NHIEU-CAY.md` mục 6 (ba câu cuối) + 11.10.**
+Chủ dự án chọn: ① tự duyệt **nới hẹp** (chủ/`quan_tri` cây ấy tự duyệt đơn gắn
+mã của mình; cây chưa có vai vẫn cần chữ ký thứ hai) ② gộp thì **máy giữ mã
+nhỏ**, QTHT chỉ Duyệt/Từ chối ③ làm **phòng trước**. Ba bước:
+**b124a** ô gợi ý *"đã có trong phần mềm chưa"* lúc thêm người *(việc kế tiếp,
+đã chốt xong cách làm)* · **b124b** mục *Báo trùng* + hàm gộp · **b124c** SQL
+nới hẹp luật tự duyệt.
+
+**b124a — làm gì, đã chốt hết, mở ra là viết được** (`THIET-KE-NHIEU-CAY.md`
+mục 6, khối *b124a*): **thành viên thường cũng kéo được** người từ cây khác
+vào, miễn đúng trực hệ. Một file `luoc-do/28`: hàm mới `tim_nguoi_moi_cay()`
++ nới **hai** hàng rào của `luu_cay()` — `3b` cho qua người mà mình xem được
+cây chứa họ, và `4a/4c` cộng `v_keo_vao` vào `v_pham_vi`. ⚠ Nới `3b` mà quên
+`4c` là hỏng im lặng. Rồi `sb.js` + ô gợi ý ở màn hình thêm người.
+⚠ `28` sẽ dán đè `luu_cay()` nên nó **đứng CUỐI** chuỗi `03`/`06`/`08`/`13`
+→`25`→`27`.
 ⚠ Ô gợi ý trên điện thoại: vá `visualViewport` đã có **ảnh 390px đạt**
 (`kq-gan-ma-390.png`, b123) — hộp mở gọn, không tràn. Nhưng đó là trang giả
 trên máy tính; **điện thoại thật vẫn chưa ai bấm lại**.
@@ -123,9 +137,8 @@ nhập GEDCOM/Excel qua máy chủ · **khôi phục thật** *(đo cả vòng s
 khôi phục→về đúng cũ, không chỉ "có file")* · **tối ưu tốc độ đọc** khi mọi
 chức năng đã chạy *(681 người: ~0,4s)*. *(Số mục = `THIET-KE-QUAN-TRI.md`.)*
 
-⚠ **17/09, chủ dự án nêu:** ① huy hiệu số đếm + bấm tên mở cây ở Gia phả, an
-toàn (`9.6`) ② ⚠⚠ **CẦN CHỐT HƯỚNG TRƯỚC KHI VIẾT MÃ** — QTHT tự duyệt đề xuất
-gắn mã của mình? xin gỡ luật "không ngoại lệ" đã chốt hai lần (`11.10`).
+⚠ **17/09, chủ dự án nêu:** huy hiệu số đếm + bấm tên mở cây ở Gia phả, an
+toàn (`9.6`). *(Câu thứ hai — QTHT tự duyệt — đã chốt 21/09, nay là b124c.)*
 
 ---
 
@@ -133,12 +146,6 @@ gắn mã của mình? xin gỡ luật "không ngoại lệ" đã chốt hai l�
 
 *Việc đã đóng thì **xoá khỏi bảng**, đừng gạch ngang giữ lại — nhật ký bước đã
 là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừng chép số lần trước.*
-
-⚠ **21/09: bốn việc giao phụ tá 18/09 nay XONG CẢ BỐN.** Ba việc AGY làm đã rà
-lại ở b123 — `settings.js` đúng; hướng dẫn phân quyền có **5 chỗ sai tên nút**
-(viết theo suy đoán, không mở giao diện ra soi), đã sửa. Việc thứ tư
-`xem-khung-quan-tri.mjs` Claude Code tự làm. Phân công vùng: **`../GEMINI.md`
-mục 2c**.
 
 | Việc | Ghi ở đâu |
 |---|---|

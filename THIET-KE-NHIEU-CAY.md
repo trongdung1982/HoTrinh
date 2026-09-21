@@ -317,7 +317,62 @@ thống có nhiều hơn một cây.
 | Bảng mới **`tree_persons(tree_id, person_id)`** — ai thuộc cây nào | Điều 2. Xoá người khỏi một cây = xoá dòng này, **không** đụng bản ghi người |
 | Cột `persons.noi_ve` (`luoc-do/25`) **bỏ** | Hai cây trỏ cùng một dòng, không còn gì để nối |
 | Đề xuất trùng: bảng mới, mỗi dòng `(ma_giu?, ma_x, ma_y, ly_do, nguoi_gui, trang_thai, nguoi_duyet)` | Điều 5 |
-| Quản trị hệ thống duyệt trùng → chọn mã giữ; mã thua đặt `deleted` + trỏ về mã giữ, **chuyển** các dòng `tree_persons` · quan hệ · ảnh của nó sang mã giữ, ghi `change_log` | Luật không xoá cứng. Trường nào lệch nhau thì giữ bản của mã giữ, QTHT sửa sau — dựng bản gọn trước |
+| Quản trị hệ thống duyệt trùng; mã thua đặt `deleted` + trỏ về mã giữ, **chuyển** các dòng `tree_persons` · quan hệ · ảnh của nó sang mã giữ, ghi `change_log` | Luật không xoá cứng. Trường nào lệch nhau thì giữ bản của mã giữ, QTHT sửa sau — dựng bản gọn trước |
+
+#### ✓ CHỐT THÊM 21/09/2026 — ba câu cuối của b124
+
+1. **Máy chọn mã giữ, KHÔNG hỏi: mã NHỎ HƠN ở lại.** Đúng nếp đã chốt 23/08
+   cho gộp cặp hôn nhân (`tai-lieu/DAC-TA-GOP_V02.md` mục 2: *"hỏi lại một câu
+   đã có đáp án cố định là mời người dùng trả lời sai"*) và đúng nếp *"cây tạo
+   trước giữ mã"* của `luoc-do/26`. QTHT chỉ bấm **Duyệt** hoặc **Từ chối**.
+   Trường nào bên giữ **bỏ trống** thì lấy của bên thua — cũng là nếp
+   `mergeUnions`. Trường vênh thật thì giữ bên giữ, QTHT sửa sau.
+2. **Hàm gộp không phân biệt cùng cây hay khác cây.** Hai mã trùng trong CÙNG
+   một cây hôm nay cũng chưa gộp được — chưa có hàm nào. SQL y hệt nhau, nên
+   một hàm phục vụ cả hai. Mọi lần gộp vẫn do QTHT duyệt.
+3. **Danh sách nơi phải chuyển mã đã có sẵn, đừng liệt kê lại bằng trí nhớ:**
+   `luoc-do/26` mục 2c đi đủ **mười** chỗ một mã người xuất hiện —
+   `tree_persons` · `unions.partners` · `unions.partner_order` · `unions.ranks`
+   (khoá jsonb) · `union_children.person_id` · `media.subject_id` ·
+   `trees.root_person_id` · `branches.root_person_id` ·
+   `tree_members.person_id` · `user_settings.focus_person_id` ·
+   `de_xuat_gan_nguoi.person_id`. Hàm gộp chép đúng danh sách ấy. Sót một chỗ
+   là mất **lặng lẽ**.
+   ⚠ Gộp xong có thể sinh **cặp hôn nhân trùng** (mã giữ và mã thua cùng cưới
+   một người) — đã có `domains/union.js timCapTrung()` + màn hình `form-gop.js`
+   để dọn, nhưng người dọn phải xem được cả hai cây.
+
+#### b124a — đường KÉO NGƯỜI CÓ SẴN VÀO CÂY, chốt 21/09/2026
+
+**✓ Chủ dự án chốt: THÀNH VIÊN THƯỜNG cũng kéo được**, không chỉ quản trị —
+miễn gắn người ấy vào đúng trực hệ của họ. Cái giá đã nói rõ và đã nhận: kéo
+vào là **sửa được luôn bản ghi dùng chung**, nên cây bên kia chịu ảnh hưởng;
+chỗ gác còn lại là kiểm duyệt của cây này (điều 3 mục 6).
+
+**Đi bằng `luu_cay()`, KHÔNG đẻ hàm ghi thứ hai.** Nó đã mang sẵn kiểm duyệt,
+`change_log`, hoàn tác, chống ghi đè. Bài học b110c — *hàng rào phải gác CỘT,
+không gác HÀM* — nói thẳng rằng hai đường ghi vào `tree_persons` là hai chỗ để
+lệch nhau. `luu_cay()` vốn đã `insert into tree_persons` cho mọi người trong
+`persons.luu`, nên việc kéo vào **không cần một dòng ghi mới nào**; chỉ hai
+hàng rào phải nới, đúng hai chỗ:
+
+| Hàng rào | Hôm nay | Sửa thành |
+|---|---|---|
+| **3b** — *"bản ghi đang có phải thuộc cây này"*, trả `ngoaicay` | chặn MỌI mã người đã tồn tại mà chưa thuộc cây | cho qua **khi và chỉ khi** người gọi xem được **ít nhất một cây đang chứa** người ấy (`ds_cay_xem_duoc()` của `26`). Không xem được cây nào chứa họ thì vẫn `ngoaicay` — nếu không, gõ mò mã `P0123` là kéo được người ở cây kín |
+| **4a/4c** — trực hệ | người **đã tồn tại** mà ngoài `pham_vi_sua()` thì vai `sua` không đụng được; người ở cây khác **luôn** ngoài phạm vi, vì phạm vi tính trong những người đã thuộc cây | gom những người **đang được kéo vào** thành `v_keo_vao`, rồi `v_pham_vi := v_pham_vi ‖ v_keo_vao` **trước** mọi phép 4. Một biến, một câu; không chép lại phép kiểm nào |
+
+⚠ **Nới 3b mà quên 4c là hỏng nửa vời, im lặng**: 4c bắt mọi vợ/chồng của một
+hôn nhân phải trong phạm vi, nên người vừa kéo vào sẽ bị chính nó đánh rớt —
+người dùng thấy *"hôn nhân có người ngoài trực hệ"*, một câu không dính gì tới
+việc họ vừa làm.
+
+**Ô gợi ý** dùng hàm mới `tim_nguoi_moi_cay(p_tree, p_chuoi)` — chép nguyên
+nếp `tim_nguoi_trong_cay()` (`27` cuối file), đổi ba chỗ: tìm trong **mọi cây
+`ds_cay_xem_duoc()`** thay vì một cây · **loại người đã thuộc `p_tree`** ·
+trả thêm **tên các cây đang chứa** để người dùng biết mình đang kéo từ đâu.
+Gác bằng `co_the_sua(p_tree)` (không phải `co_the_quan_tri`, theo câu chốt
+trên). ⚠ `drop function` xoá cả `grant` — hàm mới thì `revoke` trước, `grant`
+sau, đúng nếp `07` mục 8.
 
 Người gửi báo trùng chỉ thấy được cây mình được xem, nên **chỉ người ở cả hai
 cây mới báo được**. Quản trị hệ thống thấy hết khi duyệt.
@@ -353,8 +408,9 @@ ngày mất của anh Minh còn nguyên.
 |---|---|---|
 | **b121** | Lược đồ: `persons` khoá `id` · `tree_persons` · quan hệ bỏ `tree_id` · mã `P` toàn cục · chống ghi đè theo người. Chuyển dữ liệu giả hiện có. Chạy trên bàn thử SQL, gồm kịch bản ghi đè ba bước | Bàn thử xanh, rồi mới đưa file dán |
 | **b122** | `luu_cay()` · đọc cây · `pham_vi_sua()` · kiểm duyệt theo mô hình mới; bỏ `noiVe` ở JS | Mở ba cây, sửa một người, lưu, mở lại đúng |
-| **b123** | Thêm người: ô *"đã có trong phần mềm chưa"* tìm trong các cây được xem, chọn thì thêm vào cây | Thêm một người cây A vào cây B, sửa ở B thấy ở A |
-| **b124** | Mục *Báo trùng người giữa các cây* (trang Gia phả) + QTHT duyệt gộp | Gửi một báo trùng, QTHT duyệt, mã thua trỏ về mã giữ |
+| **b124a** *(PHÒNG — làm trước, chủ dự án chốt 21/09)* | Thêm người: ô *"đã có trong phần mềm chưa"* tìm trong các cây được xem, chọn thì thêm vào cây. *(Số cũ b123 — bước ấy đã tiêu vào việc khác.)* | Thêm một người cây A vào cây B, sửa ở B thấy ở A |
+| **b124b** *(CHỮA)* | Mục *Báo trùng người giữa các cây* (trang Gia phả) + QTHT duyệt gộp | Gửi một báo trùng, QTHT duyệt, mã thua trỏ về mã giữ |
+| **b124c** | Nới hẹp luật tự duyệt theo mục 11.10 *(việc SQL riêng, không lẫn vào hai bước trên)* | Chủ cây tự duyệt đơn của mình được; người chưa có vai vẫn bị từ chối |
 
 
 ### ⚠ Mã cây KHÔNG phải dòng họ — chủ dự án chốt 17/09/2026
@@ -916,7 +972,7 @@ khoá, tài khoản có đăng nhập được không *(prototype ngầm định
 `THIET-KE-QUAN-TRI.md` mục 9.5; ③ QTHT cuối cùng có bị khoá được không *(luật
 "không tắt người cuối cùng" của 11.5 nên áp sang)*.
 
-### 10. ⚠⚠ CÂU HỎI TREO 17/09/2026 — QTHT tự duyệt đề xuất gắn mã người của mình?
+### 10. ✓ CHỐT 21/09/2026 — QTHT tự duyệt đề xuất gắn mã người của mình: NỚI HẸP
 
 **Chủ dự án nêu:** "quản trị hệ thống xử lý việc gì phải để quản trị hệ thống
 khác duyệt rất khó chịu trong thực tế quản trị" — đề nghị QTHT tự duyệt được
@@ -943,18 +999,27 @@ khẳng định về quyền hạn. Một QTHT bị chiếm đoạt tài khoản
 vẫn có thể tự nhận mình là bất cứ ai trong gia phả nếu không có người thứ hai
 xác nhận.
 
-**Ba hướng, chưa chọn hướng nào:**
+**✓ Chủ dự án chọn hướng 2 — NỚI HẸP, KHÔNG BỎ LUẬT (21/09/2026).** *(Hướng 1
+"giữ nguyên, giải bằng quy trình hai QTHT xét chéo" và hướng 3 "bỏ hẳn chữ ký
+thứ hai ở mọi cây" đều bị bỏ; nguyên văn ba hướng ở `git log -p` file này.)*
 
-1. **Giữ nguyên**, giải quyết bằng QUY TRÌNH: luôn có ≥ 2 tài khoản QTHT hoạt
-   động, đúng để xét chéo cho nhau — không sửa mã, chỉ cần chủ dự án duy trì
-   thói quen ấy.
-2. **Nới hẹp, không bỏ luật**: quan_tri/QTHT gắn mã người cho CHÍNH HỌ, TRONG
-   CÂY HỌ ĐÃ LÀ chủ/quan_tri, được TỰ DUYỆT — vì ở đó họ vốn đã toàn quyền,
-   nên tự duyệt không leo thang gì thêm. Đơn ở NHỮNG CÂY KHÁC (nơi họ chưa có
-   vai gì) vẫn cần chữ ký thứ hai, vì lúc đó việc gắn mã MỞ RA quyền mới.
-3. **Bỏ hẳn chữ ký thứ hai** cho mọi QTHT ở mọi cây — đúng như câu chủ dự án
-   vừa nêu, chấp nhận đánh đổi ở trên.
+**Luật mới, đúng một câu:** người nộp đơn gắn mã cho CHÍNH MÌNH được TỰ DUYỆT
+**khi và chỉ khi** họ đã là **chủ cây** hoặc **`quan_tri` của chính cây ấy**.
+Mọi trường hợp khác — gồm QTHT nộp đơn ở cây họ **chưa có vai gì** — vẫn cần
+chữ ký thứ hai.
 
-**Việc kế tiếp:** hỏi lại chủ dự án chọn 1/2/3 (hoặc phương án khác), rồi mới
-viết SQL. Đụng `duyet_de_xuat_gan()` và `gan_nguoi_cho_thanh_vien()` — cả hai
-đã có bảng tự kiểm canh đúng câu `la_chinh_minh`, sửa thì phải sửa cả bảng ấy.
+**Vì sao chỗ này nới được mà bảy cửa kia thì không:** ở cây mình đã là
+chủ/`quan_tri`, người ấy vốn đã sửa được toàn cây, nên tự duyệt **không mở
+thêm một quyền nào** — không có gì để leo thang. Ở cây chưa có vai, gắn mã là
+đúng lúc `pham_vi_sua()` mở ra một nhánh mới: ở đó luật cũ giữ nguyên.
+
+⚠ **Cờ QTHT KHÔNG phải điều kiện tự duyệt.** Điều kiện là *vai trong chính cây
+ấy*. Viết nhầm thành "là QTHT thì tự duyệt" là rơi thẳng về hướng 3 mà không ai
+thấy — hai câu đọc giống nhau, nghĩa khác hẳn.
+
+**Khi viết SQL:** đụng `duyet_de_xuat_gan()` và `gan_nguoi_cho_thanh_vien()` —
+cả hai đang gác bằng `la_chinh_minh(...)`, nay phải thành *`la_chinh_minh` VÀ
+KHÔNG phải chủ/`quan_tri` của cây ấy* thì mới từ chối. Cả hai đã có bảng tự
+kiểm canh đúng câu `la_chinh_minh`, **sửa thì phải sửa cả bảng ấy**, thêm dòng
+cho cả hai phía: chủ cây tự duyệt → cho qua; người ngoài vai tự duyệt → vẫn bị
+từ chối.
