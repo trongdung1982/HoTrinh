@@ -4,8 +4,8 @@
 --            *"người này đã có trong phần mềm chưa"* lúc thêm người, và hai
 --            hàng rào của `luu_cay()` nới đúng mức để việc ấy đi lọt.
 -- Chạy ở   : Supabase → SQL Editor. Chạy SAU `27-ham-mot-nguoi.sql`.
--- Thiết kế : `THIET-KE-NHIEU-CAY.md` mục 6, khối *b124a* (chốt 21/09/2026)
--- Phiên bản: 0.1.0 · Cập nhật: 21/09/2026 (b124a)
+-- Thiết kế : `THIET-KE-NHIEU-CAY.md` mục 6, khối *b124a* · Sổ tay: so-tay/luu-du-lieu.md
+-- Phiên bản: 0.1.0 · Cập nhật: 22/09/2026 (b124a) — đã dán lên máy chủ thật
 -- ============================================================
 --
 -- ═══ VÌ SAO CÓ FILE NÀY ═══

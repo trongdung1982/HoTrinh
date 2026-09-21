@@ -1,9 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 21/09/2026 · Bước gần nhất: **b123** — rà lại hai lượt Antigravity,
-viết lại `xem-khung-quan-tri.mjs` theo giao diện b118d. ⚠ **b122d NGHIỆM THU
-XONG**: chủ dự án sửa người ở tài khoản 1 → tài khoản 2 thấy → sửa tiếp →
-tài khoản 1 thấy. Một người một bản ghi chạy đúng hai chiều.*
+*Cập nhật 22/09/2026 · Bước gần nhất: **b124a** — máy chủ (`luoc-do/28`, đã
+dán) và trình duyệt (ô "đã có sẵn chưa" ở bốn chế độ thêm người) đều xong;
+CHƯA AI BẤM THỬ. ⚠ **b122d NGHIỆM THU XONG** (21/09): một người một bản ghi
+chạy đúng hai chiều qua hai tài khoản.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
