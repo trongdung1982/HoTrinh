@@ -5,10 +5,10 @@
 //            `tai-lieu/BAN-DO-TACH_V01.md`) và XUẤT LẠI mọi tên đã dời đi
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: pages/form-{thung-rac,sap-thu-tu,go-noi,sua-con,gia-dinh,cap,
-//            xoa,anh}.js, state,
+//            xoa,anh}.js, pages/quan-tri/o-goi-y.js, state,
 //            domains/{person,union,validate,media,purge,render},
-//            services/{repo,gas}, utils/{graph,text,date,image,avatar}, config
-// Phiên bản: 1.43.0 · Cập nhật: 18/09/2026 (b122b) — bỏ ô `noiVe`
+//            services/repo, utils/{graph,text,date,image,avatar}, config
+// Phiên bản: 1.44.0 · Cập nhật: 22/09/2026 (b124a) — ô "đã có sẵn chưa"
 // ============================================================
 //
 // NGƯỢC với hai màn hình kia: form HIỆN ĐỦ MỌI Ô, kèm chữ mờ gợi ý.
@@ -239,8 +239,9 @@ import { attachMedia, detachMedia, setPortrait, clearPortrait,
          getMediaFor, getPortrait } from '../domains/media.js';
 import { planPurge, applyPurge, moTaKePurge } from '../domains/purge.js';
 import { mauVien } from '../domains/render.js';
-import { luuCay, suaDuoc } from '../services/repo.js';
+import { luuCay, suaDuoc, timNguoiMoiCay } from '../services/repo.js';
 import { taiAnh, xoaAnhThat } from '../services/tuong-thich.js';
+import { ganGoiY, dongNguoiCayKhac } from './quan-tri/o-goi-y.js';
 import { buildIndex } from '../utils/graph.js';
 import { fullName, coGiaTri, removeDiacritics, doiSongNguoi } from '../utils/text.js';
 import { formatDate, parseLooseDate, stampNow, mocNgay } from '../utils/date.js';
@@ -283,6 +284,13 @@ let noiVao     = null;
 let daXemThuTu = false;  // đã trả lời câu hỏi thứ tự anh chị em
 let sapXepLai  = false;  // câu trả lời ấy có phải "sắp xếp lại theo tuổi" không
 let noiCtx     = null;   // chế độ noi: { personId, targetId, loai, unionId }
+
+// b124a — KÉO NGƯỜI ĐÃ CÓ Ở CÂY KHÁC VÀO, chỉ ở bốn chế độ THÊM. Chi tiết:
+// `so-tay/luu-du-lieu.md` mục "KÉO người cây khác VÀO cây này".
+let nguoiCoSanChon = null;  // { id, ten, cacCay, gioi } hoặc null = người mới
+let bocCaNhanKhoa  = null;  // khối Tên→Ghi chú, mờ + khoá khi đã chọn người có sẵn
+let khoaGioiGoc    = false; // trạng thái khoá giới tính GỐC của form (themBanDoi)
+let gioiGoc        = null;  // giá trị giới tính GỐC, để trả lại khi "Bỏ chọn"
 
 // --- ẢNH ĐẠI DIỆN (bước 28) ---------------------------------------------
 //
@@ -501,6 +509,10 @@ export function closePersonForm() {
   khoiThuBac   = null;
   khoiHon      = null;
   conSanCo     = [];
+  nguoiCoSanChon = null;
+  bocCaNhanKhoa  = null;
+  khoaGioiGoc    = false;
+  gioiGoc        = null;
 }
 
 /**
@@ -674,6 +686,14 @@ function veCacO(nguoi) {
     ra.push(veKhoiAnh(nguoi.id, nguoi));
   }
 
+  // b124a — câu "đã có sẵn chưa" đứng NGAY TRÊN khối Tên, cùng lý lẽ với câu
+  // "nối vào đâu" ở luật 13: nó quyết định khối bên dưới còn nghĩa gì không.
+  if (laCheDoThem()) ra.push(...khoiTimNguoiCoSan());
+
+  // Đánh dấu chỉ số ĐỂ BỌC LẠI phía dưới (b124a) — mọi phần tử từ đây tới hết
+  // khối Ghi chú là "dữ liệu cá nhân", khoá lại khi đã chọn người có sẵn.
+  const chiSoCaNhanBatDau = ra.length;
+
   ra.push(veNhan('Tên'));
   const hangTen = document.createElement('div');
   hangTen.style.cssText = 'display:flex;gap:6px';
@@ -700,6 +720,8 @@ function veCacO(nguoi) {
   // Thêm cha/mẹ: KHÔNG khoá — từ bước 27 chính ô này là chỗ nói đây là cha hay
   // là mẹ, nên khoá nó là bịt mất câu hỏi duy nhất của cả cái form.
   const khoaGioi = N.cheDo === 'themBanDoi' && !!(noiVao && noiVao.gioiNguoc);
+  khoaGioiGoc = khoaGioi;   // b124a — "Bỏ chọn" trả giới tính về đúng trạng thái này
+  gioiGoc     = nguoi.sex;
   ra.push(veChonGioi(nguoi.sex, khoaGioi));
   if (khoaGioi) ra.push(veDongGioi(noiVao.gioiMoc, noiVao.gioiNguoc, tenNguoi(noiVao.banDoiId)));
 
@@ -763,6 +785,18 @@ function veCacO(nguoi) {
   ra.push(oNhieuDong('note', nguoi.note,
                      'Chuyện gia đình cần nhớ, điều không có ô riêng…'));
 
+  // b124a — bọc TOÀN BỘ khối Tên→Ghi chú vừa dựng vào một `<div>`, để
+  // `capNhatKhoaCaNhan()` mờ + khoá cả cụm bằng một chỗ, không phải dò từng ô.
+  // Đã chọn người có sẵn thì dữ liệu gõ ở đây KHÔNG được gửi đi — xem
+  // `so-tay/luu-du-lieu.md`.
+  if (laCheDoThem()) {
+    const phanCaNhan = ra.splice(chiSoCaNhanBatDau);
+    bocCaNhanKhoa = document.createElement('div');
+    bocCaNhanKhoa.append(...phanCaNhan);
+    ra.push(bocCaNhanKhoa);
+    capNhatKhoaCaNhan();
+  }
+
   // QUAN HỆ đứng CUỐI CÙNG, cùng lý lẽ đã dùng cho bộ thông dụng ở bước 32:
   // người đã quen form này tìm Tên · Giới tính · Sinh · Mất ở đúng chỗ cũ, còn
   // thứ mọc thêm ở cuối thì không ai phải học lại gì.
@@ -772,6 +806,97 @@ function veCacO(nguoi) {
   if (N.cheDo === 'sua') ra.push(...veKhoiQuanHe(nguoi));
 
   return ra;
+}
+
+/**
+ * Ô "đã có trong phần mềm chưa" — b124a. Gõ tên hoặc mã, chọn một dòng thì
+ * `nguoiCoSanChon` được gán và khối Tên→Ghi chú khoá lại (`capNhatKhoaCaNhan`).
+ * Không chọn gì thì mọi thứ chạy như trước — người MỚI, y hệt hôm qua.
+ *
+ * Dùng lại nguyên `ganGoiY()` của trang Quản trị (`quan-tri/o-goi-y.js`): ba
+ * ô gõ tay mù ở đó và ô này cư xử giống hệt nhau — chờ ngừng gõ, hỏi máy chủ,
+ * vẽ danh sách, đi bằng phím mũi tên. Chép lại là tự rước bốn cái bẫy file ấy
+ * đã tính trước (đầu file `o-goi-y.js`).
+ */
+function khoiTimNguoiCoSan() {
+  const boc = document.createElement('div');
+  boc.style.cssText = 'margin-top:4px';
+
+  const oNhap = document.createElement('input');
+  oNhap.type = 'text';
+  oNhap.placeholder = 'Bỏ trống nếu là người mới — gõ tên hoặc mã để tìm người đã có';
+  oNhap.style.cssText = KIEU_O;
+  oNhap.setAttribute('aria-label', 'Tìm người đã có trong phần mềm');
+
+  const the = document.createElement('div');
+
+  function veThe() {
+    the.innerHTML = '';
+    if (!nguoiCoSanChon) return;
+    const hang = document.createElement('div');
+    hang.style.cssText =
+      'display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;' +
+      'padding:9px 11px;border:1px solid #cdbf98;border-radius:9px;' +
+      'background:#fbf6e8;font-size:12px;line-height:1.5';
+
+    const chu = document.createElement('span');
+    chu.textContent = '✓ Dùng người đã có: ' + nguoiCoSanChon.ten +
+      ' (' + nguoiCoSanChon.id + ')' +
+      (nguoiCoSanChon.cacCay ? ' — đã có ở: ' + nguoiCoSanChon.cacCay : '');
+
+    const bo = document.createElement('button');
+    bo.type = 'button';
+    bo.textContent = 'Bỏ chọn, tự nhập người mới';
+    bo.style.cssText =
+      'margin-left:auto;padding:3px 9px;font-size:11px;white-space:nowrap;' +
+      'border:1px solid #cdbf98;border-radius:6px;background:#fffdf9;cursor:pointer';
+    bo.addEventListener('click', () => {
+      nguoiCoSanChon = null;
+      oNhap.value = '';
+      veThe();
+      capNhatKhoaCaNhan();
+    });
+
+    hang.append(chu, bo);
+    the.append(hang);
+  }
+
+  ganGoiY(oNhap, {
+    tim: async (chuoi) => {
+      const kq = await timNguoiMoiCay(chuoi);
+      return kq.ok ? kq.ds : [];
+    },
+    ve: dongNguoiCayKhac,
+    giaTri: (m) => m.ten,
+    khiChon: (m) => {
+      nguoiCoSanChon = { id: m.maNguoi, ten: m.ten, cacCay: m.cacCay, gioi: m.gioi };
+      veThe();
+      capNhatKhoaCaNhan();
+    },
+  });
+
+  boc.append(oNhap, the);
+  return [veNhan('Người này đã có trong phần mềm chưa?'), boc];
+}
+
+/**
+ * Mờ + khoá khối Tên→Ghi chú khi `nguoiCoSanChon` có giá trị; trả nó về đúng
+ * trạng thái gốc khi bỏ chọn. Giới tính đi riêng qua `o.sex.datKhoa()` — API
+ * chính hàm `veChonGioi()` đã bày sẵn — để hiện ĐÚNG giới tính thật của người
+ * vừa chọn thay vì để trống, và để KHÔNG mở nhầm khoá "hôn nhân đồng giới" của
+ * `themBanDoi` lúc bỏ chọn (khôi phục bằng `khoaGioiGoc`/`gioiGoc`, không phải
+ * ép cứng về `false`).
+ */
+function capNhatKhoaCaNhan() {
+  if (bocCaNhanKhoa) {
+    const khoa = !!nguoiCoSanChon;
+    bocCaNhanKhoa.style.opacity = khoa ? '.4' : '1';
+    bocCaNhanKhoa.style.pointerEvents = khoa ? 'none' : 'auto';
+  }
+  if (o.sex && typeof o.sex.datKhoa === 'function') {
+    o.sex.datKhoa(nguoiCoSanChon ? true : khoaGioiGoc,
+                  nguoiCoSanChon ? (nguoiCoSanChon.gioi || null) : gioiGoc);
+  }
 }
 
 function veNhan(chu) {
@@ -1816,7 +1941,7 @@ async function handleAddChild() {
   // nên rà bằng chỉ mục cũ thì mọi phép soi quan hệ đều không thấy gì.
   const indexMoi = buildIndex(dung.tree);
   const raSoat = gopRaSoat(
-    validateAll(dung.tree, indexMoi, 'person', { personId: dung.person.id }),
+    raSoatNguoiKhiThem(dung.tree, indexMoi, dung.person.id),
     validateAll(dung.tree, indexMoi, 'child',
                 { childId: dung.person.id, unionId: dung.union.id })
   );
@@ -1850,7 +1975,11 @@ async function handleAddChild() {
 
   const nguoiMoi = dung.person;
   const unionMoi = dung.union;
-  const tenMoi   = coGiaTri(fullName(nguoiMoi)) ? fullName(nguoiMoi) : nguoiMoi.id;
+  // b124a — người ĐÃ CÓ ở cây khác thì `nguoiMoi` chỉ là một mã trần
+  // (`dungNguoiCoSan()`), không có gì để `fullName()` đọc; lấy tên thật từ
+  // chính dòng gợi ý người dùng vừa chọn.
+  const tenMoi   = nguoiCoSanChon ? nguoiCoSanChon.ten
+    : (coGiaTri(fullName(nguoiMoi)) ? fullName(nguoiMoi) : nguoiMoi.id);
 
   let ketQua;
   try {
@@ -1859,15 +1988,21 @@ async function handleAddChild() {
         if (!Array.isArray(cay.persons)) cay.persons = [];
         if (!Array.isArray(cay.unions))  cay.unions  = [];
 
-        // Chốt chặn cuối: mã người mới được sinh từ cây lúc mở form, còn hàm này
-        // chạy trên bản sao của cây LÚC LƯU. Hai cây ấy lệch nhau thì thà hỏng
-        // lần lưu còn hơn ghi hai người trùng mã — `buildIndex()` ném lỗi khi
-        // gặp mã trùng, và lúc đó app không mở lại được nữa.
-        if (cay.persons.some((p) => p && p.id === nguoiMoi.id)) {
-          throw new Error('Mã ' + nguoiMoi.id + ' vừa được dùng cho một người khác. ' +
-                          'Tải lại trang rồi thêm lại.');
+        // b124a — người ĐÃ CÓ ở cây khác: KHÔNG ghi bản ghi người, chỉ ghi
+        // quan hệ. Bản ghi ấy thuộc cây kia; gửi lên là upsert ĐÈ lên nó bằng
+        // một mã gần như rỗng. Máy chủ tự thêm vào `tree_persons` của cây này
+        // — xem `so-tay/luu-du-lieu.md`.
+        if (!nguoiCoSanChon) {
+          // Chốt chặn cuối: mã người mới được sinh từ cây lúc mở form, còn hàm
+          // này chạy trên bản sao của cây LÚC LƯU. Hai cây ấy lệch nhau thì thà
+          // hỏng lần lưu còn hơn ghi hai người trùng mã — `buildIndex()` ném lỗi
+          // khi gặp mã trùng, và lúc đó app không mở lại được nữa.
+          if (cay.persons.some((p) => p && p.id === nguoiMoi.id)) {
+            throw new Error('Mã ' + nguoiMoi.id + ' vừa được dùng cho một người khác. ' +
+                            'Tải lại trang rồi thêm lại.');
+          }
+          cay.persons.push(JSON.parse(JSON.stringify(nguoiMoi)));
         }
-        cay.persons.push(JSON.parse(JSON.stringify(nguoiMoi)));
 
         const i = cay.unions.findIndex((u) => u && u.id === unionMoi.id);
         if (i >= 0) cay.unions[i] = JSON.parse(JSON.stringify(unionMoi));
@@ -1878,7 +2013,9 @@ async function handleAddChild() {
         target: nguoiMoi.id,
         note:   'Thêm ' + (quanHe === 'adopted' ? 'con nuôi ' : 'người con ') + tenMoi +
                 ' vào ' + unionMoi.id +
-                (dung.laUnionMoi ? ' (cặp mới, tạo cùng lúc)' : '') + ' bằng form nhập liệu.',
+                (dung.laUnionMoi ? ' (cặp mới, tạo cùng lúc)' : '') +
+                (nguoiCoSanChon ? ' — người ĐÃ CÓ ở cây khác, kéo vào (b124a).'
+                                : ' bằng form nhập liệu.'),
         diff:   dung.diff,
       }
     );
@@ -1928,15 +2065,14 @@ async function handleAddDauTien() {
   const luc = stampNow();
   const boi = (state.phien && state.phien.email) || '';
 
-  const kqP = createPerson(state.tree, gomThayDoi(), { boi, luc });
+  const kqP = taoHoacDungNguoi(state.tree, gomThayDoi(), { boi, luc });
   if (!kqP) {
     hienNhan('Không dựng được bản ghi. Tải lại trang rồi thử lại.', true);
     return;
   }
 
   const indexMoi = buildIndex(kqP.tree);
-  const raSoat   = validateAll(kqP.tree, indexMoi, 'person',
-                               { personId: kqP.person.id });
+  const raSoat   = raSoatNguoiKhiThem(kqP.tree, indexMoi, kqP.person.id);
 
   if (!raSoat.canSave) {
     hienNhan('Chưa thêm được — có chỗ không thể đúng được:', true,
@@ -1960,7 +2096,10 @@ async function handleAddDauTien() {
   hienNhan('Đang lưu…', false);
 
   const nguoiMoi = kqP.person;
-  const tenMoi   = coGiaTri(fullName(nguoiMoi)) ? fullName(nguoiMoi) : nguoiMoi.id;
+  // b124a — cùng lý lẽ với `handleAddChild`: người ĐÃ CÓ ở cây khác thì
+  // `nguoiMoi` chỉ là mã trần, lấy tên thật từ dòng gợi ý đã chọn.
+  const tenMoi   = nguoiCoSanChon ? nguoiCoSanChon.ten
+    : (coGiaTri(fullName(nguoiMoi)) ? fullName(nguoiMoi) : nguoiMoi.id);
 
   let ketQua;
   try {
@@ -1968,14 +2107,18 @@ async function handleAddDauTien() {
       (cay) => {
         if (!Array.isArray(cay.persons)) cay.persons = [];
 
-        // Cùng chốt chặn với `handleAddChild`, và ở đây nó bắt thêm một ca
-        // riêng: hai người cùng mở một gia phả rỗng, cả hai cùng bấm thêm
-        // người đầu tiên. Cả hai đều sinh ra P0001.
-        if (cay.persons.some((p) => p && p.id === nguoiMoi.id)) {
-          throw new Error('Mã ' + nguoiMoi.id + ' vừa được dùng cho một người khác. ' +
-                          'Tải lại trang rồi thêm lại.');
+        // b124a — người ĐÃ CÓ ở cây khác: KHÔNG ghi bản ghi người, chỉ đặt
+        // gốc cây. Xem chú thích đầy đủ ở `handleAddChild`.
+        if (!nguoiCoSanChon) {
+          // Cùng chốt chặn với `handleAddChild`, và ở đây nó bắt thêm một ca
+          // riêng: hai người cùng mở một gia phả rỗng, cả hai cùng bấm thêm
+          // người đầu tiên. Cả hai đều sinh ra P0001.
+          if (cay.persons.some((p) => p && p.id === nguoiMoi.id)) {
+            throw new Error('Mã ' + nguoiMoi.id + ' vừa được dùng cho một người khác. ' +
+                            'Tải lại trang rồi thêm lại.');
+          }
+          cay.persons.push(JSON.parse(JSON.stringify(nguoiMoi)));
         }
-        cay.persons.push(JSON.parse(JSON.stringify(nguoiMoi)));
 
         // Chỉ nhận gốc khi chỗ ấy còn trống. Cây đáng lẽ rỗng, nhưng bản sao
         // dùng ở đây là cây LÚC LƯU chứ không phải cây lúc mở form — và ghi đè
@@ -1986,7 +2129,8 @@ async function handleAddDauTien() {
       {
         action: 'create',
         target: nguoiMoi.id,
-        note:   'Thêm người đầu tiên của gia phả: ' + tenMoi + '.',
+        note:   'Thêm người đầu tiên của gia phả: ' + tenMoi +
+                (nguoiCoSanChon ? ' — người ĐÃ CÓ ở cây khác, kéo vào (b124a).' : '.'),
         diff:   kqP.diff,
       }
     );
@@ -2017,6 +2161,33 @@ async function handleAddDauTien() {
 }
 
 /**
+ * Thay `createPerson()` khi người đang thêm là người ĐÃ CÓ ở cây khác (b124a):
+ * chèn một MÃ TRẦN vào bản sao của cây để `createUnion`/`addChild`/`addPartner`
+ * — cả ba chỉ đọc `id` và `deleted` của người, xem đầu ba hàm ấy ở
+ * `domains/union.js` — coi là "đã tồn tại", KHÔNG dựng bản ghi thật. Trả cùng
+ * hình dạng `{tree, person, diff}` với `createPerson()` để mọi hàm `dungCayThem*`
+ * dưới đây dùng chung đúng một dòng gọi, không phải rẽ nhánh.
+ *
+ * ⚠ `diff` rỗng CỐ Ý: không có gì thay đổi ở BẢN GHI NGƯỜI cả — người này
+ * không được ghi. Nơi gọi cuối cùng (ba hàm `handleAdd*`) phải tự biết ĐỪNG
+ * đưa `person` này vào phần `persons.luu` của lần lưu — xem
+ * `so-tay/luu-du-lieu.md` mục "KÉO người cây khác VÀO cây này".
+ */
+function dungNguoiCoSan(tree, id) {
+  if (!tree || !Array.isArray(tree.persons) || !id) return null;
+  if (tree.persons.some((p) => p && p.id === id)) return null;   // đã ở cây này rồi
+  const stub = { id, deleted: false };
+  return { tree: Object.assign({}, tree, { persons: tree.persons.concat([stub]) }),
+           person: stub, diff: {} };
+}
+
+/** Một dòng gọi cho cả bốn nơi từng gọi thẳng `createPerson()` — b124a. */
+function taoHoacDungNguoi(tree, thayDoi, ghiNhan) {
+  return nguoiCoSanChon ? dungNguoiCoSan(tree, nguoiCoSanChon.id)
+                        : createPerson(tree, thayDoi, ghiNhan);
+}
+
+/**
  * Dựng cây mới mang đủ ba thay đổi, bằng ba hàm thuần nối đuôi nhau.
  *
  * ⚠ THỨ TỰ LÀ BẮT BUỘC và không hoán được: `nextId()` đọc cây, nên mỗi hàm phải
@@ -2041,7 +2212,7 @@ function dungCayThemCon(cay, thayDoi, quanHe, ghiNhan) {
     Object.assign(diff, kqU.diff);
   }
 
-  const kqP = createPerson(tree, thayDoi, ghiNhan);
+  const kqP = taoHoacDungNguoi(tree, thayDoi, ghiNhan);
   if (!kqP) return null;
   tree = kqP.tree;
   Object.assign(diff, kqP.diff);
@@ -2071,6 +2242,20 @@ function dungCayThemCon(cay, thayDoi, quanHe, ghiNhan) {
  * KHÔNG dùng làm con số của bản báo cáo rà soát — bản báo cáo chạy nhánh
  * `'tree'` một lượt duy nhất và mới là chỗ con số có nghĩa.
  */
+/**
+ * Nhánh `'person'` của `validateAll()`, NHƯNG bỏ qua khi người đang thêm là
+ * người ĐÃ CÓ ở cây khác (b124a) — bản ghi ấy chỉ là một mã trần trong cây
+ * tạm (`dungNguoiCoSan()`), không có tên hay ngày tháng gì để rà; rà soát
+ * bản ghi THẬT của họ đã diễn ra từ lúc bản ghi ấy được tạo, ở cây kia.
+ */
+function raSoatNguoiKhiThem(tree, index, personId) {
+  if (nguoiCoSanChon) {
+    return { canSave: true, errors: [], warnings: [], skipped: [],
+             counts: { total: 0, ok: 0, error: 0, warning: 0, skip: 0 } };
+  }
+  return validateAll(tree, index, 'person', { personId });
+}
+
 function gopRaSoat(a, b) {
   const ra = {
     canSave: a.canSave && b.canSave,
@@ -3312,7 +3497,7 @@ async function handleAddNguoiThan() {
   // `state.index`, nên rà bằng chỉ mục cũ thì mọi phép soi quan hệ mù hết.
   const indexMoi = buildIndex(dung.tree);
   let raSoat = gopRaSoat(
-    validateAll(dung.tree, indexMoi, 'person', { personId: dung.person.id }),
+    raSoatNguoiKhiThem(dung.tree, indexMoi, dung.person.id),
     validateAll(dung.tree, indexMoi, 'union',  { unionId: dung.union.id })
   );
   if (laChaMe) {
@@ -3360,18 +3545,25 @@ async function handleAddNguoiThan() {
   hienNhan('Đang lưu…', false);
 
   const nguoiMoi = dung.person;
-  const tenMoi   = coGiaTri(fullName(nguoiMoi)) ? fullName(nguoiMoi) : nguoiMoi.id;
+  // b124a — người ĐÃ CÓ ở cây khác: lấy tên thật từ dòng gợi ý đã chọn.
+  const tenMoi   = nguoiCoSanChon ? nguoiCoSanChon.ten
+    : (coGiaTri(fullName(nguoiMoi)) ? fullName(nguoiMoi) : nguoiMoi.id);
   const vai      = laChaMe
     ? (noiVao.gioi === 'F' ? 'mẹ' : (noiVao.gioi === 'M' ? 'cha' : 'cha/mẹ'))
     : 'vợ/chồng';
   const moc      = laChaMe ? noiVao.childId : noiVao.banDoiId;
 
-  const ketQua = await ghiBanGhi(nguoiMoi, [dung.union], {
+  // b124a — `ghiBanGhi(null, …)` là đúng đường có sẵn: KHÔNG ghi bản ghi
+  // người, chỉ ghi quan hệ. Mọi nơi khác trong file đã gọi theo cách này khi
+  // người kia là người có sẵn TRONG CÙNG CÂY (`dungCayNoi`); ở đây khác đúng
+  // một chỗ — người có sẵn ấy đang thuộc CÂY KHÁC.
+  const ketQua = await ghiBanGhi(nguoiCoSanChon ? null : nguoiMoi, [dung.union], {
     action: 'create',
     target: nguoiMoi.id,
     note:   'Thêm ' + vai + ' ' + tenMoi + ' cho ' + tenNguoi(moc) +
             ' vào ' + dung.union.id +
-            (dung.laUnionMoi ? ' (cặp mới, tạo cùng lúc)' : '') + '.',
+            (dung.laUnionMoi ? ' (cặp mới, tạo cùng lúc)' : '') +
+            (nguoiCoSanChon ? ' — người ĐÃ CÓ ở cây khác, kéo vào (b124a).' : '.'),
     diff:   dung.diff,
   });
 
@@ -3401,7 +3593,7 @@ async function handleAddNguoiThan() {
 function dungCayThemChaMe(cay, thayDoi, quanHe, ghiNhan) {
   if (!cay || !noiVao || !noiVao.childId) return null;
 
-  const kqP = createPerson(cay, thayDoi, ghiNhan);
+  const kqP = taoHoacDungNguoi(cay, thayDoi, ghiNhan);
   if (!kqP) return null;
 
   let tree = kqP.tree;
@@ -3443,7 +3635,7 @@ function dungCayThemChaMe(cay, thayDoi, quanHe, ghiNhan) {
 function dungCayThemBanDoi(cay, thayDoi, ghiNhan) {
   if (!cay || !noiVao || !noiVao.banDoiId) return null;
 
-  const kqP = createPerson(cay, thayDoi, ghiNhan);
+  const kqP = taoHoacDungNguoi(cay, thayDoi, ghiNhan);
   if (!kqP) return null;
 
   const tree = kqP.tree;

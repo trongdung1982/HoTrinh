@@ -114,7 +114,9 @@ ghi thứ hai. **Bốn chỗ phải đi cùng nhau, sót chỗ nào cũng hỏng
 `null`, và cả hàng rào 3b lặng lẽ cho qua tất cả.
 
 Kéo người vào thì **đừng gửi kèm bản ghi người** — chỉ gửi quan hệ; bản ghi ấy
-thuộc cây kia, gửi lên là upsert đè. Đo: `../kiem-thu/ban-thu-sql/do-b124a.mjs`.
+thuộc cây kia, gửi lên là upsert đè. Trình duyệt canh luật này ở
+`person-edit.js` (`taoHoacDungNguoi`/`dungNguoiCoSan`).
+Đo: `../kiem-thu/ban-thu-sql/do-b124a.mjs`.
 
 ## Mã toàn cục — xin bằng `cap_ma()`
 

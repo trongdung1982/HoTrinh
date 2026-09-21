@@ -64,10 +64,8 @@ khi coi hai máy chủ đã đồng bộ.
 DÁN lên THẬT** (b122c, 18/09/2026). Bảng tự kiểm cuối mỗi file: **chủ dự án
 đọc lại 18/09/2026, tất cả các dòng đạt.** Chưa rõ Staging.
 
-⏳ **`28-keo-nguoi-co-san.sql` (b124a) — VIẾT XONG, CHƯA DÁN.** Bàn thử SQL tại
-chỗ 22/22 ĐẠT (`../kiem-thu/ban-thu-sql/do-b124a.mjs`). ⚠ Bàn thử dựng từ
-TRỐNG nên nó không đo được đường NÂNG CẤP máy chủ thật — dán xong đọc bảng tự
-kiểm cuối file, cả 6 dòng phải ĐẠT. Chưa dán thì ô gợi ý chưa chạy.
+**`28-keo-nguoi-co-san.sql` (b124a) — ĐÃ DÁN lên THẬT, 22/09/2026, tự kiểm
+6/6 ĐẠT** (chủ dự án đọc lại, xác nhận). Chưa rõ Staging.
 
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
 `11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18` ·
@@ -112,15 +110,15 @@ chiều qua hai tài khoản)*. Còn lẻ: nút Từ chối khoá đúng lúc �
 Chủ dự án chọn: ① tự duyệt **nới hẹp** (chủ/`quan_tri` cây ấy tự duyệt đơn gắn
 mã của mình; cây chưa có vai vẫn cần chữ ký thứ hai) ② gộp thì **máy giữ mã
 nhỏ**, QTHT chỉ Duyệt/Từ chối ③ làm **phòng trước**. Ba bước:
-**b124a** ô gợi ý *"đã có trong phần mềm chưa"* lúc thêm người *(việc kế tiếp,
-đã chốt xong cách làm)* · **b124b** mục *Báo trùng* + hàm gộp · **b124c** SQL
-nới hẹp luật tự duyệt.
+**b124a** ô gợi ý *"đã có trong phần mềm chưa"* lúc thêm người · **b124b** mục
+*Báo trùng* + hàm gộp · **b124c** SQL nới hẹp luật tự duyệt.
 
-**b124a — máy chủ XONG** (`luoc-do/28`, 22/22 trên bàn thử; luật ở
-`THIET-KE-NHIEU-CAY.md` mục 6 khối *b124a*): thành viên thường cũng kéo được
-người từ cây khác vào, miễn đúng trực hệ. Cửa `timNguoiMoiCay()` đã có ở
-`sb.js` · `repo.js` · bản giả. **Còn lại: ô gợi ý ở màn hình thêm người** —
-dùng quan hệ để kéo, đừng gửi kèm bản ghi người (`28` mục P9 tự thêm vào cây).
+**b124a — MÁY CHỦ VÀ MÃ ĐỀU XONG, CHƯA AI BẤM THỬ** (22/09). SQL đã dán, tự
+kiểm 6/6 ĐẠT. Trình duyệt: ô "đã có trong phần mềm chưa" đứng trên khối Tên ở
+cả BỐN chế độ thêm người (con · cha/mẹ · vợ/chồng · người đầu tiên) —
+`taoHoacDungNguoi()` thay `createPerson()`, ba nơi lưu tự canh không gửi bản
+ghi người khi đã chọn (`so-tay/luu-du-lieu.md`). Điểm dừng: mở form thêm
+người, gõ tên một người đã ở cây khác, chọn, lưu — người ấy vào cả hai cây.
 ⚠ Ô gợi ý trên điện thoại: vá `visualViewport` đã có **ảnh 390px đạt**
 (`kq-gan-ma-390.png`, b123) — hộp mở gọn, không tràn. Nhưng đó là trang giả
 trên máy tính; **điện thoại thật vẫn chưa ai bấm lại**.

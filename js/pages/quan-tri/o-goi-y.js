@@ -3,10 +3,10 @@
 // Vai trò  : Ô gõ vài chữ → hiện danh sách khớp. Một bản dùng cho CẢ BA chỗ
 //            đang gõ tay mù: email ở form Mời, mã người ở form Mời, và mã
 //            người ở khu Tài khoản.
-// Lớp      : pages — được gọi bởi: pages/quan-tri/* · được phép gọi: services
+// Lớp      : pages — gọi bởi pages/quan-tri/*, pages/person-edit.js · gọi: services
 // Phụ thuộc: (không) — nơi gọi truyền hàm tìm vào, file này không biết
 //            Supabase là gì
-// Phiên bản: 0.2.0 · Cập nhật: 18/09/2026 — nghe thêm `visualViewport` (bẫy 4)
+// Phiên bản: 0.3.0 · Cập nhật: 22/09/2026 (b124a) — thêm `dongNguoiCayKhac()`
 // ============================================================
 //
 // ═══ VÌ SAO MỘT BẢN CHO BA CHỖ ═══
@@ -267,4 +267,22 @@ export function dongNguoi(m) {
     .filter(Boolean).join('  ·  ');
 
   return { chinh: m.ten, phu, mo: Boolean(m.ganChoEmail) };
+}
+
+/**
+ * Chữ cho một dòng NGƯỜI Ở CÂY KHÁC — b124a, `pages/person-edit.js` dùng khi
+ * gõ ô "đã có trong phần mềm chưa" lúc thêm người. Cùng khuôn `dongNguoi()`,
+ * thay `ganChoEmail` bằng `cacCay`: đây không phải chuyện tài khoản, mà là
+ * chuyện người ấy đang đứng ở những cây nào.
+ */
+export function dongNguoiCayKhac(m) {
+  const nam = (m.namSinh || m.namMat)
+    ? '(' + (m.namSinh || '?') + '–' + (m.namMat || '') + ')'
+    : '';
+
+  const phu = [m.maNguoi, nam,
+    m.cacCay ? 'đã có ở: ' + m.cacCay : '']
+    .filter(Boolean).join('  ·  ');
+
+  return { chinh: m.ten, phu, mo: false };
 }
