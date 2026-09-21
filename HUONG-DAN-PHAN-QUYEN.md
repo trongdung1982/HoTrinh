@@ -1,6 +1,6 @@
 # Hướng dẫn phân quyền — dành cho chủ dự án
 
-*Cập nhật 18/09/2026 · Thao tác trên trang Quản trị thay cho SQL Editor (b106) · Luật trực hệ + hàng chờ duyệt*
+*Cập nhật 21/09/2026 · Thao tác trên trang Quản trị thay cho SQL Editor (b106) · Tên mục và tên vai trò đã soi lại đúng giao diện b118d · Luật trực hệ + hàng chờ duyệt*
 
 > File này viết cho người **không lập trình**. Mỗi bước ghi rõ bấm gì, và
 > ghi rõ **nhìn thấy gì thì biết là xong**.
@@ -34,7 +34,7 @@ Chưa gắn mã, hoặc chưa được duyệt → **chỉ xem**, và xem đư�
   hoặc nhờ quản trị viên. Đây là điều bạn đã biết và vẫn chọn — không phải lỗi.
 - **Luật chạy hai chiều.** Con cháu sửa được hồ sơ của bạn, vì bạn nằm trong
   đường trực hệ của họ. Nhờ vậy hồ sơ các cụ đã mất vẫn có người chăm.
-- **Quản trị viên sửa được tất cả**, và gắn được cho **nhiều tài khoản**.
+- **Quản trị gia phả sửa được tất cả**, và gắn được cho **nhiều tài khoản**.
 
 ---
 
@@ -75,30 +75,39 @@ máy chủ kiểm tra bảo đảm toàn vẹn dữ liệu (không gắn trùng 
 
 ### Các bước thao tác trên giao diện:
 
-1. **Mở trang Quản trị**: Trên thanh menu hoặc Cài đặt, bấm vào **Quản trị**
-   (địa chỉ `…/QuanTri.html`). Chọn gia phả cần thao tác.
-2. **Duyệt đơn xin vào và gắn mã người**:
-   - Chọn tab **Đơn xin vào** (nơi gom các tài khoản đã đăng ký và xin vào cây).
-   - Với mỗi đơn, nhập hoặc chọn **mã người** trong gia phả (ví dụ `P0012`) vào ô tương ứng.
-   - Bấm **Duyệt** — tài khoản được nhận vào cây, mang vai trò *Thành viên* và được sửa trực hệ của mã người ấy.
-   - Nếu không muốn nhận, bấm **Từ chối** (hệ thống hỏi xác nhận lại một nhịp rồi mới xoá).
-   - Nếu duyệt cho vào nhưng **để trống mã người**, họ sẽ vào với vai trò *Khách* (chỉ xem, không sửa được gì).
-3. **Đổi vai trò hoặc gắn lại mã người cho tài khoản đã vào cây**:
-   - Chọn tab **Thành viên** (hoặc *Tất cả*).
-   - Bấm vào nút hành động (`...` hoặc menu) trên dòng tài khoản cần chỉnh:
-     - **Đổi vai trò**: Chọn một trong ba vai trò: *Quản trị viên* · *Thành viên* · *Khách*.
-     - **Gắn mã người**: Cập nhật hoặc đổi mã người liên kết với tài khoản này.
-     - **Tin cậy**: Bật/tắt cờ tin cậy (bật cờ này thì thành viên được ghi thẳng dữ liệu mà không cần qua hàng chờ duyệt nội dung).
-     - **Gỡ khỏi gia phả**: Gỡ quyền truy cập của tài khoản khỏi cây.
+1. **Mở trang Quản trị**: trên thanh menu hoặc Cài đặt, bấm **Quản trị**
+   (địa chỉ `…/QuanTri.html`). Bấm **Gia phả**, chọn cây cần thao tác.
+2. **Duyệt đơn xin vào** — *nhận người vào cây, CHƯA cho sửa gì cả*:
+   - Bấm mục **Đơn xin vào** ở thanh bên trái *(số bên cạnh là số đơn đang chờ)*.
+   - Mỗi đơn có đúng hai nút: **Duyệt** và **Từ chối**. Bấm xong còn một hộp
+     hỏi lại rồi mới thi hành. **Không có ô nhập mã người ở đây** — gắn mã là
+     việc riêng, làm ở bước 3.
+   - **Duyệt chỉ cấp quyền ĐỌC** cây ấy, và chỉ cây ấy. Người vừa được duyệt
+     xem được sơ đồ, chưa sửa được gì.
+   - Nút Duyệt mờ đi nghĩa là bạn không có thẩm quyền: duyệt đơn là việc của
+     **chủ gia phả** và **Quản trị hệ thống**.
+3. **Cho quyền sửa, gắn mã người, đổi vai trò** — mục **Thành viên & quyền**:
+   - Cột **Quyền** là một dòng chữ bấm được (ví dụ *Khách*). Bấm vào nó để
+     **đổi vai trò**: *Quản trị gia phả* · *Thành viên* · *Khách*.
+   - Cuối mỗi dòng là menu **Chọn ▾**, mở ra:
+     - **Gắn / đổi mã người** — nối tài khoản với một người trong sơ đồ. Gắn
+       rồi thì họ sửa được trực hệ của người ấy; để trống thì chỉ xem.
+     - **Bật tin cậy (ghi thẳng)** / **Tắt tin cậy (ghi thẳng)** — bật thì
+       người ấy ghi thẳng, không qua hàng chờ duyệt nội dung.
+     - **Bàn giao chủ sở hữu** — trao cây cho người khác.
+     - **Xóa khỏi gia phả** — gỡ hẳn quyền truy cập cây này.
+   - Mục nào mờ thì rê chuột vào sẽ hiện câu vì sao.
 
 ⚠ **Một người trong gia phả chỉ gắn được với một tài khoản.** Gắn `P0012` cho
 người thứ hai thì máy chủ từ chối. Đó là chủ ý: nếu không, hai người cùng nhận
 mình là một cụ và cả hai cùng sửa được trực hệ của cụ, mà không có gì bất thường
 hiện lên màn hình.
 
-⚠ **Luật "không ai tự đặt quyền cho chính mình":** Nút đổi vai trò trên dòng
-của chính bạn sẽ bị khoá mờ sẵn kèm lý do — chủ cây hay quản trị viên không tự
-hạ hoặc tự nâng vai trò của chính mình được.
+⚠ **Luật "không ai tự đặt quyền cho chính mình":** trên dòng của chính bạn,
+chữ Quyền và các mục trong menu **Chọn ▾** đều mờ sẵn kèm lý do — chủ gia phả
+hay Quản trị hệ thống cũng không tự hạ hay tự nâng vai trò mình được. Muốn gắn
+mã người cho chính mình thì dùng mục **Đề xuất mã người cho mình**, rồi một
+Quản trị hệ thống **khác** duyệt.
 
 ### Bảng phân định vai trò trong gia phả:
 
@@ -106,11 +115,11 @@ hạ hoặc tự nâng vai trò của chính mình được.
 |---|---|---|---|---|
 | **Quản trị hệ thống** | `quan_tri_he_thong` | ghi thẳng | ✓ | ✓ (mọi cây) |
 | **Chủ cây** *(cột chu_so_huu)* | `quan_tri` hoặc `sua` | ghi thẳng | ✓ | ✓ (cây của mình) |
-| **Quản trị viên** | `quan_tri` | ghi thẳng | ✓ | ✗ |
+| **Quản trị gia phả** | `quan_tri` | ghi thẳng | ✓ | ✗ |
 | **Thành viên** | `sua` | theo trực hệ, chờ duyệt | ✗ | ✗ |
 | **Khách** | `xem` | ✗ | ✗ | ✗ |
 
-- **Quản trị viên (`quan_tri`)** là người kiểm duyệt nội dung của cây, **không**
+- **Quản trị gia phả (`quan_tri`)** là người kiểm duyệt nội dung của cây, **không**
   phải người quản trị hệ thống và không đổi được quyền thành viên khác.
 - **Chủ cây (`chu_so_huu`)** là người lập ra cây, nắm toàn quyền phân quyền trên cây đó.
 
@@ -118,9 +127,9 @@ hạ hoặc tự nâng vai trò của chính mình được.
 
 ## 4. Xem hiện ai đang có quyền gì
 
-Cách xem nhanh và chuẩn xác nhất là mở trang **Quản trị** → chọn gia phả → tab
-**Thành viên**. Bảng hiển thị đầy đủ mọi tài khoản, vai trò, mã người được gắn,
-trạng thái duyệt và cờ tin cậy.
+Cách xem nhanh và chuẩn xác nhất là mở trang **Quản trị** → **Gia phả** → chọn
+cây → mục **Thành viên & quyền**. Bảng hiển thị đầy đủ mọi tài khoản, vai trò,
+mã người được gắn, trạng thái duyệt và cờ tin cậy.
 
 Nếu cần tra cứu trực tiếp bằng SQL trong **SQL Editor** (chỉ để kiểm tra tầng dữ liệu):
 
@@ -128,8 +137,7 @@ Nếu cần tra cứu trực tiếp bằng SQL trong **SQL Editor** (chỉ để
 select m.email, m.role, m.person_id, m.approved,
        coalesce(p.names->0->>'given', '') as ten_nguoi_duoc_gan
   from public.tree_members m
-  left join public.persons p
-    on p.tree_id = m.tree_id and p.id = m.person_id
+  left join public.persons p on p.id = m.person_id   -- mã người duy nhất mọi cây (`26`)
  where m.tree_id = (select id from public.trees where tree_code = 'NTB')
  order by m.role, m.email;
 ```
@@ -162,10 +170,11 @@ Người trong họ **tự xin vào**, bạn không phải đi thêm tay từng 
 1. Họ tự đăng ký tài khoản, đăng nhập.
 2. Màn hình hiện **"Bạn chưa được cấp quyền xem"** kèm ô tự giới thiệu và
    nút **Xin vào gia phả**. Bấm xong, đơn vào hàng chờ.
-3. Bạn mở trang **Quản trị** (`QuanTri.html`) → chọn gia phả → tab **Đơn xin vào**. Mỗi đơn
-   hiện email, lời họ tự giới thiệu, giờ gửi.
-4. Điền **mã người** trong gia phả rồi bấm **Duyệt** — họ vào xem được, và
-   sửa được trực hệ của mã ấy. **Để trống mã** thì họ chỉ xem, không sửa gì.
+3. Bạn mở trang **Quản trị** (`QuanTri.html`) → **Gia phả** → chọn cây → mục
+   **Đơn xin vào**. Mỗi đơn hiện email, lời họ tự giới thiệu, giờ gửi.
+4. Bấm **Duyệt** — họ vào **xem** được, chưa sửa được gì. Muốn họ sửa được
+   thì sang mục **Thành viên & quyền**, menu **Chọn ▾** → **Gắn / đổi mã
+   người**; gắn rồi họ sửa được trực hệ của mã ấy.
 5. Không phải người trong họ thì bấm **Từ chối** (hỏi lại một nhịp rồi mới xoá).
 
 ⚠ **Người đang chờ không xem được gì cả.** Không phải "xem được nhưng không
@@ -221,12 +230,12 @@ thật, không phải số nhớ trên màn hình.
 ⚠ **Trên điện thoại bảng rộng hơn màn hình** — kéo ngang *trong* bảng mới thấy
 hai nút ở cột cuối. Trang tự hiện một dòng nhắc khi rơi vào cảnh ấy.
 
-**Ai vào được:** Quản trị hệ thống và Quản trị viên. Người khác mở đúng địa chỉ
+**Ai vào được:** Quản trị hệ thống và Quản trị gia phả. Người khác mở đúng địa chỉ
 ấy cũng chỉ thấy một câu *"Trang này dành cho quản trị viên"* — chặn nằm ở máy
 chủ, không nằm ở chỗ giấu địa chỉ.
 
 **Ai bị treo cờ chờ duyệt:** chỉ vai **Thành viên** chưa bật cờ tin cậy. Bạn
-(Quản trị hệ thống) và Quản trị viên ghi thẳng, không qua hàng chờ — nên hàng
+(Quản trị hệ thống) và Quản trị gia phả ghi thẳng, không qua hàng chờ — nên hàng
 chờ trống trơn là chuyện bình thường cho tới khi có người trong họ vào sửa.
 
 ### Muốn chắc nút "Gạt đi" hoàn tác đúng — dán một file, 30 giây

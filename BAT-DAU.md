@@ -139,19 +139,10 @@ repo phải để Public), hoặc chuyển sang Cloudflare Pages (repo để Pri
 
 ---
 
-## 5. Năm việc bản cũ còn dở — ĐỪNG chép lại
+## 5. Một việc bản cũ còn dở — ĐỪNG chép lại
 
 Ghi trong lời thẻ `bang-apps-script-2026-09-02`, chép lại đây cho khỏi phải tra:
-
-1. ⛔ **Lỗi trên điện thoại: chọn số đời không tự vẽ lại sơ đồ** (máy tính không
-   bị). Chưa đo, chưa biết gốc. ⚠ Nếu bản Supabase dùng lại `pages/tree-view.js`
-   thì **lỗi này đi theo**. Nên đo và sửa sớm.
-2. Chế độ **bổ sung** của nhập Excel — có phép đo xanh nhưng chủ dự án chưa bấm
-   thử trên app thật.
-3. Chưa mở file `.ged` xuất ra bằng một phần mềm gia phả thật (mới mở Notepad).
-4. Chưa giới hạn được Editor theo chi/nhánh → **Supabase giải quyết**.
-5. Chưa chặn được Editor sửa tay file JSON ngoài app → **Supabase giải quyết**.
-
+1. Chưa giới hạn được Editor theo chi/nhánh → **Supabase giải quyết**.
 Và một việc dọn mã treo từ b48: **đợt 7 của phép tách `person-edit.js`**.
 
 ---

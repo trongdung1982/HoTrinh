@@ -505,7 +505,7 @@ Chỉ đổi chữ tiếng Việt hiển thị trên giao diện (trong `setting
 |---|---|---|
 | `quan_tri_he_thong` | **Quản trị hệ thống** | Siêu quản trị của cả hệ thống phần mềm |
 | `quan_tri` | **Quản trị gia phả** | Người quản trị, kiểm duyệt dữ liệu của một cây/chi cụ thể |
-| `sua` | **Thành viên họ tộc** | Con cháu trong họ, sửa thông tin trong phạm vi trực hệ |
+| `sua` | **Thành viên** | Con cháu trong họ, sửa thông tin trong phạm vi trực hệ |
 | `xem` | **Khách** | Người chỉ có quyền xem dữ liệu |
 | `sao_luu` | **Tài khoản sao lưu** | Tài khoản chuyên dụng để chạy sao lưu tự động |
 
@@ -527,7 +527,7 @@ Chủ dự án chốt dứt điểm sau khi bác bỏ chỗ lệch của b104:
 | **Quản trị hệ thống** | cờ `tai_khoan.la_quan_tri_he_thong` | ✓ mọi cây | ✓ | ✓ mọi cây |
 | **Chủ cây** *(người tạo)* | cột `trees.chu_so_huu` | ✓ cây mình | ✓ | ✓ **chỉ cây mình**, cấp tối đa `quan_tri` |
 | **Quản trị gia phả** (`quan_tri`) | `tree_members.role` | ✓ | ✓ | **✗** |
-| **Thành viên họ tộc** (`sua`) | `tree_members.role` | trực hệ, qua hàng chờ | ✗ | ✗ |
+| **Thành viên** (`sua`) | `tree_members.role` | trực hệ, qua hàng chờ | ✗ | ✗ |
 | **Khách** (`xem`) | `tree_members.role` | ✗ | ✗ | ✗ |
 
 Nguyên văn chủ dự án:

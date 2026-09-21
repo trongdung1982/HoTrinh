@@ -3,7 +3,9 @@
 // Vai trò  : Hằng số hiển thị phía trình duyệt.
 // Lớp      : config — không gọi file nào khác
 // Phụ thuộc: (không)
-// Phiên bản: 0.21.0 · Cập nhật: 08/09/2026 11:50 (b103 — nhận bảng tên bốn hạng người)
+// Phiên bản: 0.21.1 · Cập nhật: 21/09/2026 21:05 (b123 — vai `sua` gọi là
+//            "Thành viên" ở MỌI màn hình, chủ dự án chốt; trước đây Cài đặt
+//            ghi "Thành viên họ tộc" còn Quản trị ghi "Thành viên")
 // ============================================================
 //
 // LƯU Ý: file này KHÔNG phải nơi bạn điền cấu hình. Mọi thứ cần điền nằm ở
@@ -721,7 +723,7 @@ function haiLe(le) {
  * Bốn tên, đúng như chủ dự án chốt:
  *
  *   Quản trị hệ thống  `quan_tri_he_thong`   dựng cây, đổi được quyền của người khác
- *   Quản trị viên      `quan_tri`               kiểm duyệt nội dung
+ *   Quản trị gia phả   `quan_tri`               kiểm duyệt nội dung
  *   Thành viên         `sua`                 sửa được trực hệ của mình
  *   Khách              `xem`                 chỉ xem
  *
@@ -733,7 +735,7 @@ function haiLe(le) {
 export function vaiTroBangChu(vaiTro) {
   if (vaiTro === 'quan_tri_he_thong') return 'Quản trị hệ thống';
   if (vaiTro === 'quan_tri') return 'Quản trị gia phả';
-  if (vaiTro === 'sua') return 'Thành viên họ tộc';
+  if (vaiTro === 'sua') return 'Thành viên';
   if (vaiTro === 'xem') return 'Khách';
   if (vaiTro === 'sao_luu') return 'Tài khoản sao lưu';
   return vaiTro || '';

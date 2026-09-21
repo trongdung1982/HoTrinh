@@ -176,9 +176,6 @@ là đã đóng bước với một lỗi khôi phục sao lưu nằm im trong m
 | Bộ bất biến bố cục vẫn gác nhánh Apps Script | `KE-HOACH.md` cuối file |
 | Bốn màn hình chưa mở được | `KIEN-TRUC.md` mục 6 |
 
-⚠ **Chưa đo trên cây 681 người.** Bộ kiểm chạy trên cây thử 59 người. Lỗi `vn`
-vừa rồi lộ ra ở app thật chứ không lộ ở bộ kiểm — vì bộ kiểm khi ấy chỉ so cây
-với cây, không có ai bấm nút *Thêm người*.
 
 ---
 

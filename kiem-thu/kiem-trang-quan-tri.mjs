@@ -162,7 +162,9 @@ kiem('có <title>', /<title>[^<]+<\/title>/.test(HTML), 'thiếu title');
 // CSS của khung nằm ở FILE RIÊNG chứ không nhúng, để bản giả dùng để nhìn
 // bằng mắt (`kiem-thu/trang-quan-tri-gia.html`) nạp đúng một nguồn ấy.
 kiem('nạp quan-tri.css — bố cục khung bốn khu',
-     /<link\s+rel="stylesheet"\s+href="quan-tri\.css">/.test(HTML),
+     // `?v=1.1.2` là CỐ Ý — ép trình duyệt bỏ bản CSS cũ trong bộ nhớ đệm
+     // (b122d). Bài kiểm chấp nhận có hay không có phần `?v=`.
+     /<link\s+rel="stylesheet"\s+href="quan-tri\.css(\?v=[\w.]+)?">/.test(HTML),
      'thiếu thẻ link tới quan-tri.css');
 
 kiem('file quan-tri.css có thật',
