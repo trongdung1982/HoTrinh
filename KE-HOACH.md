@@ -1,8 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 18/09/2026 · Bước gần nhất: **b122d** — chủ dự án đã bấm thử (cây
-T388, thêm người, mời thành viên), tự kiểm `26`+`27` đạt hết. Ba việc mới nổi
-ra lúc bấm thử, xem mục *Kế tiếp* dưới.*
+*Cập nhật 21/09/2026 · Bước gần nhất: **b123** — rà lại hai lượt Antigravity,
+viết lại `xem-khung-quan-tri.mjs` theo giao diện b118d. ⚠ **b122d NGHIỆM THU
+XONG**: chủ dự án sửa người ở tài khoản 1 → tài khoản 2 thấy → sửa tiếp →
+tài khoản 1 thấy. Một người một bản ghi chạy đúng hai chiều.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -94,9 +95,10 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 `THIET-KE-NHIEU-CAY.md` mục 6 (thay b120, `noi_ve` bỏ). **b121 · b122a · b122b
 · b122c (dán) xong**; sổ tay: `so-tay/luu-du-lieu.md`.
 
-**b122d — bấm một phần** (tạo cây, thêm người, mời thành viên). Còn thiếu:
-sửa một người, **Lưu hai lần liền** · tải lại xem đúng · nút Từ chối khoá
-đúng lúc. ⚠ Staging lệch thật tới khi dán `26`+`27` sang đó.
+**b122d — ĐÃ NGHIỆM THU 21/09/2026.** Tạo cây, thêm người, mời thành viên
+(18/09); sửa người qua lại giữa HAI tài khoản, mỗi bên thấy cái bên kia vừa
+sửa (21/09). Còn lẻ: nút Từ chối khoá đúng lúc — chưa ai bấm.
+⚠ Staging vẫn lệch thật tới khi dán `26`+`27` sang đó.
 
 **Nổi ra lúc bấm thử 18/09** (chi tiết `so-tay/trang-quan-tri.md`): khay điều
 hướng điện thoại + ba lỗi bố cục mobile **đã vá, chủ dự án xác nhận đạt**. Còn
@@ -129,9 +131,11 @@ gắn mã của mình? xin gỡ luật "không ngoại lệ" đã chốt hai l�
 *Việc đã đóng thì **xoá khỏi bảng**, đừng gạch ngang giữ lại — nhật ký bước đã
 là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừng chép số lần trước.*
 
-⚠ **18/09: phụ tá đã xong 3/4 việc** (hướng dẫn phân quyền mục 3 · nợ b105 ·
-*Quyền*/*Vai trò*); còn `xem-khung-quan-tri.mjs` — phân công vùng:
-**`../GEMINI.md` mục 2c**. Rà lại việc họ làm ở phiên sau.
+⚠ **21/09: bốn việc giao phụ tá 18/09 nay XONG CẢ BỐN.** Ba việc AGY làm đã rà
+lại ở b123 — `settings.js` đúng; hướng dẫn phân quyền có **5 chỗ sai tên nút**
+(viết theo suy đoán, không mở giao diện ra soi), đã sửa. Việc thứ tư
+`xem-khung-quan-tri.mjs` Claude Code tự làm. Phân công vùng: **`../GEMINI.md`
+mục 2c**.
 
 | Việc | Ghi ở đâu |
 |---|---|
@@ -140,7 +144,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Bốn bảng CHƯA được sao lưu**: `cau_hinh` · `tai_khoan` · `de_xuat_gan_nguoi` · `doi_ma_toan_cuc`. Ba bảng đầu giữ cờ QTHT, khoá mềm, đơn đề xuất; `doi_ma_toan_cuc` giữ cặp mã cũ→mới vĩnh viễn. Cần xem RLS có cho vai `sao_luu` đọc không trước khi thêm | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
 | ⚠ **Hai hàm của `16` nay LỆCH NGHĨA với tên của chúng**: `xin_xoa_cay()` không còn là "xin" — nó ẩn cây ngay; `huy_xin_xoa_cay()` nay chỉ QTHT gọi được và nghĩa thật là *trả lại cho chủ*. Giữ tên cũ ở b118b là **cố ý** (đổi tên kéo theo `sb.js` · `sb-gia.mjs` · `trang-cay.js` · bộ ảnh). Đổi tên là một bước riêng | `luoc-do/23-bon-luat-moi.sql` khối đầu |
 | ⚠ **`ds_kiem_duyet()` chưa trả người duyệt · lúc duyệt · lý do từ chối** — hai tab lịch sử của Kiểm duyệt để trống ba cột (cột có trong `change_log`, hàm chưa đọc). Sửa hàm là `drop` → chép cả `grant` | `so-tay/trang-quan-tri.md` |
-| ⚠ **`xem-khung-quan-tri.mjs` (ngoài repo) còn kịch bản bấm của giao diện cũ** — viết lại theo cảnh của `so-quantri3.mjs`, hoặc bỏ | `so-tay/trang-quan-tri.md` |
+| ⚠⚠ **Font `Georgia` thiếu chữ `ề` · `ắ` · `ồ`** — tựa trang và tựa MỌI hộp thoại vỡ dấu: *"Thành viên và quyê ̀n"*, *"Gă ́n mã người trong sơ đô ̀"*, *"Nguyễn Trọng Bă ́c"*. Đo b123 bằng ba font cùng chuỗi chữ; `system-ui` và Times đúng, Georgia vỡ. **Người thật trên Chrome/Windows thấy y hệt.** Chưa sửa vì đổi font là đổi mảng đã chép nguyên từ prototype — **cần chủ dự án quyết** | `so-tay/trang-quan-tri.md` |
 | ⚠ **Hai việc của điểm dừng b106 chưa nghiệm thu bằng mắt**: gắn được mã người · đăng nhập bằng vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **Thành viên thường nộp đề xuất phải gõ mã người trần** — ô gợi ý đi qua `tim_nguoi_trong_cay()`, gác bằng `co_the_quan_tri()`, nên với họ không gợi ý gì. Nộp vẫn được | `nhat-ky/b117-khu-tai-khoan.md` |
 | ⚠ **Huy hiệu *đơn chờ duyệt* trên nút Gia phả đếm theo cây ĐANG MỞ** (`napSoDem(phien.treeId)`) — chỗ duy nhất của trang còn dính cây đang mở. Có từ b101, b117 chỉ dời nút | `khung.js` · luật 5a |

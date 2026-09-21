@@ -35,10 +35,13 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
 - **Thêm cửa vào `sb.js` thì thêm ở `sb-gia.mjs`** — thiếu một tên là `SyntaxError`
   lúc nạp, cả bộ ảnh ra nền trơn (đã xảy ra b110b, b111). Tham số của bản giả
   phải cùng NGHĨA với máy chủ.
-- **Nhìn bằng mắt trước khi báo xong**: `node ../kiem-thu/so-quantri3.mjs [lọc]`
-  (cặp `sq-p-*` prototype / `sq-a-*` app). Bộ bất biến văn bản không bắt được
-  lệch giao diện. ⚠ `xem-khung-quan-tri.mjs` (kq-*) còn kịch bản bấm của giao
-  diện cũ (*Sửa quyền*, *Xét đơn*…) — ảnh ra sai cảnh, đừng dùng tới khi viết lại.
+- **Nhìn bằng mắt trước khi báo xong** — hai bộ ảnh, hai việc khác nhau:
+  · `node ../kiem-thu/so-quantri3.mjs [lọc]` (cặp `sq-p-*` prototype /
+  `sq-a-*` app) so giao diện, bắt *lệch so với prototype*.
+  · `node ../kiem-thu/xem-khung-quan-tri.mjs [lọc]` (`kq-*`, **viết lại b123**)
+  chụp APP MỘT MÌNH ở cảnh prototype không có: menu bị khoá, hộp gắn mã trên
+  390px, ca biên địa chỉ sai. Thêm cảnh thì thêm vào đó, đừng thêm vào bộ kia.
+  Bộ bất biến văn bản không bắt được cả hai loại.
 
 ## Lỗi đã gặp — áp cho MỌI file trong "Gồm"
 
@@ -80,6 +83,19 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   đo trước đó lệch. Vá bằng nghe thêm `window.visualViewport` (bẫy 4 trong
   file). **Chưa xác nhận trên điện thoại thật** — chủ dự án mới thử điện
   thoại, chưa thử máy tính; bấm lại sau khi vá rồi báo còn lệch không.
+
+- **Font `Georgia` thiếu chữ `ề` · `ắ` · `ồ`** (đo b123, 21/09/2026). CSS
+  quantri3 đặt `h1{font:36px Georgia,serif}` và `.modal-title{…Georgia…}`;
+  Chrome không rơi sang font dự phòng mà **tự ghép dấu**, nên tựa hiện thành
+  *"Thành viên và quyê ̀n"*, *"Gă ́n mã người trong sơ đô ̀"* — dấu rời hẳn ra.
+  Đo bằng ba dòng cùng chuỗi chữ, ba font: Georgia vỡ, `system-ui` và
+  `Times New Roman` đúng. **Không phải hiện tượng của ảnh headless** — người
+  thật trên Chrome/Windows thấy y hệt. Chưa sửa: đổi font là đổi một mảng đã
+  chép nguyên từ prototype, phải hỏi chủ dự án trước.
+- **Menu *Chọn hành động* của dòng CUỐI bảng bị cắt cụt** (đo b123) —
+  `.panel{overflow:auto}` của quantri3 cắt menu ở mép bảng, người bấm phải
+  cuộn trong bảng mới thấy mục. Nới khung ảnh không chữa được; ảnh
+  `kq-menu-saoluu.png` giữ lại đúng cảnh ấy.
 
 ## Vì sao làm thế này
 

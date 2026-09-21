@@ -77,19 +77,20 @@ máy chủ kiểm tra bảo đảm toàn vẹn dữ liệu (không gắn trùng 
 
 1. **Mở trang Quản trị**: trên thanh menu hoặc Cài đặt, bấm **Quản trị**
    (địa chỉ `…/QuanTri.html`). Bấm **Gia phả**, chọn cây cần thao tác.
-2. **Duyệt đơn xin vào** — *nhận người vào cây, CHƯA cho sửa gì cả*:
+2. **Duyệt đơn xin vào** — *nhận người vào cây*:
    - Bấm mục **Đơn xin vào** ở thanh bên trái *(số bên cạnh là số đơn đang chờ)*.
-   - Mỗi đơn có đúng hai nút: **Duyệt** và **Từ chối**. Bấm xong còn một hộp
-     hỏi lại rồi mới thi hành. **Không có ô nhập mã người ở đây** — gắn mã là
-     việc riêng, làm ở bước 3.
-   - **Duyệt chỉ cấp quyền ĐỌC** cây ấy, và chỉ cây ấy. Người vừa được duyệt
-     xem được sơ đồ, chưa sửa được gì.
+   - Mỗi đơn có đúng hai nút: **Duyệt** và **Từ chối**. Bấm xong hiện một hộp
+     hỏi lại, và **trong hộp ấy có ô *Mã người trong sơ đồ***.
+   - **Điền mã** (ví dụ `P0012`) → họ vừa xem được, vừa sửa được trực hệ của
+     người ấy. **Để trống** → chỉ xem. Bảng ở ngoài không có ô này; nó chỉ
+     hiện trong hộp sau khi bấm Duyệt.
+   - Duyệt cấp quyền cho **đúng cây ấy**, không lan sang cây khác.
    - Nút Duyệt mờ đi nghĩa là bạn không có thẩm quyền: duyệt đơn là việc của
      **chủ gia phả** và **Quản trị hệ thống**.
 3. **Cho quyền sửa, gắn mã người, đổi vai trò** — mục **Thành viên & quyền**:
    - Cột **Quyền** là một dòng chữ bấm được (ví dụ *Khách*). Bấm vào nó để
      **đổi vai trò**: *Quản trị gia phả* · *Thành viên* · *Khách*.
-   - Cuối mỗi dòng là menu **Chọn ▾**, mở ra:
+   - Cuối mỗi dòng là nút **Chọn hành động**, mở ra:
      - **Gắn / đổi mã người** — nối tài khoản với một người trong sơ đồ. Gắn
        rồi thì họ sửa được trực hệ của người ấy; để trống thì chỉ xem.
      - **Bật tin cậy (ghi thẳng)** / **Tắt tin cậy (ghi thẳng)** — bật thì
@@ -104,7 +105,7 @@ mình là một cụ và cả hai cùng sửa được trực hệ của cụ, m
 hiện lên màn hình.
 
 ⚠ **Luật "không ai tự đặt quyền cho chính mình":** trên dòng của chính bạn,
-chữ Quyền và các mục trong menu **Chọn ▾** đều mờ sẵn kèm lý do — chủ gia phả
+chữ Quyền và các mục trong nút **Chọn hành động** đều mờ sẵn kèm lý do — chủ gia phả
 hay Quản trị hệ thống cũng không tự hạ hay tự nâng vai trò mình được. Muốn gắn
 mã người cho chính mình thì dùng mục **Đề xuất mã người cho mình**, rồi một
 Quản trị hệ thống **khác** duyệt.
@@ -172,9 +173,10 @@ Người trong họ **tự xin vào**, bạn không phải đi thêm tay từng 
    nút **Xin vào gia phả**. Bấm xong, đơn vào hàng chờ.
 3. Bạn mở trang **Quản trị** (`QuanTri.html`) → **Gia phả** → chọn cây → mục
    **Đơn xin vào**. Mỗi đơn hiện email, lời họ tự giới thiệu, giờ gửi.
-4. Bấm **Duyệt** — họ vào **xem** được, chưa sửa được gì. Muốn họ sửa được
-   thì sang mục **Thành viên & quyền**, menu **Chọn ▾** → **Gắn / đổi mã
-   người**; gắn rồi họ sửa được trực hệ của mã ấy.
+4. Bấm **Duyệt** — hộp hiện ra kèm ô **Mã người trong sơ đồ**. Điền mã thì
+   họ sửa được trực hệ của người ấy; để trống thì chỉ xem. Gắn sau cũng
+   được: mục **Thành viên & quyền** → **Chọn hành động** → **Gắn / đổi mã
+   người**.
 5. Không phải người trong họ thì bấm **Từ chối** (hỏi lại một nhịp rồi mới xoá).
 
 ⚠ **Người đang chờ không xem được gì cả.** Không phải "xem được nhưng không
