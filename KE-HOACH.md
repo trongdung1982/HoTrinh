@@ -64,9 +64,16 @@ khi coi hai máy chủ đã đồng bộ.
 DÁN lên THẬT** (b122c, 18/09/2026). Bảng tự kiểm cuối mỗi file: **chủ dự án
 đọc lại 18/09/2026, tất cả các dòng đạt.** Chưa rõ Staging.
 
+⏳ **`28-keo-nguoi-co-san.sql` (b124a) — VIẾT XONG, CHƯA DÁN.** Bàn thử SQL tại
+chỗ 22/22 ĐẠT (`../kiem-thu/ban-thu-sql/do-b124a.mjs`). ⚠ Bàn thử dựng từ
+TRỐNG nên nó không đo được đường NÂNG CẤP máy chủ thật — dán xong đọc bảng tự
+kiểm cuối file, cả 6 dòng phải ĐẠT. Chưa dán thì ô gợi ý chưa chạy.
+
 ⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
 `11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18` ·
-`03`/`06`/`08`/`13`→`25`**→`27`** *(bản đứng cuối của 21 hàm, kê ở đầu `27`)*.
+`03`/`06`/`08`/`13`→`25`→`27`**→`28`** *(`28` đứng CUỐI: nó giữ bản đứng cuối
+của `luu_cay()` và `tu_choi_thay_doi()`, khác `27` chín chỗ. Dán lại `27` sau
+`28` là mất cả chín, **không một lời báo**)*.
 ⚠ **Sau `26` KHÔNG dán lại `02`/`11`** — luật đọc trên bảng người của chúng
 hỏi `tree_id` đã bỏ; bản đứng cuối của bốn luật ấy ở `26` mục 5.
 `23` đứng CUỐI mọi chuỗi: nó là bản đứng cuối của 13 hàm, trong đó có
@@ -97,13 +104,9 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 `THIET-KE-NHIEU-CAY.md` mục 6 (thay b120, `noi_ve` bỏ). **b121 · b122a · b122b
 · b122c (dán) xong**; sổ tay: `so-tay/luu-du-lieu.md`.
 
-**b122d — ĐÃ NGHIỆM THU 21/09/2026.** Tạo cây, thêm người, mời thành viên
-(18/09); sửa người qua lại giữa HAI tài khoản, mỗi bên thấy cái bên kia vừa
-sửa (21/09). Còn lẻ: nút Từ chối khoá đúng lúc — chưa ai bấm.
-⚠ Staging vẫn lệch thật tới khi dán `26`+`27` sang đó.
-
-**Nổi ra lúc bấm thử 18/09** (chi tiết `so-tay/trang-quan-tri.md`): khay điều
-hướng điện thoại + ba lỗi bố cục mobile **đã vá, chủ dự án xác nhận đạt**.
+**b122d — ĐÃ NGHIỆM THU 21/09/2026** *(một người một bản ghi chạy đúng hai
+chiều qua hai tài khoản)*. Còn lẻ: nút Từ chối khoá đúng lúc — chưa ai bấm.
+⚠ Staging vẫn lệch thật tới khi dán `26`+`27`+`28` sang đó.
 
 **✓ HƯỚNG ĐÃ CHỐT 21/09 — `THIET-KE-NHIEU-CAY.md` mục 6 (ba câu cuối) + 11.10.**
 Chủ dự án chọn: ① tự duyệt **nới hẹp** (chủ/`quan_tri` cây ấy tự duyệt đơn gắn
@@ -113,14 +116,11 @@ nhỏ**, QTHT chỉ Duyệt/Từ chối ③ làm **phòng trước**. Ba bước
 đã chốt xong cách làm)* · **b124b** mục *Báo trùng* + hàm gộp · **b124c** SQL
 nới hẹp luật tự duyệt.
 
-**b124a — làm gì, đã chốt hết, mở ra là viết được** (`THIET-KE-NHIEU-CAY.md`
-mục 6, khối *b124a*): **thành viên thường cũng kéo được** người từ cây khác
-vào, miễn đúng trực hệ. Một file `luoc-do/28`: hàm mới `tim_nguoi_moi_cay()`
-+ nới **hai** hàng rào của `luu_cay()` — `3b` cho qua người mà mình xem được
-cây chứa họ, và `4a/4c` cộng `v_keo_vao` vào `v_pham_vi`. ⚠ Nới `3b` mà quên
-`4c` là hỏng im lặng. Rồi `sb.js` + ô gợi ý ở màn hình thêm người.
-⚠ `28` sẽ dán đè `luu_cay()` nên nó **đứng CUỐI** chuỗi `03`/`06`/`08`/`13`
-→`25`→`27`.
+**b124a — máy chủ XONG** (`luoc-do/28`, 22/22 trên bàn thử; luật ở
+`THIET-KE-NHIEU-CAY.md` mục 6 khối *b124a*): thành viên thường cũng kéo được
+người từ cây khác vào, miễn đúng trực hệ. Cửa `timNguoiMoiCay()` đã có ở
+`sb.js` · `repo.js` · bản giả. **Còn lại: ô gợi ý ở màn hình thêm người** —
+dùng quan hệ để kéo, đừng gửi kèm bản ghi người (`28` mục P9 tự thêm vào cây).
 ⚠ Ô gợi ý trên điện thoại: vá `visualViewport` đã có **ảnh 390px đạt**
 (`kq-gan-ma-390.png`, b123) — hộp mở gọn, không tràn. Nhưng đó là trang giả
 trên máy tính; **điện thoại thật vẫn chưa ai bấm lại**.

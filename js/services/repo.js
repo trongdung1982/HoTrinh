@@ -4,7 +4,8 @@
 // Lớp      : services — được gọi bởi: pages · gọi: services/sb,
 //            services/hinh-dang, utils, state
 // Phụ thuộc: services/sb.js, services/hinh-dang.js, utils/graph.js, state.js
-// Phiên bản: 0.4.0 · Cập nhật: 18/09/2026 (b122b)
+// Phiên bản: 0.5.0 · Cập nhật: 21/09/2026 (b124a)
+//            0.5.0 thêm `timNguoiMoiCay()` — cửa cho ô gợi ý lúc thêm người.
 //            0.4.0 mô hình một người một bản ghi: kho mã xin của máy chủ
 //            (`dayKhoMa`/`xinMa`) · đặt lại số chống ghi đè sau mỗi lần Lưu.
 // Sổ tay   : so-tay/luu-du-lieu.md
@@ -152,6 +153,19 @@ export async function xinMa(loai, so) {
   if (!kq.ok) return { ok: false, loi: kq.loi, so: 0 };
   napKho(loai, kq.ds);
   return { ok: true, loi: null, so: kq.ds.length };
+}
+
+/**
+ * Ô gợi ý *"người này đã có trong phần mềm chưa"* lúc thêm người mới (b124a).
+ *
+ * Đi thẳng xuống máy chủ mỗi lần gõ, KHÔNG nhớ tạm: danh sách phụ thuộc quyền
+ * xem của người đang đăng nhập và đổi khi họ được nhận vào một cây khác, nên
+ * một bản nhớ tạm ở đây là một bản có thể sai mà không ai biết. Mười dòng bốn
+ * chữ thì gọi lại rẻ hơn nhớ.
+ */
+export async function timNguoiMoiCay(chuoi) {
+  if (!state.treeId) return { ok: false, loi: 'Chưa biết đang mở gia phả nào.', ds: [] };
+  return sb.timNguoiMoiCay(state.treeId, chuoi);
 }
 
 /**

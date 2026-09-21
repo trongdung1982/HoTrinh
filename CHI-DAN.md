@@ -46,7 +46,7 @@ kế hoạch đang dùng sang file khác, **đừng nới trần**.
    ⚠ **File SQL nào đã dán, file nào chưa — hỏi `KE-HOACH.md`.** Không giữ
    bản thứ hai ở đây: nó đổi mỗi bước, và hai chỗ ghi là hai chỗ để lệch nhau.
    ⚠ **Chuỗi dán lại:** `11`/`10`→`14`→`16`→`18`→**`23`** ·
-   `13`/`14`→`15`→`20`→**`23`** · `08`→`18` · `03`/`08`→**`27`**. Quên `18` là mở lại lỗ hổng "hai
+   `13`/`14`→`15`→`20`→**`23`** · `08`→`18` · `03`/`08`→`27`→**`28`** *(`28` giữ bản cuối của `luu_cay()`)*. Quên `18` là mở lại lỗ hổng "hai
    chữ ký" của b110c; quên **`23`** là mở lại khoá mềm, lời mời QTHT và cây đã
    xoá — cả ba **im lặng**.
    ⚠ **`drop function` XOÁ CẢ `grant`.** Dựng lại một hàm đã có thì chép theo

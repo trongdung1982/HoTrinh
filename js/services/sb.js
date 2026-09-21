@@ -5,7 +5,9 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.24.0 · Cập nhật: 18/09/2026 (b122b)
+// Phiên bản: 0.25.0 · Cập nhật: 21/09/2026 (b124a)
+//            0.25.0 thêm `timNguoiMoiCay()` — gợi ý người ĐÃ CÓ ở cây khác
+//            lúc thêm người (`luoc-do/28`).
 //            0.24.0 mô hình MỘT NGƯỜI MỘT BẢN GHI (`luoc-do/26`+`27`):
 //            `layDong()` đọc bốn bảng dùng chung bằng `doc_cay()`; thêm
 //            `capMa()` · `dsNguoiMoCoi()`; bỏ `docNguoiCayKhac()` và hai câu
@@ -1942,6 +1944,39 @@ export async function timNguoiTrongCay(treeId, chuoi) {
     namMat: r.nam_mat || '',
     gioi: r.gioi || 'U',
     ganChoEmail: r.gan_cho_email || '',
+  }));
+  return { ok: true, loi: null, ds };
+}
+
+/**
+ * Gợi ý NGƯỜI ĐÃ CÓ Ở CÂY KHÁC, cho ô *"đã có trong phần mềm chưa"* lúc thêm
+ * người (b124a). Trả tối đa 10 dòng.
+ *
+ * Khác `timNguoiTrongCay()` ở bốn chỗ, và cả bốn đều do máy chủ giữ — đừng lọc
+ * lại ở đây: tìm trong MỌI cây người dùng xem được · LOẠI người đã thuộc cây
+ * này · trả kèm tên các cây đang chứa họ · gác bằng `co_the_sua()` chứ không
+ * phải quyền quản trị, vì chủ dự án chốt 21/09/2026 rằng thành viên thường
+ * cũng kéo người từ cây khác vào được.
+ *
+ * ⚠ `cacCay` chỉ kể những cây NGƯỜI DÙNG XEM ĐƯỢC. Một người có thể còn nằm ở
+ *   cây kín nào đó mà câu này không nói — đừng hiển thị nó như danh sách đủ.
+ */
+export async function timNguoiMoiCay(treeId, chuoi) {
+  const k = layKhach();
+  if (!k || !treeId) return { ok: false, loi: 'Chưa nối được máy chủ.', ds: [] };
+
+  const { data, error } = await k.rpc('tim_nguoi_moi_cay', {
+    p_tree: treeId, p_chuoi: String(chuoi || ''),
+  });
+  if (error) return { ok: false, loi: cauLoi(error), ds: [] };
+
+  const ds = (data || []).map((r) => ({
+    maNguoi: r.id || '',
+    ten: r.ten || '',
+    namSinh: r.nam_sinh || '',
+    namMat: r.nam_mat || '',
+    gioi: r.gioi || 'U',
+    cacCay: r.cac_cay || '',
   }));
   return { ok: true, loi: null, ds };
 }
