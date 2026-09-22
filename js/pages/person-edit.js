@@ -9,6 +9,7 @@
 //            domains/{person,union,validate,media,purge,render},
 //            services/repo, utils/{graph,text,date,image,avatar}, config
 // Phiên bản: 1.45.0 · Cập nhật: 22/09/2026 (b124a2) — hồ sơ người cây khác tự điền
+// Sổ tay   : so-tay/luu-du-lieu.md · so-tay/o-goi-y.md
 // ============================================================
 //
 // NGƯỢC với hai màn hình kia: form HIỆN ĐỦ MỌI Ô, kèm chữ mờ gợi ý.
@@ -70,11 +71,10 @@
 //    và chỉ ở đó. Đây là lời của màn hình, và nó nói rõ mình là ai.
 //
 // 7. THỨ TỰ ANH CHỊ EM CÓ BA LỰA CHỌN, KHÔNG PHẢI HAI. Người con vừa thêm mà
-//    lớn tuổi hơn một anh chị em đang đứng trước thì app hỏi: vẫn thêm · thêm
-//    và sắp xếp lại theo tuổi · huỷ bỏ. Không chặn, vì thứ tự anh em không phải
-//    lúc nào cũng theo tuổi (con vợ cả chép trước con vợ thứ là lệ có thật);
-//    cũng không tự sắp, vì tự sắp là lặng lẽ đổi một thứ người ta đã chép tay.
-//    Phép sắp lại chạy TRƯỚC phép rà — luật 1 đòi thứ được rà đúng là thứ được ghi.
+//    lớn tuổi hơn một anh chị em đứng trước thì app hỏi: vẫn thêm · thêm và
+//    sắp lại theo tuổi · huỷ. Không chặn, vì thứ tự anh em không phải lúc nào
+//    cũng theo tuổi (con vợ cả chép trước con vợ thứ là lệ có thật); cũng không
+//    tự sắp. Phép sắp chạy TRƯỚC phép rà — luật 1.
 //
 // --- XOÁ NGƯỜI: luật thứ tám (18/08/2026, chat 2.5a) --------------------
 //

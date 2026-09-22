@@ -7,7 +7,7 @@
 // Phụ thuộc: (không) — nơi gọi truyền hàm `tim`/`ve` vào; file này không biết
 //            Supabase là gì, nên đổi nguồn dữ liệu không phải sửa nó
 // Phiên bản: 0.4.0 · Cập nhật: 22/09/2026 (b124a2) — bẫy 5 và 6
-// Sổ tay   : so-tay/trang-quan-tri.md
+// Sổ tay   : so-tay/o-goi-y.md
 // ============================================================
 //
 // ═══ SÁU CÁI BẪY ĐÃ TÍNH TRƯỚC — chuyện đầy đủ ở sổ tay ═══
