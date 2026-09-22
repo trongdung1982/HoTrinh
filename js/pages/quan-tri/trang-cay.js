@@ -37,6 +37,7 @@ import {
   dsXinDoiVai, duyetXinDoiVai,
 } from '../../services/sb.js';
 import { duongDan } from './trang-chi-tiet.js';
+import { mountTrangNguoi } from './trang-nguoi.js';
 import { hoi } from './hop-thoai.js';
 import { ganGoiY, dongNguoi, dongTaiKhoan } from './o-goi-y.js';
 import {
@@ -54,6 +55,9 @@ import {
  */
 export const MUC_TRANG_CAY = [
   { ma: 'tong-quan', chu: 'Tổng quan' },
+  // b125a — bảng phẳng mọi người của cây. Section `#tree-people` KHÔNG có
+  // trong prototype quantri3, dựng mới 23/09/2026.
+  { ma: 'nguoi', chu: 'Danh sách người', view: 'tree-people' },
   { ma: 'thanh-vien', chu: 'Thành viên & quyền', view: 'tree-members' },
   { ma: 'don-xin-vao', chu: 'Đơn xin vào', view: 'tree-requests' },
   // Nghĩa chốt 15/09/2026 (b116): Bàn giao chủ + Xoá cây.
@@ -71,6 +75,7 @@ const LY_DO_QUYEN_DE_NGHI =
  */
 export async function mountTrangCay(sec, ctx) {
   const hashLuc = window.location.hash;
+  if (ctx.muc === 'nguoi') return mountTrangNguoi(sec, ctx, hashLuc);
   if (ctx.muc === 'thanh-vien') return mountThanhVien(sec, ctx, hashLuc);
   if (ctx.muc === 'don-xin-vao') return mountDonXinVao(sec, ctx, hashLuc);
   return mountChiTiet(sec, ctx, hashLuc);
@@ -80,7 +85,7 @@ export async function mountTrangCay(sec, ctx) {
 // Mẩu dùng chung
 // ============================================================
 
-async function timCay(ctx) {
+export async function timCay(ctx) {
   const kq = await layDanhSachGiaPha();
   if (!kq.ok) return { loi: kq.loi || 'Máy chủ không trả lời.' };
   const cay = kq.ds.find((c) => c.treeCode === ctx.thamSo);

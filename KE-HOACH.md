@@ -42,11 +42,11 @@ Quản trị hệ thống**.
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b111** — kiểm duyệt TRƯỚC/SAU | Lưu "chờ duyệt" thật, bằng tài khoản KHÔNG quản trị cây ấy (quản trị luôn `ghi_thang()`, không vào hàng chờ) |
-| **b111b** — gắn mã người, đổi cây ở ô chọn | Mã xong, `20` đã dán |
-| **b111c** — nộp · tự duyệt bị từ chối · người khác duyệt được | ✓② nộp đã bấm 17/09 (LVT433). Còn ①Nhận lời mời QTHT ③tự duyệt bị từ chối ④QTHT khác duyệt được |
-| **b117** — khu Tài khoản | ①bảng *Các gia phả tôi tham gia* đúng mã (tài khoản thường, qua RLS) ②Đổi mật khẩu: sai bị từ chối, đúng thì đổi |
-| **b118d** — cả trang Quản trị | ✓ Thành viên & quyền đã mở 21/09. Còn: từng trang con còn lại; menu *Chọn hành động* (trang cây) và *Chọn ▾* (trang tài khoản) mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
+| **b111** — kiểm duyệt TRƯỚC/SAU | Lưu "chờ duyệt" bằng tài khoản KHÔNG quản trị cây ấy (quản trị luôn `ghi_thang()`) |
+| **b111c** — đơn gắn mã | Còn ①nhận lời mời QTHT ②QTHT khác duyệt được ③**b124c**: chủ cây tự duyệt đơn mình PHẢI ăn |
+| **b117** — khu Tài khoản | ①bảng *Các gia phả tôi tham gia* đúng mã (tài khoản thường, qua RLS) ②đổi mật khẩu |
+| **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
+| **b125a** — Danh sách người | Mở trên cây 681 người: đọc có nhanh không, 14 cột có cuộn ngang gọn không |
 
 ---
 
@@ -57,19 +57,9 @@ Quản trị hệ thống**.
 **Đã dán lên CẢ HAI Supabase (thật + Staging): `01` → `21`, không sót file
 nào.** `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
 
-**`22`→`25` — ĐÃ DÁN lên THẬT, tự kiểm ĐẠT.** Chưa rõ Staging — hỏi lại trước
-khi coi hai máy chủ đã đồng bộ.
-
-**`26-mot-nguoi-mot-ban-ghi.sql` (b121) + `27-ham-mot-nguoi.sql` (b122a) — ĐÃ
-DÁN lên THẬT** (b122c, 18/09/2026). Bảng tự kiểm cuối mỗi file: **chủ dự án
-đọc lại 18/09/2026, tất cả các dòng đạt.** Chưa rõ Staging.
-
-**`28-keo-nguoi-co-san.sql` (b124a) — ĐÃ DÁN lên THẬT, 22/09/2026, tự kiểm
-6/6 ĐẠT** (chủ dự án đọc lại, xác nhận). Chưa rõ Staging.
-
-⚠ **`29-tu-duyet-noi-hep.sql` (b124c) — VIẾT XONG, CHƯA DÁN đâu cả.** Bàn thử
-tại chỗ 38/38 ĐẠT, có kiểm chứng ngược (`../kiem-thu/ban-thu-sql/do-b124c.mjs`).
-Dán rồi thì nút Duyệt trên đơn gắn mã của **chính chủ cây** mới ăn.
+**`22`→`29` — ĐÃ DÁN lên THẬT, tự kiểm ĐẠT cả** (`26`+`27` ngày 18/09 · `28`
+ngày 22/09 · `29` ngày 23/09; chủ dự án đọc lại bảng tự kiểm từng lần).
+⚠ **Chưa rõ Staging từ `22` trở đi** — hỏi lại trước khi coi hai máy đồng bộ.
 
 ⚠ **Chuỗi dán lại — bản DUY NHẤT** *(bản thứ hai ở `CHI-DAN.md` đã bỏ 23/09:
 hai chỗ ghi đã lệch thật)*:
@@ -120,14 +110,27 @@ kéo người cây khác đã TẮT (`CAN_KEO_NGUOI_XUYEN_CAY` trong `person-edi
 máy chủ giữ nguyên. Đã làm gì · năm câu phải chốt · cách mở lại · hai lỗ hôn
 nhân dùng chung · dữ liệu thử còn sót: **`so-tay/nguoi-xuyen-cay.md`**.
 
-**b124c XONG 23/09/2026** (không thuộc chức năng đóng băng): `luoc-do/29` +
-`sb.laQuanTriCay()` + nới nút Duyệt ở `trang-cay.js`. Luật: nộp đơn gắn mã cho
-chính mình thì **tự duyệt được khi và chỉ khi đã là chủ cây / `quan_tri` cây
-ấy**; QTHT chưa có vai trong cây vẫn cần chữ ký thứ hai.
-⚠ **Điểm dừng chưa bấm:** dán `29` lên máy chủ thật, rồi chủ cây nộp một đơn
-gắn mã của mình và tự bấm Duyệt. Chi tiết + chỗ chưa với tới:
-`so-tay/phan-quyen.md` mục *Nới hẹp luật tự duyệt*.
+**b124c XONG 23/09/2026** — `29` + `sb.laQuanTriCay()` + nới nút Duyệt. Luật,
+chỗ chưa với tới, điểm dừng: `so-tay/phan-quyen.md` mục *Nới hẹp tự duyệt*.
 ⚠ Ô gợi ý trên điện thoại thật chưa ai bấm lại — `so-tay/o-goi-y.md`.
+
+### ⚠ b125 — BẢNG NGƯỜI trong trang Quản trị (chủ dự án chốt 23/09/2026)
+
+Bấm tên cây ở khu Gia phả → trang cây → mục *Danh sách người*: bảng phẳng kiểu
+trang tính, để **gắn tài khoản vào người** và **quản lý nhiều trường nội dung**.
+Chủ dự án chọn **bản đầy đủ**, nên chia bước:
+
+| Bước | Việc | Điểm dừng |
+|---|---|---|
+| **b125a ✓ 23/09** | Section `#tree-people` (KHÔNG có trong quantri3) · 14 cột · tìm · sắp xếp · phân trang 50 · cột *Tài khoản* | Mở cây 681 người, tìm một người, sắp theo năm sinh |
+| **b125b** | Gắn/gỡ tài khoản ngay trên dòng người (dùng lại `gan_nguoi_cho_thanh_vien` + ô gợi ý tài khoản) | Gắn rồi gỡ một tài khoản, cột đổi theo |
+| **b125c** | Sửa tại chỗ các trường, Lưu theo dòng qua `luu_cay()` | Thành viên thường sửa → vào hàng chờ; quản trị → ghi thẳng |
+| **b125d** | Chọn nhiều dòng + sửa hàng loạt một trường | Sửa 10 người một lượt, hoàn tác được |
+| **b125e** | Xuất Excel; nối vào đường NHẬP đã có | Xuất ra mở được bằng Excel |
+
+⚠ **b125a chưa ai bấm trên máy chủ thật** — mới nhìn ảnh trên trang giả 60
+người. Cây 681 người là phép thử thật: đọc mất bao lâu, bảng có khựng không.
+⚠ **b125e đụng nợ cũ**: nhập GEDCOM/Excel chưa nối kho mã (bảng *Còn treo*).
 
 ### Sau đó — chưa đặt số, chưa chốt
 
@@ -174,13 +177,8 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 
 ### ⚠ Bộ bất biến bố cục đang gác nhầm nhánh
 
-Bộ kiểm 66 phép / 51.250 phép so — thứ bảo vệ `domains/layout.js` — nằm ở
-`Claude_Code/kiem-thu/`, và **58 trong 142 file của nó `import` từ
-`../giapha/js/`**, tức bản đã đóng băng: sửa `supabase/js/domains/` thì nó vẫn
-xanh vì đang đo file khác. *(Lý lẽ đầy đủ: `/kiem-tra` phép 9.)* Ba đường chưa
-chọn: (a) biến môi trường chọn gốc; (b) chép bộ kiểm vào `supabase/kiem-thu/`;
-(c) sống bằng phép 9.
-
-⚠ **Đã thành sự thật** — `domains/person.js` sửa ở b120 (thêm `noiVe`) và b122b
-(bỏ đi), chủ dự án cho phép cả hai lần; phép 9 báo LỖI đúng dự đoán. Chưa nguy
-hiểm: `layout.js` vẫn giống hệt bản đóng băng. Quyết (a)/(b)/(c) để phiên khác.
+Bộ kiểm bảo vệ `domains/layout.js` `import` từ `../giapha/js/` — bản ĐÃ ĐÓNG
+BĂNG — nên sửa `supabase/js/domains/` thì nó vẫn xanh vì đang đo file khác.
+Lý lẽ đầy đủ và ba đường chưa chọn: **`/kiem-tra` phép 9**. Đã thành sự thật ở
+`person.js` (b120, b122b — chủ dự án cho phép cả hai lần); `layout.js` vẫn
+giống hệt bản đóng băng nên chưa nguy hiểm.

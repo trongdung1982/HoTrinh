@@ -1186,10 +1186,19 @@ kiem('khối xét đơn đề xuất về trang cây, không còn "chuyển sang
      !/hienNay:/.test(JS_TC_SOM),
      'mục Đề xuất gắn người vẫn là chỗ trống');
 
-// ⚠ Giữ nguyên ① của KE-HOACH b117 — cửa thứ TÁM, mờ sẵn kèm lý do.
-kiem('nút Duyệt trên đơn của CHÍNH MÌNH vẫn khoá sẵn',
-     /const khoa = d\.laCuaToi\s*\?/.test(JS_TC_SOM),
-     'mời người nộp tự ký chữ ký thứ hai');
+// ⚠ ĐỔI LUẬT b124c (23/09/2026): cửa thứ TÁM nay có ngoại lệ HẸP — chủ cây và
+//   `quan_tri` của chính cây ấy tự duyệt được đơn của mình (`luoc-do/29`,
+//   `THIET-KE-NHIEU-CAY.md` 11.10). Nên phép cũ *"laCuaToi thì khoá"* nay SAI.
+//   Hai vế phải cùng đúng, và vế thứ hai là vế dễ mất:
+kiem('nút Duyệt trên đơn của mình chỉ khoá khi KHÔNG có vai trong cây',
+     /const khoa = d\.laCuaToi && !tuDuyetDuoc\s*\?/.test(JS_TC_SOM),
+     'khoá sẵn cho mọi người — mời chủ cây đi xin chữ ký mình đã có');
+kiem('…và `tuDuyetDuoc` hỏi laQuanTriCay(), KHÔNG suy từ coTheQuanTri()',
+     /laQuanTriCay\(cay\.fileId\)/.test(JS_TC_SOM),
+     'suy từ cờ Quản trị hệ thống là bỏ chữ ký thứ hai ở MỌI cây');
+kiem('nút Từ chối đơn của mình vẫn khoá (đường đúng là Rút đơn)',
+     /const khoaTuChoi = d\.laCuaToi\s*\?/.test(JS_TC_SOM),
+     'máy chủ vẫn chặn tự từ chối — nút sáng là mời bấm một thứ chắc chắn hỏng');
 
 // — sb.js —
 for (const ten of ['doiMatKhau', 'chanCuaToi']) {

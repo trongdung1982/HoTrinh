@@ -101,3 +101,14 @@ td .link { text-align:left; }
      hơn cạnh dưới nút (12+38=50px). Chừa thêm chỗ, chỉ trên điện thoại. */
   main{ padding-top:64px; }
 }
+
+/* ── Bảng Danh sách người (b125a) — KHÔNG có trong quantri3 ────────────────
+   Bảng 14 cột: để nó co vào bề ngang khung thì chữ gãy ba dòng một ô và
+   hàng cao gấp ba (ảnh 23/09). Trang tính thì cuộn ngang, không gãy chữ —
+   bọc ngoài đã `overflow-x:auto`, ở đây chỉ nói "đừng co nữa". */
+#tp-bang{ min-width:1180px; }
+#tp-bang th, #tp-bang td{ white-space:nowrap; }
+#tp-bang th{ padding:8px 12px; }
+#tp-bang td{ padding:9px 12px; }
+/* Ô Ghi chú là chỗ duy nhất được dài — cắt bằng dấu ba chấm, giữ nguyên hàng. */
+#tp-bang td:last-child{ max-width:280px; overflow:hidden; text-overflow:ellipsis; }
