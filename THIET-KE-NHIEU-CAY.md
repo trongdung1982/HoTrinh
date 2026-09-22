@@ -280,6 +280,11 @@ thống có nhiều hơn một cây.
 
 ## 6. ✓ CHỐT 17/09/2026 — MỘT NGƯỜI, MỘT BẢN GHI, CHUNG TOÀN PHẦN MỀM
 
+> ⚠⚠ **Phần NGƯỜI XUYÊN CÂY (b124a kéo người · b124b báo trùng/gộp) ĐÓNG BĂNG
+> 22/09/2026** — thẻ gia đình lẫn lộn vì chưa chốt ranh giới cây. Năm câu phải
+> trả lời và ghi vào mục này trước khi mở lại: `so-tay/nguoi-xuyen-cay.md`.
+> Phần lưu trữ (một bản ghi, `tree_persons`, `revision`) vẫn chạy.
+>
 > Thay hẳn thiết kế b120 (mỗi cây một bản ghi riêng, nối nhau bằng `noi_ve`).
 > Bản cũ và lý do cũ nằm trong git: `git log -p THIET-KE-NHIEU-CAY.md`.
 > Lược đồ dựng ở b121 (`26`, chưa dán); hàm và JS là b122.

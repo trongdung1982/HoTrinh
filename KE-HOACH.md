@@ -1,8 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 22/09/2026 · Bước gần nhất: **b124b** — vá ô gợi ý (bấm không ăn)
-và điền sẵn hồ sơ người ở cây khác; CHƯA AI BẤM LẠI. ⚠ **b122d NGHIỆM THU XONG** (21/09): một người một bản ghi
-chạy đúng hai chiều qua hai tài khoản.*
+*Cập nhật 22/09/2026 · ⚠⚠ **NGƯỜI XUYÊN CÂY ĐÓNG BĂNG** (22/09) — ô kéo người
+cây khác đã tắt khỏi giao diện; chưa chốt ranh giới cây thì không làm tiếp:
+`so-tay/nguoi-xuyen-cay.md`. ⚠ **b122d NGHIỆM THU XONG** (21/09): một người một
+bản ghi chạy đúng hai chiều qua hai tài khoản.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -105,30 +106,16 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 chiều qua hai tài khoản)*. Còn lẻ: nút Từ chối khoá đúng lúc — chưa ai bấm.
 ⚠ Staging vẫn lệch thật tới khi dán `26`+`27`+`28` sang đó.
 
-**✓ HƯỚNG ĐÃ CHỐT 21/09 — `THIET-KE-NHIEU-CAY.md` mục 6 (ba câu cuối) + 11.10.**
-Chủ dự án chọn: ① tự duyệt **nới hẹp** (chủ/`quan_tri` cây ấy tự duyệt đơn gắn
-mã của mình; cây chưa có vai vẫn cần chữ ký thứ hai) ② gộp thì **máy giữ mã
-nhỏ**, QTHT chỉ Duyệt/Từ chối ③ làm **phòng trước**. Ba bước:
-**b124a** ô gợi ý lúc thêm người *(+ `b124a2` vá, dưới)* · **b124b** mục
-*Báo trùng* + hàm gộp · **b124c** SQL nới hẹp luật tự duyệt.
+**⚠⚠ b124a/b124b ĐÓNG BĂNG 22/09/2026.** Chủ dự án bấm thử: sửa ở cây này
+cây kia đổi theo (đúng), nhưng **thẻ gia đình lẫn lộn** — gốc là câu hỏi thiết
+kế *"người xuyên cây thì ranh giới cây còn cứng không"*, chưa ai trả lời. Ô
+kéo người cây khác đã TẮT (`CAN_KEO_NGUOI_XUYEN_CAY` trong `person-edit.js`);
+máy chủ giữ nguyên. Đã làm gì · năm câu phải chốt · cách mở lại · hai lỗ hôn
+nhân dùng chung · dữ liệu thử còn sót: **`so-tay/nguoi-xuyen-cay.md`**.
 
-**b124a xong** — ô gợi ý ở cả BỐN chế độ thêm người; luật "đã chọn thì không
-gửi bản ghi người" ở `so-tay/luu-du-lieu.md`.
-
-**b124a2 — chủ dự án bấm 22/09, báo *"thấy ô chọn mà không chọn được"*; ĐÃ VÁ,
-CHƯA BẤM LẠI.** Hai lỗi im lặng ở `o-goi-y.js` + yêu cầu mới: chọn xong thì hồ
-sơ **tự điền từ cơ sở dữ liệu rồi khoá**, *Bỏ chọn* xoá trắng lại
-(`docNguoiTheoMa()` đọc thẳng `persons` qua luật `doc_persons` của `26` —
-KHÔNG thêm hàm máy chủ nào). Chuyện đầy đủ: `so-tay/o-goi-y.md`.
-⚠ **Điểm dừng chưa bấm:** thêm người, gõ tên một người ở cây khác, **chọn**
-(phải thấy thẻ ✓ + hồ sơ hiện ra), lưu; rồi sang cây kia sửa một ô, xem cây
-này có đổi theo không.
-⚠ Ô gợi ý trên điện thoại: vá `visualViewport` đã có **ảnh 390px đạt**
-(`kq-gan-ma-390.png`, b123) — hộp mở gọn, không tràn. Nhưng đó là trang giả
-trên máy tính; **điện thoại thật vẫn chưa ai bấm lại**.
-
-- ⚠ Để b124 (chưa lộ vì mỗi cây còn tự đứng riêng): cờ `deleted` và xoá cứng hôn
-  nhân là CHUNG mọi cây · `doc_cay` bỏ cạnh con có một đầu ngoài cây.
+**b124c** (nới hẹp luật tự duyệt, `THIET-KE-NHIEU-CAY.md` 11.10) KHÔNG thuộc
+chức năng đóng băng — vẫn là việc kế tiếp được.
+⚠ Ô gợi ý trên điện thoại thật chưa ai bấm lại — `so-tay/o-goi-y.md`.
 
 ### Sau đó — chưa đặt số, chưa chốt
 

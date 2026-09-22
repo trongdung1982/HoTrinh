@@ -8,8 +8,8 @@
 //            xoa,anh}.js, pages/quan-tri/o-goi-y.js, state,
 //            domains/{person,union,validate,media,purge,render},
 //            services/repo, utils/{graph,text,date,image,avatar}, config
-// Phiên bản: 1.45.0 · Cập nhật: 22/09/2026 (b124a2) — hồ sơ người cây khác tự điền
-// Sổ tay   : so-tay/luu-du-lieu.md · so-tay/o-goi-y.md
+// Phiên bản: 1.46.0 · Cập nhật: 22/09/2026 — đóng băng kéo người xuyên cây
+// Sổ tay   : so-tay/luu-du-lieu.md · so-tay/o-goi-y.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
 // NGƯỢC với hai màn hình kia: form HIỆN ĐỦ MỌI Ô, kèm chữ mờ gợi ý.
@@ -287,6 +287,10 @@ let noiCtx     = null;   // chế độ noi: { personId, targetId, loai, unionId
 
 // b124a — KÉO NGƯỜI ĐÃ CÓ Ở CÂY KHÁC VÀO, chỉ ở bốn chế độ THÊM. Chi tiết:
 // `so-tay/luu-du-lieu.md` mục "KÉO người cây khác VÀO cây này".
+// ⚠ ĐÓNG BĂNG 22/09/2026: ô tìm không vẽ ra, nên `nguoiCoSanChon` luôn null và
+// mọi nhánh bên dưới chạy như "người mới". Đừng bật lại trước khi chốt câu hỏi
+// ranh giới cây ở `so-tay/nguoi-xuyen-cay.md`.
+const CAN_KEO_NGUOI_XUYEN_CAY = false;
 let nguoiCoSanChon = null;  // { id, ten, cacCay, gioi } hoặc null = người mới
 let bocCaNhanKhoa  = null;  // khối Tên→Ghi chú, mờ + khoá khi đã chọn người có sẵn
 let khoaGioiGoc    = false; // trạng thái khoá giới tính GỐC của form (themBanDoi)
@@ -688,7 +692,7 @@ function veCacO(nguoi) {
 
   // b124a — câu "đã có sẵn chưa" đứng NGAY TRÊN khối Tên, cùng lý lẽ với câu
   // "nối vào đâu" ở luật 13: nó quyết định khối bên dưới còn nghĩa gì không.
-  if (laCheDoThem()) ra.push(...khoiTimNguoiCoSan());
+  if (CAN_KEO_NGUOI_XUYEN_CAY && laCheDoThem()) ra.push(...khoiTimNguoiCoSan());
 
   // Đánh dấu chỉ số ĐỂ BỌC LẠI phía dưới (b124a) — mọi phần tử từ đây tới hết
   // khối Ghi chú là "dữ liệu cá nhân", khoá lại khi đã chọn người có sẵn.

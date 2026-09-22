@@ -93,11 +93,10 @@ trong phần mềm chỉ bằng cách gửi mã. Hàng rào 3b của `luu_cay()`
 — áp cho cả sửa, xoá, và kéo người cây khác làm vợ/chồng/con. Xoá người = rút
 khỏi cây này; bản ghi chỉ xoá khi không cây nào giữ. Đo: `do-b122.mjs` L3–L11.
 
-## KÉO người cây khác VÀO cây này (b124a, `luoc-do/28`)
+## KÉO người cây khác VÀO cây này (b124a) — ⚠ ĐÓNG BĂNG: `nguoi-xuyen-cay.md`
 
 Cửa 3b trên mở hé từ 21/09/2026: kéo được người đã có ở cây khác vào **khi và
-chỉ khi** mình xem được ít nhất một cây đang chứa họ. Thành viên thường cũng
-kéo được, miễn gắn vào đúng trực hệ. Đi bằng chính `luu_cay()`, không có hàm
+chỉ khi** mình xem được ít nhất một cây đang chứa họ. Đi bằng chính `luu_cay()`, không có hàm
 ghi thứ hai. **Bốn chỗ phải đi cùng nhau, sót chỗ nào cũng hỏng IM LẶNG:**
 
 1. **3b nới** — chỗ duy nhất kêu to khi sót (`ngoaicay`).
