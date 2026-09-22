@@ -38,9 +38,6 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
 - **Chữ ĐỎ ở đầu trang giả là lời của chính bản giả**, không phải lỗi bố cục:
   nó kể cửa nào thiếu, dữ liệu nào bản giả không dựng được. Đọc nó trước, đừng
   đi sửa CSS. *(chuyển từ `CHI-DAN.md` về đây b123 — file ấy chật trần.)*
-- **Ảnh 1280px KHÔNG phân giải được "đè" với "sát"** ở ô gợi ý: hai hộp cách
-  nhau 1px và chồng lên nhau trông như nhau. Đo bằng `node ../kiem-thu/do-goi-y.mjs`,
-  nó đọc toạ độ thật. *(cũng chuyển từ `CHI-DAN.md`, b123.)*
 - **Nhìn bằng mắt trước khi báo xong** — hai bộ ảnh, hai việc khác nhau:
   · `node ../kiem-thu/so-quantri3.mjs [lọc]` (cặp `sq-p-*` prototype /
   `sq-a-*` app) so giao diện, bắt *lệch so với prototype*.
@@ -81,11 +78,8 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   chỗ y hệt CHƯA vá** — `<div style="display:grid;grid-template-columns:1fr
   1fr…">` dòng ~306/317, form *Tạo tài khoản* (khu Quản trị hệ thống, tab
   chưa nối máy chủ thật nên chưa ai thấy trên điện thoại) — sửa khi chạm tới.
-- **`o-goi-y.js` chọn dòng gợi ý "không được" trên điện thoại** — nghi vấn:
-  bàn phím ảo mở ra không bắn `resize` của `window`, toạ độ `position:fixed`
-  đo trước đó lệch. Vá bằng nghe thêm `window.visualViewport` (bẫy 4 trong
-  file). **Chưa xác nhận trên điện thoại thật** — chủ dự án mới thử điện
-  thoại, chưa thử máy tính; bấm lại sau khi vá rồi báo còn lệch không.
+- **Mọi chuyện của Ô GỢI Ý nay ở `so-tay/o-goi-y.md`** — nó dùng chung cho
+  cả form thêm người, không còn là việc riêng của trang này (b124a2).
 
 - **Font `Georgia` thiếu chữ `ề` · `ắ` · `ồ`** (đo b123, 21/09/2026). CSS
   quantri3 đặt `h1{font:36px Georgia,serif}` và `.modal-title{…Georgia…}`;

@@ -5,7 +5,9 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.25.0 · Cập nhật: 21/09/2026 (b124a)
+// Phiên bản: 0.26.0 · Cập nhật: 22/09/2026 (b124a2)
+//            0.26.0 thêm `docNguoiTheoMa()` — đọc một bản ghi người ở cây
+//            khác, để form điền sẵn thay vì bắt gõ tay.
 //            0.25.0 thêm `timNguoiMoiCay()` — gợi ý người ĐÃ CÓ ở cây khác
 //            lúc thêm người (`luoc-do/28`).
 //            0.24.0 mô hình MỘT NGƯỜI MỘT BẢN GHI (`luoc-do/26`+`27`):
@@ -1979,6 +1981,35 @@ export async function timNguoiMoiCay(treeId, chuoi) {
     cacCay: r.cac_cay || '',
   }));
   return { ok: true, loi: null, ds };
+}
+
+/**
+ * Đọc ĐÚNG MỘT bản ghi người theo mã, để ô *"đã có trong phần mềm chưa"* điền
+ * sẵn mọi ô của form (b124a2). Trả về DÒNG thô; `repo.js` ráp sang hình cây.
+ *
+ * ⚠ **Không có hàm máy chủ mới nào cho việc này, và đó là chủ ý.** Luật đọc
+ *   `doc_persons` của `luoc-do/26` mục 5 đã nói đúng điều cần nói — *xem được
+ *   người nào thì đọc được người ấy* — nên hỏi thẳng bảng qua PostgREST là đi
+ *   đúng cái cửa đã có sẵn. Thêm một `security definer` nữa chỉ để lặp lại
+ *   luật ấy là thêm một chỗ nữa có thể lệch đi mà không ai biết.
+ *
+ * ⚠ Người không xem được thì RLS cho ra **0 dòng**, không phải lỗi — cùng bẫy
+ *   đã ghi ở `so-tay/phan-quyen.md`: hàng rào im lặng thì phải tự đọc lại kết
+ *   quả mới biết. Ở đây "0 dòng" được dịch thành một câu nói rõ cho người dùng.
+ */
+export async function docNguoiTheoMa(ma) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', dong: null };
+
+  const { data, error } = await k.from('persons').select('*')
+    .eq('id', String(ma || '')).maybeSingle();
+  if (error) return { ok: false, loi: cauLoi(error), dong: null };
+  if (!data) {
+    return { ok: false, dong: null,
+             loi: 'Không đọc được người mang mã ' + ma + '. Có thể mã sai, ' +
+                  'hoặc người ấy nằm trong gia phả bạn không có quyền xem.' };
+  }
+  return { ok: true, loi: null, dong: data };
 }
 
 /**

@@ -4,10 +4,8 @@
 // Lớp      : services — được gọi bởi: pages · gọi: services/sb,
 //            services/hinh-dang, utils, state
 // Phụ thuộc: services/sb.js, services/hinh-dang.js, utils/graph.js, state.js
-// Phiên bản: 0.5.0 · Cập nhật: 21/09/2026 (b124a)
-//            0.5.0 thêm `timNguoiMoiCay()` — cửa cho ô gợi ý lúc thêm người.
-//            0.4.0 mô hình một người một bản ghi: kho mã xin của máy chủ
-//            (`dayKhoMa`/`xinMa`) · đặt lại số chống ghi đè sau mỗi lần Lưu.
+// Phiên bản: 0.6.0 · Cập nhật: 22/09/2026 (b124a2) — hai cửa của ô gợi ý
+//            "đã có trong phần mềm chưa": `timNguoiMoiCay` · `docNguoiTheoMa`
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -30,7 +28,7 @@
 // dịch với lần ghi, nên không có khe hở giữa lúc kiểm và lúc ghi.
 
 import * as sb from './sb.js';
-import { rapCay, soSanh, coGiDeGhi, tangSoSauKhiLuu } from './hinh-dang.js';
+import { rapCay, rapMotNguoi, soSanh, coGiDeGhi, tangSoSauKhiLuu } from './hinh-dang.js';
 import { state, notify } from '../state.js';
 import { buildIndex } from '../utils/graph.js';
 import { sinhMaCay, napKho, soMaTrongKho } from '../utils/id.js';
@@ -166,6 +164,22 @@ export async function xinMa(loai, so) {
 export async function timNguoiMoiCay(chuoi) {
   if (!state.treeId) return { ok: false, loi: 'Chưa biết đang mở gia phả nào.', ds: [] };
   return sb.timNguoiMoiCay(state.treeId, chuoi);
+}
+
+/**
+ * Đọc trọn một bản ghi người theo mã — dùng ngay sau khi chọn một dòng ở ô
+ * gợi ý trên (b124a2). Form lấy nó để **điền sẵn mọi ô rồi khoá lại**, thay vì
+ * bày ra một khối trống mà người dùng không biết mình vừa chọn đúng ai.
+ *
+ * ⚠ Bản ghi này **chỉ để NHÌN**. Nó thuộc cây khác, và gửi nó lên trong lần
+ *   lưu là upsert đè lên bản của cây ấy — `so-tay/luu-du-lieu.md`, mục *KÉO
+ *   người cây khác VÀO cây này*. Ba nơi lưu của `person-edit.js` đã canh
+ *   chuyện ấy bằng `nguoiCoSanChon`; đừng nối thêm đường thứ tư.
+ */
+export async function docNguoiTheoMa(ma) {
+  const kq = await sb.docNguoiTheoMa(ma);
+  if (!kq.ok) return { ok: false, loi: kq.loi, nguoi: null };
+  return { ok: true, loi: null, nguoi: rapMotNguoi(kq.dong) };
 }
 
 /**

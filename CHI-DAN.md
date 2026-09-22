@@ -1,6 +1,6 @@
 # CHỈ DẪN — đọc file này đầu mỗi phiên
 
-*Nhánh Supabase · cập nhật 16/09/2026 (b118b)*
+*Nhánh Supabase · cập nhật 22/09/2026 (b124a2)*
 
 ⚠ **TRẦN CỨNG 80 DÒNG · 8 KB · mỗi dòng ≤ 400 ký tự** — đo: `kiem-thu/do-gon.mjs`.
 Vượt trần (file này hay `KE-HOACH.md`) thì **CẮT việc đã xong** — không dời
@@ -19,8 +19,9 @@ kế hoạch đang dùng sang file khác, **đừng nới trần**.
 | **Ai là "quản trị"?** — trước khi gõ chữ ấy | ⚠ Ba hạng khác nhau: **Quản trị hệ thống** = cờ `tai_khoan` · **Chủ cây** = cột `trees.chu_so_huu` · **Quản trị gia phả** = `tree_members.role='quan_tri'`, **chỉ sửa + duyệt nội dung, KHÔNG đổi quyền**. Mã `quan_tri_he_thong` **không** đặt vào `tree_members` được nữa. ⚠ **Quyền DỰNG cây là hạng thứ tư** = cờ `tai_khoan.duoc_tao_cay`, **tách hẳn** khỏi ba hạng trên (b110b) |
 | Đụng kiểm duyệt nội dung, hoàn tác | `luoc-do/08-kiem-duyet.sql` · `03-ham-luu-cay.sql` khối *chụp ảnh* · `kiem-thu/thu-hoan-tac.sql` · bảng TRƯỚC/SAU: `luoc-do/19-kiem-duyet-chi-tiet.sql` + `js/domains/so-sanh.js` (b111) |
 | **Đụng nhiều cây · quyền cấp hệ thống · tạo cây · mã xuyên cây** | ⚠ `THIET-KE-NHIEU-CAY.md` **trước tiên** |
-| **Đụng trang `QuanTri.html` — bất cứ khu nào** | ⚠⚠ **`so-tay/trang-quan-tri.md` trước tiên** — giao diện = NGUYÊN FILE quantri3 dựng bằng máy (b118d), JS chỉ đổ dữ liệu vào section của mình, không vẽ lại; sổ tay ấy giữ mọi bẫy đã gặp (bản giả `sb-gia.mjs`, ô gợi ý, font, menu bị cắt) · `THIET-KE-QUAN-TRI.md` · `js/pages/quan-tri/` · ⚠ **nhìn bằng mắt trước khi báo xong**: `so-quantri3.mjs` *(so với prototype)* + `xem-khung-quan-tri.mjs` *(cảnh app riêng)*, cả hai ở `../kiem-thu/` · ⚠ **không màn hình nào ngầm định "cây đang mở"** — mọi chỗ gán quyền gọi tên cây (b110b); ngoại lệ duy nhất là hai cờ cấp tài khoản |
+| **Đụng trang `QuanTri.html` — bất cứ khu nào** | ⚠⚠ **`so-tay/trang-quan-tri.md` trước tiên** — giao diện = NGUYÊN FILE quantri3 dựng bằng máy (b118d), JS chỉ đổ dữ liệu vào section của mình, không vẽ lại; sổ tay ấy giữ mọi bẫy đã gặp (bản giả `sb-gia.mjs`, font, menu bị cắt) · `THIET-KE-QUAN-TRI.md` · `js/pages/quan-tri/` · ⚠ **nhìn bằng mắt trước khi báo xong**: `so-quantri3.mjs` *(so với prototype)* + `xem-khung-quan-tri.mjs` *(cảnh app riêng)*, cả hai ở `../kiem-thu/` · ⚠ **không màn hình nào ngầm định "cây đang mở"** — mọi chỗ gán quyền gọi tên cây (b110b); ngoại lệ duy nhất là hai cờ cấp tài khoản |
 | Bàn thử SQL tại chỗ · phép ĐO hàng rào · tên/mã vai trò | `../kiem-thu/ban-thu-sql/` *(ngoài repo, CÓ trên máy này)* — `do-b102`→`do-b118b` ⚠ tiếng Việt vào psql phải đi bằng `-f`, không `-c` · tên vai: `config.js` hàm `vaiTroBangChu()` |
+| Đụng **ô gợi ý** (bốn chỗ dùng chung `o-goi-y.js`) | ⚠ `so-tay/o-goi-y.md` — sáu cái bẫy, hai cái từng nuốt mất cú bấm |
 | Duyệt/gắn tài khoản, hỏi "sao tôi không sửa được" | `HUONG-DAN-PHAN-QUYEN.md` |
 | Đụng cách VẼ sơ đồ | `../tai-lieu/QUY-TAC-VE_V14.md` · `BAT-DAU.md` mục 6 |
 | Đụng ảnh | `KIEN-TRUC.md` mục 7 ⚠ có câu chưa chốt |
@@ -49,16 +50,13 @@ kế hoạch đang dùng sang file khác, **đừng nới trần**.
    `13`/`14`→`15`→`20`→**`23`** · `08`→`18` · `03`/`08`→`27`→**`28`** *(`28` giữ bản cuối của `luu_cay()`)*. Quên `18` là mở lại lỗ hổng "hai
    chữ ký" của b110c; quên **`23`** là mở lại khoá mềm, lời mời QTHT và cây đã
    xoá — cả ba **im lặng**.
-   ⚠ **`drop function` XOÁ CẢ `grant`.** Dựng lại một hàm đã có thì chép theo
-   cả dòng `grant` của nó, không thì nó lặng lẽ rơi về mặc định Postgres *ai
-   cũng gọi được, kể cả `anon`* — `15` đã vấp, `20` vá.
+   ⚠ **`drop function` XOÁ CẢ `grant`** — và hai luật dán lại nữa: cả ba ở
+   `so-tay/phan-quyen.md`, mục *Luật chung*.
 
 ## Quy ước khung tài liệu này
 
 - **Tên file CỐ ĐỊNH, không có `_Vxx`.** Lịch sử để git giữ. Muốn xem bản cũ
   thì `git log -p <file>`, đừng đẻ ra bản thứ hai.
-  *(Khác `tai-lieu/` — thư mục ấy giữ quy ước `_Vxx` vì nó là bản sao Knowledge
-  Base trên claude.ai, nơi không có lịch sử phiên bản.)*
 - **Ghi theo CHỨC NĂNG, không theo phiên** (từ 15/09/2026): gặp lỗi thì ghi vào
   `so-tay/<chức-năng>.md` và xoá dấu vết ở các file đã thấy; việc từng phiên nằm
   ở lời commit. `nhat-ky/` là kho lưu trữ, không thêm, không sửa.

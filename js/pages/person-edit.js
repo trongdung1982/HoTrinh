@@ -8,7 +8,7 @@
 //            xoa,anh}.js, pages/quan-tri/o-goi-y.js, state,
 //            domains/{person,union,validate,media,purge,render},
 //            services/repo, utils/{graph,text,date,image,avatar}, config
-// Phiên bản: 1.44.0 · Cập nhật: 22/09/2026 (b124a) — ô "đã có sẵn chưa"
+// Phiên bản: 1.45.0 · Cập nhật: 22/09/2026 (b124a2) — hồ sơ người cây khác tự điền
 // ============================================================
 //
 // NGƯỢC với hai màn hình kia: form HIỆN ĐỦ MỌI Ô, kèm chữ mờ gợi ý.
@@ -239,7 +239,7 @@ import { attachMedia, detachMedia, setPortrait, clearPortrait,
          getMediaFor, getPortrait } from '../domains/media.js';
 import { planPurge, applyPurge, moTaKePurge } from '../domains/purge.js';
 import { mauVien } from '../domains/render.js';
-import { luuCay, suaDuoc, timNguoiMoiCay } from '../services/repo.js';
+import { luuCay, suaDuoc, timNguoiMoiCay, docNguoiTheoMa } from '../services/repo.js';
 import { taiAnh, xoaAnhThat } from '../services/tuong-thich.js';
 import { ganGoiY, dongNguoiCayKhac } from './quan-tri/o-goi-y.js';
 import { buildIndex } from '../utils/graph.js';
@@ -829,6 +829,8 @@ function khoiTimNguoiCoSan() {
   oNhap.setAttribute('aria-label', 'Tìm người đã có trong phần mềm');
 
   const the = document.createElement('div');
+  let dangNap = false;   // đang đọc hồ sơ người vừa chọn
+  let loiNap  = '';      // câu lỗi của lần đọc ấy, rỗng = không có lỗi
 
   function veThe() {
     the.innerHTML = '';
@@ -840,6 +842,7 @@ function khoiTimNguoiCoSan() {
       'background:#fbf6e8;font-size:12px;line-height:1.5';
 
     const chu = document.createElement('span');
+    chu.style.cssText = 'flex:1 1 200px;min-width:0';
     chu.textContent = '✓ Dùng người đã có: ' + nguoiCoSanChon.ten +
       ' (' + nguoiCoSanChon.id + ')' +
       (nguoiCoSanChon.cacCay ? ' — đã có ở: ' + nguoiCoSanChon.cacCay : '');
@@ -852,13 +855,33 @@ function khoiTimNguoiCoSan() {
       'border:1px solid #cdbf98;border-radius:6px;background:#fffdf9;cursor:pointer';
     bo.addEventListener('click', () => {
       nguoiCoSanChon = null;
+      loiNap = '';
+      dangNap = false;
       oNhap.value = '';
+      // ⚠ PHẢI XOÁ TRẮNG lại. Bỏ mấy ô đã điền nằm nguyên đấy thì cú bấm
+      //   "tự nhập người mới" biến hồ sơ của người kia thành bản nháp của một
+      //   người mới — và lần này nó ĐƯỢC GỬI ĐI, vì `nguoiCoSanChon` đã rỗng.
+      dienTuNguoiCoSan(NGUOI_TRONG);
       veThe();
       capNhatKhoaCaNhan();
     });
 
     hang.append(chu, bo);
     the.append(hang);
+
+    // Dòng thứ hai trả lời câu *"giờ tôi điền gì nữa"* — và phải nói ngay ở
+    // đây, chứ không để người dùng tự đoán từ mấy ô xám bên dưới.
+    const duoi = document.createElement('div');
+    duoi.style.cssText =
+      'margin-top:5px;font-size:11px;line-height:1.5;color:#6a625a';
+    duoi.textContent = dangNap
+      ? 'Đang đọc hồ sơ của người này từ máy chủ…'
+      : (loiNap
+        ? '⚠ ' + loiNap + ' Vẫn nối được, chỉ là không xem trước được hồ sơ.'
+        : 'Hồ sơ bên dưới lấy từ cơ sở dữ liệu và KHÔNG sửa ở đây được — ' +
+          'một người chỉ có một bản ghi cho mọi gia phả. Muốn sửa thì thêm ' +
+          'xong, mở hồ sơ người ấy ra sửa; sửa ở đâu cũng hiện ở mọi cây.');
+    the.append(duoi);
   }
 
   ganGoiY(oNhap, {
@@ -872,11 +895,110 @@ function khoiTimNguoiCoSan() {
       nguoiCoSanChon = { id: m.maNguoi, ten: m.ten, cacCay: m.cacCay, gioi: m.gioi };
       veThe();
       capNhatKhoaCaNhan();
+      napDayDu(m.maNguoi);
     },
   });
 
+  /**
+   * Đọc trọn bản ghi rồi ĐỔ VÀO các ô (b124a2).
+   *
+   * Không chờ được: một vòng mạng đứng giữa cú bấm và lời báo là chỗ người
+   * dùng đọc ra *"bấm không ăn"*. Nên thẻ ✓ hiện ngay từ `khiChon`, còn hàm
+   * này chạy sau và chỉ điền thêm.
+   *
+   * ⚠ Về muộn thì phải KIỂM LẠI xem người dùng còn đang chọn đúng người ấy
+   *   không — họ có thể đã bấm *Bỏ chọn* hoặc chọn người khác trong lúc chờ.
+   *   Không kiểm là điền dữ liệu của người này vào form đang nói về người kia.
+   */
+  async function napDayDu(ma) {
+    dangNap = true;
+    veThe();
+    let kq;
+    try {
+      kq = await docNguoiTheoMa(ma);
+    } catch (e) {
+      kq = { ok: false, loi: e && e.message ? e.message : String(e) };
+    }
+    dangNap = false;
+    if (!nguoiCoSanChon || nguoiCoSanChon.id !== ma) return;   // đã đổi ý
+
+    if (!kq.ok || !kq.nguoi) {
+      loiNap = kq.loi || 'Không đọc được hồ sơ của người này.';
+      veThe();
+      return;
+    }
+    loiNap = '';
+    // Tên thật trong hồ sơ có thể khác chuỗi gợi ý (gợi ý ghép bằng
+    // `ten_day_du()`), nên lấy lại từ chính bản ghi.
+    nguoiCoSanChon.gioi = kq.nguoi.sex || nguoiCoSanChon.gioi;
+    dienTuNguoiCoSan(kq.nguoi);
+    veThe();
+    capNhatKhoaCaNhan();
+  }
+
   boc.append(oNhap, the);
   return [veNhan('Người này đã có trong phần mềm chưa?'), boc];
+}
+
+/**
+ * Đổ hồ sơ đọc từ cơ sở dữ liệu vào đúng những ô của form (b124a2).
+ *
+ * ⚠ **Điền để NHÌN, không phải để gửi.** Ba nơi lưu đều đi qua
+ *   `taoHoacDungNguoi()`: đã chọn người có sẵn thì chúng gửi MỖI quan hệ, còn
+ *   bản ghi người thì không gửi một chữ nào (`so-tay/luu-du-lieu.md`). Nhờ
+ *   thế điền vào đây là an toàn tuyệt đối — không có đường nào để mấy ô này
+ *   ghi đè lên bản ghi của cây kia.
+ *
+ * ⚠ Vì sao phải điền, chứ không để khối trống mờ đi như b124a: chủ dự án nêu
+ *   22/09/2026 — *"chọn người ở cây khác thì thông tin còn lại phải tự động
+ *   điền từ cơ sở dữ liệu, không cho nhập tay"*. Khối trống không nói được
+ *   câu quan trọng nhất: **bạn vừa chọn đúng người chưa.**
+ */
+function dienTuNguoiCoSan(nguoi) {
+  const ten = mucTenChinh(nguoi);
+  datO('surname', ten.surname);
+  datO('middle',  ten.middle);
+  datO('given',   ten.given);
+
+  // Tên phụ đi qua mảng làm việc của form, không đi qua `o[...]` — đó là chỗ
+  // duy nhất của form giữ riêng một bản sao, xem khối TÊN PHỤ.
+  tenPhu = docTenPhu(nguoi);
+  veLaiTenPhu();
+
+  if (o.sex && typeof o.sex.datKhoa === 'function') o.sex.datKhoa(true, nguoi.sex || 'U');
+
+  const sinh = khoiNgayCua(nguoi.birth);
+  const mat  = khoiNgayCua(nguoi.death);
+  datO('birth',      sinh.raw);
+  datO('birthPlace', sinh.place);
+  datO('death',      mat.raw);
+  datO('deathPlace', mat.place);
+  datO('burialPlace', nguoi.burialPlace);
+  datO('gio', nguoi.vn && nguoi.vn.gio);
+  datO('doi', doiHienTai(nguoi));
+  datO('chi', nguoi.vn && nguoi.vn.branch);
+
+  datO('title',       nguoi.title);
+  datO('occupation',  nguoi.occupation);
+  datO('education',   nguoi.education);
+  datO('religion',    nguoi.religion);
+  datO('residence',   nguoi.residence);
+  datO('nationality', nguoi.nationality);
+  datO('note',        nguoi.note);
+
+  if (o.living) o.living.checked = nguoi.living === true;
+}
+
+/**
+ * Đặt giá trị cho một ô của form, và bắn `input` để mấy dòng chữ ăn theo ô ấy
+ * tính lại — ô ngày có một dòng *"máy đọc được…"* chỉ cập nhật khi nghe sự
+ * kiện này, nên gán thẳng `.value` là để lại một câu nói về chữ cũ.
+ */
+function datO(khoa, giaTri) {
+  const el = o[khoa];
+  if (!el || typeof el.value !== 'string') return;
+  el.value = coGiaTri(giaTri) ? String(giaTri) : '';
+  el.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
 /**
@@ -890,8 +1012,22 @@ function khoiTimNguoiCoSan() {
 function capNhatKhoaCaNhan() {
   if (bocCaNhanKhoa) {
     const khoa = !!nguoiCoSanChon;
-    bocCaNhanKhoa.style.opacity = khoa ? '.4' : '1';
+    // ⚠ b124a2 đổi `.4` thành `.88`, và đó là chuyện đọc được hay không.
+    //   Khối này nay CÓ CHỮ — hồ sơ thật của người vừa chọn — và mờ 40% thì
+    //   nó thành một mảng xám không ai đọc nổi, tức là mất đúng câu người
+    //   dùng cần: *"mình vừa chọn đúng người chưa?"*
+    bocCaNhanKhoa.style.opacity = khoa ? '.88' : '1';
     bocCaNhanKhoa.style.pointerEvents = khoa ? 'none' : 'auto';
+    // `readOnly` chứ không `disabled`: `disabled` làm trình duyệt tô chữ xám
+    // nhạt hơn nữa, và chính chữ ấy là thứ phải đọc được.
+    for (const el of bocCaNhanKhoa.querySelectorAll('input, textarea, select')) {
+      // `readOnly` không có ở `select` và ở ô tích, nên hai thứ ấy đi bằng
+      // `disabled` — `pointer-events:none` đã chặn chuột, cái này chặn nốt
+      // đường đi bằng phím Tab.
+      if (el.tagName === 'SELECT' || el.type === 'checkbox') el.disabled = khoa;
+      else el.readOnly = khoa;
+      el.style.background = khoa ? '#f4efe6' : '#fff';
+    }
   }
   if (o.sex && typeof o.sex.datKhoa === 'function') {
     o.sex.datKhoa(nguoiCoSanChon ? true : khoaGioiGoc,

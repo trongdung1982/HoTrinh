@@ -1,42 +1,33 @@
 // ============================================================
 // giapha-supabase · js/pages/quan-tri/o-goi-y.js
-// Vai trò  : Ô gõ vài chữ → hiện danh sách khớp. Một bản dùng cho CẢ BA chỗ
-//            đang gõ tay mù: email ở form Mời, mã người ở form Mời, và mã
-//            người ở khu Tài khoản.
-// Lớp      : pages — gọi bởi pages/quan-tri/*, pages/person-edit.js · gọi: services
-// Phụ thuộc: (không) — nơi gọi truyền hàm tìm vào, file này không biết
-//            Supabase là gì
-// Phiên bản: 0.3.0 · Cập nhật: 22/09/2026 (b124a) — thêm `dongNguoiCayKhac()`
+// Vai trò  : Ô gõ vài chữ → hiện danh sách khớp. MỘT bản cho CẢ BỐN chỗ đang
+//            gõ tay mù: email + mã người ở form Mời, mã người ở khu Tài
+//            khoản, và ô "đã có trong phần mềm chưa" của form thêm người.
+// Lớp      : pages — gọi bởi pages/quan-tri/*, pages/person-edit.js
+// Phụ thuộc: (không) — nơi gọi truyền hàm `tim`/`ve` vào; file này không biết
+//            Supabase là gì, nên đổi nguồn dữ liệu không phải sửa nó
+// Phiên bản: 0.4.0 · Cập nhật: 22/09/2026 (b124a2) — bẫy 5 và 6
+// Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
-// ═══ VÌ SAO MỘT BẢN CHO BA CHỖ ═══
+// ═══ SÁU CÁI BẪY ĐÃ TÍNH TRƯỚC — chuyện đầy đủ ở sổ tay ═══
 //
-// Ba ô ấy hỏi ba câu khác nhau nhưng CƯ XỬ giống hệt nhau: chờ người ta ngừng
-// gõ, hỏi máy chủ, vẽ danh sách, đi bằng phím mũi tên, chọn thì điền vào ô.
-// Chép ba bản thì hôm nay chúng giống nhau, và lệch dần từ lần sửa thứ hai —
-// đúng lý lẽ b109 đã dùng để KHÔNG chép năm hàm việc của `13`.
-//
-// File này **không biết gì về dữ liệu**. Nơi gọi truyền vào một hàm `tim` và
-// một hàm `ve`; đổi nguồn dữ liệu không phải sửa file này.
-//
-// ═══ BỐN CÁI BẪY ĐÃ TÍNH TRƯỚC ═══
-//
-//  1. **Danh sách phải nổi trên `body`, không nằm trong ô cha.** Cả ba chỗ ở
-//     trong bảng cuộn ngang được — thả vào trong ấy bị cắt mép, hoặc đẩy cột
-//     nút ra khỏi màn hình (b106, b109, chỉ nhìn bằng mắt mới thấy). Nên
-//     `position:fixed`, gắn vào `document.body`, đo bằng `getBoundingClientRect()`.
-//
-//  2. **Câu trả lời về CHẬM hơn câu hỏi sau.** Gõ `ngu` rồi gõ tiếp `nguyen`:
-//     hai lời gọi chạy song song, không gì bảo đảm cái nào về trước — thấy
-//     kết quả của chữ mình vừa xoá. Mỗi lời gọi mang một số thứ tự; chỉ số
-//     MỚI NHẤT được vẽ.
-//
-//  3. **`blur` xảy ra TRƯỚC `click`.** Đóng danh sách ở `blur` thì cú bấm vào
-//     một dòng gợi ý không bao giờ tới nơi. Nên chọn bằng `mousedown` +
-//     `preventDefault()`: ô chữ không mất tiêu điểm, và cú bấm chạy.
-//
-//  4. **Bàn phím ảo mở ra không bắn `resize` của `window`.** Toạ độ đo trước
-//     đó lệch, chạm hụt dòng gợi ý (b122d) — nghe thêm `window.visualViewport`.
+//  1. Danh sách nổi trên `body` bằng `position:fixed`, KHÔNG nằm trong ô cha:
+//     ba chỗ kia ở trong bảng cuộn ngang được, thả vào trong là cụt mép.
+//  2. Câu trả lời về CHẬM hơn câu hỏi sau — mỗi lời gọi mang một số thứ tự,
+//     chỉ số MỚI NHẤT được vẽ.
+//  3. `blur` xảy ra TRƯỚC `click` — chọn bằng `mousedown` + `preventDefault()`.
+//  4. Bàn phím ảo mở ra không bắn `resize` của `window` — nghe thêm
+//     `window.visualViewport`, nếu không toạ độ đã đo lệch mất (b122d).
+//  5. `chon()` bắn lại `input`, và lượt ấy MỞ LẠI DANH SÁCH, đè lên đúng lời
+//     báo "đã chọn" — người dùng thấy cú bấm của mình rơi vào hư không
+//     (22/09/2026). `boQuaLuotSau` nuốt đúng một lượt. Và vì cú bấm là thứ
+//     dễ mất nhất, mỗi dòng nghe CẢ `mousedown` LẪN `click`; cú thứ hai tự
+//     rơi ra vì `ds` đã rỗng.
+//  6. Rê chuột KHÔNG được vẽ lại cả bảng: `innerHTML = ''` ở `mouseenter`
+//     làm Chrome bắn `mouseenter` cho dòng vừa dựng lại — vòng ấy quay mỗi
+//     khung hình — và `scrollTop` về 0 ngay lúc người ta định bấm. Đổi màu
+//     tại chỗ bằng `toSang()`; chỉ `veBang()` khi danh sách thật sự đổi.
 
 /** Bao lâu sau khi ngừng gõ thì mới hỏi máy chủ (mili giây). */
 const CHO_GO = 180;
@@ -63,6 +54,8 @@ export function ganGoiY(oNhap, { tim, ve, giaTri, khiChon }) {
   let dang = -1;           // dòng đang trỏ tới, -1 = chưa trỏ đâu
   let dongHo = null;
   let soLuot = 0;          // bẫy 2 — số thứ tự lời gọi
+  let cacDong = [];        // bẫy 6 — phần tử của từng dòng, để đổi màu tại chỗ
+  let boQuaLuotSau = false; // bẫy 5 — `chon()` bắn lại `input`, đừng hỏi lại
 
   // ------------------------------------------------------------
   // Vẽ
@@ -71,6 +64,7 @@ export function ganGoiY(oNhap, { tim, ve, giaTri, khiChon }) {
   function dong() {
     if (bang) { bang.remove(); bang = null; }
     ds = [];
+    cacDong = [];
     dang = -1;
   }
 
@@ -80,6 +74,24 @@ export function ganGoiY(oNhap, { tim, ve, giaTri, khiChon }) {
     bang.style.left = h.left + 'px';
     bang.style.top = (h.bottom + 2) + 'px';
     bang.style.width = Math.max(h.width, 240) + 'px';
+  }
+
+  /** Kiểu của MỘT dòng. Một chỗ định nghĩa, cho `veBang` và `toSang` dùng chung. */
+  function kieuDong(i, mo) {
+    return 'padding:7px 10px;cursor:pointer;border-bottom:1px solid #f0ebe3;' +
+      (i === dang ? 'background:#f2ece2;' : '') +
+      (mo ? 'opacity:.62;' : '');
+  }
+
+  /**
+   * Đổi dòng đang trỏ tới mà KHÔNG vẽ lại danh sách — bẫy 6 ở đầu file.
+   * Cuộn dòng ấy vào tầm nhìn, vì đi bằng phím mũi tên qua dòng thứ tám thì
+   * nó đã nằm dưới mép hộp cao 246px.
+   */
+  function toSang() {
+    cacDong.forEach((d, i) => { d.style.cssText = kieuDong(i, d.dataset.mo === '1'); });
+    const d = cacDong[dang];
+    if (d && d.scrollIntoView) d.scrollIntoView({ block: 'nearest' });
   }
 
   function veBang() {
@@ -93,15 +105,14 @@ export function ganGoiY(oNhap, { tim, ve, giaTri, khiChon }) {
       document.body.append(bang);
     }
     bang.innerHTML = '';
+    cacDong = [];
 
     ds.forEach((muc, i) => {
       const { chinh, phu, mo } = ve(muc);
 
       const d = document.createElement('div');
-      d.style.cssText =
-        'padding:7px 10px;cursor:pointer;border-bottom:1px solid #f0ebe3;' +
-        (i === dang ? 'background:#f2ece2;' : '') +
-        (mo ? 'opacity:.62;' : '');
+      d.dataset.mo = mo ? '1' : '0';
+      d.style.cssText = kieuDong(i, mo);
 
       const c1 = document.createElement('div');
       c1.textContent = chinh;
@@ -117,9 +128,18 @@ export function ganGoiY(oNhap, { tim, ve, giaTri, khiChon }) {
 
       // ⚠ `mousedown` + `preventDefault`, KHÔNG `click` — bẫy 3 ở đầu file.
       d.addEventListener('mousedown', (e) => { e.preventDefault(); chon(i); });
-      d.addEventListener('mouseenter', () => { dang = i; veBang(); });
+      // …và `click` đi kèm làm lưới đỡ, bẫy 5: `chon()` đã rỗng `ds` nên cú
+      // thứ hai tự rơi ra ở dòng đầu tiên, chọn hai lần là vô hại.
+      d.addEventListener('click', (e) => { e.preventDefault(); chon(i); });
+      // ⚠ Chỉ ĐỔI MÀU, không vẽ lại — bẫy 6 ở đầu file.
+      d.addEventListener('mouseenter', () => {
+        if (dang === i) return;
+        dang = i;
+        toSang();
+      });
 
       bang.append(d);
+      cacDong.push(d);
     });
 
     datCho();
@@ -131,6 +151,9 @@ export function ganGoiY(oNhap, { tim, ve, giaTri, khiChon }) {
     oNhap.value = giaTri(muc);
     dong();
     if (khiChon) khiChon(muc);
+    // ⚠ Vẫn bắn `input` để nơi gọi nghe được chữ vừa điền — nhưng KHÔNG được
+    //   để nó hỏi máy chủ thêm một lượt nữa. Bẫy 5 ở đầu file.
+    boQuaLuotSau = true;
     oNhap.dispatchEvent(new Event('input', { bubbles: true }));
   }
 
@@ -166,6 +189,8 @@ export function ganGoiY(oNhap, { tim, ve, giaTri, khiChon }) {
   // ------------------------------------------------------------
 
   function khiGo() {
+    // Bẫy 5 — lượt này là do chính `chon()` bắn ra, không phải người ta gõ.
+    if (boQuaLuotSau) { boQuaLuotSau = false; return; }
     if (dongHo) clearTimeout(dongHo);
     dongHo = setTimeout(hoi, CHO_GO);
   }
@@ -176,11 +201,11 @@ export function ganGoiY(oNhap, { tim, ve, giaTri, khiChon }) {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       dang = (dang + 1) % ds.length;
-      veBang();
+      toSang();
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       dang = (dang <= 0 ? ds.length : dang) - 1;
-      veBang();
+      toSang();
     } else if (e.key === 'Enter') {
       // Chỉ nuốt phím Enter khi người ta ĐANG trỏ vào một dòng. Không trỏ vào
       // đâu mà vẫn nuốt là chặn mất đường gõ tay xong bấm Enter.

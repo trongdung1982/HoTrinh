@@ -4,7 +4,7 @@
 //            Ráp dòng thành cây, và so hai cây ra danh sách phép ghi.
 // Lớp      : services — được gọi bởi: services/repo · gọi: utils/date
 // Phụ thuộc: utils/date.js
-// Phiên bản: 0.4.0 · Cập nhật: 18/09/2026 (b122b)
+// Phiên bản: 0.5.0 · Cập nhật: 22/09/2026 (b124a2) — thêm `rapMotNguoi()`
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -244,6 +244,18 @@ export function rapCay(dong) {
       counts: r.counts || {}, map: r.map || [],
     })),
   };
+}
+
+/**
+ * MỘT dòng `persons` → một bản ghi người hình camelCase.
+ *
+ * Không đi qua `rapCay()` được vì ở đây **không có cây nào để ráp**: ô *"đã
+ * có trong phần mềm chưa"* (b124a2) đọc đúng một người đang đứng ở cây KHÁC,
+ * chỉ để bày ra cho người dùng nhìn. Bản ghi trả về **không được gửi lên lại**
+ * — nó thuộc cây kia, gửi lên là upsert đè (`so-tay/luu-du-lieu.md`).
+ */
+export function rapMotNguoi(dong) {
+  return dong ? veCay(TEN_PERSON, dong) : null;
 }
 
 /** ISO của Postgres → `dd/mm/yyyy HH:mm`, khuôn duy nhất của cả dự án. */

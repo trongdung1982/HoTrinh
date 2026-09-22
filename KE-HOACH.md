@@ -1,8 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 22/09/2026 · Bước gần nhất: **b124a** — máy chủ (`luoc-do/28`, đã
-dán) và trình duyệt (ô "đã có sẵn chưa" ở bốn chế độ thêm người) đều xong;
-CHƯA AI BẤM THỬ. ⚠ **b122d NGHIỆM THU XONG** (21/09): một người một bản ghi
+*Cập nhật 22/09/2026 · Bước gần nhất: **b124b** — vá ô gợi ý (bấm không ăn)
+và điền sẵn hồ sơ người ở cây khác; CHƯA AI BẤM LẠI. ⚠ **b122d NGHIỆM THU XONG** (21/09): một người một bản ghi
 chạy đúng hai chiều qua hai tài khoản.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
@@ -110,15 +109,20 @@ chiều qua hai tài khoản)*. Còn lẻ: nút Từ chối khoá đúng lúc �
 Chủ dự án chọn: ① tự duyệt **nới hẹp** (chủ/`quan_tri` cây ấy tự duyệt đơn gắn
 mã của mình; cây chưa có vai vẫn cần chữ ký thứ hai) ② gộp thì **máy giữ mã
 nhỏ**, QTHT chỉ Duyệt/Từ chối ③ làm **phòng trước**. Ba bước:
-**b124a** ô gợi ý *"đã có trong phần mềm chưa"* lúc thêm người · **b124b** mục
+**b124a** ô gợi ý lúc thêm người *(+ `b124a2` vá, dưới)* · **b124b** mục
 *Báo trùng* + hàm gộp · **b124c** SQL nới hẹp luật tự duyệt.
 
-**b124a — MÁY CHỦ VÀ MÃ ĐỀU XONG, CHƯA AI BẤM THỬ** (22/09). SQL đã dán, tự
-kiểm 6/6 ĐẠT. Trình duyệt: ô "đã có trong phần mềm chưa" đứng trên khối Tên ở
-cả BỐN chế độ thêm người (con · cha/mẹ · vợ/chồng · người đầu tiên) —
-`taoHoacDungNguoi()` thay `createPerson()`, ba nơi lưu tự canh không gửi bản
-ghi người khi đã chọn (`so-tay/luu-du-lieu.md`). Điểm dừng: mở form thêm
-người, gõ tên một người đã ở cây khác, chọn, lưu — người ấy vào cả hai cây.
+**b124a xong** — ô gợi ý ở cả BỐN chế độ thêm người; luật "đã chọn thì không
+gửi bản ghi người" ở `so-tay/luu-du-lieu.md`.
+
+**b124a2 — chủ dự án bấm 22/09, báo *"thấy ô chọn mà không chọn được"*; ĐÃ VÁ,
+CHƯA BẤM LẠI.** Hai lỗi im lặng ở `o-goi-y.js` + yêu cầu mới: chọn xong thì hồ
+sơ **tự điền từ cơ sở dữ liệu rồi khoá**, *Bỏ chọn* xoá trắng lại
+(`docNguoiTheoMa()` đọc thẳng `persons` qua luật `doc_persons` của `26` —
+KHÔNG thêm hàm máy chủ nào). Chuyện đầy đủ: `so-tay/o-goi-y.md`.
+⚠ **Điểm dừng chưa bấm:** thêm người, gõ tên một người ở cây khác, **chọn**
+(phải thấy thẻ ✓ + hồ sơ hiện ra), lưu; rồi sang cây kia sửa một ô, xem cây
+này có đổi theo không.
 ⚠ Ô gợi ý trên điện thoại: vá `visualViewport` đã có **ảnh 390px đạt**
 (`kq-gan-ma-390.png`, b123) — hộp mở gọn, không tràn. Nhưng đó là trang giả
 trên máy tính; **điện thoại thật vẫn chưa ai bấm lại**.
