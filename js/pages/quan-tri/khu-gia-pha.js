@@ -6,7 +6,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, utils/id, quan-tri/trang-chi-tiet ·
 //            quan-tri/hop-thoai · quan-tri/o-bang
-// Phiên bản: 1.1.0 · Cập nhật: 16/09/2026 (b118c)
+// Phiên bản: 1.2.0 · Cập nhật: 23/09/2026 — bấm TÊN CÂY mở trang cây
 //            1.1.0 *Xin đổi quyền* nối thật (`xinDoiVai()`, `23` mục 10) ·
 //            *Xóa cây* có hiệu lực NGAY (luật 4) · *Rút đơn xoá* đổi thành
 //            *Trả lại cho chủ*, chỉ Quản trị hệ thống bấm được. Lịch sử các
@@ -137,7 +137,11 @@ function dongQuanLy(c, phien, napLai) {
   const tr = document.createElement('tr');
   const duocDieuHanh = c.toiLaChu || phien.laQuanTriHeThong;
 
-  const oTen = td(tenVaPhu(c.ten || '(chưa đặt tên)', 'Mã cây: ' + c.treeCode));
+  // Bấm TÊN CÂY là mở trang của cây ấy (chủ dự án nêu 17/09, làm 23/09). Trước
+  // đó tên là chữ trơ, và mọi đường vào cây nằm rải ở các cột khác — người ta
+  // bấm vào tên trước tiên, đó là chỗ tay tự đưa tới.
+  const oTen = td(lienKet(c.ten || '(chưa đặt tên)', '#' + duongDan('gia-pha', 'cay', c.treeCode)),
+    span('sub', 'Mã cây: ' + c.treeCode));
 
   const oQuyen = td(huyHieu(c.toiLaChu ? 'Chủ gia phả'
     : (TEN_VAI[c.vaiCuaToi] || c.vaiCuaToi || '')));
@@ -313,7 +317,11 @@ function dongThanhVien(c, phien, napLai) {
     : huyHieu(TEN_VAI[c.vaiCuaToi] || c.vaiCuaToi || ''));
 
   tr.append(
-    td(span('name', c.ten || '(chưa đặt tên)')),
+    // Người mới ĐƯỢC MỜI chưa có chân trong cây — trang cây sẽ nói "không
+    // thấy", nên tên họ vẫn là chữ trơ cho tới khi bấm Nhận.
+    td(c.duocMoi
+      ? span('name', c.ten || '(chưa đặt tên)')
+      : lienKet(c.ten || '(chưa đặt tên)', '#' + duongDan('gia-pha', 'cay', c.treeCode))),
     td(c.emailChu ? span('name', c.emailChu) : ''),
     td(c.treeCode),
     oQuyen,

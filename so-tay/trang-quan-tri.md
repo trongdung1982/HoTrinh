@@ -132,3 +132,11 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   dữ liệu* làm được, vì nó chỉ cần đọc Supabase (`dem_du_lieu`). Đừng tưởng
   thêm khoá bí mật hay Edge Function là "cho gọn" — xem `sao-luu/SaoLuu.gs`
   đã đâm vào đúng bức tường ấy một lần rồi.
+
+## "JWT issued at future" — vé đăng nhập CŨ, không phải đồng hồ hôm nay
+
+23/09: khu Tài khoản báo nguyên văn câu ấy, bảng *Các gia phả tôi tham gia*
+rỗng. ⚠ Đo trước khi đoán (20 giây): `date` của máy · `Date:` của Supabase —
+khớp từng giây, nên thủ phạm là vé đang giữ trong trình duyệt, cấp lúc đồng hồ
+còn lệch. Chữa: Đăng xuất rồi đăng nhập lại. `sb.cauLoi()` nay dịch ra lời
+làm được.

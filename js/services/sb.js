@@ -5,7 +5,7 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.27.0 · Cập nhật: 23/09/2026 (b124c) — thêm `laQuanTriCay()`
+// Phiên bản: 0.28.0 · Cập nhật: 23/09/2026 (b124c) — `laQuanTriCay()` · dịch lỗi vé JWT
 //            0.26.0 thêm `docNguoiTheoMa()` — đọc một bản ghi người ở cây
 //            khác, để form điền sẵn thay vì bắt gõ tay.
 //            0.25.0 thêm `timNguoiMoiCay()` — gợi ý người ĐÃ CÓ ở cây khác
@@ -80,6 +80,18 @@ function cauLoi(e) {
   if (/Email not confirmed/i.test(m)) {
     return 'Tài khoản chưa xác nhận. Mở hộp thư và bấm đường liên kết ' +
            'Supabase vừa gửi, rồi đăng nhập lại.';
+  }
+  // ⚠ 23/09/2026: máy chủ trả nguyên văn `JWT issued at future`, và câu ấy
+  //   không nói người dùng phải làm gì. Nó nghĩa là vé đăng nhập đang giữ
+  //   trong trình duyệt được cấp lúc đồng hồ máy còn chạy nhanh — đo 23/09:
+  //   máy và Supabase khớp từng giây, nên thủ phạm là vé CŨ, không phải đồng
+  //   hồ hôm nay. Đăng xuất rồi đăng nhập lại là cấp vé mới.
+  if (/issued at future|JWTIssuedAtFuture/i.test(m)) {
+    return 'Vé đăng nhập của trình duyệt được cấp lúc đồng hồ máy còn lệch, '
+         + 'nên máy chủ từ chối. Bấm Đăng xuất rồi đăng nhập lại là xong.';
+  }
+  if (/JWT expired|token is expired/i.test(m)) {
+    return 'Vé đăng nhập đã hết hạn. Đăng nhập lại rồi thử lại việc vừa làm.';
   }
   return m;
 }
