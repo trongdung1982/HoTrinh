@@ -5,7 +5,7 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.26.0 · Cập nhật: 22/09/2026 (b124a2)
+// Phiên bản: 0.27.0 · Cập nhật: 23/09/2026 (b124c) — thêm `laQuanTriCay()`
 //            0.26.0 thêm `docNguoiTheoMa()` — đọc một bản ghi người ở cây
 //            khác, để form điền sẵn thay vì bắt gõ tay.
 //            0.25.0 thêm `timNguoiMoiCay()` — gợi ý người ĐÃ CÓ ở cây khác
@@ -1349,6 +1349,25 @@ export async function coTheQuanTri(treeId) {
   const k = layKhach();
   if (!k || !treeId) return false;
   const { data, error } = await k.rpc('co_the_quan_tri', { p_tree: treeId });
+  return !error && data === true;
+}
+
+/**
+ * Người đang đăng nhập có **vai trong CHÍNH cây này** không — chủ cây, hoặc
+ * `quan_tri` của cây ấy (b124c, `luoc-do/29`). Dùng để mở nút Duyệt trên đơn
+ * gắn mã của chính mình, theo luật nới hẹp ở `THIET-KE-NHIEU-CAY.md` 11.10.
+ *
+ * ⚠ KHÁC `coTheQuanTri()` ngay trên đúng một chỗ, và đó là cả điểm của hàm
+ *   này: cờ Quản trị hệ thống KHÔNG tính. QTHT ở cây họ chưa có vai vẫn phải
+ *   xin chữ ký thứ hai. Hỏi nhầm hàm kia là bỏ luật ấy ở mọi cây.
+ */
+export async function laQuanTriCay(treeId) {
+  const k = layKhach();
+  if (!k || !treeId) return false;
+  const nguoi = await nguoiDangNhap();
+  if (!nguoi) return false;
+  const { data, error } = await k.rpc('la_quan_tri_cay',
+    { p_tree: treeId, p_user: nguoi.id });
   return !error && data === true;
 }
 

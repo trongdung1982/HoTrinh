@@ -67,8 +67,17 @@ DÁN lên THẬT** (b122c, 18/09/2026). Bảng tự kiểm cuối mỗi file: **
 **`28-keo-nguoi-co-san.sql` (b124a) — ĐÃ DÁN lên THẬT, 22/09/2026, tự kiểm
 6/6 ĐẠT** (chủ dự án đọc lại, xác nhận). Chưa rõ Staging.
 
-⚠ **Chuỗi dán lại** *(cùng bảng ở `CHI-DAN.md` mục 3, đừng để hai bản lệch)*:
+⚠ **`29-tu-duyet-noi-hep.sql` (b124c) — VIẾT XONG, CHƯA DÁN đâu cả.** Bàn thử
+tại chỗ 38/38 ĐẠT, có kiểm chứng ngược (`../kiem-thu/ban-thu-sql/do-b124c.mjs`).
+Dán rồi thì nút Duyệt trên đơn gắn mã của **chính chủ cây** mới ăn.
+
+⚠ **Chuỗi dán lại — bản DUY NHẤT** *(bản thứ hai ở `CHI-DAN.md` đã bỏ 23/09:
+hai chỗ ghi đã lệch thật)*:
 `11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18` ·
+`21`/`13`/`18`/`27`**→`29`** *(`29` giữ bản cuối của `duyet_de_xuat_gan()` và
+`gan_nguoi_cho_thanh_vien()`)* · ⚠ **`21` KHÔNG dán lại một mình được nữa** —
+`ds_de_xuat_gan()` của nó còn nối `persons.tree_id`, cột `26` đã bỏ; lỗi to
+tiếng, và `27` là chỗ vá (đo 23/09, bàn thử) ·
 `03`/`06`/`08`/`13`→`25`→`27`**→`28`** *(`28` đứng CUỐI: nó giữ bản đứng cuối
 của `luu_cay()` và `tu_choi_thay_doi()`, khác `27` chín chỗ. Dán lại `27` sau
 `28` là mất cả chín, **không một lời báo**)*.
@@ -102,8 +111,6 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 `THIET-KE-NHIEU-CAY.md` mục 6 (thay b120, `noi_ve` bỏ). **b121 · b122a · b122b
 · b122c (dán) xong**; sổ tay: `so-tay/luu-du-lieu.md`.
 
-**b122d — ĐÃ NGHIỆM THU 21/09/2026** *(một người một bản ghi chạy đúng hai
-chiều qua hai tài khoản)*. Còn lẻ: nút Từ chối khoá đúng lúc — chưa ai bấm.
 ⚠ Staging vẫn lệch thật tới khi dán `26`+`27`+`28` sang đó.
 
 **⚠⚠ b124a/b124b ĐÓNG BĂNG 22/09/2026.** Chủ dự án bấm thử: sửa ở cây này
@@ -113,8 +120,13 @@ kéo người cây khác đã TẮT (`CAN_KEO_NGUOI_XUYEN_CAY` trong `person-edi
 máy chủ giữ nguyên. Đã làm gì · năm câu phải chốt · cách mở lại · hai lỗ hôn
 nhân dùng chung · dữ liệu thử còn sót: **`so-tay/nguoi-xuyen-cay.md`**.
 
-**b124c** (nới hẹp luật tự duyệt, `THIET-KE-NHIEU-CAY.md` 11.10) KHÔNG thuộc
-chức năng đóng băng — vẫn là việc kế tiếp được.
+**b124c XONG 23/09/2026** (không thuộc chức năng đóng băng): `luoc-do/29` +
+`sb.laQuanTriCay()` + nới nút Duyệt ở `trang-cay.js`. Luật: nộp đơn gắn mã cho
+chính mình thì **tự duyệt được khi và chỉ khi đã là chủ cây / `quan_tri` cây
+ấy**; QTHT chưa có vai trong cây vẫn cần chữ ký thứ hai.
+⚠ **Điểm dừng chưa bấm:** dán `29` lên máy chủ thật, rồi chủ cây nộp một đơn
+gắn mã của mình và tự bấm Duyệt. Chi tiết + chỗ chưa với tới:
+`so-tay/phan-quyen.md` mục *Nới hẹp luật tự duyệt*.
 ⚠ Ô gợi ý trên điện thoại thật chưa ai bấm lại — `so-tay/o-goi-y.md`.
 
 ### Sau đó — chưa đặt số, chưa chốt

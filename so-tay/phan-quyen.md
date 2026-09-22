@@ -29,6 +29,32 @@ Liên quan: `THIET-KE-NHIEU-CAY.md` mục 11 · `DU-LIEU.md` mục 2 · `HUONG-D
   `23` là mở lại khoá mềm, mở lại lời mời QTHT thành quyền thật, mở lại cây đã
   xoá — cả ba đều **im lặng**.
 
+## Nới hẹp luật tự duyệt — `29` (b124c, 23/09/2026)
+
+Luật mới, một câu: **người nộp đơn gắn mã cho chính mình tự duyệt được khi và
+chỉ khi họ đã là chủ cây, hoặc `quan_tri` của chính cây ấy.** Mọi ca khác —
+gồm QTHT ở cây họ chưa có vai — vẫn cần chữ ký thứ hai. Lý lẽ và ba hướng đã
+cân: `THIET-KE-NHIEU-CAY.md` 11.10.
+
+- Hàm mới `la_quan_tri_cay(p_tree, p_user)` đọc thẳng `trees.chu_so_huu` +
+  `tree_members`. ⚠ **KHÔNG được hỏi `vai_tro()`**: nó trả `'quan_tri_he_thong'`
+  ở nhánh ĐẦU TIÊN, nên một QTHT không có chân trong cây vẫn "là quản trị cây
+  ấy" — đúng cái nhầm 11.10 cảnh báo, và nó bỏ chữ ký thứ hai ở MỌI cây.
+- Phải nới **cả hai lớp**: `duyet_de_xuat_gan()` (cửa thứ tám) và
+  `gan_nguoi_cho_thanh_vien()` — cửa thứ tám cố ý đi qua hàm sau, nới một lớp
+  là hỏng nửa vời, kèm câu từ chối nói về chuyện khác.
+- `tu_choi_de_xuat_gan()` **không** nới: tự rút đơn đã là đường có sẵn.
+- Trình duyệt hỏi `sb.laQuanTriCay()`, KHÔNG suy từ `coTheQuanTri()` — hàm ấy
+  bật cho cả QTHT.
+- ⚠ **Nhánh `quan_tri` chưa với tới được**, nói thẳng: hai hàm vẫn mở đầu bằng
+  `co_the_quan_tri()`, mà hàm ấy chỉ nhận QTHT hoặc chủ cây. Giữ nhánh là giữ
+  đúng câu đã chốt và giữ sẵn cho ngày `co_the_quan_tri()` được nới — **đừng
+  viết vào báo cáo rằng nó đã đo**. Muốn quản trị gia phả xét được đơn gắn mã
+  là một việc KHÁC, chưa chốt. Đo: `do-b124c.mjs` B6b.
+- ⚠ **`21` không dán lại một mình được nữa** (đo 23/09): `ds_de_xuat_gan()` của
+  nó còn nối `persons.tree_id`, cột `26` đã bỏ — lỗi to tiếng, `27` là chỗ vá.
+  Bài đo dựng lại ĐÚNG MỘT hàm bản cũ thay vì dán lại cả file.
+
 ## Bài học
 
 ### Gốc phạm vi trực hệ phải THUỘC CÂY (b122a)

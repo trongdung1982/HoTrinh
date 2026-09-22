@@ -15,6 +15,7 @@ kế hoạch đang dùng sang file khác, **đừng nới trần**.
 | Đụng `services/` | `KIEN-TRUC.md` mục 1, 3 · `DU-LIEU.md` mục 1, 6 |
 | Đổi lược đồ bảng, thêm/bớt trường | ⚠ `so-tay/luu-du-lieu.md` *(cột mới: BỐN chỗ)* · `DU-LIEU.md` · `luoc-do/` |
 | **Mời vào cây · cờ QT hệ thống · khoá/xoá tài khoản · xoá gia phả** | ⚠⚠ **`so-tay/phan-quyen.md` trước tiên** · `THIET-KE-NHIEU-CAY.md` **11.4**+**11.8** *(vào cây cần HAI chữ ký; luật ấy ĐÃ TỪNG THỦNG ở bốn cửa, vá bằng `18`)* · **11.5** · **11.6** · **11.9** *(bốn luật mới)* · `luoc-do/14` · `16` · ⚠⚠ **`23-bon-luat-moi.sql`** *(bản ĐỨNG CUỐI: khoá mềm 60 ngày · QTHT hai chữ ký · cây ẩn NGAY khi chủ xoá · thùng rác 120 ngày · xin đổi quyền)* |
+| **Ai tự duyệt đơn gắn mã** | ⚠⚠ `so-tay/phan-quyen.md` mục *Nới hẹp tự duyệt* · `luoc-do/29` ĐỨNG CUỐI 2 hàm |
 | Đụng phân quyền, RLS | ⚠⚠ **`so-tay/phan-quyen.md` trước tiên** — nó nói hàm nào ĐỨNG CUỐI ở file nào, và cặp hàng rào phải đi liền nhau · `THIET-KE-NHIEU-CAY.md` **11.3** *(bảng 5 hạng)* · `DU-LIEU.md` mục 2 + **2a** + **2b** · `luoc-do/13` *(không tự đặt quyền cho mình)* · `11` ⚠ *(cờ quyền: CHỈ luật ĐỌC)* · `17` *(cờ `duoc_tao_cay`)* · `18` *(bốn cửa + `la_thanh_vien` · `ds_thanh_vien` · `ds_cho_duyet`)* · `20` *(`ds_tai_khoan_he_thong`)* · `21` *(đề xuất gắn mã người)* · ⚠⚠ **`23`** *(ĐỨNG CUỐI 13 hàm, gồm `la_quan_tri_he_thong` · `la_thanh_vien` · `co_the_xem_cay` · `co_the_sua` · `ds_gia_pha` — dán lại `11`/`14`/`16`/`18`/`20` thì PHẢI dán lại nó)* · `06` · `07` · `02-rls.sql` |
 | **Ai là "quản trị"?** — trước khi gõ chữ ấy | ⚠ Ba hạng khác nhau: **Quản trị hệ thống** = cờ `tai_khoan` · **Chủ cây** = cột `trees.chu_so_huu` · **Quản trị gia phả** = `tree_members.role='quan_tri'`, **chỉ sửa + duyệt nội dung, KHÔNG đổi quyền**. Mã `quan_tri_he_thong` **không** đặt vào `tree_members` được nữa. ⚠ **Quyền DỰNG cây là hạng thứ tư** = cờ `tai_khoan.duoc_tao_cay`, **tách hẳn** khỏi ba hạng trên (b110b) |
 | Đụng kiểm duyệt nội dung, hoàn tác | `luoc-do/08-kiem-duyet.sql` · `03-ham-luu-cay.sql` khối *chụp ảnh* · `kiem-thu/thu-hoan-tac.sql` · bảng TRƯỚC/SAU: `luoc-do/19-kiem-duyet-chi-tiet.sql` + `js/domains/so-sanh.js` (b111) |
@@ -46,10 +47,9 @@ kế hoạch đang dùng sang file khác, **đừng nới trần**.
    `KIEN-TRUC.md` mục 6: còn gì dở.
    ⚠ **File SQL nào đã dán, file nào chưa — hỏi `KE-HOACH.md`.** Không giữ
    bản thứ hai ở đây: nó đổi mỗi bước, và hai chỗ ghi là hai chỗ để lệch nhau.
-   ⚠ **Chuỗi dán lại:** `11`/`10`→`14`→`16`→`18`→**`23`** ·
-   `13`/`14`→`15`→`20`→**`23`** · `08`→`18` · `03`/`08`→`27`→**`28`** *(`28` giữ bản cuối của `luu_cay()`)*. Quên `18` là mở lại lỗ hổng "hai
-   chữ ký" của b110c; quên **`23`** là mở lại khoá mềm, lời mời QTHT và cây đã
-   xoá — cả ba **im lặng**.
+   ⚠ **Chuỗi dán lại: `KE-HOACH.md` mục SQL giữ bản DUY NHẤT** *(bản thứ hai
+   từng nằm ở đây, và nó đã lệch thật — 23/09 thêm `29` chỉ một bên)*. Quên một
+   mắt xích là mở lại lỗ hổng cũ, **im lặng**.
    ⚠ **`drop function` XOÁ CẢ `grant`** — và hai luật dán lại nữa: cả ba ở
    `so-tay/phan-quyen.md`, mục *Luật chung*.
 

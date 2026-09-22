@@ -6,7 +6,7 @@
 //            hộp hỏi đổi quyền dùng chung với trang một tài khoản.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-goi-y · o-bang
-// Phiên bản: 1.1.0 · Cập nhật: 16/09/2026 (b118c)
+// Phiên bản: 1.2.0 · Cập nhật: 23/09/2026 (b124c) — nới nút Duyệt đơn của mình
 //            1.1.0 Vòng đời: xoá cây có hiệu lực NGAY (luật 4), *Rút đơn* đổi
 //            thành *Trả lại cho chủ* — chỉ Quản trị hệ thống. Bảng Thành viên
 //            & quyền nối duyệt/từ chối đơn xin đổi quyền (`23` mục 10).
@@ -29,7 +29,7 @@
 //   của trang Mời gia nhập. Nhận hộ người khác là bỏ mất chữ ký thứ hai.
 
 import {
-  layDanhSachGiaPha, dsThanhVien, coTheQuanTri, chonGiaPha,
+  layDanhSachGiaPha, dsThanhVien, coTheQuanTri, laQuanTriCay, chonGiaPha,
   doiVaiThanhVien, ganNguoiChoThanhVien, datTinCayThanhVien, goThanhVien,
   doiChuCay, duyetThanhVien, tuChoiThanhVien, timNguoiTrongCay, timTaiKhoan,
   xinXoaCay, huyXinXoaCay, duyetXoaCay,
@@ -689,7 +689,10 @@ async function veDeXuat(noi, cay, napLai, hashLuc) {
   noi.append(panel);
   dongTrong(tb, 5, 'Đang đọc đơn…');
 
-  const [ds, duocDoiQuyen] = await Promise.all([dsDeXuatGan(cay.fileId), coTheQuanTri(cay.fileId)]);
+  // b124c — `tuDuyetDuoc` KHÔNG suy được từ `duocDoiQuyen`: cái sau bật cho cả
+  // Quản trị hệ thống, mà cờ ấy không cho tự duyệt (`luoc-do/29`, luật 11.10).
+  const [ds, duocDoiQuyen, tuDuyetDuoc] = await Promise.all([
+    dsDeXuatGan(cay.fileId), coTheQuanTri(cay.fileId), laQuanTriCay(cay.fileId)]);
   if (window.location.hash !== hashLuc) return;
 
   panel.querySelector('.panel-head').append(span('', ds.length + ' đơn đang chờ · mỗi đơn là một ' +
@@ -698,9 +701,15 @@ async function veDeXuat(noi, cay, napLai, hashLuc) {
 
   tb.innerHTML = '';
   for (const d of ds) {
-    const khoa = d.laCuaToi
+    const khoa = d.laCuaToi && !tuDuyetDuoc
       ? 'Đơn của chính bạn — người nộp không ký luôn chữ thứ hai. Nhờ một quản trị khác xét, hoặc rút đơn.'
       : duocDoiQuyen ? '' : 'Bạn xem được đơn này nhưng không xét được — việc của chủ gia phả và Quản trị hệ thống.';
+
+    // ⚠ Tự TỪ CHỐI đơn mình thì máy chủ vẫn chặn (`21` mục 7) — đường đúng là
+    //   nút Rút đơn ngay dưới. Chỉ nút Duyệt được nới.
+    const khoaTuChoi = d.laCuaToi
+      ? 'Đơn của chính bạn — muốn thôi thì rút đơn về, không phải tự từ chối mình.'
+      : khoa;
 
     const bDuyet = khoa ? nutMo('Duyệt', khoa, 'warm') : nut('Duyệt', 'warm');
     bDuyet.addEventListener('click', async () => {
@@ -710,7 +719,7 @@ async function veDeXuat(noi, cay, napLai, hashLuc) {
         nutOk: 'Duyệt', lam: () => duyetDeXuatGan(d.id) });
       if (kq) napLai();
     });
-    const bTuChoi = khoa ? nutMo('Từ chối', khoa, 'danger') : nut('Từ chối', 'danger');
+    const bTuChoi = khoaTuChoi ? nutMo('Từ chối', khoaTuChoi, 'danger') : nut('Từ chối', 'danger');
     bTuChoi.addEventListener('click', async () => {
       const kq = await hoi({ tua: 'Từ chối đề xuất',
         chu: 'Người nộp đọc lại được câu lý do này — bắt buộc ghi.',

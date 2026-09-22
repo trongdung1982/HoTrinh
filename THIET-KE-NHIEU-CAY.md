@@ -1022,6 +1022,11 @@ thêm một quyền nào** — không có gì để leo thang. Ở cây chưa c�
 ấy*. Viết nhầm thành "là QTHT thì tự duyệt" là rơi thẳng về hướng 3 mà không ai
 thấy — hai câu đọc giống nhau, nghĩa khác hẳn.
 
+**✓ ĐÃ LÀM 23/09/2026 — `luoc-do/29-tu-duyet-noi-hep.sql`** (bàn thử 38/38, có
+kiểm chứng ngược; CHƯA DÁN lên máy chủ). Hàm mới `la_quan_tri_cay()`; giao diện
+hỏi `sb.laQuanTriCay()`. ⚠ Nhánh `quan_tri` chưa với tới được vì
+`co_the_quan_tri()` chặn từ cửa trước — `so-tay/phan-quyen.md`.
+
 **Khi viết SQL:** đụng `duyet_de_xuat_gan()` và `gan_nguoi_cho_thanh_vien()` —
 cả hai đang gác bằng `la_chinh_minh(...)`, nay phải thành *`la_chinh_minh` VÀ
 KHÔNG phải chủ/`quan_tri` của cây ấy* thì mới từ chối. Cả hai đã có bảng tự
