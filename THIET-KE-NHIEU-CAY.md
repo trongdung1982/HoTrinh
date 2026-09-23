@@ -509,11 +509,22 @@ hình mới, không có thẻ mới. `bloodline.js`/`layout.js` chỉ đọc `pe
 nên **không chạm `domains/`**. Bước 0: bàn thử SQL, hai cây giả chung một
 người, thẻ của người ấy ở hai cây phải kể giống hệt nhau.
 
-**Còn mở — duy nhất một điểm:** thành viên sở hữu người p mà p nằm NGOÀI
-cây T đang mở — v2 ca 11 cho sửa "đúng phần giao" (trực hệ của p ∩ thành
-viên T), còn app hôm nay chặn vì bài học b122a (luoc-do/27) đòi gốc phạm vi
-phải thuộc cây. Giữ như hôm nay hay đổi theo v2 — **chưa hỏi, cần chốt trước
-khi đụng `pham_vi_sua()`**.
+**Điểm này KHÔNG tự đóng được — số đo thật khác lời v2.** Chủ dự án cho là
+thừa vì "Hàng rào 1 đã quy định quyền", nhưng bài học b122a
+(`so-tay/phan-quyen.md`) ghi rõ hành vi ĐANG CHẠY khác công thức
+`TrựcHệ(sở_hữu) ∩ Members(T)`:
+
+- **App hôm nay (từ `luoc-do/27`):** gốc (người mình sở hữu) nằm NGOÀI cây T
+  → `pham_vi_sua(gà, T)` trả **rỗng toàn bộ** — không xét trực hệ có giao với
+  T hay không.
+- **Công thức `TrựcHệ(sở_hữu) ∩ Members(T)`** (v2 ca 11 và bản chốt phía
+  trên): vẫn tính ra phần giao, có thể KHÔNG rỗng, dù gốc nằm ngoài T.
+
+Hai cái cho kết quả khác nhau đúng ở ca "gốc ngoài cây nhưng trực hệ có giao
+với cây". Đây từng là chỗ vá lỗi thật (khoá ngoại `tree_id`/`person_id` bị
+bỏ ở `26`, chữa ở `27`) — không thể gọi là câu hỏi thừa. **Cần chốt lại:**
+giữ luật rỗng-nếu-gốc-ngoài-cây như hôm nay, hay đổi sang công thức giao như
+v2.
 
 ⚠ Bản v2 mục 2.5, 3.2 viết "vẽ nốt cụt cho người ngoài Hàng rào 1", và mục
 1.2/ca 8 cho vùng biên có "thẻ riêng" — cả hai **ngược** với chốt trên, đọc
