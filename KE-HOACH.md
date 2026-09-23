@@ -42,17 +42,17 @@ Quản trị hệ thống**.
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b111** — kiểm duyệt TRƯỚC/SAU | Lưu "chờ duyệt" bằng tài khoản KHÔNG quản trị cây ấy (quản trị luôn `ghi_thang()`) |
+| **b111** — kiểm duyệt TRƯỚC/SAU | ⏸ **Hoãn** — quyền đang chỉnh lý (b126 · gom một cửa quyền). Chỉnh xong mới soạn lại cách bấm |
 | **b111c** — đơn gắn mã | Còn ①nhận lời mời QTHT ②QTHT khác duyệt được ③**b124c**: chủ cây tự duyệt đơn mình PHẢI ăn |
 | **b117** — khu Tài khoản | ①bảng *Các gia phả tôi tham gia* đúng mã (tài khoản thường, qua RLS) ②đổi mật khẩu |
 | **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
-| **b125a** — Danh sách người | Mở trên cây 681 người: đọc có nhanh không, 14 cột có cuộn ngang gọn không |
-
 ---
 
-## SQL — đã dán gì, và luật dán lại
+## SQL — đã dán gì
 
 **Đây là chỗ DUY NHẤT ghi trạng thái dán** — hai chỗ ghi là hai chỗ để lệch nhau.
+Luật dán lại (file nào kéo theo file nào): **`so-tay/phan-quyen.md`** mục
+*Chuỗi dán lại*.
 
 **Đã dán lên CẢ HAI Supabase (thật + Staging): `01` → `21`, không sót file
 nào.** `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
@@ -60,27 +60,6 @@ nào.** `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
 **`22`→`29` — ĐÃ DÁN lên THẬT, tự kiểm ĐẠT cả** (`26`+`27` ngày 18/09 · `28`
 ngày 22/09 · `29` ngày 23/09; chủ dự án đọc lại bảng tự kiểm từng lần).
 ⚠ **Chưa rõ Staging từ `22` trở đi** — hỏi lại trước khi coi hai máy đồng bộ.
-
-⚠ **Chuỗi dán lại — bản DUY NHẤT** *(bản thứ hai ở `CHI-DAN.md` đã bỏ 23/09:
-hai chỗ ghi đã lệch thật)*:
-`11`/`10`→`14`→`16`→`18`**→`23`** · `13`/`14`→`15`→`20`**→`23`** · `08`→`18` ·
-`21`/`13`/`18`/`27`**→`29`** *(`29` giữ bản cuối của `duyet_de_xuat_gan()` và
-`gan_nguoi_cho_thanh_vien()`)* · ⚠ **`21` KHÔNG dán lại một mình được nữa** —
-`ds_de_xuat_gan()` của nó còn nối `persons.tree_id`, cột `26` đã bỏ; lỗi to
-tiếng, và `27` là chỗ vá (đo 23/09, bàn thử) ·
-`03`/`06`/`08`/`13`→`25`→`27`**→`28`** *(`28` đứng CUỐI: nó giữ bản đứng cuối
-của `luu_cay()` và `tu_choi_thay_doi()`, khác `27` chín chỗ. Dán lại `27` sau
-`28` là mất cả chín, **không một lời báo**)*.
-⚠ **Sau `26` KHÔNG dán lại `02`/`11`** — luật đọc trên bảng người của chúng
-hỏi `tree_id` đã bỏ; bản đứng cuối của bốn luật ấy ở `26` mục 5.
-`23` đứng CUỐI mọi chuỗi: nó là bản đứng cuối của 13 hàm, trong đó có
-`la_quan_tri_he_thong()` · `la_thanh_vien()` · `co_the_xem_cay()` ·
-`co_the_sua()`. Quên nó là mở lại khoá mềm, mở lại lời mời QTHT thành quyền
-thật, và mở lại cây đã xoá — cả ba đều **im lặng**.
-
-⚠ Ba luật dán lại nữa, cả ba đều đã có người trả giá — `05` phải đứng trước
-`06` · dán lại riêng `06`/`07` là mở rộng `quan_tri` trở lại · `drop function`
-xoá cả `grant`: nay ở **`so-tay/phan-quyen.md`**, mục *Luật chung*.
 
 ---
 
@@ -118,14 +97,13 @@ Chủ dự án chọn **bản đầy đủ**, nên chia bước:
 
 | Bước | Việc | Điểm dừng |
 |---|---|---|
-| **b125a ✓ 23/09** | Section `#tree-people` (KHÔNG có trong quantri3) · 14 cột · tìm · sắp xếp · phân trang 50 · cột *Tài khoản* | Mở cây 681 người, tìm một người, sắp theo năm sinh |
 | **b125b** | Gắn/gỡ tài khoản ngay trên dòng người (dùng lại `gan_nguoi_cho_thanh_vien` + ô gợi ý tài khoản) | Gắn rồi gỡ một tài khoản, cột đổi theo |
 | **b125c** | Sửa tại chỗ các trường, Lưu theo dòng qua `luu_cay()` | Thành viên thường sửa → vào hàng chờ; quản trị → ghi thẳng |
 | **b125d** | Chọn nhiều dòng + sửa hàng loạt một trường | Sửa 10 người một lượt, hoàn tác được |
 | **b125e** | Xuất Excel; nối vào đường NHẬP đã có | Xuất ra mở được bằng Excel |
 
-⚠ **b125a chưa ai bấm trên máy chủ thật** — mới nhìn ảnh trang giả 60 người;
-cây 681 người mới là phép thử. ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
+b125a xong, chủ dự án bấm trên app thật cây 681 người: đọc nhanh, cuộn ngang
+gọn. ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
 
 ### ⚠⚠ b127 — VÙNG BIÊN cho thẻ thông tin (chốt 23/09/2026) — LÀM TRƯỚC
 

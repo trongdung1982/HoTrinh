@@ -47,11 +47,9 @@ kế hoạch đang dùng sang file khác, **đừng nới trần**.
    `KIEN-TRUC.md` mục 6: còn gì dở.
    ⚠ **File SQL nào đã dán, file nào chưa — hỏi `KE-HOACH.md`.** Không giữ
    bản thứ hai ở đây: nó đổi mỗi bước, và hai chỗ ghi là hai chỗ để lệch nhau.
-   ⚠ **Chuỗi dán lại: `KE-HOACH.md` mục SQL giữ bản DUY NHẤT** *(bản thứ hai
-   từng nằm ở đây, và nó đã lệch thật — 23/09 thêm `29` chỉ một bên)*. Quên một
-   mắt xích là mở lại lỗ hổng cũ, **im lặng**.
-   ⚠ **`drop function` XOÁ CẢ `grant`** — và hai luật dán lại nữa: cả ba ở
-   `so-tay/phan-quyen.md`, mục *Luật chung*.
+   ⚠ **Chuỗi dán lại + `drop function` XOÁ CẢ `grant`: bản DUY NHẤT ở
+   `so-tay/phan-quyen.md`**, mục *Luật chung*. Quên một mắt xích là mở lại lỗ
+   hổng cũ, **im lặng**.
 
 ## Quy ước khung tài liệu này
 

@@ -29,6 +29,19 @@ Liên quan: `THIET-KE-NHIEU-CAY.md` mục 11 · `DU-LIEU.md` mục 2 · `HUONG-D
   `23` là mở lại khoá mềm, mở lại lời mời QTHT thành quyền thật, mở lại cây đã
   xoá — cả ba đều **im lặng**.
 
+### Chuỗi dán lại — bản DUY NHẤT
+
+Dán lại file bên trái thì phải dán tiếp các file bên phải, đúng thứ tự:
+
+- `11`/`10`→`14`→`16`→`18`→**`23`** · `13`/`14`→`15`→`20`→**`23`** · `08`→`18`
+- `21`/`13`/`18`/`27`→**`29`** — `29` giữ bản cuối của `duyet_de_xuat_gan()` và
+  `gan_nguoi_cho_thanh_vien()`.
+- `03`/`06`/`08`/`13`→`25`→`27`→**`28`** — `28` giữ bản cuối của `luu_cay()` và
+  `tu_choi_thay_doi()`, khác `27` chín chỗ. Dán lại `27` sau `28` là mất cả
+  chín, **không một lời báo**.
+- **Sau `26` KHÔNG dán lại `02`/`11`** — luật đọc trên bảng người của chúng hỏi
+  `tree_id` đã bỏ; bản đứng cuối của bốn luật ấy ở `26` mục 5.
+
 ## Nới hẹp luật tự duyệt — `29` (b124c, 23/09/2026)
 
 Luật mới, một câu: **người nộp đơn gắn mã cho chính mình tự duyệt được khi và
