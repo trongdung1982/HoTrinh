@@ -26,15 +26,6 @@ Let's Encrypt hạn 02/12/2026; địa chỉ cũ `301` về đây)*. Máy chủ 
 án làm chủ)* — mã cây 3 chữ số. Trang `QuanTri.html` bốn khu đều đã nối. Phân
 quyền đã đo bằng REST, 5/5 hàng rào đạt (b94, b96).
 
-⚠⚠ **Từ b118d trang Quản trị LÀ nguyên file prototype quantri3**, dựng bằng máy,
-mọi trang con gắn chức năng thật, không còn chỗ vẽ tạm — luật và bẫy ở
-`so-tay/trang-quan-tri.md`. ⚠ **Đã bấm trên máy chủ thật 21/09** (mục Thành
-viên & quyền của cây NTB) — mới một trang con, các trang khác chưa.
-
-⚠ **`domains/` giữ nguyên chín file** (mười, trừ `person.js` sửa ở b120 và
-b122b, chủ dự án cho phép cả hai lần) suốt cuộc chuyển nhà — hệ quả ở phần
-"Bộ bất biến" dưới.
-
 ### Điểm dừng chưa bấm thử — trang Quản trị đã xong (b118d), nay bấm được
 
 Tất cả là "chưa ai bấm", không phải "chưa viết". Đã có sẵn **hai tài khoản
@@ -61,7 +52,7 @@ nào.** `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
 ngày 22/09 · `29` ngày 23/09; chủ dự án đọc lại bảng tự kiểm từng lần).
 ⚠ **Chưa rõ Staging từ `22` trở đi** — hỏi lại trước khi coi hai máy đồng bộ.
 
-**`30` (b127a) — CHƯA DÁN.** Đo trên bàn thử 23/09 đạt 37/37, gồm cây 681.
+**`30` (b127a) — ĐÃ DÁN lên THẬT 23/09**, chạy thành công.
 
 ---
 
@@ -84,8 +75,8 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 
 ⚠ Staging vẫn lệch thật tới khi dán `26`+`27`+`28` sang đó.
 
-**⚠ b124a/b124b vẫn TẮT** (`CAN_KEO_NGUOI_XUYEN_CAY`, `person-edit.js`) tới
-hết b127. Thứ tự mở lại · dữ liệu thử: **`so-tay/nguoi-xuyen-cay.md`**.
+**⚠ Ô kéo người (b124a) BẬT LẠI 23/09** để chủ dự án thử, trước b127b/b127c;
+b124b vẫn chưa dựng. Thứ tự mở lại · dữ liệu thử: **`so-tay/nguoi-xuyen-cay.md`**.
 
 **b124c XONG 23/09/2026** — `29` + `sb.laQuanTriCay()` + nới nút Duyệt. Luật,
 chỗ chưa với tới, điểm dừng: `so-tay/phan-quyen.md` mục *Nới hẹp tự duyệt*.

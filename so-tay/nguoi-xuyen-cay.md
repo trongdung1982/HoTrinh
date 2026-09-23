@@ -1,7 +1,7 @@
 # Sổ tay — NGƯỜI XUYÊN CÂY (một người nằm ở nhiều cây)
 
-*Lập 22/09/2026. Đóng băng 22/09, **thiết kế chốt 23/09** — ô kéo người vẫn
-tắt tới hết b127. Đọc hết file này trước khi đụng kéo người, báo trùng, gộp.*
+*Lập 22/09/2026. Đóng băng 22/09, **thiết kế chốt 23/09** — ô kéo người bật
+lại 23/09 để thử, trước b127b/b127c. Đọc hết file này trước khi đụng kéo người, báo trùng, gộp.*
 
 ## Trạng thái hôm nay — tóm một dòng
 
@@ -13,7 +13,7 @@ Thêm người nào cũng là người MỚI, như trước b124a.
 |---|---|
 | Mã người toàn cục, một dòng `persons` cho mọi cây, `tree_persons` (b121–b122, `luoc-do/26` + `27`) | **GIỮ, đang chạy.** Mọi cây đứng trên nó. Đây không phải "tính năng xuyên cây" mà là cách lưu mọi người |
 | Chống ghi đè theo bản ghi (`revision`), hoàn tác xuyên cây | **GIỮ** — `so-tay/luu-du-lieu.md` |
-| Ô *"Người này đã có trong phần mềm chưa?"* ở form thêm người (b124a, b124a2) | **TẮT** — `person-edit.js`, hằng `CAN_KEO_NGUOI_XUYEN_CAY = false`. Mã còn nguyên, chỉ không vẽ ra |
+| Ô *"Người này đã có trong phần mềm chưa?"* ở form thêm người (b124a, b124a2) | **BẬT LẠI 23/09** theo lời chủ dự án, để thử `30` — trước b127b/b127c. Tắt: `person-edit.js`, `CAN_KEO_NGUOI_XUYEN_CAY = false` |
 | Hàm máy chủ `tim_nguoi_moi_cay()` + hàng rào 3b nới trong `luu_cay()` (`luoc-do/28`) | **CÒN TRÊN MÁY CHỦ**, không ai gọi tới. ⚠ Nghĩa là: ai tự soạn lệnh REST vẫn kéo được người ở cây mình ĐƯỢC XEM. Không mở thêm lỗ nào so với 21/09, nhưng đừng viết là "đã khoá ở máy chủ" |
 | `repo.timNguoiMoiCay` · `repo.docNguoiTheoMa` · `sb.*` cùng tên · `o-goi-y.js dongNguoiCayKhac` | Còn nguyên, không ai gọi |
 | b124b *Báo trùng người giữa các cây* + hàm gộp | **CHƯA DỰNG, đóng băng theo** — cùng một câu hỏi bên dưới |

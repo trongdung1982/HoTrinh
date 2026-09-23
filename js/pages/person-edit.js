@@ -8,7 +8,7 @@
 //            xoa,anh}.js, pages/quan-tri/o-goi-y.js, state,
 //            domains/{person,union,validate,media,purge,render},
 //            services/repo, utils/{graph,text,date,image,avatar}, config
-// Phiên bản: 1.46.0 · Cập nhật: 22/09/2026 — đóng băng kéo người xuyên cây
+// Phiên bản: 1.47.0 · Cập nhật: 23/09/2026 — bật lại ô kéo người xuyên cây
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/o-goi-y.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -287,10 +287,10 @@ let noiCtx     = null;   // chế độ noi: { personId, targetId, loai, unionId
 
 // b124a — KÉO NGƯỜI ĐÃ CÓ Ở CÂY KHÁC VÀO, chỉ ở bốn chế độ THÊM. Chi tiết:
 // `so-tay/luu-du-lieu.md` mục "KÉO người cây khác VÀO cây này".
-// ⚠ ĐÓNG BĂNG 22/09/2026: ô tìm không vẽ ra, nên `nguoiCoSanChon` luôn null và
-// mọi nhánh bên dưới chạy như "người mới". Đừng bật lại trước khi chốt câu hỏi
-// ranh giới cây ở `so-tay/nguoi-xuyen-cay.md`.
-const CAN_KEO_NGUOI_XUYEN_CAY = false;
+// Đóng băng 22/09, chủ dự án BẬT LẠI 23/09 để thử `luoc-do/30` — trước b127b
+// (thẻ chưa đọc `vanh_dai`) và b127c (chưa chặn khai trùng quan hệ). Tắt = đặt
+// `false`, ô tìm không vẽ ra, mọi nhánh chạy như "người mới".
+const CAN_KEO_NGUOI_XUYEN_CAY = true;
 let nguoiCoSanChon = null;  // { id, ten, cacCay, gioi } hoặc null = người mới
 let bocCaNhanKhoa  = null;  // khối Tên→Ghi chú, mờ + khoá khi đã chọn người có sẵn
 let khoaGioiGoc    = false; // trạng thái khoá giới tính GỐC của form (themBanDoi)
