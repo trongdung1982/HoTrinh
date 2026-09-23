@@ -92,13 +92,12 @@ chỗ chưa với tới, điểm dừng: `so-tay/phan-quyen.md` mục *Nới h�
 ### ⚠ b125 — BẢNG NGƯỜI trong trang Quản trị (chủ dự án chốt 23/09/2026)
 
 Bấm tên cây ở khu Gia phả → trang cây → mục *Danh sách người*: bảng phẳng kiểu
-trang tính, để **gắn tài khoản vào người** và **quản lý nhiều trường nội dung**.
-Chủ dự án chọn **bản đầy đủ**, nên chia bước:
+trang tính, để **quản lý nhiều trường nội dung**. Cột *Tài khoản* chỉ để XEM —
+gắn tài khoản ↔ người là việc của b126 (Hồ sơ cá nhân), **b125b đã bỏ** 23/09.
 
 | Bước | Việc | Điểm dừng |
 |---|---|---|
-| **b125b** | Gắn/gỡ tài khoản ngay trên dòng người (dùng lại `gan_nguoi_cho_thanh_vien` + ô gợi ý tài khoản) | Gắn rồi gỡ một tài khoản, cột đổi theo |
-| **b125c** | Sửa tại chỗ các trường, Lưu theo dòng qua `luu_cay()` | Thành viên thường sửa → vào hàng chờ; quản trị → ghi thẳng |
+| **b125c** ⏸ | Sửa tại chỗ các trường, Lưu theo dòng qua `luu_cay()`. **Hoãn như b111** — quyền đang chỉnh lý | Thành viên thường sửa → vào hàng chờ; quản trị → ghi thẳng |
 | **b125d** | Chọn nhiều dòng + sửa hàng loạt một trường | Sửa 10 người một lượt, hoàn tác được |
 | **b125e** | Xuất Excel; nối vào đường NHẬP đã có | Xuất ra mở được bằng Excel |
 
