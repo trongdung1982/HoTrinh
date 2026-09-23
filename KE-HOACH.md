@@ -1,9 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 22/09/2026 · ⚠⚠ **NGƯỜI XUYÊN CÂY ĐÓNG BĂNG** (22/09) — ô kéo người
-cây khác đã tắt khỏi giao diện; chưa chốt ranh giới cây thì không làm tiếp:
-`so-tay/nguoi-xuyen-cay.md`. ⚠ **b122d NGHIỆM THU XONG** (21/09): một người một
-bản ghi chạy đúng hai chiều qua hai tài khoản.*
+*Cập nhật 23/09/2026 · Vừa xong **b124c** (tự duyệt nới hẹp, `29` đã dán) và
+**b125a** (bảng Danh sách người). Việc kế tiếp: **b126** — gắn người + dòng họ
+về Hồ sơ cá nhân. ⚠⚠ **NGƯỜI XUYÊN CÂY ĐÓNG BĂNG** (22/09): chưa chốt ranh
+giới cây thì không làm tiếp — `so-tay/nguoi-xuyen-cay.md`.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -128,9 +128,18 @@ Chủ dự án chọn **bản đầy đủ**, nên chia bước:
 | **b125d** | Chọn nhiều dòng + sửa hàng loạt một trường | Sửa 10 người một lượt, hoàn tác được |
 | **b125e** | Xuất Excel; nối vào đường NHẬP đã có | Xuất ra mở được bằng Excel |
 
-⚠ **b125a chưa ai bấm trên máy chủ thật** — mới nhìn ảnh trên trang giả 60
-người. Cây 681 người là phép thử thật: đọc mất bao lâu, bảng có khựng không.
-⚠ **b125e đụng nợ cũ**: nhập GEDCOM/Excel chưa nối kho mã (bảng *Còn treo*).
+⚠ **b125a chưa ai bấm trên máy chủ thật** — mới nhìn ảnh trang giả 60 người;
+cây 681 người mới là phép thử. ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
+
+### ⚠⚠ b126 — GẮN NGƯỜI và DÒNG HỌ về HỒ SƠ CÁ NHÂN (chốt 23/09/2026)
+
+Luật, lý lẽ, danh sách chỗ bị đụng: **`THIET-KE-NHIEU-CAY.md` mục 6**, khối
+*Gắn người và dòng họ*. Tóm: một người duy nhất, một tài khoản duy nhất → gắn
+là chuyện của TÀI KHOẢN, không của từng cây. Chủ tài khoản tự khai, không ai
+khai thay, **QTHT duyệt**; dòng họ chọn trong các cây mình là thành viên, QTHT
+tự chọn cho mình không cần duyệt. Đổi nền móng (`pham_vi_sua` · `nguoi_gan` ·
+bốn cửa gắn mã · `de_xuat_gan_nguoi` đang mang `tree_id`) — **chia bước và đo
+trên bàn thử trước, đừng dán thẳng**.
 
 ### Sau đó — chưa đặt số, chưa chốt
 
@@ -156,15 +165,14 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Nhập GEDCOM/Excel chưa nối vào kho mã** — `capMaHangLoat()` hỏi `nextId` một lần rồi tự đếm tiếp, nên từ mã thứ hai đã ra ngoài phần máy chủ đặt trước. Hỏng to tiếng (`trungma`), không lặng lẽ. Đường sửa: `pages/import-export.js` gọi `repo.xinMa(loai, so)` trước khi nhập | `so-tay/luu-du-lieu.md` |
 | ⚠ **`di-doi/sinh-sql-di-doi.mjs` lạc hậu từ `26`** — SQL nó sinh còn gắn `tree_id` vào bốn bảng dùng chung. Ba cây đã di dời xong nên chưa có việc; chạy sẽ lỗi to tiếng | đầu chính file ấy |
 | ⚠ **Bốn bảng CHƯA được sao lưu**: `cau_hinh` · `tai_khoan` · `de_xuat_gan_nguoi` · `doi_ma_toan_cuc`. Ba bảng đầu giữ cờ QTHT, khoá mềm, đơn đề xuất; `doi_ma_toan_cuc` giữ cặp mã cũ→mới vĩnh viễn. Cần xem RLS có cho vai `sao_luu` đọc không trước khi thêm | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
-| ⚠ **Hai hàm của `16` nay LỆCH NGHĨA với tên của chúng**: `xin_xoa_cay()` không còn là "xin" — nó ẩn cây ngay; `huy_xin_xoa_cay()` nay chỉ QTHT gọi được và nghĩa thật là *trả lại cho chủ*. Giữ tên cũ ở b118b là **cố ý** (đổi tên kéo theo `sb.js` · `sb-gia.mjs` · `trang-cay.js` · bộ ảnh). Đổi tên là một bước riêng | `luoc-do/23-bon-luat-moi.sql` khối đầu |
+| ⚠ **Hai hàm của `16` LỆCH NGHĨA với tên** (`xin_xoa_cay` ẩn cây NGAY; `huy_xin_xoa_cay` = trả lại cho chủ). Giữ tên cũ là cố ý; đổi tên là một bước riêng | `luoc-do/23-bon-luat-moi.sql` khối đầu |
 | ⚠ **`ds_kiem_duyet()` chưa trả người duyệt · lúc duyệt · lý do từ chối** — hai tab lịch sử của Kiểm duyệt để trống ba cột (cột có trong `change_log`, hàm chưa đọc). Sửa hàm là `drop` → chép cả `grant` | `so-tay/trang-quan-tri.md` |
-| ⚠ **Prototype `quantri3.html` vẫn còn `Georgia`** — app đã bỏ (b123, `quan-tri.css` 1.1.3) nhưng file prototype thì chưa. Chép lại khối CSS từ prototype là **rước lại lỗi vỡ dấu `ề`/`ắ`/`ồ`**; nhớ giữ dòng đè ở phần app | `so-tay/trang-quan-tri.md` |
-| ⚠ **Hai việc của điểm dừng b106 chưa nghiệm thu bằng mắt**: gắn được mã người · đăng nhập bằng vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |
-| ⚠ **Thành viên thường nộp đề xuất phải gõ mã người trần** — ô gợi ý đi qua `tim_nguoi_trong_cay()`, gác bằng `co_the_quan_tri()`, nên với họ không gợi ý gì. Nộp vẫn được | `nhat-ky/b117-khu-tai-khoan.md` |
+| ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa *(b126 sẽ đụng cả hai)* | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **Huy hiệu *đơn chờ duyệt* trên nút Gia phả đếm theo cây ĐANG MỞ** (`napSoDem(phien.treeId)`) — chỗ duy nhất của trang còn dính cây đang mở. Có từ b101, b117 chỉ dời nút | `khung.js` · luật 5a |
 | ⚠ **Ai gọi `don_thung_rac()`** — nút bấm tay hay trigger Apps Script đêm? Chưa hỏi chủ dự án | `THIET-KE-NHIEU-CAY.md` mục 11.6 |
 | ⚠ **b103 → b105 của Antigravity vẫn nằm NGOÀI repo**, trong `codex/`, mới dán lên Staging. Soi lướt: `12` và `13` không thêm luật ghi nào — nhưng chưa rà kỹ, chưa đo | `PHOI-HOP-AI.md` |
 | ⚠ **Bộ bất biến bố cục đang gác nhầm nhánh** — xem ngay dưới bảng | `/kiem-tra` phép 9 |
+| ⚠ **`index.html` → Cài đặt: "Dòng họ" và vai trò CỐ ĐỊNH TRONG MÃ** — tồn dư thời một cây, phải đọc từ chỗ khai của b126 | `js/pages/settings.js` |
 | ⚠ **Sao lưu KHÔNG chép ảnh** — chỉ liệt kê. Ảnh vẫn nằm đúng một chỗ | `KIEN-TRUC.md` mục 7 |
 | ⚠ **Chưa ai thử KHÔI PHỤC từ file sao lưu** — *có file* khác *khôi phục được* | `sao-luu/HUONG-DAN-SAO-LUU.md` |
 | Bốn màn hình chưa mở được (sao lưu · dựng gia phả mới · bỏ chọn · quyền ảnh) | `KIEN-TRUC.md` mục 6 |

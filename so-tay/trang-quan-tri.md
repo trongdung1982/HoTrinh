@@ -133,10 +133,11 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   thêm khoá bí mật hay Edge Function là "cho gọn" — xem `sao-luu/SaoLuu.gs`
   đã đâm vào đúng bức tường ấy một lần rồi.
 
-## "JWT issued at future" — vé đăng nhập CŨ, không phải đồng hồ hôm nay
+## Hai điều ghi ngày 23/09/2026
 
-23/09: khu Tài khoản báo nguyên văn câu ấy, bảng *Các gia phả tôi tham gia*
-rỗng. ⚠ Đo trước khi đoán (20 giây): `date` của máy · `Date:` của Supabase —
-khớp từng giây, nên thủ phạm là vé đang giữ trong trình duyệt, cấp lúc đồng hồ
-còn lệch. Chữa: Đăng xuất rồi đăng nhập lại. `sb.cauLoi()` nay dịch ra lời
-làm được.
+**Nộp** đơn gắn mã đi từ *Tài khoản → Các gia phả tôi tham gia*; trang cây chỉ
+để **XÉT** đơn người khác nộp. ⚠ b126 dời hẳn việc gắn sang *Hồ sơ cá nhân*.
+
+**`JWT issued at future`** = vé đăng nhập CŨ, không phải đồng hồ hôm nay. Đo
+trước khi đoán (20 giây): `date` của máy và `Date:` của Supabase khớp từng
+giây. Chữa: Đăng xuất rồi đăng nhập lại; `sb.cauLoi()` nay dịch ra lời làm được.

@@ -429,9 +429,28 @@ ngày mất của anh Minh còn nguyên.
 
 **Kết luận:** một người thuộc dòng họ nào là **do chính người ấy chọn**, không
 phụ thuộc cây họ nằm trong; người ấy **khai được cây chính** của mình.
-**Chưa thiết kế** — còn mở: dòng họ lưu thành gì (danh mục hay chữ tự do), ai
-khai thay cho người đã mất, cây chính có phải một trong các cây `noi_ve` nối
-tới không. Đừng suy dòng họ từ mã cây hay từ cây đang mở.
+Đừng suy dòng họ từ mã cây hay từ cây đang mở.
+
+### ✓ CHỐT 23/09/2026 — GẮN NGƯỜI và DÒNG HỌ về HỒ SƠ CÁ NHÂN (b126)
+
+Chủ dự án chốt, cùng một lý lẽ cho cả hai: **mỗi người trong app là duy nhất,
+mỗi tài khoản cũng duy nhất — nên chuyện "tài khoản này là ai" là chuyện của
+TÀI KHOẢN, không phải của từng cây.** Cách gắn theo cây hôm nay là **lạc hậu**
+(di sản thời một cây), dù đường `de_xuat_gan_nguoi` vẫn chạy.
+
+| Việc | Luật mới |
+|---|---|
+| **Gắn tài khoản ↔ người** | Đặt ở *Tài khoản → Hồ sơ cá nhân*. **Chủ tài khoản TỰ khai mã người**, người khác KHÔNG làm thay. **Quản trị hệ thống duyệt.** |
+| **Dòng họ** | Thêm mục ở chính Hồ sơ cá nhân ấy: **tự chọn trong những cây mình là thành viên**. QTHT duyệt. **QTHT tự chọn cho mình, không cần ai duyệt.** |
+
+⚠ Đây là đổi NỀN MÓNG, không phải thêm màn hình: `tree_members.person_id` là
+*"tôi là ai TRONG CÂY NÀY"*, luật mới hỏi *"tôi là ai"* — một câu, một chỗ.
+Đụng tới: `pham_vi_sua()` · `nguoi_gan()` · bốn cửa gắn mã · bảng
+`de_xuat_gan_nguoi` (đang mang `tree_id`) · `21` · `27` · `29`. Chia bước và
+đo trên bàn thử trước, đừng dán thẳng.
+
+⚠ **Vai trò + "Dòng họ" ở `index.html` → Cài đặt đang CỐ ĐỊNH TRONG MÃ** — tồn
+dư thời một cây, phải đọc từ chỗ khai mới này.
 
 ---
 
