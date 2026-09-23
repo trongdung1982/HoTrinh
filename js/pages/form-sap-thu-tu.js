@@ -5,7 +5,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: pages/person-edit.js (nền dùng chung), state,
 //            domains/{union,render}, utils/{text,date,image,avatar}
-// Phiên bản: 1.0.0 · Cập nhật: 27/08/2026 19:30
+// Phiên bản: 1.1.0 · Cập nhật: 23/09/2026 (b127b) — con ở vành đai hiện tên
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 3 của
@@ -277,8 +277,10 @@ function veDayCon() {
  * nút *Xong* xuống dưới mép màn hình.
  */
 function veTheCon(id, i) {
-  const p = timNguoiTrongCay(id);
-  const conTrong = !!(state.index && state.index.personById.has(id));
+  // Người vành đai (b127b) là con ở gia phả khác — có tên, không phải thùng rác.
+  const bien = state.index && state.index.vanhDaiById && state.index.vanhDaiById.get(id);
+  const p = timNguoiTrongCay(id) || bien || null;
+  const conTrong = !!(state.index && state.index.personById.has(id)) || !!bien;
   const dangKeo  = !!(sapKeo && sapKeo.tu === i);
 
   const the = document.createElement('div');

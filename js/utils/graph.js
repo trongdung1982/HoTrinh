@@ -3,7 +3,7 @@
 // Vai trò  : Duyệt đồ thị dùng chung. MỌI hàm ở đây bắt buộc có tập visited.
 // Lớp      : utils
 // Phụ thuộc: (không)
-// Phiên bản: 0.3.0 · Cập nhật: 15/08/2026 23:52
+// Phiên bản: 0.4.0 · Cập nhật: 23/09/2026 (b127b) — `buildIndex` thêm `vanhDaiById`
 // ============================================================
 //
 // CẢNH BÁO: Gia phả là ĐỒ THỊ, không phải cây. Hôn nhân giữa hai nhánh
@@ -83,7 +83,8 @@ export function bfsLevels(startIds, getNeighbors, maxDepth = 0) {
  *   personById:      Map<string, object>,
  *   unionById:       Map<string, object>,
  *   unionsAsPartner: Map<string, string[]>,
- *   unionsAsChild:   Map<string, string[]>
+ *   unionsAsChild:   Map<string, string[]>,
+ *   vanhDaiById:     Map<string, object>   người ngoài cây, chỉ để điền thẻ
  * }}
  */
 export function buildIndex(tree) {
@@ -126,7 +127,16 @@ export function buildIndex(tree) {
     }
   }
 
-  return { personById, unionById, unionsAsPartner, unionsAsChild };
+  // VÀNH ĐAI (b127b): người ngoài cây có dây nối vào người trong cây. Map
+  // RIÊNG, cố ý không trộn vào `personById` — `domains/` chỉ đọc map ấy nên
+  // họ không bao giờ được vẽ. Chỉ thẻ thông tin tra map này để điền tên.
+  const vanhDaiById = new Map();
+  for (const p of (tree && Array.isArray(tree.vanhDai)) ? tree.vanhDai : []) {
+    if (!p || !p.id || p.deleted || personById.has(p.id)) continue;
+    vanhDaiById.set(p.id, p);
+  }
+
+  return { personById, unionById, unionsAsPartner, unionsAsChild, vanhDaiById };
 }
 
 /**

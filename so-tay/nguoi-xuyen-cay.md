@@ -102,12 +102,15 @@ trong cây).
    | ✓ **b127a** | `luoc-do/30` — đo `../kiem-thu/ban-thu-sql/do-b127a.mjs` 37/37: cây 681 persons/unions/children/media không đổi một dòng, vành đai rỗng, 48→52 ms; người NPG đưa sang NTB có thẻ giống hệt | Đạt trên bàn thử 23/09 |
    | **b127b** | `sb.js` · `hinh-dang.js` · `utils/graph.js` map riêng · `person-detail.js` tra map ấy | Cây `T388` (còn người kéo từ `TH957`): thẻ đủ vợ/con; sơ đồ không đổi một nét |
    | **b127c** | Chặn khai nhầm ở `luu_cay()`: A–B đã có quan hệ thì khoá; đề nghị chỉnh sửa → QTHT duyệt | Khai quan hệ thứ hai cho một cặp → bị chặn |
-   ⚠ Hai điều b127b phải biết, đo ở b127a:
-   - `vanh_dai` kéo theo cả **anh chị em** của người xuyên cây (con của hôn
-     nhân cha mẹ họ) — thẻ không có dòng anh chị em nên không dùng tới.
-   - `reorderChildren()` (`domains/union.js`) đòi đủ hoán vị các con; màn
-     *Sắp thứ tự con* chỉ đưa con trong cây thì cặp có con ở vành đai sẽ
-     **từ chối sắp** (không mất dữ liệu). Đưa cả con vành đai vào danh sách.
+   ✓ **b127b** 23/09 — `sb.js` · `hinh-dang.js` · `graph.js` (`vanhDaiById`) ·
+   `person-detail.js` (`timNguoiThe`) · `form-sap-thu-tu.js`. Đo
+   `../kiem-thu/kiem-vanh-dai.mjs` 14/14 (Chrome thật, mã `supabase/js`).
+   Còn: chủ dự án bấm trên cây `T388`. Luật thẻ: `so-tay/the-thong-tin.md`.
+   - `vanh_dai` kéo theo cả **anh chị em** của người xuyên cây — thẻ không có
+     dòng anh chị em nên không hiện; máy chủ vẫn gửi bản ghi của họ.
+   - *Sắp thứ tự con* vốn đưa ĐỦ các con (kể cả ngoài cây) cho
+     `reorderChildren()`, nên sắp được; con vành đai nay hiện tên thay vì bị
+     ghi nhầm "trong thùng rác".
 4. Mới bật `CAN_KEO_NGUOI_XUYEN_CAY = true` trong `person-edit.js`. Bật trước
    bước 3 là tái hiện đúng lỗi 22/09.
 5. b124b (Báo trùng + gộp) đi sau cùng — gộp hai người là đổ hai nhánh vào nhau,

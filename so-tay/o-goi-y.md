@@ -3,7 +3,7 @@
 File     : `js/pages/quan-tri/o-goi-y.js` — MỘT bản cho cả bốn chỗ
 Nơi gọi  : form Mời (email · mã người) · khu Tài khoản (mã người) ·
            form thêm người, ô *"đã có trong phần mềm chưa"* (`person-edit.js`)
-           — ⚠ ô này TẮT từ 22/09/2026, `so-tay/nguoi-xuyen-cay.md`
+           — tắt 22/09, bật lại 23/09/2026, `so-tay/nguoi-xuyen-cay.md`
 Đo bằng  : `node ../kiem-thu/do-goi-y.mjs` (toạ độ, trên trang Quản trị giả) ·
            `node ../kiem-thu/do-chon-that.mjs` (cú bấm + điền sẵn, trên form thật)
 

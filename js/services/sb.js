@@ -5,15 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.28.0 · Cập nhật: 23/09/2026 (b124c) — `laQuanTriCay()` · dịch lỗi vé JWT
-//            0.26.0 thêm `docNguoiTheoMa()` — đọc một bản ghi người ở cây
-//            khác, để form điền sẵn thay vì bắt gõ tay.
-//            0.25.0 thêm `timNguoiMoiCay()` — gợi ý người ĐÃ CÓ ở cây khác
-//            lúc thêm người (`luoc-do/28`).
-//            0.24.0 mô hình MỘT NGƯỜI MỘT BẢN GHI (`luoc-do/26`+`27`):
-//            `layDong()` đọc bốn bảng dùng chung bằng `doc_cay()`; thêm
-//            `capMa()` · `dsNguoiMoCoi()`; bỏ `docNguoiCayKhac()` và hai câu
-//            lỗi của `noi_ve`. Lịch sử: `git log -p js/services/sb.js`.
+// Phiên bản: 0.29.0 · Cập nhật: 23/09/2026 (b127b) — `layDong()` nhận `vanhDai`
+//            Lịch sử: `git log -p js/services/sb.js`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -590,6 +583,7 @@ export async function layDong(treeId) {
         unions:   chung.data.unions   || [],
         children: chung.data.children || [],
         media:    chung.data.media    || [],
+        vanhDai:  chung.data.vanh_dai || [],   // `luoc-do/30` — người ngoài cây, chỉ để điền thẻ
         sources:  sources.data  || [],
         imports:  imports.data  || [],
         maNhatKy: (maNhatKy.data || []).map((r) => r.ma),

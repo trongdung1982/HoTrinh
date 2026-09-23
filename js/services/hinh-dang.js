@@ -4,7 +4,7 @@
 //            Ráp dòng thành cây, và so hai cây ra danh sách phép ghi.
 // Lớp      : services — được gọi bởi: services/repo · gọi: utils/date
 // Phụ thuộc: utils/date.js
-// Phiên bản: 0.5.0 · Cập nhật: 22/09/2026 (b124a2) — thêm `rapMotNguoi()`
+// Phiên bản: 0.6.0 · Cập nhật: 23/09/2026 (b127b) — `rapCay()` ráp `vanhDai`
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -243,6 +243,12 @@ export function rapCay(dong) {
       source: r.source, sourceName: r.source_name, exporter: r.exporter,
       counts: r.counts || {}, map: r.map || [],
     })),
+
+    // ⚠ VÀNH ĐAI (`luoc-do/30`, b127b): người NGOÀI cây có dây nối thẳng vào
+    //   người trong cây. CHỈ để thẻ điền dòng "vợ: …", "con: …" — không vẽ,
+    //   không thẻ riêng, và **không bao giờ gửi lên lại**: `boCay()` không đọc
+    //   khoá này, nên sửa ở đây là vô nghĩa, không phải lỗ hổng.
+    vanhDai: (dong.vanhDai || []).map((r) => veCay(TEN_PERSON, r)),
   };
 }
 

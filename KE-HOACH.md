@@ -101,8 +101,9 @@ gọn. ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
 
 Người ngoài cây có dây nối vào chỉ điền dòng "vợ/con: …" trong thẻ, **không
 vẽ**. Luật: `THIET-KE-NHIEU-CAY.md` mục 6 · ba bước b127a–c + điểm dừng:
-`so-tay/nguoi-xuyen-cay.md` mục *Cách mở lại*. Bước 0 và b127a (`30`, bàn
-thử) đã đạt — kế tiếp **b127b**.
+`so-tay/nguoi-xuyen-cay.md` mục *Cách mở lại*. b127a (`30`, đã dán) và
+b127b (thẻ kể tên người vành đai) xong — chờ chủ dự án bấm cây `T388`; kế
+tiếp **b127c**.
 
 ### ⚠⚠ b126 — GẮN NGƯỜI và DÒNG HỌ về HỒ SƠ CÁ NHÂN (chốt 23/09/2026)
 
