@@ -53,6 +53,7 @@ ngày 22/09 · `29` ngày 23/09; chủ dự án đọc lại bảng tự kiểm 
 ⚠ **Chưa rõ Staging từ `22` trở đi** — hỏi lại trước khi coi hai máy đồng bộ.
 
 **`30` (b127a) — ĐÃ DÁN lên THẬT 23/09**, chạy thành công.
+**`31` (b127c) — CHƯA DÁN.** Bàn thử 24/09 đạt 22/22.
 
 ---
 
@@ -102,8 +103,9 @@ gọn. ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
 Người ngoài cây có dây nối vào chỉ điền dòng "vợ/con: …" trong thẻ, **không
 vẽ**. Luật: `THIET-KE-NHIEU-CAY.md` mục 6 · ba bước b127a–c + điểm dừng:
 `so-tay/nguoi-xuyen-cay.md` mục *Cách mở lại*. b127a (`30`, đã dán) và
-b127b (thẻ kể tên người vành đai) xong — chờ chủ dự án bấm cây `T388`; kế
-tiếp **b127c**.
+b127b (thẻ kể tên người vành đai) xong — chờ chủ dự án bấm cây `T388`.
+b127c (`31`, khoá quan hệ trùng) xong trên bàn thử, chờ dán. Kế tiếp
+**b127d** (đề nghị chỉnh sửa → QTHT duyệt) — chờ chủ dự án chốt tách.
 
 ### ⚠⚠ b126 — GẮN NGƯỜI và DÒNG HỌ về HỒ SƠ CÁ NHÂN (chốt 23/09/2026)
 

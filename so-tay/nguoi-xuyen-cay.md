@@ -100,8 +100,18 @@ trong cây).
    | Bước | Việc | Điểm dừng |
    |---|---|---|
    | ✓ **b127a** | `luoc-do/30` — đo `../kiem-thu/ban-thu-sql/do-b127a.mjs` 37/37: cây 681 persons/unions/children/media không đổi một dòng, vành đai rỗng, 48→52 ms; người NPG đưa sang NTB có thẻ giống hệt | Đạt trên bàn thử 23/09 |
-   | **b127b** | `sb.js` · `hinh-dang.js` · `utils/graph.js` map riêng · `person-detail.js` tra map ấy | Cây `T388` (còn người kéo từ `TH957`): thẻ đủ vợ/con; sơ đồ không đổi một nét |
-   | **b127c** | Chặn khai nhầm ở `luu_cay()`: A–B đã có quan hệ thì khoá; đề nghị chỉnh sửa → QTHT duyệt | Khai quan hệ thứ hai cho một cặp → bị chặn |
+   | ✓ **b127b** | xem dưới bảng | Cây `T388`: thẻ đủ vợ/con; sơ đồ không đổi một nét — chờ chủ dự án bấm |
+   | ✓ **b127c** | `luoc-do/31` — hai trigger, đo `../kiem-thu/ban-thu-sql/do-b127c.mjs` 22/22 | Đạt trên bàn thử 24/09, chưa dán |
+   | **b127d** *(đề nghị tách 24/09, chờ chủ dự án chốt)* | ① **Đề nghị chỉnh sửa** quan hệ → QTHT duyệt (bảng mới + nút gửi + khu duyệt). ② Sửa/xoá quan hệ có MỘT ĐẦU NGOÀI cây đang mở → QTHT duyệt | — |
+   ✓ **b127c** 24/09 — A–B đã nối thẳng (vợ/chồng · cha mẹ–con) ở một hôn
+   nhân sống thì không nối thêm ở hôn nhân khác. Gác bằng TRIGGER trên
+   `unions` + `union_children` (không chép lại `luu_cay()`), lỗi `GP409` hint
+   `quanhetrung`, câu tiếng Việt ở `chiTiet` → `sb.luuCay()` đổi thành `loi`.
+   - Chỉ xét quan hệ MỚI SINH; cặp đã trùng từ trước vẫn sửa/gộp được.
+   - Chặn MỌI người, kể cả QTHT — cặp trùng không bao giờ đúng. Muốn nối lại
+     thì xoá quan hệ cũ trước (cùng lần lưu cũng được).
+   - `validate.js` không nhắc sớm (không sửa `domains/`); người dùng thấy câu
+     báo lúc bấm Lưu.
    ✓ **b127b** 23/09 — `sb.js` · `hinh-dang.js` · `graph.js` (`vanhDaiById`) ·
    `person-detail.js` (`timNguoiThe`) · `form-sap-thu-tu.js`. Đo
    `../kiem-thu/kiem-vanh-dai.mjs` 14/14 (Chrome thật, mã `supabase/js`).
@@ -111,8 +121,7 @@ trong cây).
    - *Sắp thứ tự con* vốn đưa ĐỦ các con (kể cả ngoài cây) cho
      `reorderChildren()`, nên sắp được; con vành đai nay hiện tên thay vì bị
      ghi nhầm "trong thùng rác".
-4. Mới bật `CAN_KEO_NGUOI_XUYEN_CAY = true` trong `person-edit.js`. Bật trước
-   bước 3 là tái hiện đúng lỗi 22/09.
+4. ✓ `CAN_KEO_NGUOI_XUYEN_CAY = true` — chủ dự án bật 23/09, trước b127b/c.
 5. b124b (Báo trùng + gộp) đi sau cùng — gộp hai người là đổ hai nhánh vào nhau,
    nên càng phụ thuộc câu 1–5.
 

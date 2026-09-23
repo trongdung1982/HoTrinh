@@ -5,7 +5,7 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.29.0 · Cập nhật: 23/09/2026 (b127b) — `layDong()` nhận `vanhDai`
+// Phiên bản: 0.30.0 · Cập nhật: 24/09/2026 (b127c) — `luuCay()` dịch `quanhetrung`
 //            Lịch sử: `git log -p js/services/sb.js`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
@@ -666,6 +666,11 @@ export async function luuCay(treeId, revision, ops, moTa) {
     p_mo_ta:    moTa || {},
   });
   if (error) return { ok: false, lyDo: 'maychutuchoi', loi: cauLoi(error) };
+  // `luoc-do/31`: trigger chặn quan hệ khai lần hai. `luu_cay()` chỉ có câu
+  // riêng cho `trungma`, nên câu đúng (có tên hai người) nằm ở `chiTiet`.
+  if (data && data.lyDo === 'quanhetrung' && data.chiTiet) {
+    return { ...data, loi: data.chiTiet };
+  }
   return data;
 }
 
