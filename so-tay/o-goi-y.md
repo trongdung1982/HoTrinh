@@ -3,7 +3,10 @@
 File     : `js/pages/quan-tri/o-goi-y.js` — MỘT bản cho cả bốn chỗ
 Nơi gọi  : form Mời (email · mã người) · khu Tài khoản (mã người) ·
            form thêm người, ô *"đã có trong phần mềm chưa"* (`person-edit.js`)
-           — tắt 22/09, bật lại 23/09/2026, `so-tay/nguoi-xuyen-cay.md`
+           — tắt 22/09, bật lại 23/09/2026, `so-tay/nguoi-xuyen-cay.md`.
+           ⚠ Ô này đứng ĐẦU form (sau "Cha mẹ là ai?" ở Thêm con). Đặt dưới
+           khối hôn nhân thì cách đầu hộp 619px — trên điện thoại chủ dự án
+           báo "thiếu ô" (24/09). Đo: `../kiem-thu/kiem-o-da-co.mjs`
 Đo bằng  : `node ../kiem-thu/do-goi-y.mjs` (toạ độ, trên trang Quản trị giả) ·
            `node ../kiem-thu/do-chon-that.mjs` (cú bấm + điền sẵn, trên form thật)
 

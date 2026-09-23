@@ -100,11 +100,12 @@ gọn. ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
 ### ⚠⚠ b128 — LUẬT VẼ SAI, sửa theo dữ liệu nền (chủ dự án 24/09/2026) — LÀM TRƯỚC
 
 Chủ dự án: *"theo luật mới về dữ liệu nền bất biến thì luật vẽ cũ sai"* —
-**cần làm theo phương pháp chủ dự án đã đề xuất nhưng bị xếp lại.** ⚠ Chưa
-tìm thấy phương pháp ấy ghi thành mục riêng; câu gần nhất là lời 22/09 ở
-`so-tay/nguoi-xuyen-cay.md` (*"thêm người ở cây khác thì bấm người đó sẽ vẽ
-đủ mối quan hệ của họ"*). **Hỏi lại nguyên văn trước khi thiết kế.** Ảnh ở
-`../anh_supabase/` (ngoài repo). Bốn lỗi, cùng một phiên thiết kế rồi tách bước:
+**cần làm theo phương pháp chủ dự án đã đề xuất nhưng bị xếp lại** — chủ dự
+án xác nhận 24/09 ("đồng ý đề xuất") đó là lời 22/09 ở
+`so-tay/nguoi-xuyen-cay.md`: *"thêm người ở cây khác thì bấm người đó sẽ vẽ
+đủ mối quan hệ của họ"*. Phiên đầu b128 = THIẾT KẾ (vẽ lan tới đâu, cây còn
+giữ vai gì: mục lục · quyền sửa), chưa viết mã. Ảnh ở `../anh_supabase/`
+(ngoài repo). Bốn lỗi:
 
 | Lỗi | Ảnh | Thấy gì | Chạm |
 |---|---|---|---|
@@ -117,13 +118,13 @@ tìm thấy phương pháp ấy ghi thành mục riêng; câu gần nhất là l
 (bộ bất biến `../kiem-thu/` vẫn đo `giapha/js`). Phải có chủ dự án cho phép và
 trỏ bộ bất biến sang nhánh mới TRƯỚC khi sửa. Nhìn bằng mắt, đo trên cây 681.
 
-### ⚠⚠ b127 — VÙNG BIÊN cho thẻ thông tin (chốt 23/09/2026)
+### ⚠ b127d — ĐỀ NGHỊ CHỈNH SỬA quan hệ → QTHT duyệt (tách 24/09/2026)
 
-b127a (`30`) · b127b (thẻ kể tên người vành đai — chờ chủ dự án bấm `T388`) ·
-b127c (`31`, khoá quan hệ trùng) **xong, đã dán**. ⚠ "Vùng biên không vẽ" là
-một nửa của hàng rào mà b128 đang xét lại. **b127d** (tách 24/09, chủ dự án
-đồng ý): đề nghị chỉnh sửa → QTHT duyệt · sửa/xoá quan hệ có một đầu ngoài
-cây → QTHT duyệt. Chi tiết: `so-tay/nguoi-xuyen-cay.md` mục *Cách mở lại*.
+① Người dùng gửi đề nghị sửa quan hệ đã khoá (`31` chặn khai lần hai) →
+QTHT duyệt: bảng mới + nút gửi + khu duyệt. ② Sửa/xoá quan hệ có một đầu
+ngoài cây đang mở → QTHT duyệt. Đi SAU b128 — cách vẽ đổi thì "ngoài cây"
+có thể đổi nghĩa. Chi tiết: `so-tay/nguoi-xuyen-cay.md` mục *Cách mở lại*.
+⚠ b127b chưa bấm thật: thẻ người kéo sang `T388` phải đủ vợ/con.
 
 ### ⚠⚠ b126 — GẮN NGƯỜI và DÒNG HỌ về HỒ SƠ CÁ NHÂN (chốt 23/09/2026)
 
