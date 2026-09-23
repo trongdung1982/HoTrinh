@@ -77,8 +77,9 @@ Ghi câu trả lời vào `THIET-KE-NHIEU-CAY.md` mục 6, rồi mới mở phi�
 5. **Kéo một người vào = kéo gì theo?** Chỉ người ấy, hay tự thêm cả cha mẹ/
    vợ/con vào `tree_persons` của cây mới?
 
-Chủ dự án đã nghiêng về một hướng (câu *"bấm người đó sẽ vẽ đủ mối quan hệ của
-họ"*), nhưng **chưa chốt** — đừng tự chọn thay.
+✓ **Câu 1–3 đã chốt 23/09/2026** — `THIET-KE-NHIEU-CAY.md` mục 6, *HAI HÀNG
+RÀO*: cây (`tree_persons`) vẫn là ranh vẽ cứng; người ngoài cây có dây nối vào
+chỉ hiện ở **thẻ thông tin**, không vẽ. Câu 4, 5 **còn mở**.
 
 ## Cách mở lại, theo thứ tự
 

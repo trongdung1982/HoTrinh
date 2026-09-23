@@ -452,6 +452,42 @@ TÀI KHOẢN, không phải của từng cây.** Cách gắn theo cây hôm nay 
 ⚠ **Vai trò + "Dòng họ" ở `index.html` → Cài đặt đang CỐ ĐỊNH TRONG MÃ** — tồn
 dư thời một cây, phải đọc từ chỗ khai mới này.
 
+### ✓ CHỐT 23/09/2026 — HAI HÀNG RÀO (trả lời câu 1–3 của `so-tay/nguoi-xuyen-cay.md`)
+
+Chốt khi rà bản `gui-chatgpt/be-thong-tin-nguoi-gia-dinh-cay-hinh-thuc-hoa-v2.md`.
+Nền: **người + quan hệ là bất biến, duy nhất; cây là một tập hợp trên nền ấy.**
+
+| Hàng rào | Là gì | Luật |
+|---|---|---|
+| **1 — ranh VẼ** | `tree_persons` của cây đang mở | **Giữ nguyên như app đang chạy**: vừa là mục lục cây, vừa quyết định sơ đồ vẽ tới đâu |
+| **2 — ranh TRA thông tin** | Người NGOÀI cây có dây nối thẳng vào người trong cây | **Không vẽ lên sơ đồ, kể cả nốt cụt.** Chỉ hiện ở **thẻ thông tin**: bấm a thấy "vợ: b", "con: c" dù b, c ngoài cây. Hôm nay thẻ không có gì về b — đó là lỗi |
+
+- **Không có con đường khai nhầm.** A là cha B ở cây này thì không cây nào khai
+  được A là anh em B. App cho khai nhầm là **app sai**. Hàng rào thật đặt ở
+  **`luu_cay()` trên máy chủ**, đối chiếu nền đầy đủ; `validate.js` chạy trên
+  mẩu đã cắt nên chỉ là lời nhắc sớm. Phải có trước khi bật lại
+  `CAN_KEO_NGUOI_XUYEN_CAY`.
+- **Quyền giữ nguyên mô hình đang chạy**, năm vai của v2 chỉ là tên khác:
+  Chim = `la_quan_tri_he_thong` · Chủ mảnh đất = `trees.chu_so_huu` · Quản gia =
+  `quan_tri` · Thành viên = `sua` + `pham_vi_sua()` · Xem = `xem`.
+- **Quản gia (`quan_tri`) KHÔNG đổi vai người khác** — chỉ sửa + duyệt nội dung,
+  như mục 11. v2 viết "trọn quyền" là sai.
+- **Giữ `sao_luu` và cờ `duoc_tao_cay`** — ngoài năm vai, không xung đột.
+- Chỗ rối là **cách cài**, không phải mô hình: 16 hàm gác cửa quyền, nhiều hàm
+  định nghĩa lại 2–5 lần ở các file SQL. Dọn thành một cửa — việc riêng, sau.
+
+**Cách làm đã phác (chưa được duyệt để làm):** `doc_cay()` trả thêm mảng
+`vanh_dai` TÁCH khỏi `persons` → `utils/graph.js` dựng map riêng cạnh
+`personById` → `pages/person-detail.js` tra map ấy khi không thấy trong cây.
+`bloodline.js`/`layout.js` chỉ đọc `personById` nên **không chạm `domains/`**.
+Bước 0: bàn thử SQL, hai cây giả chung một người, thẻ gia đình ở hai cây phải
+kể giống hệt nhau.
+
+**Còn mở:** câu 4 (ai duyệt quan hệ có một đầu ngoài cây) · câu 5 (kéo người
+vào kéo theo gì) · Hàng rào 2 hiện những trường nào ở thẻ (chủ dự án chưa trả lời đề xuất
+"tên · năm sinh–mất"). ⚠ Bản v2 mục 2.5, 3.2 viết "vẽ nốt cụt cho người ngoài
+Hàng rào 1" — **ngược** với chốt trên.
+
 ---
 
 ## 7. Tạo cây mới
