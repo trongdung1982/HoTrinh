@@ -454,79 +454,54 @@ dư thời một cây, phải đọc từ chỗ khai mới này.
 
 ### ✓ CHỐT 23/09/2026 — HAI HÀNG RÀO (trả lời năm câu của `so-tay/nguoi-xuyen-cay.md`)
 
-Chốt khi rà bản `gui-chatgpt/be-thong-tin-nguoi-gia-dinh-cay-hinh-thuc-hoa-v2.md`.
-Nền: **người + quan hệ là bất biến, duy nhất; cây là một tập hợp trên nền ấy.**
+**Nền: người + quan hệ là bất biến, duy nhất; cây là một tập hợp trên nền ấy.**
 
-| Hàng rào | Là gì | Luật |
+| Hàng rào | Gồm ai | Luật |
 |---|---|---|
-| **1 — ranh VẼ** | `tree_persons` của cây đang mở | **Giữ nguyên như app đang chạy**: vừa là mục lục cây, vừa quyết định sơ đồ vẽ tới đâu. **Người trung tâm sơ đồ đã là cơ chế "cờ ghim"** — không cần khái niệm `pinned_stop` mới của v2 |
-| **2 — vùng biên** | Người NGOÀI cây, có dây nối thẳng (vợ/chồng, cha mẹ, con) vào một người TRONG cây | **Không có thẻ riêng, không vẽ lên sơ đồ, không có đường bấm tới.** Việc DUY NHẤT của dữ liệu vùng biên: bổ sung vào các dòng "vợ: b", "con: c" trong thẻ của người TRONG cây. Không phát sinh câu hỏi điều hướng hay câu hỏi sửa — vì không có đường bấm vào b thì không có gì phải lo |
+| **1 — cây** | `tree_persons` của cây đang mở | **Giữ nguyên như app đang chạy**: mục lục cây, ranh vẽ sơ đồ, ranh quyền sửa. Điểm dừng chủ động là **người trung tâm sơ đồ** — đã có |
+| **2 — vùng biên** | Người NGOÀI cây có dây nối thẳng (vợ/chồng, cha mẹ, con) vào người TRONG cây | **Việc duy nhất:** bổ sung các dòng "vợ: b", "con: c" trong thẻ của người trong cây. Không vẽ, không có thẻ riêng, không có đường bấm tới |
 
-**Câu 3 (thẻ kể gì) đã trả lời — nội dung thẻ của một người là thiết kế cũ,
-đã khoá.** Cái mới chỉ là: dữ liệu vợ/chồng/cha mẹ/con ở vùng biên trước đây
-bị `doc_cay()` cắt mất nên các dòng ấy trống — đó là lỗi cần chữa, không phải
-câu hỏi thiết kế mới.
+Nội dung thẻ thông tin là thiết kế cũ, đã khoá. Lỗi hôm nay chỉ là `doc_cay()`
+cắt mất người vùng biên nên các dòng ấy trống.
 
-**Câu 4 (ai duyệt) — CHỐT:** hai quy tắc tách bạch:
-- **A, B đã có một quan hệ thì khoá — không khai lại quan hệ khác cho cùng
-  cặp qua đường thường.** Ví dụ A đã là cha của B thì không nơi nào khai lại
-  B là anh em của A.
-- **Phát hiện khai sai thì đi đường riêng:** gửi **đề nghị chỉnh sửa**,
-  **Quản trị hệ thống duyệt** mới đổi. Áp dụng chung, không phân biệt quan hệ
-  đó gốc từ cây nào — vì quan hệ là sự thật chung, không thuộc một cây.
-- Sửa/xoá một quan hệ có ít nhất một đầu nằm NGOÀI cây đang mở: cũng
-  **Quản trị hệ thống duyệt**.
-- Hàng rào thật đặt ở **`luu_cay()` trên máy chủ**, đối chiếu nền đầy đủ;
-  `validate.js` chạy trên mẩu đã cắt nên chỉ là lời nhắc sớm, không phải chỗ
-  chặn. Phải có trước khi bật lại `CAN_KEO_NGUOI_XUYEN_CAY`.
+**Trực hệ — hai nhánh riêng, không trộn:**
 
-**Câu 5 (kéo người vào kéo theo gì) — CHỐT:** **chỉ kéo bản ghi của chính
-người đó.** Không tự thêm cha mẹ/vợ/con vào `tree_persons` của cây mới — họ
-tự nhiên nằm ở vùng biên, chỉ bổ sung thông tin cho thẻ, không được vẽ.
+| Nhánh | Xuất phát từ | Dùng cho | Mã |
+|---|---|---|---|
+| **Vẽ** | Người trung tâm đang xem | Sơ đồ: ai cùng huyết thống thì vẽ đủ, dâu/rể thành nốt cụt | `domains/bloodline.js` |
+| **Sửa** | Người mà tài khoản sở hữu | Vai `sua` sửa được những ai | `pham_vi_sua()` (`luoc-do/27`) |
 
-**Người không thuộc cây nào — CHỐT:** trạng thái hiển nhiên hợp lệ, không
-phải ca đặc biệt. Người đó tồn tại thật, chỉ không có sơ đồ nào vẽ ra vì
-không có quan hệ nào nối tới. Quản lý bằng danh sách ở `quantri.html`, không
-qua cơ chế cây/chìa khoá.
+Nhánh sửa duyệt **trong cây ở mọi bước**, kể cả bước xuất phát — người sở hữu
+không thuộc cây thì phạm vi rỗng.
 
-**Quyền — giữ nguyên mô hình đang chạy**, năm vai của v2 chỉ là tên khác:
-Chim = `la_quan_tri_he_thong` · Chủ mảnh đất = `trees.chu_so_huu` · Quản gia =
-`quan_tri` · Thành viên = `sua` + `pham_vi_sua()` · Xem = `xem`.
-- **Quản gia (`quan_tri`) KHÔNG đổi vai người khác** — chỉ sửa + duyệt nội dung,
-  như mục 11. v2 viết "trọn quyền" là sai.
-- **Giữ `sao_luu` và cờ `duoc_tao_cay`** — ngoài năm vai, không xung đột.
-- Chỗ rối là **cách cài**, không phải mô hình: 16 hàm gác cửa quyền, nhiều hàm
-  định nghĩa lại 2–5 lần ở các file SQL. Dọn thành một cửa — việc riêng, sau.
-- **KHÔNG dựng bảng mới `tree_roles`/`owner_account_id`/`owned_person_id` như
-  v2 mục 4** — tên khác của cái đã có; dán theo sẽ xoá mất luồng mời/duyệt và
-  luật hai chữ ký đang chạy.
+**Quan hệ:**
+- A, B đã có quan hệ thì **khoá**, không khai lại. Phát hiện sai thì gửi
+  **đề nghị chỉnh sửa**, **Quản trị hệ thống duyệt**.
+- Sửa/xoá quan hệ có một đầu ngoài cây đang mở: **Quản trị hệ thống duyệt**.
+- Chặn ở **`luu_cay()` trên máy chủ**, đối chiếu nền đầy đủ; `validate.js` chỉ
+  nhắc sớm. Phải có trước khi bật lại `CAN_KEO_NGUOI_XUYEN_CAY`.
 
-**Cách làm đã phác (chưa được duyệt để làm):** `doc_cay()` trả thêm mảng
-`vanh_dai` TÁCH khỏi `persons` → `utils/graph.js` dựng map riêng cạnh
-`personById` → `pages/person-detail.js` tra map ấy khi không thấy trong cây,
-điền vào đúng những dòng thẻ đã có sẵn (vợ/chồng, cha mẹ, con). Không có màn
-hình mới, không có thẻ mới. `bloodline.js`/`layout.js` chỉ đọc `personById`
-nên **không chạm `domains/`**. Bước 0: bàn thử SQL, hai cây giả chung một
-người, thẻ của người ấy ở hai cây phải kể giống hệt nhau.
+**Đưa người vào cây:** chỉ bản ghi của chính người đó. Cha mẹ/vợ/con không đi
+theo — họ tự nằm ở vùng biên.
 
-**KHÔNG có điểm nào mở — công thức "giao" tôi chép từ v2 mô tả sai thuật
-toán thật, đã sửa lại cho đúng.** `pham_vi_sua()` (`luoc-do/27`, hàm CTE đệ
-quy) không tính trực hệ toàn cục rồi mới giao với cây — phép duyệt **bị bó
-buộc nằm trong cây tại MỌI bước**, kể cả bước xuất phát: từng bước đi lên/
-xuống/sang vợ chồng đều lọc `... in (select id from cay)`. Vì vậy nếu gốc
-(người tài khoản sở hữu) không thuộc cây, phép duyệt còn chưa bắt đầu được,
-kết quả rỗng — đây là **hệ quả tất yếu của thuật toán đúng**, không phải một
-lựa chọn còn phải cân nhắc.
+**Người không thuộc cây nào:** hợp lệ, không phải ca đặc biệt. Quản lý bằng danh
+sách ở `quantri.html`.
 
-Chú thích ngay trong mã (`luoc-do/27` dòng 186–188) nói thẳng: nhận gốc vô
-điều kiện — đúng như công thức "giao toàn cục" ở v2 ca 11 — từng là **lỗ
-hổng bảo mật đã vá** (`tree_members.person_id` trỏ sang người cây khác thì
-bị cấp nhầm quyền sửa người đó). Nên công thức của v2 không phải một phương
-án hợp lệ để chọn, mà là đúng ca đã biết là sai.
+**Quyền — giữ mô hình đang chạy:**
+- Năm vai: Quản trị hệ thống (`la_quan_tri_he_thong`) · Chủ cây
+  (`trees.chu_so_huu`, một tài khoản nhiều cây) · Quản trị gia phả (`quan_tri`)
+  · Sửa (`sua` + `pham_vi_sua()`) · Xem (`xem`). Thêm `sao_luu` và cờ
+  `duoc_tao_cay`. **Không dựng bảng vai mới.**
+- **Quản trị gia phả KHÔNG đổi vai người khác** — chỉ sửa + duyệt nội dung (mục 11).
+- Chỗ rối là **cách cài**: 16 hàm gác cửa quyền, nhiều hàm định nghĩa lại 2–5
+  lần ở các file SQL. Gom về một cửa — việc riêng, sau.
 
-⚠ Bản v2 mục 2.5, 3.2 viết "vẽ nốt cụt cho người ngoài Hàng rào 1", và mục
-1.2/ca 8 cho vùng biên có "thẻ riêng" — cả hai **ngược** với chốt trên, đọc
-bản v2 thì bỏ qua hai chỗ đó.
+**Cách làm đã phác (chưa duyệt):** `doc_cay()` trả thêm mảng `vanh_dai` TÁCH
+khỏi `persons` → `utils/graph.js` dựng map riêng cạnh `personById` →
+`pages/person-detail.js` tra map ấy để điền các dòng thẻ sẵn có.
+`bloodline.js`/`layout.js` chỉ đọc `personById` nên **không chạm `domains/`**.
+Bước 0: bàn thử SQL, hai cây giả chung một người, thẻ người ấy ở hai cây phải
+kể giống hệt nhau.
 
 ---
 

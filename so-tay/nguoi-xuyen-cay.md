@@ -82,12 +82,9 @@ RÀO*: cây (`tree_persons`) vẫn là ranh vẽ cứng; người ngoài cây c�
 (vùng biên) không có thẻ riêng, không vẽ, chỉ bổ sung dòng "vợ/con: …" vào thẻ
 người trong cây; kéo người vào cây chỉ kéo đúng một bản ghi; A–B đã có quan hệ
 thì khoá, sai thì gửi đề nghị chỉnh sửa cho QTHT duyệt; người không thuộc cây
-nào là trạng thái hợp lệ, quản lý ở `quantri.html`.
-
-Không còn điểm nào mở. (Từng tưởng có một điểm — "thành viên sở hữu người
-ngoài cây có sửa được phần giao không" — nhưng đó là hiểu sai thuật toán:
-`pham_vi_sua()` bó buộc phép duyệt nằm trong cây ở MỌI bước, không phải
-tính trực hệ toàn cục rồi giao; xem cuối mục 6.)
+nào là trạng thái hợp lệ, quản lý ở `quantri.html`. Trực hệ có hai nhánh
+riêng — vẽ (từ người trung tâm) và sửa (từ người tài khoản sở hữu, duyệt
+trong cây).
 
 ## Cách mở lại, theo thứ tự
 
