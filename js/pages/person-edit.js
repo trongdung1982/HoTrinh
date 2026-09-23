@@ -8,7 +8,7 @@
 //            xoa,anh}.js, pages/quan-tri/o-goi-y.js, state,
 //            domains/{person,union,validate,media,purge,render},
 //            services/repo, utils/{graph,text,date,image,avatar}, config
-// Phiên bản: 1.47.0 · Cập nhật: 23/09/2026 — bật lại ô kéo người xuyên cây
+// Phiên bản: 1.48.0 · Cập nhật: 24/09/2026 — ô "đã có trong hệ thống" lên đầu form
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/o-goi-y.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -655,8 +655,17 @@ function veCacO(nguoi) {
   // quan hệ. Nó quyết định nghĩa của mọi ô đứng dưới — ô quan hệ đẻ/nuôi nói
   // về CẶP nào, ô thứ bậc đếm theo những cặp nào — nên hỏi sau là bắt người ta
   // trả lời mấy câu rồi mới biết chúng nói về cái gì.
+  // Ô "đã có trong hệ thống chưa" (b124a) — ĐỨNG ĐẦU form ở ba chế độ mà chỗ
+  // nối đã rõ từ nút vừa bấm; ở Thêm con nó đứng ngay sau "Cha mẹ là ai?" (luật
+  // 13). Đổi 24/09/2026: trước đó nó nằm dưới cả khối hôn nhân, cách đầu hộp
+  // Thêm vợ/chồng 619px — trên điện thoại chủ dự án tưởng là không có ô
+  // (`../kiem-thu/kiem-o-da-co.mjs` đo vị trí).
+  const coODaCo = CAN_KEO_NGUOI_XUYEN_CAY && laCheDoThem();
+  if (coODaCo && N.cheDo !== 'themCon') ra.push(...khoiTimNguoiCoSan());
+
   if (N.cheDo === 'themCon') {
     ra.push(...khoiChonChaMe());
+    if (coODaCo) ra.push(...khoiTimNguoiCoSan());
     ra.push(veNhan('Quan hệ với cặp này'));
     ra.push(oQuanHeMoi('Quan hệ của người con với cặp này', 'con'));
   }
@@ -689,10 +698,6 @@ function veCacO(nguoi) {
     ra.push(veNhan('Ảnh'));
     ra.push(veKhoiAnh(nguoi.id, nguoi));
   }
-
-  // b124a — câu "đã có sẵn chưa" đứng NGAY TRÊN khối Tên, cùng lý lẽ với câu
-  // "nối vào đâu" ở luật 13: nó quyết định khối bên dưới còn nghĩa gì không.
-  if (CAN_KEO_NGUOI_XUYEN_CAY && laCheDoThem()) ra.push(...khoiTimNguoiCoSan());
 
   // Đánh dấu chỉ số ĐỂ BỌC LẠI phía dưới (b124a) — mọi phần tử từ đây tới hết
   // khối Ghi chú là "dữ liệu cá nhân", khoá lại khi đã chọn người có sẵn.
@@ -813,7 +818,7 @@ function veCacO(nguoi) {
 }
 
 /**
- * Ô "đã có trong phần mềm chưa" — b124a. Gõ tên hoặc mã, chọn một dòng thì
+ * Ô "đã có trong hệ thống chưa" — b124a. Gõ tên hoặc mã, chọn một dòng thì
  * `nguoiCoSanChon` được gán và khối Tên→Ghi chú khoá lại (`capNhatKhoaCaNhan`).
  * Không chọn gì thì mọi thứ chạy như trước — người MỚI, y hệt hôm qua.
  *
@@ -830,7 +835,7 @@ function khoiTimNguoiCoSan() {
   oNhap.type = 'text';
   oNhap.placeholder = 'Bỏ trống nếu là người mới — gõ tên hoặc mã để tìm người đã có';
   oNhap.style.cssText = KIEU_O;
-  oNhap.setAttribute('aria-label', 'Tìm người đã có trong phần mềm');
+  oNhap.setAttribute('aria-label', 'Tìm người đã có trong hệ thống');
 
   const the = document.createElement('div');
   let dangNap = false;   // đang đọc hồ sơ người vừa chọn
@@ -941,7 +946,7 @@ function khoiTimNguoiCoSan() {
   }
 
   boc.append(oNhap, the);
-  return [veNhan('Người này đã có trong phần mềm chưa?'), boc];
+  return [veNhan('Người này đã có trong hệ thống chưa?'), boc];
 }
 
 /**

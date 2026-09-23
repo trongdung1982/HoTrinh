@@ -1,9 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 23/09/2026 22:36 · Người xuyên cây **đã chốt thiết kế** (HAI HÀNG
-RÀO, `THIET-KE-NHIEU-CAY.md` mục 6) và **bước 0 đạt** trên bàn thử. Việc kế
-tiếp: **b127** — vùng biên cho thẻ thông tin (chủ dự án đồng ý). Sau đó
-**b126** — gắn người + dòng họ về Hồ sơ cá nhân.*
+*Cập nhật 24/09/2026 · b127a–c xong (`30`, `31` đã dán). Chủ dự án khẳng định
+**luật vẽ cũ sai** (hàng rào "cây = ranh vẽ cứng") — việc kế tiếp: **b128**
+chốt lại cách vẽ theo dữ liệu nền. Rồi b127d, b126.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -53,7 +52,7 @@ ngày 22/09 · `29` ngày 23/09; chủ dự án đọc lại bảng tự kiểm 
 ⚠ **Chưa rõ Staging từ `22` trở đi** — hỏi lại trước khi coi hai máy đồng bộ.
 
 **`30` (b127a) — ĐÃ DÁN lên THẬT 23/09**, chạy thành công.
-**`31` (b127c) — CHƯA DÁN.** Bàn thử 24/09 đạt 22/22.
+**`31` (b127c) — ĐÃ DÁN lên THẬT 24/09**: 2 trigger, 0 cặp trùng từ trước.
 
 ---
 
@@ -98,14 +97,33 @@ gắn tài khoản ↔ người là việc của b126 (Hồ sơ cá nhân), **b1
 b125a xong, chủ dự án bấm trên app thật cây 681 người: đọc nhanh, cuộn ngang
 gọn. ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
 
-### ⚠⚠ b127 — VÙNG BIÊN cho thẻ thông tin (chốt 23/09/2026) — LÀM TRƯỚC
+### ⚠⚠ b128 — LUẬT VẼ SAI, sửa theo dữ liệu nền (chủ dự án 24/09/2026) — LÀM TRƯỚC
 
-Người ngoài cây có dây nối vào chỉ điền dòng "vợ/con: …" trong thẻ, **không
-vẽ**. Luật: `THIET-KE-NHIEU-CAY.md` mục 6 · ba bước b127a–c + điểm dừng:
-`so-tay/nguoi-xuyen-cay.md` mục *Cách mở lại*. b127a (`30`, đã dán) và
-b127b (thẻ kể tên người vành đai) xong — chờ chủ dự án bấm cây `T388`.
-b127c (`31`, khoá quan hệ trùng) xong trên bàn thử, chờ dán. Kế tiếp
-**b127d** (đề nghị chỉnh sửa → QTHT duyệt) — chờ chủ dự án chốt tách.
+Chủ dự án: *"theo luật mới về dữ liệu nền bất biến thì luật vẽ cũ sai"* —
+**cần làm theo phương pháp chủ dự án đã đề xuất nhưng bị xếp lại.** ⚠ Chưa
+tìm thấy phương pháp ấy ghi thành mục riêng; câu gần nhất là lời 22/09 ở
+`so-tay/nguoi-xuyen-cay.md` (*"thêm người ở cây khác thì bấm người đó sẽ vẽ
+đủ mối quan hệ của họ"*). **Hỏi lại nguyên văn trước khi thiết kế.** Ảnh ở
+`../anh_supabase/` (ngoài repo). Bốn lỗi, cùng một phiên thiết kế rồi tách bước:
+
+| Lỗi | Ảnh | Thấy gì | Chạm |
+|---|---|---|---|
+| ① Hàng rào vẽ cứng | `loi_2_cay_1.png` · `loi_2_cay_2.png` | Thêm cha mẹ cho *lê thị vợ thử H9* ở cây 2 → cây 1 (trước đó đúng) vẽ chị dưới *lê tình thương* như con của cặp MỘT người: mẹ *Nguyễn Thị Hai b* không thuộc cây 1 nên nửa cặp bị cắt | `doc_cay` · `graph.js` · thiết kế mục 6 |
+| ② Nét cha mẹ → con gấp chữ Z | `loi_2_cay_2.png` | Điểm thả từ cặp cha mẹ không nằm trên khoảng các con (Nguyễn Văn Một → Nguyễn Thị Hai b; lê tình thương + Hai b → hai con) | `domains/layout.js` |
+| ③ Nốt lửng sai hướng | `not_lung.png` | Nốt của *lê tình thương* chĩa ngang vào em gái bên phải | `domains/layout.js` / `render.js` |
+| ④ Điện thoại: lề sơ đồ hẹp | (lời chủ dự án) | Người ở mép bị nút chức năng che | `pages/tree-view.js` |
+
+⚠ ②③ nằm trong `domains/` — luật "không sửa `domains/`" + `/kiem-tra` phép 9
+(bộ bất biến `../kiem-thu/` vẫn đo `giapha/js`). Phải có chủ dự án cho phép và
+trỏ bộ bất biến sang nhánh mới TRƯỚC khi sửa. Nhìn bằng mắt, đo trên cây 681.
+
+### ⚠⚠ b127 — VÙNG BIÊN cho thẻ thông tin (chốt 23/09/2026)
+
+b127a (`30`) · b127b (thẻ kể tên người vành đai — chờ chủ dự án bấm `T388`) ·
+b127c (`31`, khoá quan hệ trùng) **xong, đã dán**. ⚠ "Vùng biên không vẽ" là
+một nửa của hàng rào mà b128 đang xét lại. **b127d** (tách 24/09, chủ dự án
+đồng ý): đề nghị chỉnh sửa → QTHT duyệt · sửa/xoá quan hệ có một đầu ngoài
+cây → QTHT duyệt. Chi tiết: `so-tay/nguoi-xuyen-cay.md` mục *Cách mở lại*.
 
 ### ⚠⚠ b126 — GẮN NGƯỜI và DÒNG HỌ về HỒ SƠ CÁ NHÂN (chốt 23/09/2026)
 

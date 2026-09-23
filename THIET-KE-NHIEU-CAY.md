@@ -454,6 +454,12 @@ dư thời một cây, phải đọc từ chỗ khai mới này.
 
 ### ✓ CHỐT 23/09/2026 — HAI HÀNG RÀO (trả lời năm câu của `so-tay/nguoi-xuyen-cay.md`)
 
+> ⚠⚠ **24/09/2026 chủ dự án khẳng định phần VẼ của luật này SAI** — cây là
+> ranh vẽ cứng thì người xuyên cây bị vẽ nửa cặp (ảnh `loi_2_cay_*.png`).
+> Phần dữ liệu (một bản ghi, quan hệ dùng chung, khoá quan hệ trùng) vẫn giữ.
+> Cách vẽ đang xét lại ở **b128**, `KE-HOACH.md`. Đừng lấy hàng rào 1 làm
+> chuẩn khi đụng vẽ.
+
 **Nền: người + quan hệ là bất biến, duy nhất; cây là một tập hợp trên nền ấy.**
 
 | Hàng rào | Gồm ai | Luật |

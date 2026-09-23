@@ -101,8 +101,8 @@ trong cây).
    |---|---|---|
    | ✓ **b127a** | `luoc-do/30` — đo `../kiem-thu/ban-thu-sql/do-b127a.mjs` 37/37: cây 681 persons/unions/children/media không đổi một dòng, vành đai rỗng, 48→52 ms; người NPG đưa sang NTB có thẻ giống hệt | Đạt trên bàn thử 23/09 |
    | ✓ **b127b** | xem dưới bảng | Cây `T388`: thẻ đủ vợ/con; sơ đồ không đổi một nét — chờ chủ dự án bấm |
-   | ✓ **b127c** | `luoc-do/31` — hai trigger, đo `../kiem-thu/ban-thu-sql/do-b127c.mjs` 22/22 | Đạt trên bàn thử 24/09, chưa dán |
-   | **b127d** *(đề nghị tách 24/09, chờ chủ dự án chốt)* | ① **Đề nghị chỉnh sửa** quan hệ → QTHT duyệt (bảng mới + nút gửi + khu duyệt). ② Sửa/xoá quan hệ có MỘT ĐẦU NGOÀI cây đang mở → QTHT duyệt | — |
+   | ✓ **b127c** | `luoc-do/31` — hai trigger, đo `../kiem-thu/ban-thu-sql/do-b127c.mjs` 22/22 | Đã dán 24/09: 2 trigger, 0 cặp trùng |
+   | **b127d** *(tách 24/09, chủ dự án đồng ý)* | ① **Đề nghị chỉnh sửa** quan hệ → QTHT duyệt (bảng mới + nút gửi + khu duyệt). ② Sửa/xoá quan hệ có MỘT ĐẦU NGOÀI cây đang mở → QTHT duyệt | — |
    ✓ **b127c** 24/09 — A–B đã nối thẳng (vợ/chồng · cha mẹ–con) ở một hôn
    nhân sống thì không nối thêm ở hôn nhân khác. Gác bằng TRIGGER trên
    `unions` + `union_children` (không chép lại `luu_cay()`), lỗi `GP409` hint
