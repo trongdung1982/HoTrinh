@@ -1,9 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 23/09/2026 · Vừa xong **b124c** (tự duyệt nới hẹp, `29` đã dán) và
-**b125a** (bảng Danh sách người). Việc kế tiếp: **b126** — gắn người + dòng họ
-về Hồ sơ cá nhân. ⚠⚠ **NGƯỜI XUYÊN CÂY ĐÓNG BĂNG** (22/09): chưa chốt ranh
-giới cây thì không làm tiếp — `so-tay/nguoi-xuyen-cay.md`.*
+*Cập nhật 23/09/2026 22:36 · Người xuyên cây **đã chốt thiết kế** (HAI HÀNG
+RÀO, `THIET-KE-NHIEU-CAY.md` mục 6) và **bước 0 đạt** trên bàn thử. Việc kế
+tiếp: **b127** — vùng biên cho thẻ thông tin (chủ dự án đồng ý). Sau đó
+**b126** — gắn người + dòng họ về Hồ sơ cá nhân.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -103,12 +103,8 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 
 ⚠ Staging vẫn lệch thật tới khi dán `26`+`27`+`28` sang đó.
 
-**⚠⚠ b124a/b124b ĐÓNG BĂNG 22/09/2026.** Chủ dự án bấm thử: sửa ở cây này
-cây kia đổi theo (đúng), nhưng **thẻ gia đình lẫn lộn** — gốc là câu hỏi thiết
-kế *"người xuyên cây thì ranh giới cây còn cứng không"*, chưa ai trả lời. Ô
-kéo người cây khác đã TẮT (`CAN_KEO_NGUOI_XUYEN_CAY` trong `person-edit.js`);
-máy chủ giữ nguyên. Đã làm gì · năm câu phải chốt · cách mở lại · hai lỗ hôn
-nhân dùng chung · dữ liệu thử còn sót: **`so-tay/nguoi-xuyen-cay.md`**.
+**⚠ b124a/b124b vẫn TẮT** (`CAN_KEO_NGUOI_XUYEN_CAY`, `person-edit.js`) tới
+hết b127. Thứ tự mở lại · dữ liệu thử: **`so-tay/nguoi-xuyen-cay.md`**.
 
 **b124c XONG 23/09/2026** — `29` + `sb.laQuanTriCay()` + nới nút Duyệt. Luật,
 chỗ chưa với tới, điểm dừng: `so-tay/phan-quyen.md` mục *Nới hẹp tự duyệt*.
@@ -130,6 +126,12 @@ Chủ dự án chọn **bản đầy đủ**, nên chia bước:
 
 ⚠ **b125a chưa ai bấm trên máy chủ thật** — mới nhìn ảnh trang giả 60 người;
 cây 681 người mới là phép thử. ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
+
+### ⚠⚠ b127 — VÙNG BIÊN cho thẻ thông tin (chốt 23/09/2026) — LÀM TRƯỚC
+
+Người ngoài cây có dây nối vào chỉ điền dòng "vợ/con: …" trong thẻ, **không
+vẽ**. Luật: `THIET-KE-NHIEU-CAY.md` mục 6 · ba bước b127a–c + điểm dừng:
+`so-tay/nguoi-xuyen-cay.md` mục *Cách mở lại*. Bước 0 đã đạt.
 
 ### ⚠⚠ b126 — GẮN NGƯỜI và DÒNG HỌ về HỒ SƠ CÁ NHÂN (chốt 23/09/2026)
 

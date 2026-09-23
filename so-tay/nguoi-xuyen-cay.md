@@ -1,7 +1,7 @@
 # Sổ tay — NGƯỜI XUYÊN CÂY (một người nằm ở nhiều cây)
 
-*Lập 22/09/2026. ⚠⚠ **ĐÓNG BĂNG từ 22/09/2026** — đọc hết file này trước khi
-đụng lại bất cứ thứ gì về kéo người, báo trùng, gộp người giữa các cây.*
+*Lập 22/09/2026. Đóng băng 22/09, **thiết kế chốt 23/09** — ô kéo người vẫn
+tắt tới hết b127. Đọc hết file này trước khi đụng kéo người, báo trùng, gộp.*
 
 ## Trạng thái hôm nay — tóm một dòng
 
@@ -88,12 +88,21 @@ trong cây).
 
 ## Cách mở lại, theo thứ tự
 
-1. Chốt năm câu trên với chủ dự án; ghi vào `THIET-KE-NHIEU-CAY.md` mục 6.
-2. **Phép thử nhỏ trước** (CLAUDE.md mục 8): dựng hai cây giả chung một người
-   trên bàn thử SQL (`../kiem-thu/ban-thu-sql/`, nếp `do-b124a.mjs`), vẽ thẻ gia
-   đình của người ấy ở cả hai cây, **nhìn bằng mắt** — và đo thêm trên cây 681.
-3. Sửa `doc_cay()` / tầng vẽ theo câu trả lời. ⚠ Chạm `domains/` là phải hỏi
-   (`CHI-DAN.md` điều 1).
+1. ✓ Chốt năm câu — 23/09/2026.
+2. ✓ Phép thử nhỏ — 23/09/2026, đạt 11/11:
+   `../kiem-thu/ban-thu-sql/do-buoc0-vanh-dai.mjs`. Nó cũng tái hiện đúng hai
+   lỗi của `doc_cay()` hôm nay (con rỗng · hôn nhân thiếu một nửa). ⚠ Chưa đo
+   trên cây 681 — việc của b127a.
+   ⚠ Bẫy khi đo `doc_cay()` thật: nó gọi `co_the_xem_cay()`, nên phải có dòng
+   `tree_members` + `set local role authenticated`; và `select set_config(...)`
+   tự in ra một dòng JSON — lấy dòng `{` **cuối**, không phải dòng đầu.
+3. **b127**, một phiên một bước. Không chạm `domains/`.
+
+   | Bước | Việc | Điểm dừng |
+   |---|---|---|
+   | **b127a** | `doc_cay()` trả thêm `vanh_dai`, thôi cắt cạnh con — `luoc-do/30`; chép `doc_cay_thu()` ở `../kiem-thu/ban-thu-sql/thu-vanh-dai.sql`, đừng viết lại. Đo cả cây 681 | Bàn thử: thẻ một người ở hai cây giống hệt |
+   | **b127b** | `sb.js` · `hinh-dang.js` · `utils/graph.js` map riêng · `person-detail.js` tra map ấy | Cây `T388` (còn người kéo từ `TH957`): thẻ đủ vợ/con; sơ đồ không đổi một nét |
+   | **b127c** | Chặn khai nhầm ở `luu_cay()`: A–B đã có quan hệ thì khoá; đề nghị chỉnh sửa → QTHT duyệt | Khai quan hệ thứ hai cho một cặp → bị chặn |
 4. Mới bật `CAN_KEO_NGUOI_XUYEN_CAY = true` trong `person-edit.js`. Bật trước
    bước 3 là tái hiện đúng lỗi 22/09.
 5. b124b (Báo trùng + gộp) đi sau cùng — gộp hai người là đổ hai nhánh vào nhau,
