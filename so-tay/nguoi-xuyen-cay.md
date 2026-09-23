@@ -84,9 +84,10 @@ người trong cây; kéo người vào cây chỉ kéo đúng một bản ghi; 
 thì khoá, sai thì gửi đề nghị chỉnh sửa cho QTHT duyệt; người không thuộc cây
 nào là trạng thái hợp lệ, quản lý ở `quantri.html`.
 
-**Một điểm mở MỚI** (khác 5 câu cũ): thành viên sở hữu người p ngoài cây T có
-sửa được phần giao (trực hệ p ∩ thành viên T) như v2 ca 11 hay giữ chặn như
-bài học b122a — xem cuối mục 6.
+Không còn điểm nào mở. (Từng tưởng có một điểm — "thành viên sở hữu người
+ngoài cây có sửa được phần giao không" — nhưng đó là hiểu sai thuật toán:
+`pham_vi_sua()` bó buộc phép duyệt nằm trong cây ở MỌI bước, không phải
+tính trực hệ toàn cục rồi giao; xem cuối mục 6.)
 
 ## Cách mở lại, theo thứ tự
 

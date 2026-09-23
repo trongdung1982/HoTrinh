@@ -509,22 +509,20 @@ hình mới, không có thẻ mới. `bloodline.js`/`layout.js` chỉ đọc `pe
 nên **không chạm `domains/`**. Bước 0: bàn thử SQL, hai cây giả chung một
 người, thẻ của người ấy ở hai cây phải kể giống hệt nhau.
 
-**Điểm này KHÔNG tự đóng được — số đo thật khác lời v2.** Chủ dự án cho là
-thừa vì "Hàng rào 1 đã quy định quyền", nhưng bài học b122a
-(`so-tay/phan-quyen.md`) ghi rõ hành vi ĐANG CHẠY khác công thức
-`TrựcHệ(sở_hữu) ∩ Members(T)`:
+**KHÔNG có điểm nào mở — công thức "giao" tôi chép từ v2 mô tả sai thuật
+toán thật, đã sửa lại cho đúng.** `pham_vi_sua()` (`luoc-do/27`, hàm CTE đệ
+quy) không tính trực hệ toàn cục rồi mới giao với cây — phép duyệt **bị bó
+buộc nằm trong cây tại MỌI bước**, kể cả bước xuất phát: từng bước đi lên/
+xuống/sang vợ chồng đều lọc `... in (select id from cay)`. Vì vậy nếu gốc
+(người tài khoản sở hữu) không thuộc cây, phép duyệt còn chưa bắt đầu được,
+kết quả rỗng — đây là **hệ quả tất yếu của thuật toán đúng**, không phải một
+lựa chọn còn phải cân nhắc.
 
-- **App hôm nay (từ `luoc-do/27`):** gốc (người mình sở hữu) nằm NGOÀI cây T
-  → `pham_vi_sua(gà, T)` trả **rỗng toàn bộ** — không xét trực hệ có giao với
-  T hay không.
-- **Công thức `TrựcHệ(sở_hữu) ∩ Members(T)`** (v2 ca 11 và bản chốt phía
-  trên): vẫn tính ra phần giao, có thể KHÔNG rỗng, dù gốc nằm ngoài T.
-
-Hai cái cho kết quả khác nhau đúng ở ca "gốc ngoài cây nhưng trực hệ có giao
-với cây". Đây từng là chỗ vá lỗi thật (khoá ngoại `tree_id`/`person_id` bị
-bỏ ở `26`, chữa ở `27`) — không thể gọi là câu hỏi thừa. **Cần chốt lại:**
-giữ luật rỗng-nếu-gốc-ngoài-cây như hôm nay, hay đổi sang công thức giao như
-v2.
+Chú thích ngay trong mã (`luoc-do/27` dòng 186–188) nói thẳng: nhận gốc vô
+điều kiện — đúng như công thức "giao toàn cục" ở v2 ca 11 — từng là **lỗ
+hổng bảo mật đã vá** (`tree_members.person_id` trỏ sang người cây khác thì
+bị cấp nhầm quyền sửa người đó). Nên công thức của v2 không phải một phương
+án hợp lệ để chọn, mà là đúng ca đã biết là sai.
 
 ⚠ Bản v2 mục 2.5, 3.2 viết "vẽ nốt cụt cho người ngoài Hàng rào 1", và mục
 1.2/ca 8 cho vùng biên có "thẻ riêng" — cả hai **ngược** với chốt trên, đọc
