@@ -77,9 +77,16 @@ Ghi câu trả lời vào `THIET-KE-NHIEU-CAY.md` mục 6, rồi mới mở phi�
 5. **Kéo một người vào = kéo gì theo?** Chỉ người ấy, hay tự thêm cả cha mẹ/
    vợ/con vào `tree_persons` của cây mới?
 
-✓ **Câu 1–3 đã chốt 23/09/2026** — `THIET-KE-NHIEU-CAY.md` mục 6, *HAI HÀNG
+✓ **Cả năm câu đã chốt 23/09/2026** — `THIET-KE-NHIEU-CAY.md` mục 6, *HAI HÀNG
 RÀO*: cây (`tree_persons`) vẫn là ranh vẽ cứng; người ngoài cây có dây nối vào
-chỉ hiện ở **thẻ thông tin**, không vẽ. Câu 4, 5 **còn mở**.
+(vùng biên) không có thẻ riêng, không vẽ, chỉ bổ sung dòng "vợ/con: …" vào thẻ
+người trong cây; kéo người vào cây chỉ kéo đúng một bản ghi; A–B đã có quan hệ
+thì khoá, sai thì gửi đề nghị chỉnh sửa cho QTHT duyệt; người không thuộc cây
+nào là trạng thái hợp lệ, quản lý ở `quantri.html`.
+
+**Một điểm mở MỚI** (khác 5 câu cũ): thành viên sở hữu người p ngoài cây T có
+sửa được phần giao (trực hệ p ∩ thành viên T) như v2 ca 11 hay giữ chặn như
+bài học b122a — xem cuối mục 6.
 
 ## Cách mở lại, theo thứ tự
 
