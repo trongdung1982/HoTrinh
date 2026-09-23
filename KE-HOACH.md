@@ -61,6 +61,8 @@ nào.** `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
 ngày 22/09 · `29` ngày 23/09; chủ dự án đọc lại bảng tự kiểm từng lần).
 ⚠ **Chưa rõ Staging từ `22` trở đi** — hỏi lại trước khi coi hai máy đồng bộ.
 
+**`30` (b127a) — CHƯA DÁN.** Đo trên bàn thử 23/09 đạt 37/37, gồm cây 681.
+
 ---
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
@@ -108,7 +110,8 @@ gọn. ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
 
 Người ngoài cây có dây nối vào chỉ điền dòng "vợ/con: …" trong thẻ, **không
 vẽ**. Luật: `THIET-KE-NHIEU-CAY.md` mục 6 · ba bước b127a–c + điểm dừng:
-`so-tay/nguoi-xuyen-cay.md` mục *Cách mở lại*. Bước 0 đã đạt.
+`so-tay/nguoi-xuyen-cay.md` mục *Cách mở lại*. Bước 0 và b127a (`30`, bàn
+thử) đã đạt — kế tiếp **b127b**.
 
 ### ⚠⚠ b126 — GẮN NGƯỜI và DÒNG HỌ về HỒ SƠ CÁ NHÂN (chốt 23/09/2026)
 

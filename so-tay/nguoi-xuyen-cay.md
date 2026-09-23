@@ -91,8 +91,7 @@ trong cây).
 1. ✓ Chốt năm câu — 23/09/2026.
 2. ✓ Phép thử nhỏ — 23/09/2026, đạt 11/11:
    `../kiem-thu/ban-thu-sql/do-buoc0-vanh-dai.mjs`. Nó cũng tái hiện đúng hai
-   lỗi của `doc_cay()` hôm nay (con rỗng · hôn nhân thiếu một nửa). ⚠ Chưa đo
-   trên cây 681 — việc của b127a.
+   lỗi của `doc_cay()` hôm nay (con rỗng · hôn nhân thiếu một nửa).
    ⚠ Bẫy khi đo `doc_cay()` thật: nó gọi `co_the_xem_cay()`, nên phải có dòng
    `tree_members` + `set local role authenticated`; và `select set_config(...)`
    tự in ra một dòng JSON — lấy dòng `{` **cuối**, không phải dòng đầu.
@@ -100,9 +99,15 @@ trong cây).
 
    | Bước | Việc | Điểm dừng |
    |---|---|---|
-   | **b127a** | `doc_cay()` trả thêm `vanh_dai`, thôi cắt cạnh con — `luoc-do/30`; chép `doc_cay_thu()` ở `../kiem-thu/ban-thu-sql/thu-vanh-dai.sql`, đừng viết lại. Đo cả cây 681 | Bàn thử: thẻ một người ở hai cây giống hệt |
+   | ✓ **b127a** | `luoc-do/30` — đo `../kiem-thu/ban-thu-sql/do-b127a.mjs` 37/37: cây 681 persons/unions/children/media không đổi một dòng, vành đai rỗng, 48→52 ms; người NPG đưa sang NTB có thẻ giống hệt | Đạt trên bàn thử 23/09 |
    | **b127b** | `sb.js` · `hinh-dang.js` · `utils/graph.js` map riêng · `person-detail.js` tra map ấy | Cây `T388` (còn người kéo từ `TH957`): thẻ đủ vợ/con; sơ đồ không đổi một nét |
    | **b127c** | Chặn khai nhầm ở `luu_cay()`: A–B đã có quan hệ thì khoá; đề nghị chỉnh sửa → QTHT duyệt | Khai quan hệ thứ hai cho một cặp → bị chặn |
+   ⚠ Hai điều b127b phải biết, đo ở b127a:
+   - `vanh_dai` kéo theo cả **anh chị em** của người xuyên cây (con của hôn
+     nhân cha mẹ họ) — thẻ không có dòng anh chị em nên không dùng tới.
+   - `reorderChildren()` (`domains/union.js`) đòi đủ hoán vị các con; màn
+     *Sắp thứ tự con* chỉ đưa con trong cây thì cặp có con ở vành đai sẽ
+     **từ chối sắp** (không mất dữ liệu). Đưa cả con vành đai vào danh sách.
 4. Mới bật `CAN_KEO_NGUOI_XUYEN_CAY = true` trong `person-edit.js`. Bật trước
    bước 3 là tái hiện đúng lỗi 22/09.
 5. b124b (Báo trùng + gộp) đi sau cùng — gộp hai người là đổ hai nhánh vào nhau,
