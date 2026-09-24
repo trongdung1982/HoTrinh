@@ -6,7 +6,7 @@
 //            utils/{text,glyph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
 //            backup,chon-gia-pha,import-export,export-image}
-// Phiên bản: 1.39.0 · Cập nhật: 24/09/2026 21:10 (b128b ④ lề chừa cột nút)
+// Phiên bản: 1.39.0 · Cập nhật: 24/09/2026 20:55 (b128b ④ lề chừa cột nút)
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục)
 // ============================================================
 //
