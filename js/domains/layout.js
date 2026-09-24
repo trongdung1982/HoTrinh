@@ -3,7 +3,7 @@
 // Vai trò  : Tính TOẠ ĐỘ các ô người, đường nối và nốt cụt. Không vẽ gì cả.
 // Lớp      : domains — HÀM THUẦN. Không gọi services, không chạm DOM.
 // Phụ thuộc: config (LAYOUT, PHOTO)
-// Phiên bản: 1.20.0 · Cập nhật: 24/09/2026 22:10
+// Phiên bản: 1.20.1 · Cập nhật: 25/09/2026 06:30
 // ⚠ b128b: HAI cách xếp nằm cạnh nhau — cũ `datMoiKhoi()` + bốn lượt vá, mới
 //   `datBaKhoi()` (mục 4b). Chọn bằng `LAYOUT.xepBaKhoi` / `tuyChon.baKhoi`.
 // Sổ tay   : so-tay/ve-so-do.md
@@ -2669,7 +2669,17 @@ function viTriNotCut(ct, treoCua, sp, nut) {
 
   const thieuBanDoi = thieuBanDoiCua(ct, sp.unionId);
 
-  if (thieuBanDoi || !u) {
+  // ⚠ Hôn nhân MỘT NGƯỜI mà mọi con đều ẩn thì không có trong `unionHT` (không
+  // còn gì để nối) — `!u` ở đây KHÔNG có nghĩa là thiếu bạn đời. Nốt mọc theo
+  // hướng sơ đồ sẽ vẽ tiếp: thiếu con thì XUỐNG (ca P0413 Nguyễn Trọng Chính,
+  // U0182, cây 681, 25/09/2026 — trước đó mọc ngang như thiếu vợ).
+  if (!u && !thieuBanDoi) {
+    const x = nut.x + RONG / 2;
+    const yDay = nut.y + CAO + LAYOUT.vGap - LAYOUT.stubRadius - 2;
+    return { x, y: yDay, x1: x, y1: nut.y + CAO, angle: 90 };
+  }
+
+  if (thieuBanDoi) {
     // HAI thứ phải đúng cùng lúc, thiếu một là nốt tròn nằm đè lên ô người
     // bên cạnh (16/08/2026, chat 1.4 — đo được 14/120 nốt hỏng, đúng bằng
     // TOÀN BỘ số nốt nằm ngang; sáu bất biến của chat 1.3 chỉ xét ô với ô nên

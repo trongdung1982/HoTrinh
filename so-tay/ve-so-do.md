@@ -27,6 +27,12 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
   lấy chính con trai bà (U0108, U0109). Không cách xếp nào cho điểm thả nằm
   trong khoảng hai cô. Còn chờ chủ dự án sửa dữ liệu — đừng vá bằng mã.
 
+- **Nốt cụt mọc sai hướng** — P0413 (U0182, hôn nhân chỉ một mình ông, con
+  ẩn): mọc NGANG như thiếu vợ. Luật chủ dự án: nốt mọc theo hướng sơ đồ sẽ vẽ
+  tiếp khi bấm người ấy làm trung tâm. Gốc: union một người hết con hiển thị
+  thì không có trong `unionHT`, và `viTriNotCut()` đọc `!u` thành "thiếu bạn
+  đời". Nay chỉ `thieuBanDoiCua()` mới cho mọc ngang (áp cả hai cách xếp).
+
 ## Vì sao làm thế này
 - Khối tính TỪ DƯỚI LÊN, mỗi khối trả điểm nối cạnh dưới (`noi`) → khối trên
   chỉ việc căn theo, không cần lượt vá sau (thuật toán chủ dự án tả, b128b).
