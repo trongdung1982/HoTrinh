@@ -2,11 +2,10 @@
 
 *Cập nhật 24/09/2026 · b128a xong, `32` đã dán. Chủ dự án chốt lại:
 **hàng rào 1 là RÀO THÉP** cho cả vẽ lẫn sửa — dòng "luật vẽ cũ sai" hôm trước
-là đọc sai. b128b: ④ xong, ③ hết nhờ b128a, ② đã đo ra gốc. Kế tiếp:
-b128b-2 (dựng `datBaKhoi()` mới). b128a đã bấm đạt. Rồi b127d, b126.*
+là đọc sai. b128b-2 xong (24/09 22:10): `datBaKhoi()` dựng cạnh cách cũ,
+công tắc `LAYOUT.xepBaKhoi` còn TẮT. Kế tiếp: b128b-3. Rồi b127d, b126.*
 
-⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
-thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
+⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
 **đừng nới trần**. Ba luật giữ nó gọn:
 
 1. **Xong rồi thì xoá khỏi đây.** Việc đã làm nằm ở lời commit (`git log`).
@@ -115,12 +114,13 @@ lớn; vẽ xong mỗi khối biết chính xác điểm nối ở cạnh dướ
 `chiMucVe()` (ảnh chụp trước b128a) · ✓ bộ bất biến đo nhánh này:
 `node --import ./sang-supabase.mjs chay.mjs` (`../kiem-thu/`).
 **②** — đo `../kiem-thu/do-b128b.mjs [đời]`. Chùm MỘT con gãy khuỷu là CỐ Ý
-(nhóm 9b). Lỗi thật: chùm ≥2 con thả ngoài khoảng con — cây 59: 0 · cây 681:
-4 cặp. Gốc `layout.js:1306` bỏ dở khi dời con sẽ đè ô. Cùng gốc, xấu hơn:
-`../kiem-thu/b128b-p0185.png` — trung tâm mép trái, cha mẹ mép phải.
-**Chia bước:** b128b-2 dựng `datBaKhoi()` mới cạnh cái cũ (khối từ dưới lên,
-trả điểm nối cạnh dưới) · b128b-3 so hai bản 59 + 681 × mọi trung tâm, nhìn
-ảnh · b128b-4 thay hẳn, xoá đường vá.
+(nhóm 9b). Gốc thật + cách chữa: `layout.js` mục 4b.
+**✓ b128b-2 (24/09):** `datBaKhoi()` — ② còn U0180 = **LỖI DỮ LIỆU** (Hạt,
+Thu ghi là con bà Hồi mà lấy con trai bà: U0108, U0109) — hỏi chủ dự án.
+Bất biến ĐẠT cả hai cách. Công cụ ở `../kiem-thu/`: `ba-khoi.mjs` (móc
+`--import`) · `so-b128b.mjs [đời]` · `xem-b128b.mjs <cây> <tâm> <đời> cu|moi`.
+**Còn:** b128b-3 chủ dự án xem ảnh, so 59 + 681 × mọi trung tâm · b128b-4
+bật hẳn, xoá `datMoiKhoi` + bốn lượt vá + công tắc.
 
 ### ⚠ b127d — ĐỀ NGHỊ CHỈNH SỬA quan hệ → QTHT duyệt (tách 24/09/2026)
 

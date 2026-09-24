@@ -3,9 +3,7 @@
 // Vai trò  : Hằng số hiển thị phía trình duyệt.
 // Lớp      : config — không gọi file nào khác
 // Phụ thuộc: (không)
-// Phiên bản: 0.21.1 · Cập nhật: 21/09/2026 21:05 (b123 — vai `sua` gọi là
-//            "Thành viên" ở MỌI màn hình, chủ dự án chốt; trước đây Cài đặt
-//            ghi "Thành viên họ tộc" còn Quản trị ghi "Thành viên")
+// Phiên bản: 0.22.0 · Cập nhật: 24/09/2026 22:10
 // ============================================================
 //
 // LƯU Ý: file này KHÔNG phải nơi bạn điền cấu hình. Mọi thứ cần điền nằm ở
@@ -414,6 +412,11 @@ export const LAYOUT = {
   // Cách ngang giữa hai KHỐI gốc rời nhau (hai gia đình không nối với nhau
   // trong cùng một sơ đồ). Rộng hơn hGap để mắt tách được hai khối.
   blockGap:    56,
+
+  // b128b — cách xếp BA KHỐI (`datBaKhoi()` trong layout.js), đặt cạnh cách
+  // cũ để so. `false` = app vẽ bằng cách cũ. Bộ kiểm bật nó bằng
+  // `kiem-thu/ba-khoi.mjs`. Bỏ công tắc này ở b128b-4, khi cách cũ bị xoá.
+  xepBaKhoi:   false,
 };
 
 // Bốn con số điều khiển tập người được vẽ. Xem KE-HOACH_V08.

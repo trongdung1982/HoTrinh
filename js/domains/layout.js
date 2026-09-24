@@ -3,7 +3,9 @@
 // Vai trò  : Tính TOẠ ĐỘ các ô người, đường nối và nốt cụt. Không vẽ gì cả.
 // Lớp      : domains — HÀM THUẦN. Không gọi services, không chạm DOM.
 // Phụ thuộc: config (LAYOUT, PHOTO)
-// Phiên bản: 1.19.0 · Cập nhật: 02/09/2026 (bước 86b — luật BA KHỐI là luật ĐỆ QUY: mỗi cặp đứng giữa hai khối tổ tiên của mình)
+// Phiên bản: 1.20.0 · Cập nhật: 24/09/2026 22:10
+// ⚠ b128b: HAI cách xếp nằm cạnh nhau — cũ `datMoiKhoi()` + bốn lượt vá, mới
+//   `datBaKhoi()` (mục 4b). Chọn bằng `LAYOUT.xepBaKhoi` / `tuyChon.baKhoi`.
 // ============================================================
 //
 // Tách khỏi render.js có chủ ý: chỉnh giao diện (màu, phông, bo góc) không
@@ -183,11 +185,17 @@ export function computeLayout(index, focusPersonId, visibleSet, scope, stubPoint
 
   ganMucDoi(ct);
   hapThuCapTrongHo(ct);            // PHẢI sau ganMucDoi — nó cần biết đời
-  const viTriX = datMoiKhoi(ct);
-  keoKhoiVeGanBanDoi(ct, viTriX);
-  canChumConVaoGiua(ct, viTriX);
-  keoKhoiPhuVeGanCon(ct, viTriX);
-  canCapVaoGiuaOngBa(ct, viTriX);
+  const baKhoi = (tuyChon && tuyChon.baKhoi !== undefined) ? !!tuyChon.baKhoi : !!LAYOUT.xepBaKhoi;
+  let viTriX;
+  if (baKhoi) {
+    viTriX = datBaKhoi(ct);
+  } else {
+    viTriX = datMoiKhoi(ct);
+    keoKhoiVeGanBanDoi(ct, viTriX);
+    canChumConVaoGiua(ct, viTriX);
+    keoKhoiPhuVeGanCon(ct, viTriX);
+    canCapVaoGiuaOngBa(ct, viTriX);
+  }
 
   const nodes = [];
   const nodeById = new Map();
@@ -1698,6 +1706,477 @@ function deLenNhau(ct, viTriX, cum, d) {
     }
   }
   return false;
+}
+
+// ============================================================
+// 4b · BA KHỐI — cách xếp MỚI (b128b), nằm cạnh cách cũ để so
+// ============================================================
+//
+// Thuật toán chủ dự án tả (KE-HOACH b128b): từ người trung tâm truy lên.
+//   khối 3 · dải cha mẹ + anh chị em + con cháu người trung tâm — `khoiDuoi()`
+//   khối 1 · tổ tiên bên cha, khối 2 · tổ tiên bên mẹ           — `khoiTren()`
+// và luật ấy ĐỆ QUY: quanh mỗi cặp tổ tiên lại có hai khối tổ tiên của hai
+// người. Khối tính TỪ DƯỚI LÊN, xong khối nào biết ngay điểm nối cạnh dưới
+// (`noi`) — khối trên chỉ việc căn theo điểm ấy, không cần lượt vá nào sau.
+//
+// Khác cách cũ ở hai chỗ, cả hai đều đã đo ra lỗi thật:
+//
+// 1. **Ghép khối theo VIỀN TỪNG HÀNG, không theo bao hình chữ nhật.** Bao hình
+//    làm người trung tâm P0185 (cây 681) văng ra mép trái, cha mẹ ở mép phải:
+//    người anh có cả đàn cháu chắt rộng 1.600px, và cả khối ấy — kể cả những
+//    hàng người trung tâm không hề đứng — chắn chỗ của cô.
+// 2. **Dải NHIỀU BẠN ĐỜI được giãn ra khi cần.** Hai khe liền nhau cách 136px,
+//    hai đàn con kề nhau cách ít nhất 148px, nên KHÔNG THỂ để cả hai điểm thả
+//    nằm trong đàn con của mình — 4 cặp lệch trên cây 681 (U0064 · U0071 ·
+//    U0074 · U0180) đều là ca này, không phải lỗi dời con ở `canChumConVaoGiua`.
+//    Giãn đúng phần thiếu (thường 12px) — xem `xepDai()`.
+//
+// Khối = { items:[{id,x}], vien: Map(đời → [trái, phải]), + các mốc x }.
+// Mọi toạ độ tương đối cho tới khi ghép xong; `dich()` dời cả khối lẫn mốc.
+
+const MOC_KHOI = ['neoX', 'noi', 'mepTrai', 'mepPhai'];
+
+function khoiRong() { return { items: [], vien: new Map() }; }
+
+function themVien(vien, m, lo, hi) {
+  const v = vien.get(m);
+  if (!v) vien.set(m, [lo, hi]);
+  else { if (lo < v[0]) v[0] = lo; if (hi > v[1]) v[1] = hi; }
+}
+
+function themO(ct, k, id, x) {
+  k.items.push({ id, x });
+  themVien(k.vien, ct.muc.get(id), x, x + RONG);
+}
+
+function dich(k, d) {
+  if (!d) return;
+  for (const it of k.items) it.x += d;
+  for (const v of k.vien.values()) { v[0] += d; v[1] += d; }
+  for (const m of MOC_KHOI) if (typeof k[m] === 'number') k[m] += d;
+}
+
+function gop(vao, k) {
+  for (const it of k.items) vao.items.push(it);
+  for (const [m, [lo, hi]] of k.vien) themVien(vao.vien, m, lo, hi);
+}
+
+/**
+ * Khối `phai` phải dời ÍT NHẤT bao nhiêu để đứng bên phải khối `trai`, cách
+ * `khe` ở MỌI hàng hai khối cùng có. Không chung hàng nào → `-Infinity`.
+ */
+function canhPhai(vTrai, vPhai, khe) {
+  let d = -Infinity;
+  for (const [m, v] of vTrai) {
+    const p = vPhai.get(m);
+    if (p) d = Math.max(d, v[1] + khe - p[0]);
+  }
+  return d;
+}
+
+function mepCua(k, phai) {
+  let x = phai ? -Infinity : Infinity;
+  for (const v of k.vien.values()) x = phai ? Math.max(x, v[1]) : Math.min(x, v[0]);
+  return x;
+}
+
+/**
+ * Xếp các khối con từ trái sang phải, khít theo viền. `tamTruoc` giữ thứ tự
+ * người neo: khối sau không bao giờ chui sang trái khối trước, kể cả khi hai
+ * khối không chung hàng nào (con bị đẩy xuống đời sâu hơn).
+ */
+function xepKhit(ds, khe) {
+  const acc = khoiRong();
+  let tamTruoc = -Infinity;
+  for (const k of ds) {
+    let d = 0;
+    if (acc.items.length) {
+      d = canhPhai(acc.vien, k.vien, khe);
+      if (!Number.isFinite(d)) d = mepCua(acc, true) + khe - mepCua(k, false);
+      if (typeof k.neoX === 'number') d = Math.max(d, tamTruoc + RONG + khe - k.neoX);
+    }
+    dich(k, d);
+    gop(acc, k);
+    if (typeof k.neoX === 'number') tamTruoc = k.neoX;
+  }
+  return acc;
+}
+
+/**
+ * KHỐI CON CHÁU của một dải: dải + mọi hậu duệ nó đặt chỗ. Cùng đường đi với
+ * `datCum()` (chung `daDat`, bỏ `roiChoCha`), khác ở cách ghép và ở dải nhiều
+ * bạn đời. Trả `null` nếu người này đã đứng chỗ khác.
+ */
+function khoiDuoi(ct, neoId) {
+  if (ct.daDat.has(neoId)) return null;
+  ct.daDat.add(neoId);
+  const dai = layDai(ct, neoId);
+  for (const id of dai.dx.keys()) ct.daDat.add(id);
+
+  // Ô của dải theo thứ tự trái → phải, và khe của mỗi union nằm ở đâu:
+  // `{khe: j}` = giữa ô j và ô j+1 · `{o: j}` = tâm ô j (union không có bạn
+  // đời trong dải).
+  const oX = [...dai.dx.keys()].sort((a, b) => dai.dx.get(a) - dai.dx.get(b));
+  const p0 = oX.map((id) => dai.dx.get(id));
+  const viTriKhe = new Map();
+  const dsUnion = [...dai.thuTuUnion];
+  for (const uid of dsUnion) {
+    const bd = dai.banDoi.find((b) => b.unionId === uid);
+    if (!bd) { viTriKhe.set(uid, { o: oX.indexOf(neoId) }); continue; }
+    const j = oX.indexOf(bd.spouseId);
+    viTriKhe.set(uid, { khe: dai.huong > 0 ? j - 1 : j });
+  }
+  // Union RIÊNG của người được hấp thụ (U0180: bà P0313 có con ghi một mình
+  // bà) cũng thuộc dải này — thả từ tâm ô bà, như `dungDiemTreo()` kiểu 'don'.
+  // Cách cũ bỏ sót, đàn con rơi vào lưới an toàn và đứng lạc tít bên phải.
+  for (const id of oX) {
+    if (id === neoId) continue;
+    for (const uid of ct.unionLamVo.get(id) || []) {
+      if (viTriKhe.has(uid) || !ct.unionHT.get(uid).partners.every((p) => dai.dx.has(p))) continue;
+      dsUnion.push(uid);
+      viTriKhe.set(uid, { o: oX.indexOf(id) });
+    }
+  }
+  const kheTu = (p, uid) => {
+    const v = viTriKhe.get(uid);
+    return v.khe !== undefined ? (p[v.khe] + RONG + p[v.khe + 1]) / 2 : p[v.o] + RONG / 2;
+  };
+
+  const chum = [];
+  dsUnion.forEach((uid, i) => {
+    const khoi = [];
+    for (const c of ct.unionHT.get(uid).children) {
+      if (ct.unionSoHuu.get(c.personId) !== uid) continue;   // bộ cha mẹ kia đặt chỗ
+      if (ct.roiChoCha.has(c.personId)) continue;            // theo bạn đời sang dải khác (b81)
+      const k = khoiDuoi(ct, c.personId);
+      if (k) { k.conId = c.personId; khoi.push(k); }
+    }
+    if (khoi.length) chum.push({ unionId: uid, khoi, goc: kheTu(p0, uid), i: dai.huong > 0 ? i : -i });
+  });
+
+  const kq = khoiRong();
+  if (chum.length === 0) {
+    oX.forEach((id, j) => themO(ct, kq, id, p0[j]));
+    kq.neoX = dai.dxP + RONG / 2;
+    return kq;
+  }
+
+  // Chùm con theo thứ tự khe trái → phải — nét treo con của bà thứ không bắc
+  // chéo qua nét treo con của bà cả.
+  chum.sort((a, b) => (a.goc - b.goc) || (a.i - b.i));
+  const dsKhoi = [];
+  for (const c of chum) for (const k of c.khoi) dsKhoi.push(k);
+  gop(kq, xepKhit(dsKhoi, LAYOUT.hGap));
+  for (const c of chum) {
+    c.lo = c.khoi[0].neoX;
+    c.hi = c.khoi[c.khoi.length - 1].neoX;
+    c.tam = (c.lo + c.hi) / 2;
+    const ids = [];
+    for (const k of c.khoi) for (const it of k.items) ids.push(it.id);
+    ct.cumCon.set(c.unionId, ids);
+  }
+
+  let p;
+  const dau = chum[0], cuoi = chum[chum.length - 1];
+  if (chum.length === 1 && dau.khoi.length === 1) {
+    // Một người con: CĂN MÉP về phía đối diện bạn đời của con (b85e), không
+    // có bạn đời thì con đứng dưới người neo (b85b) — y như `datCum()`.
+    const phia = phiaBanDoi(ct, dau.khoi[0].conId);
+    const moc = phia > 0 ? p0[p0.length - 1] : phia < 0 ? p0[0] : dai.dxP;
+    p = p0.map((v) => v + dau.lo - (moc + RONG / 2));
+  } else {
+    const lMuon = (dau.tam + cuoi.tam) / 2 - (kheTu(p0, dau.unionId) + kheTu(p0, cuoi.unionId)) / 2;
+    p = xepDai(p0, chum, viTriKhe, kheTu, lMuon);
+  }
+  oX.forEach((id, j) => themO(ct, kq, id, p[j]));
+  kq.neoX = p[oX.indexOf(neoId)] + RONG / 2;
+
+  // Nét thả từ khe xuống thanh ngang gom con thuộc về khối này: tính vào viền
+  // hàng con, để khối bên cạnh không ghé vào làm hai thanh ngang bắc chéo.
+  for (const c of chum) {
+    const m = ct.muc.get(c.khoi[0].conId);
+    const x = kheTu(p, c.unionId);
+    themVien(kq.vien, m, x, x);
+  }
+
+  // Dải đã giãn → ghi lại cho `dungDiemTreo()` / `themNetVoChong()`, vốn đọc
+  // khe theo toạ độ TƯƠNG ĐỐI trong dải.
+  const l0 = p[0] - p0[0];
+  if (p.some((v, j) => Math.abs(v - p0[j] - l0) > 0.01)) {
+    const dx = new Map(), khe = new Map();
+    oX.forEach((id, j) => dx.set(id, p[j] - p[0]));
+    for (const uid of dai.thuTuUnion) khe.set(uid, kheTu(p, uid) - p[0]);
+    ct.dai.set(neoId, { ...dai, dx, khe, dxP: dx.get(neoId), rong: p[p.length - 1] - p[0] + RONG });
+  }
+  return kq;
+}
+
+/**
+ * Đặt các ô của một dải nhiều chùm con. Luật: chùm ≥2 con thì điểm thả (khe)
+ * phải nằm TRONG khoảng các con của chùm ấy. Chùm một con được phép gãy
+ * khuỷu (nhóm 9b), không ràng buộc.
+ *
+ * Bước 1 — không giãn: tìm độ dời chung thoả mọi chùm, chọn cái gần cách căn
+ * cũ nhất (trung điểm hai chùm ngoài cùng). Bước 2 — không có độ dời nào như
+ * thế: khe đầu đặt ở CON PHẢI NHẤT của chùm đầu, rồi mỗi khe sau giãn dải
+ * đúng phần thiếu để chạm CON TRÁI NHẤT chùm của nó. Dời ô `t` trở đi: khe
+ * nằm giữa ô j, j+1 mà chỉ dời được từ ô j+1 thì phải dời GẤP ĐÔI mới đẩy
+ * khe đi đủ, vì khe là trung điểm.
+ */
+function xepDai(p0, chum, viTriKhe, kheTu, lMuon) {
+  const rang = chum.filter((c) => c.khoi.length >= 2);
+  let lo = -Infinity, hi = Infinity;
+  for (const c of rang) {
+    const k = kheTu(p0, c.unionId);
+    lo = Math.max(lo, c.lo - k);
+    hi = Math.min(hi, c.hi - k);
+  }
+  if (lo <= hi) {
+    const l = Math.min(hi, Math.max(lo, lMuon));
+    return p0.map((v) => v + l);
+  }
+
+  let p = p0.map((v) => v + rang[0].hi - kheTu(p0, rang[0].unionId));
+  const trong = (q, c) => { const k = kheTu(q, c.unionId); return k >= c.lo - 0.01 && k <= c.hi + 0.01; };
+  rang.forEach((c, i) => {
+    const k = kheTu(p, c.unionId);
+    if (k >= c.lo) return;
+    const v = viTriKhe.get(c.unionId);
+    const cach = v.khe !== undefined
+      ? [[v.khe + 1, 2 * (c.lo - k)], [v.khe, c.lo - k]]
+      : [[v.o, c.lo - k]];
+    for (const [t, buoc] of cach) {
+      const q = p.map((x, j) => (j >= t ? x + buoc : x));
+      if (rang.slice(0, i).every((c2) => trong(q, c2))) { p = q; break; }
+    }
+  });
+  return p;
+}
+
+/** Dải của một người: neo là chính họ, hoặc người đã hấp thụ họ. */
+function neoDai(ct, id) {
+  const ht = ct.hapThuBoi.get(id);
+  return ht ? ht.neoId : id;
+}
+
+/** Tâm ô của `id` trong khối `k`, hoặc `undefined`. */
+function tamTrong(k, id) {
+  for (const it of k.items) if (it.id === id) return it.x + RONG / 2;
+  return undefined;
+}
+
+/**
+ * Điểm thả của union `uid` khi các ô đã đứng trong khối `k` — cùng công thức
+ * `dungDiemTreo()`: cặp kề nhau thì khe của dải, không thì trung điểm.
+ */
+function noiCua(ct, k, uid) {
+  const u = ct.unionHT.get(uid);
+  for (const p of u.partners) {
+    const ht = ct.hapThuBoi.get(p);
+    if (!ht || ht.unionId !== uid) continue;
+    const dai = ct.dai.get(ht.neoId);
+    const x = tamTrong(k, ht.neoId);
+    if (dai && x !== undefined) return x - RONG / 2 - dai.dxP + dai.khe.get(uid);
+  }
+  const xs = u.partners.map((p) => tamTrong(k, p)).filter((x) => x !== undefined);
+  return xs.length ? (Math.min(...xs) + Math.max(...xs)) / 2 : undefined;
+}
+
+/**
+ * KHỐI TỔ TIÊN của `X`: hàng cha mẹ X, cùng hai khối tổ tiên của cha và của
+ * mẹ treo lên trên (đệ quy). `noi` = điểm thả xuống X. `null` nếu X không có
+ * cha mẹ hiển thị, hoặc cha mẹ đã đứng chỗ khác (hai nhánh cưới nhau — nét
+ * dài, y như `datCum()` trả `null`).
+ */
+function khoiTren(ct, X) {
+  const uid = ct.unionSoHuu.get(X);
+  if (!uid) return null;
+  const u = ct.unionHT.get(uid);
+
+  const dsNeo = [];
+  for (const p of u.partners) {
+    const n = neoDai(ct, p);
+    if (!dsNeo.includes(n)) dsNeo.push(n);
+  }
+  if (dsNeo.some((n) => ct.daDat.has(n))) return null;
+
+  // Nam trái, nữ phải (§2) khi hai người không chung dải.
+  dsNeo.sort((a, b) => (gioiTinh(ct, a) === 'M' ? 0 : 1) - (gioiTinh(ct, b) === 'M' ? 0 : 1));
+  const dsDai = dsNeo.map((n) => {
+    ct.daDat.add(n);
+    const dai = layDai(ct, n);
+    const k = khoiRong();
+    for (const [id, dx] of dai.dx) { ct.daDat.add(id); themO(ct, k, id, dx); }
+    k.neoX = dai.dxP + RONG / 2;
+    return k;
+  });
+  const hang = xepKhit(dsDai, LAYOUT.hGap);
+  hang.noi = noiCua(ct, hang, uid);
+
+  const xs = hang.items.map((it) => it.x + RONG / 2);
+  hang.mepTrai = Math.min(...xs);
+  hang.mepPhai = Math.max(...xs);
+
+  const doiTac = u.partners.filter((p) => tamTrong(hang, p) !== undefined)
+    .sort((a, b) => tamTrong(hang, a) - tamTrong(hang, b));
+  return treoToTien(ct, hang, doiTac, hang.noi);
+}
+
+/**
+ * Treo khối tổ tiên của từng người trong `doiTac` (trái → phải) lên trên khối
+ * `k`, căn vào điểm nối `noi` của `k`.
+ *
+ *   · Đủ hai bên: xếp khít, TRUNG ĐIỂM hai điểm nối rơi đúng `noi` (b86b —
+ *     đo trên ảnh QFT `so do 3 khoi.png`, lệch nửa pixel).
+ *   · Chỉ một bên: CĂN MÉP (b85e) — tổ tiên né sang phía đối diện bạn đời,
+ *     người trong cùng của hàng cha mẹ đứng thẳng trên đầu con.
+ *
+ * Hai khối tổ tiên thường không chung hàng nào với `k`; lỡ chung (dữ liệu có
+ * hôn nhân trong họ) thì đẩy ra hai bên cho tới khi hết chồng.
+ */
+function treoToTien(ct, k, doiTac, noi) {
+  const co = [];
+  for (const p of doiTac) {
+    const t = khoiTren(ct, p);
+    if (t) co.push({ p, t, j: doiTac.indexOf(p) });
+  }
+  if (co.length === 0) return k;
+
+  if (co.length === 1) {
+    const { p, t, j } = co[0];
+    const x = tamTrong(k, p);
+    const nhieu = doiTac.length > 1;
+    const moc = nhieu && j === 0 ? t.mepPhai : nhieu && j === doiTac.length - 1 ? t.mepTrai : t.noi;
+    dich(t, x - moc);
+  } else {
+    const acc = khoiRong();
+    for (const o of co) {
+      if (acc.items.length) {
+        let d = canhPhai(acc.vien, o.t.vien, LAYOUT.hGap);
+        if (!Number.isFinite(d)) d = mepCua(acc, true) + LAYOUT.hGap - mepCua(o.t, false);
+        dich(o.t, d);
+      }
+      gop(acc, o.t);
+    }
+    const giua = (co[0].t.noi + co[co.length - 1].t.noi) / 2;
+    for (const o of co) dich(o.t, noi - giua);
+  }
+
+  // Né khối dưới nếu lỡ chung hàng: bên trái dời trái, bên phải dời phải.
+  let dTrai = 0, dPhai = 0;
+  for (const o of co) {
+    const benTrai = o.t.noi < noi || (co.length === 1 && o.j === 0 && doiTac.length > 1);
+    if (benTrai) dTrai = Math.max(dTrai, canhPhai(o.t.vien, k.vien, LAYOUT.hGap));
+    else         dPhai = Math.max(dPhai, canhPhai(k.vien, o.t.vien, LAYOUT.hGap));
+  }
+  for (const o of co) {
+    const benTrai = o.t.noi < noi || (co.length === 1 && o.j === 0 && doiTac.length > 1);
+    dich(o.t, benTrai ? -dTrai : dPhai);
+    gop(k, o.t);
+  }
+  return k;
+}
+
+function datBaKhoi(ct) {
+  const viTri = new Map();
+  const ghi = (k) => { for (const it of k.items) viTri.set(it.id, it.x); };
+
+  // --- Lõi: khối 3 và hai khối tổ tiên ------------------------------------
+  const tam = ct.tamId && ct.dsNguoi.includes(ct.tamId) ? ct.tamId : ct.dsNguoi[0];
+  const neoTam = neoDai(ct, tam);
+  const pu = ct.roiChoCha.has(neoTam) ? null : ct.unionSoHuu.get(neoTam);
+
+  let loi = null, doiTac = [], noi;
+  if (pu) {
+    const n = neoDai(ct, ct.unionHT.get(pu).partners[0]);
+    loi = khoiDuoi(ct, n);
+    if (loi) {
+      doiTac = ct.unionHT.get(pu).partners.filter((p) => tamTrong(loi, p) !== undefined);
+      noi = noiCua(ct, loi, pu);
+    }
+  }
+  if (!loi) {
+    loi = khoiDuoi(ct, neoTam);
+    if (loi) {
+      doiTac = [...layDai(ct, neoTam).dx.keys()];
+      const xs = doiTac.map((p) => tamTrong(loi, p));
+      noi = (Math.min(...xs) + Math.max(...xs)) / 2;
+    }
+  }
+  if (loi) {
+    doiTac.sort((a, b) => tamTrong(loi, a) - tamTrong(loi, b));
+    ghi(treoToTien(ct, loi, doiTac, noi));
+  }
+
+  // --- Lưới an toàn: ai chưa đứng (cha mẹ nuôi, nhánh cưới nhau…) ----------
+  // Leo lên tổ tiên CHƯA ĐẶT cao nhất, dựng khối con cháu của người ấy, rồi
+  // đặt vào chỗ trống gần người nó nối tới nhất. Thà lệch chỗ còn hơn mất ô.
+  for (const id of ct.dsNguoi) {
+    if (ct.daDat.has(id)) continue;
+    let goc = neoDai(ct, id);
+    const daLeo = new Set([goc]);
+    for (;;) {
+      const uid = ct.unionSoHuu.get(goc);
+      if (!uid || ct.roiChoCha.has(goc)) break;
+      const len = neoDai(ct, ct.unionHT.get(uid).partners[0]);
+      if (ct.daDat.has(len) || daLeo.has(len)) break;
+      daLeo.add(len);
+      goc = len;
+    }
+    const k = khoiDuoi(ct, goc);
+    if (!k) { ct.daDat.add(id); continue; }
+    const x0 = mocLuoi(ct, viTri, k, goc);
+    ghi(datGanNhat(ct, viTri, k, x0));
+  }
+  for (const id of ct.dsNguoi) if (!viTri.has(id)) viTri.set(id, 0);
+
+  canChumConVaoGiua(ct, viTri);
+
+  let min = Infinity;
+  for (const x of viTri.values()) if (x < min) min = x;
+  if (Number.isFinite(min) && min !== 0) for (const [id, x] of viTri) viTri.set(id, x - min);
+  return viTri;
+}
+
+/**
+ * Khối lưới an toàn muốn đứng đâu (độ dời muốn có): dưới điểm thả của cha mẹ
+ * nếu cha mẹ đã đứng; không thì trên đầu người con đứng ngoài khối (cha mẹ
+ * nuôi); không thì cạnh bạn đời. Không nối với ai → sau mép phải sơ đồ.
+ */
+function mocLuoi(ct, viTri, k, goc) {
+  const trong = new Set(k.items.map((it) => it.id));
+  const uid = ct.unionSoHuu.get(goc);
+  if (uid) {
+    const xs = ct.unionHT.get(uid).partners.map((p) => viTri.get(p)).filter((x) => x !== undefined);
+    if (xs.length) return (Math.min(...xs) + Math.max(...xs)) / 2 + RONG / 2 - k.neoX;
+  }
+  for (const it of k.items) {
+    for (const u2 of ct.unionLamVo.get(it.id) || []) {
+      const u = ct.unionHT.get(u2);
+      for (const c of u.children) {
+        if (!trong.has(c.personId) && viTri.has(c.personId)) return viTri.get(c.personId) - it.x;
+      }
+      for (const p of u.partners) {
+        if (!trong.has(p) && viTri.has(p)) return viTri.get(p) - it.x;
+      }
+    }
+  }
+  let phai = -Infinity;
+  for (const x of viTri.values()) phai = Math.max(phai, x + RONG);
+  return Number.isFinite(phai) ? phai + LAYOUT.blockGap - mepCua(k, false) : 0;
+}
+
+/** Dời khối tới chỗ KHÔNG ĐÈ Ô nào gần `x0` nhất, quét dần ra hai bên. */
+function datGanNhat(ct, viTri, k, x0) {
+  for (let b = 0; b <= 20000; b += 4) {
+    for (const d of (b === 0 ? [x0] : [x0 + b, x0 - b])) {
+      if (!deChoNay(ct, viTri, k, d)) { dich(k, d); return k; }
+    }
+  }
+  let phai = -Infinity;
+  for (const x of viTri.values()) phai = Math.max(phai, x + RONG);
+  dich(k, phai + LAYOUT.blockGap - mepCua(k, false));
+  return k;
 }
 
 // ============================================================
