@@ -6,6 +6,7 @@
 // Phiên bản: 1.20.0 · Cập nhật: 24/09/2026 22:10
 // ⚠ b128b: HAI cách xếp nằm cạnh nhau — cũ `datMoiKhoi()` + bốn lượt vá, mới
 //   `datBaKhoi()` (mục 4b). Chọn bằng `LAYOUT.xepBaKhoi` / `tuyChon.baKhoi`.
+// Sổ tay   : so-tay/ve-so-do.md
 // ============================================================
 //
 // Tách khỏi render.js có chủ ý: chỉnh giao diện (màu, phông, bo góc) không
@@ -1719,17 +1720,8 @@ function deLenNhau(ct, viTriX, cum, d) {
 // người. Khối tính TỪ DƯỚI LÊN, xong khối nào biết ngay điểm nối cạnh dưới
 // (`noi`) — khối trên chỉ việc căn theo điểm ấy, không cần lượt vá nào sau.
 //
-// Khác cách cũ ở hai chỗ, cả hai đều đã đo ra lỗi thật:
-//
-// 1. **Ghép khối theo VIỀN TỪNG HÀNG, không theo bao hình chữ nhật.** Bao hình
-//    làm người trung tâm P0185 (cây 681) văng ra mép trái, cha mẹ ở mép phải:
-//    người anh có cả đàn cháu chắt rộng 1.600px, và cả khối ấy — kể cả những
-//    hàng người trung tâm không hề đứng — chắn chỗ của cô.
-// 2. **Dải NHIỀU BẠN ĐỜI được giãn ra khi cần.** Hai khe liền nhau cách 136px,
-//    hai đàn con kề nhau cách ít nhất 148px, nên KHÔNG THỂ để cả hai điểm thả
-//    nằm trong đàn con của mình — 4 cặp lệch trên cây 681 (U0064 · U0071 ·
-//    U0074 · U0180) đều là ca này, không phải lỗi dời con ở `canChumConVaoGiua`.
-//    Giãn đúng phần thiếu (thường 12px) — xem `xepDai()`.
+// Khác cách cũ ở hai chỗ — ghép theo VIỀN TỪNG HÀNG, và dải nhiều bạn đời
+// được GIÃN — lý do và ca thật: `so-tay/ve-so-do.md`.
 //
 // Khối = { items:[{id,x}], vien: Map(đời → [trái, phải]), + các mốc x }.
 // Mọi toạ độ tương đối cho tới khi ghép xong; `dich()` dời cả khối lẫn mốc.

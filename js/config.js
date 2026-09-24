@@ -413,9 +413,9 @@ export const LAYOUT = {
   // trong cùng một sơ đồ). Rộng hơn hGap để mắt tách được hai khối.
   blockGap:    56,
 
-  // b128b — cách xếp BA KHỐI (`datBaKhoi()` trong layout.js), đặt cạnh cách
-  // cũ để so. `false` = app vẽ bằng cách cũ. Bộ kiểm bật nó bằng
-  // `kiem-thu/ba-khoi.mjs`. Bỏ công tắc này ở b128b-4, khi cách cũ bị xoá.
+  // b128b — cách xếp BA KHỐI (`datBaKhoi()`) cho nơi gọi KHÔNG truyền
+  // `tuyChon.baKhoi` (tức bộ kiểm; app thì nút Cũ/Mới quyết). Bộ kiểm bật
+  // bằng `kiem-thu/ba-khoi.mjs`. Xem `so-tay/ve-so-do.md`.
   xepBaKhoi:   false,
 };
 

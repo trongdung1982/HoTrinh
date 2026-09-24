@@ -1,9 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 24/09/2026 · b128a xong, `32` đã dán. Chủ dự án chốt lại:
-**hàng rào 1 là RÀO THÉP** cho cả vẽ lẫn sửa — dòng "luật vẽ cũ sai" hôm trước
-là đọc sai. b128b-2 xong (24/09 22:10): `datBaKhoi()` dựng cạnh cách cũ,
-công tắc `LAYOUT.xepBaKhoi` còn TẮT. Kế tiếp: b128b-3. Rồi b127d, b126.*
+*Cập nhật 25/09/2026 05:45 · b128 XONG: rào thép (`32`) + vẽ BA KHỐI —
+chủ dự án xem: bản mới đẹp hơn, app mặc định MỚI, nút Cũ/Mới dưới 🔍 giữ tới
+khi chủ dự án bảo gỡ (`so-tay/ve-so-do.md`). Kế tiếp: b127d, rồi b126.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
 **đừng nới trần**. Ba luật giữ nó gọn:
@@ -91,37 +90,6 @@ gắn tài khoản ↔ người là việc của b126 (Hồ sơ cá nhân), **b1
 
 ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
 
-### ⚠⚠ b128 — RÀO THÉP + VẼ BA KHỐI (chủ dự án chốt 24/09/2026) — LÀM TRƯỚC
-
-**Lời chủ dự án, giữ nguyên ý:** hàng rào 1 là rào thép — nội dung VẼ và
-SỬA đều giới hạn trong cây; vi phạm là từ chối. Thêm B vào cây = chỉ B vào;
-cha mẹ, vợ chồng, con của B ở ngoài, không vẽ. Nhưng THẺ của B kể đủ tên
-(kèm mã) cha mẹ, vợ chồng, con, cha mẹ nuôi, anh chị em… Hai nhóm hàm cho hai
-việc, không dùng chung. Mỗi sơ đồ chỉ có MỘT tập người — không có "hai cây".
-
-**✓ b128a (24/09) — rào thép, `32` đã dán.** Lỗi ① ở đường GHI, không ở
-tầng vẽ — `so-tay/nguoi-xuyen-cay.md` mục *RÀO THÉP*.
-Đo: `do-b128a` 20/20 · `kiem-rao-thep` 21/21.
-✓ Chủ dự án bấm đạt hết (24/09), kể cả vá "khai lại ĐÚNG quan hệ đã có =
-chỉ kéo người vào" — `so-tay/nguoi-xuyen-cay.md`.
-
-**b128b — VẼ BA KHỐI** (thuật toán chủ dự án tả): từ người trung tâm truy
-ngược lên, dựng khối huyết thống của cha và của mẹ. Khối 1 = nhánh cha (khối
-con theo trực hệ) · khối 2 = nhánh mẹ (như thế) · khối 3 = anh chị em + con
-của người trung tâm. Vẽ từ trên xuống theo từng khối nhỏ rồi ghép thành khối
-lớn; vẽ xong mỗi khối biết chính xác điểm nối ở cạnh dưới → sơ đồ cân đối.
-✓ Được sửa `domains/layout.js` (24/09) · ✓ ④ lề điện thoại (chủ dự án bấm đạt) · ✓ ③ hết nhờ
-`chiMucVe()` (ảnh chụp trước b128a) · ✓ bộ bất biến đo nhánh này:
-`node --import ./sang-supabase.mjs chay.mjs` (`../kiem-thu/`).
-**②** — đo `../kiem-thu/do-b128b.mjs [đời]`. Chùm MỘT con gãy khuỷu là CỐ Ý
-(nhóm 9b). Gốc thật + cách chữa: `layout.js` mục 4b.
-**✓ b128b-2 (24/09):** `datBaKhoi()` — ② còn U0180 = **LỖI DỮ LIỆU** (Hạt,
-Thu ghi là con bà Hồi mà lấy con trai bà: U0108, U0109) — hỏi chủ dự án.
-Bất biến ĐẠT cả hai cách. Công cụ ở `../kiem-thu/`: `ba-khoi.mjs` (móc
-`--import`) · `so-b128b.mjs [đời]` · `xem-b128b.mjs <cây> <tâm> <đời> cu|moi`.
-**Còn:** b128b-3 chủ dự án xem ảnh, so 59 + 681 × mọi trung tâm · b128b-4
-bật hẳn, xoá `datMoiKhoi` + bốn lượt vá + công tắc.
-
 ### ⚠ b127d — ĐỀ NGHỊ CHỈNH SỬA quan hệ → QTHT duyệt (tách 24/09/2026)
 
 ① Người dùng gửi đề nghị sửa quan hệ đã khoá (`31` chặn khai lần hai) →
@@ -171,6 +139,8 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Ai gọi `don_thung_rac()`** — nút bấm tay hay trigger Apps Script đêm? Chưa hỏi chủ dự án | `THIET-KE-NHIEU-CAY.md` mục 11.6 |
 | ⚠ **b103 → b105 của Antigravity vẫn nằm NGOÀI repo**, trong `codex/`, mới dán lên Staging. Soi lướt: `12` và `13` không thêm luật ghi nào — nhưng chưa rà kỹ, chưa đo | `PHOI-HOP-AI.md` |
 | ⚠ **Bộ bất biến bố cục đang gác nhầm nhánh** — xem ngay dưới bảng. Đường chạy tạm đã có: `--import ./sang-supabase.mjs` (b128b) | `/kiem-tra` phép 9 |
+| ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |
+| Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
 | ⚠ **`index.html` → Cài đặt: "Dòng họ" và vai trò CỐ ĐỊNH TRONG MÃ** — tồn dư thời một cây, phải đọc từ chỗ khai của b126 | `js/pages/settings.js` |
 | ⚠ **Sao lưu KHÔNG chép ảnh** — chỉ liệt kê. Ảnh vẫn nằm đúng một chỗ | `KIEN-TRUC.md` mục 7 |
 | ⚠ **Chưa ai thử KHÔI PHỤC từ file sao lưu** — *có file* khác *khôi phục được* | `sao-luu/HUONG-DAN-SAO-LUU.md` |

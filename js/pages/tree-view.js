@@ -6,8 +6,8 @@
 //            utils/{text,glyph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
 //            backup,chon-gia-pha,import-export,export-image}
-// Phiên bản: 1.40.0 · Cập nhật: 25/09/2026 05:40 (b128b-3 nút tạm Cũ/Mới dưới ⚙)
-// Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục)
+// Phiên bản: 1.41.0 · Cập nhật: 25/09/2026 05:45 (nút Cũ/Mới dưới 🔍, mặc định Mới)
+// Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (nút Cũ/Mới)
 // ============================================================
 //
 // ⚠ HAI CHỈ MỤC: vẽ bằng `layChiMucVe()` (chỉ người trong cây); mở thẻ/form
@@ -895,8 +895,8 @@ function veHopNutTrenPhai() {
       // được chạm vào `svgEl`, `svgEl` là của file này.
       onCoSoDo: () => docCoSoDo(svgEl),
     })),
-    veNutCachXep(),
     nutTron('🔍', 'Tìm người trong gia phả', () => moDanhSachNguoi()),
+    veNutCachXep(),
   );
   return hop;
 }
@@ -904,11 +904,12 @@ function veHopNutTrenPhai() {
 /**
  * b128b-3 — NÚT TẠM chuyển qua lại cách vẽ CŨ và BA KHỐI (`datBaKhoi()`), để
  * chủ dự án so tận mắt trên dữ liệu thật. Mờ 50% cho khỏi lẫn với nút thật.
- * Nhớ lựa chọn ở `localStorage` của máy này. ⚠ Gỡ ở b128b-4, cùng công tắc.
+ * Nhớ lựa chọn ở `localStorage` của máy này. Mặc định MỚI (chủ dự án chốt
+ * 25/09: bản mới đẹp hơn). ⚠ CHỈ GỠ KHI CHỦ DỰ ÁN YÊU CẦU.
  */
 const KHOA_CACH_XEP = 'giapha.xepBaKhoi';
 function docCachXep() {
-  try { return localStorage.getItem(KHOA_CACH_XEP) === '1'; } catch (e) { return false; }
+  try { return localStorage.getItem(KHOA_CACH_XEP) !== '0'; } catch (e) { return true; }
 }
 function veNutCachXep() {
   const nut = nutTron('', '', () => {
