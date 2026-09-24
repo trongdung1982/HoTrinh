@@ -1,8 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 24/09/2026 · b128a xong trên máy (`32` CHƯA dán). Chủ dự án chốt lại:
+*Cập nhật 24/09/2026 · b128a xong, `32` đã dán. Chủ dự án chốt lại:
 **hàng rào 1 là RÀO THÉP** cho cả vẽ lẫn sửa — dòng "luật vẽ cũ sai" hôm trước
-là đọc sai. Kế tiếp: dán `32` → b128b (vẽ ba khối). Rồi b127d, b126.*
+là đọc sai. Kế tiếp: chủ dự án bấm thử b128a → b128b (vẽ ba khối). Rồi b127d, b126.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -53,9 +53,8 @@ ngày 22/09 · `29` ngày 23/09; chủ dự án đọc lại bảng tự kiểm 
 
 **`30` (b127a) — ĐÃ DÁN lên THẬT 23/09**, chạy thành công.
 **`31` (b127c) — ĐÃ DÁN lên THẬT 24/09**: 2 trigger, 0 cặp trùng từ trước.
-**`32` (b128a) — CHƯA DÁN.** Bàn thử `do-b128a.mjs` 19/19. Dán xong: bảng tự
-kiểm 4 dòng ĐẠT. ⚠ Bản đứng cuối của `luu_cay()` — dán lại `27`/`28` sau nó
-là mở lại lỗ, im lặng.
+**`32` (b128a) — ĐÃ DÁN lên THẬT 24/09**, tự kiểm 4/4 ĐẠT. ⚠ Bản đứng cuối
+của `luu_cay()` — dán lại `27`/`28` sau nó là mở lại lỗ, im lặng.
 
 ---
 
@@ -100,7 +99,7 @@ cha mẹ, vợ chồng, con của B ở ngoài, không vẽ. Nhưng THẺ của 
 (kèm mã) cha mẹ, vợ chồng, con, cha mẹ nuôi, anh chị em… Hai nhóm hàm cho hai
 việc, không dùng chung. Mỗi sơ đồ chỉ có MỘT tập người — không có "hai cây".
 
-**✓ b128a (24/09) — rào thép, chờ dán `32`.** Lỗi ① (`loi_2_cay_1.png`) ở
+**✓ b128a (24/09) — rào thép, `32` đã dán.** Lỗi ① (`loi_2_cay_1.png`) ở
 đường GHI, không ở tầng vẽ — `so-tay/nguoi-xuyen-cay.md` mục *RÀO THÉP*.
 Đo: `do-b128a.mjs` 19/19 · `../kiem-thu/kiem-rao-thep.mjs` 14/14.
 ⚠ Dữ liệu thật: *H9* có thể còn nằm ở cây 1 từ lần lỗi — dán `32` xong, xem
