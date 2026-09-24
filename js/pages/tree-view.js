@@ -6,7 +6,7 @@
 //            utils/{text,glyph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
 //            backup,chon-gia-pha,import-export,export-image}
-// Phiên bản: 1.39.0 · Cập nhật: 24/09/2026 20:55 (b128b ④ lề chừa cột nút)
+// Phiên bản: 1.40.0 · Cập nhật: 25/09/2026 05:40 (b128b-3 nút tạm Cũ/Mới dưới ⚙)
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục)
 // ============================================================
 //
@@ -263,7 +263,8 @@ export function refresh() {
 
   const stubs  = findStubPoints(index, visible, state.scope);
   const hienGio = { hienNgayGio: state.hienNgayGio === true };
-  const layout = computeLayout(index, focus, visible, state.scope, stubs, hienGio);
+  const layout = computeLayout(index, focus, visible, state.scope, stubs,
+    { ...hienGio, baKhoi: docCachXep() });
   layoutHT = layout;
 
   renderTree(svgEl, layout, index, {
@@ -894,9 +895,39 @@ function veHopNutTrenPhai() {
       // được chạm vào `svgEl`, `svgEl` là của file này.
       onCoSoDo: () => docCoSoDo(svgEl),
     })),
+    veNutCachXep(),
     nutTron('🔍', 'Tìm người trong gia phả', () => moDanhSachNguoi()),
   );
   return hop;
+}
+
+/**
+ * b128b-3 — NÚT TẠM chuyển qua lại cách vẽ CŨ và BA KHỐI (`datBaKhoi()`), để
+ * chủ dự án so tận mắt trên dữ liệu thật. Mờ 50% cho khỏi lẫn với nút thật.
+ * Nhớ lựa chọn ở `localStorage` của máy này. ⚠ Gỡ ở b128b-4, cùng công tắc.
+ */
+const KHOA_CACH_XEP = 'giapha.xepBaKhoi';
+function docCachXep() {
+  try { return localStorage.getItem(KHOA_CACH_XEP) === '1'; } catch (e) { return false; }
+}
+function veNutCachXep() {
+  const nut = nutTron('', '', () => {
+    const moi = !docCachXep();
+    try { localStorage.setItem(KHOA_CACH_XEP, moi ? '1' : '0'); } catch (e) { /* không nhớ được thì thôi */ }
+    ghiNhan();
+    refresh();
+  });
+  nut.style.opacity = '0.5';
+  nut.style.fontSize = '11px';
+  nut.style.fontWeight = '600';
+  const ghiNhan = () => {
+    const moi = docCachXep();
+    nut.textContent = moi ? 'Mới' : 'Cũ';
+    nut.title = (moi ? 'Đang vẽ cách MỚI (ba khối)' : 'Đang vẽ cách CŨ') + ' — bấm để đổi';
+    nut.setAttribute('aria-label', nut.title);
+  };
+  ghiNhan();
+  return nut;
 }
 
 /**
