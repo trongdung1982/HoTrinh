@@ -6,7 +6,7 @@
 //            utils/{text,glyph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
 //            backup,chon-gia-pha,import-export,export-image}
-// Phiên bản: 1.38.0 · Cập nhật: 24/09/2026 (b128a) — vẽ bằng `chiMucVe()`
+// Phiên bản: 1.39.0 · Cập nhật: 24/09/2026 21:10 (b128b ④ lề chừa cột nút)
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục)
 // ============================================================
 //
@@ -122,7 +122,11 @@ const TY_LE_MAX = 3;
 const TY_LE_NAC = 1.25;   // mỗi lần bấm nút phóng to / thu nhỏ
 
 let tyLe = 1;
-let padX = 0;   // lề căn giữa khi sơ đồ hẹp hơn khung
+// Lề tối thiểu quanh sơ đồ = bề rộng cột nút rộng nhất (64px, cột trái) +
+// 12px cách mép + 8px thở. Dọc: một hàng nút 44px + 12px.
+const LE_NUT_NGANG = 84;
+const LE_NUT_DOC   = 56;
+let padX = 0;   // lề căn giữa khi sơ đồ hẹp hơn khung, không dưới LE_NUT_*
 let padY = 0;
 
 // Đường kính một nút tròn nổi trên sơ đồ, px. 44 là đích chạm tối thiểu của
@@ -390,9 +394,10 @@ function nguoiSauNotCut(index, visible, stub) {
  * thuộc tính width/height đổi, nên nội dung phóng to đều, mọi nét mọi chữ
  * giữ đúng tỷ lệ với nhau.
  *
- * Lề `padX`/`padY` chỉ khác 0 khi sơ đồ HẸP HƠN khung: lúc đó đẩy nó vào
- * giữa cho đỡ lệch. Sơ đồ rộng hơn khung thì lề bằng 0 và khung cuộn bình
- * thường.
+ * Lề `padX`/`padY`: sơ đồ HẸP HƠN khung thì đẩy nó vào giữa cho đỡ lệch.
+ * Sơ đồ rộng hơn khung thì lề KHÔNG về 0 mà giữ tối thiểu `LE_NUT_NGANG` /
+ * `LE_NUT_DOC` — không có lề này thì người ở mép nằm mãi dưới cột nút, cuộn
+ * hết cỡ cũng không lộ ra (điện thoại, b128b lỗi ④).
  */
 function apDungTyLe() {
   if (!svgEl || !khungCuon || !layoutHT || !layoutHT.bounds) return;
@@ -403,8 +408,8 @@ function apDungTyLe() {
   svgEl.setAttribute('width',  String(Math.round(rong)));
   svgEl.setAttribute('height', String(Math.round(cao)));
 
-  padX = Math.max(0, (khungCuon.clientWidth  - rong) / 2);
-  padY = Math.max(0, (khungCuon.clientHeight - cao)  / 2);
+  padX = Math.max(LE_NUT_NGANG, (khungCuon.clientWidth  - rong) / 2);
+  padY = Math.max(LE_NUT_DOC,   (khungCuon.clientHeight - cao)  / 2);
   khungCuon.style.padding = padY + 'px ' + padX + 'px';
 
   if (nhanTyLe) nhanTyLe.textContent = Math.round(tyLe * 100) + '%';
