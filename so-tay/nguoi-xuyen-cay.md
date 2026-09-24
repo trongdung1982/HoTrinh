@@ -84,10 +84,11 @@ Hàng rào 1 gác CẢ vẽ LẪN sửa. Vi phạm là từ chối, không có n
   *H9* bị ghi vào cây 1 (`loi_2_cay_1.png`). Lỗ ấy mở từ `30`, khi app bắt đầu
   giữ quan hệ ra ngoài cây để thẻ kể tên — dữ liệu của nhóm THÔNG TIN lọt
   sang đường GHI.
-- **A trong cây, B ở vành đai: sửa A LUÔN được** (bàn thử L2b). Thẻ A chỉ kể
-  tên + mã B + quan hệ. Chỉ **quan hệ A–B** (cặp, cạnh con) là không sửa,
-  xoá, thêm con được từ cây này → `ngoairao`; sửa nó ở sơ đồ có cả A lẫn B.
-  B không có cửa sửa nào ở cây này.
+- **A trong cây, B ở vành đai: A sửa được, thêm được con / cha mẹ / vợ chồng
+  / người thân khác** (bàn thử L2b · L3 · L4 · L5). Chỉ **CẶP A–B** bị khoá ở
+  cây này: không sửa, không xoá, không thêm con CHO CẶP ẤY → `ngoairao`; sửa ở
+  sơ đồ có cả A lẫn B. Form *Thêm con* của A: cặp A–B hiện nhưng khoá, "Một
+  mình A" và các cặp trong cây vẫn chọn được. B không có cửa sửa nào ở đây.
 - Form nào đụng quan hệ thì phải tự bỏ phần ngoài cây TRƯỚC khi gửi, đừng
   để máy chủ báo lỗi: `form-sap-thu-tu.js` giữ con ngoài cây đứng yên, và
   không mở với cặp có vợ/chồng ngoài cây. **Các form khác CHƯA soát** (thêm

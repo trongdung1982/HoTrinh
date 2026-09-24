@@ -8,7 +8,7 @@
 //            xoa,anh}.js, pages/quan-tri/o-goi-y.js, state,
 //            domains/{person,union,validate,media,purge,render},
 //            services/repo, utils/{graph,text,date,image,avatar}, config
-// Phiên bản: 1.48.0 · Cập nhật: 24/09/2026 — ô "đã có trong hệ thống" lên đầu form
+// Phiên bản: 1.49.0 · Cập nhật: 24/09/2026 (b128a) — Thêm con: khoá cặp có vợ/chồng ngoài cây
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/o-goi-y.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -437,8 +437,10 @@ function chuanNoiVao(vao) {
   // cặp đầu tiên chứ không để trống — mở form ra mà không nút nào được chọn thì
   // người dùng phải bấm một cái chỉ để về lại đúng ca thường gặp nhất. Người
   // chưa có cặp nào thì chỉ có một câu trả lời, và khối kia tự im.
+  // ⚠ Rào thép (b128a): cặp có vợ/chồng ở vành đai KHÔNG được chọn sẵn —
+  // thêm con vào cặp ấy là đổi quan hệ của người ngoài cây, máy chủ từ chối.
   if (v.mocId && index.personById.has(v.mocId)) {
-    const ds = getPartnerUnions(index, v.mocId);
+    const ds = getPartnerUnions(index, v.mocId).filter((u) => !capCoNguoiNgoaiCay(u));
     return ds.length === 0
       ? { mocId: v.mocId, chaMeId: v.mocId }
       : { mocId: v.mocId, unionId: ds[0].id };
@@ -3221,7 +3223,15 @@ function khoiChonChaMe() {
   };
 
   for (const u of dsCap) {
-    themHang(u.id, keTenPartner(u.id), moTaCap(u), u.id === noiVao.unionId);
+    const ngoai = capCoNguoiNgoaiCay(u);
+    if (!ngoai) { themHang(u.id, keTenPartner(u.id), moTaCap(u), u.id === noiVao.unionId); continue; }
+    // Rào thép (b128a): vẫn KỂ cặp này — người dùng biết nó có — nhưng khoá.
+    themHang(u.id, ten + '  và  ' + ((ngoai.p && fullName(ngoai.p)) || ngoai.id) + ' (' + ngoai.id + ')',
+             'Người kia không thuộc gia phả này — thêm con cho cặp này ở gia phả có cả hai người.',
+             false);
+    const o = chonChaMe.cacO[chonChaMe.cacO.length - 1];
+    o.input.disabled = true;
+    o.input.parentElement.style.opacity = '.5';
   }
   themHang('', 'Một mình ' + ten,
            'Chưa biết người kia là ai — app dựng một cặp riêng chỉ có ' + ten + '.',
@@ -3236,6 +3246,17 @@ function khoiChonChaMe() {
 }
 
 /** Ghi lựa chọn của khối trên vào `noiVao`. Chuỗi rỗng = một mình người mốc. */
+/**
+ * Cặp có vợ/chồng ở VÀNH ĐAI (ngoài cây đang mở) không — rào thép b128a.
+ * @returns {{id:string, p:object}|null} người ngoài cây đầu tiên
+ */
+function capCoNguoiNgoaiCay(u) {
+  const bien = state.index && state.index.vanhDaiById;
+  if (!bien || !u) return null;
+  const id = (Array.isArray(u.partners) ? u.partners : []).find((x) => bien.has(x));
+  return id ? { id, p: bien.get(id) } : null;
+}
+
 function datChoNoiCon(unionId) {
   if (!noiVao || !noiVao.mocId) return;
   if ((noiVao.unionId || '') === unionId) return;
