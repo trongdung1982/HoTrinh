@@ -103,9 +103,9 @@ việc, không dùng chung. Mỗi sơ đồ chỉ có MỘT tập người — k
 **✓ b128a (24/09) — rào thép, `32` đã dán.** Lỗi ① ở đường GHI, không ở
 tầng vẽ — `so-tay/nguoi-xuyen-cay.md` mục *RÀO THÉP*.
 Đo: `do-b128a` 20/20 · `kiem-rao-thep` 21/21.
-⚠ Chờ chủ dự án bấm: ① cây 1 còn *H9* thì rút khỏi cây 1 · ② sắp thứ tự con
-*lê tình thương* ở cây 1 → báo "Không sắp được" · ③ *+ Con* cho anh ấy → cặp
-với *Hai b* mờ, "Một mình" chọn sẵn · ④ nối P0747 ở T388 bằng 🔗 Kết nối.
+✓ Chủ dự án bấm ①②③ đạt (24/09). Lộ lỗi mới, đã vá: khai lại ĐÚNG quan hệ
+đã có bị `31` chặn — `so-tay/nguoi-xuyen-cay.md`. ⚠ Chờ bấm: TH957 thêm vợ
+*Sáng* (người có sẵn) cho *lê tình thương* → Sáng vào cây, hiện cạnh anh ấy.
 
 **b128b — VẼ BA KHỐI** (thuật toán chủ dự án tả): từ người trung tâm truy
 ngược lên, dựng khối huyết thống của cha và của mẹ. Khối 1 = nhánh cha (khối

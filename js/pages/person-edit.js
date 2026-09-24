@@ -8,7 +8,7 @@
 //            xoa,anh}.js, pages/quan-tri/o-goi-y.js, state,
 //            domains/{person,union,validate,media,purge,render},
 //            services/repo, utils/{graph,text,date,image,avatar}, config
-// Phiên bản: 1.50.0 · Cập nhật: 24/09/2026 (b128a) — khoá cặp ngoài cây · ô tìm nhắc người đã trong cây
+// Phiên bản: 1.51.0 · Cập nhật: 24/09/2026 21:50 — khai lại ĐÚNG quan hệ đã có = chỉ kéo người vào (`keoQuaQuanHeCu`)
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/o-goi-y.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -2080,6 +2080,8 @@ async function handleAddChild() {
   const boi    = (state.phien && state.phien.email) || '';
   const quanHe = docQuanHeMoi();
 
+  if (noiVao && (await keoQuaQuanHeCu('con', noiVao.chaMeId)) !== undefined) return;
+
   const dung = dungCayThemCon(state.tree, gomThayDoi(), quanHe, { boi, luc });
   if (!dung) {
     hienNhan('Không nối được người con vào chỗ này. Có thể gia phả vừa thay đổi ' +
@@ -2345,6 +2347,64 @@ function dungNguoiCoSan(tree, id) {
   const stub = { id, deleted: false };
   return { tree: Object.assign({}, tree, { persons: tree.persons.concat([stub]) }),
            person: stub, diff: {} };
+}
+
+/**
+ * Người ĐÃ CÓ (cây khác) mà quan hệ đang khai ĐÃ nằm sẵn trong máy chủ, đúng
+ * loại ấy → trả hôn nhân cũ; khác loại hoặc chưa có → null (b128b, chủ dự án
+ * bấm 24/09: thêm vợ *Sáng* cho *lê tình thương* ở TH957, cặp U0262 đã có ở
+ * T388 → trigger `31` chặn vì app đẻ cặp THỨ HAI).
+ * Khai lại đúng sự thật đã có không phải sửa quan hệ — chỉ kéo người vào cây.
+ * Đọc `state.tree` (nhóm THÔNG TIN, đủ quan hệ ra ngoài cây), không đọc chỉ mục vẽ.
+ *   loai 'banDoi' : `mocId` và `nguoiId` cùng là vợ/chồng một cặp
+ *   loai 'chaMe'  : `nguoiId` là vợ/chồng của cặp có con `mocId`
+ *   loai 'con'    : `mocId` là vợ/chồng của cặp có con `nguoiId`
+ */
+function quanHeDaCoSan(loai, mocId, nguoiId) {
+  const ds = (state.tree && Array.isArray(state.tree.unions)) ? state.tree.unions : [];
+  const laCon = (u, id) => Array.isArray(u.children) && u.children.some((c) => c && c.personId === id);
+  const laCap = (u, id) => Array.isArray(u.partners) && u.partners.includes(id);
+  return ds.find((u) => u && !u.deleted && (
+    loai === 'banDoi' ? laCap(u, mocId) && laCap(u, nguoiId)
+    : loai === 'chaMe' ? laCap(u, nguoiId) && laCon(u, mocId)
+    : laCap(u, mocId) && laCon(u, nguoiId))) || null;
+}
+
+/**
+ * Kéo người đã có vào cây QUA quan hệ cũ `u`: gửi nguyên bản ghi vùng biên của
+ * họ (đủ cột + đúng `revision`), không gửi quan hệ nào. `luu_cay()` (`32`) nhận
+ * người gửi kèm vào `v_keo_vao`; cặp `u` tự thành cặp trong cây.
+ * Trả `undefined` = không làm (không phải ca này) → nơi gọi đi đường cũ.
+ */
+async function keoQuaQuanHeCu(loai, mocId) {
+  if (!nguoiCoSanChon) return undefined;
+  const u = quanHeDaCoSan(loai, mocId, nguoiCoSanChon.id);
+  if (!u) return undefined;
+  const banGhi = ((state.tree && state.tree.vanhDai) || []).find((p) => p && p.id === nguoiCoSanChon.id);
+  if (!banGhi) return undefined;   // không có bản ghi đủ cột → đường cũ, máy chủ tự báo
+
+  N.dangLuu = true;
+  N.nutLuu.disabled = true;
+  N.nutLuu.style.opacity = '.45';
+  hienNhan('Đang lưu…', false);
+  const ketQua = await ghiBanGhi(banGhi, [], {
+    action: 'create',
+    target: banGhi.id,
+    note:   'Kéo ' + nguoiCoSanChon.ten + ' vào gia phả này — quan hệ với ' +
+            tenNguoi(mocId) + ' đã có sẵn ở ' + u.id + ', không khai lại.',
+    diff:   {},
+  });
+  N.dangLuu = false;
+  if (!N.lopPhu) return ketQua;
+  if (ketQua && ketQua.ok) {
+    closePersonForm();
+    if (N.xuLyNgoai.onDaLuu) N.xuLyNgoai.onDaLuu(banGhi.id);
+    return ketQua;
+  }
+  N.nutLuu.disabled = false;
+  N.nutLuu.style.opacity = '1';
+  hienLoiGhi(ketQua, 'Người này CHƯA được thêm.');
+  return ketQua;
 }
 
 /** Một dòng gọi cho cả bốn nơi từng gọi thẳng `createPerson()` — b124a. */
@@ -3667,6 +3727,9 @@ async function handleAddNguoiThan() {
   const boi    = (state.phien && state.phien.email) || '';
   const quanHe = docQuanHeMoi();
   const laChaMe = N.cheDo === 'themChaMe';
+
+  if (noiVao && (await keoQuaQuanHeCu(laChaMe ? 'chaMe' : 'banDoi',
+                                      laChaMe ? noiVao.childId : noiVao.banDoiId)) !== undefined) return;
 
   const dung = laChaMe
     ? dungCayThemChaMe(state.tree, gomThayDoi(), quanHe, { boi, luc })

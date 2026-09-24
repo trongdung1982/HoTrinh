@@ -97,26 +97,27 @@ Hàng rào 1 gác CẢ vẽ LẪN sửa. Vi phạm là từ chối, không có n
 - **Ô "đã có trong hệ thống chưa" KHÔNG liệt kê người đã thuộc cây đang mở**
   (`tim_nguoi_moi_cay`, cố ý). Gõ đúng người ấy → dòng nhắc chỉ đường
   *🔗 Kết nối* trên sơ đồ. Ca thật 24/09: P0747 đã kéo vào T388 từ trước.
+- **Khai lại ĐÚNG quan hệ đã có thì KHÔNG phải sửa quan hệ** (chủ dự án bấm
+  24/09): TH957 thêm vợ *Sáng* cho *lê tình thương* — cặp U0262 đã có ở T388.
+  App cũ đẻ cặp THỨ HAI → `31` chặn. Nay `keoQuaQuanHeCu()` (`person-edit.js`,
+  ba cửa) thấy quan hệ cùng loại trong `state.tree` → gửi NGUYÊN bản ghi vành
+  đai (đúng `revision`), không gửi quan hệ. ⚠ Gửi mã trần là xoá tên. Khác
+  loại thì `31` vẫn chặn. Không đổi SQL — `ban-thu-sql/do-b128a.mjs` L6.
 - `domains/` vốn đã lọc theo `personById`, nên `chiMucVe()` không đổi một nét
   vẽ nào (đo 681 + 59 trung tâm). Nó tồn tại để luật nằm ở MỘT chỗ gọi tên
   được, không dựa vào việc mười file `domains/` cùng nhớ lọc.
 
 ## Cách mở lại, theo thứ tự
 
-1. ✓ Chốt năm câu — 23/09/2026.
-2. ✓ Phép thử nhỏ — 23/09/2026, đạt 11/11:
-   `../kiem-thu/ban-thu-sql/do-buoc0-vanh-dai.mjs`. Nó cũng tái hiện đúng hai
-   lỗi của `doc_cay()` hôm nay (con rỗng · hôn nhân thiếu một nửa).
-   ⚠ Bẫy khi đo `doc_cay()` thật: nó gọi `co_the_xem_cay()`, nên phải có dòng
+1. ✓ Chốt năm câu · ✓ phép thử nhỏ `../kiem-thu/ban-thu-sql/do-buoc0-vanh-dai.mjs` (23/09).
+2. ⚠ Bẫy khi đo `doc_cay()` thật: nó gọi `co_the_xem_cay()`, nên phải có dòng
    `tree_members` + `set local role authenticated`; và `select set_config(...)`
    tự in ra một dòng JSON — lấy dòng `{` **cuối**, không phải dòng đầu.
 3. **b127**, một phiên một bước. Không chạm `domains/`.
 
    | Bước | Việc | Điểm dừng |
    |---|---|---|
-   | ✓ **b127a** | `luoc-do/30` — đo `../kiem-thu/ban-thu-sql/do-b127a.mjs` 37/37: cây 681 persons/unions/children/media không đổi một dòng, vành đai rỗng, 48→52 ms; người NPG đưa sang NTB có thẻ giống hệt | Đạt trên bàn thử 23/09 |
    | ✓ **b127b** | xem dưới bảng | Cây `T388`: thẻ đủ vợ/con; sơ đồ không đổi một nét — chờ chủ dự án bấm |
-   | ✓ **b127c** | `luoc-do/31` — hai trigger, đo `../kiem-thu/ban-thu-sql/do-b127c.mjs` 22/22 | Đã dán 24/09: 2 trigger, 0 cặp trùng |
    | **b127d** *(tách 24/09, chủ dự án đồng ý)* | ① **Đề nghị chỉnh sửa** quan hệ → QTHT duyệt (bảng mới + nút gửi + khu duyệt). ② Sửa/xoá quan hệ có MỘT ĐẦU NGOÀI cây đang mở → QTHT duyệt | — |
    ✓ **b127c** 24/09 — A–B đã nối thẳng (vợ/chồng · cha mẹ–con) ở một hôn
    nhân sống thì không nối thêm ở hôn nhân khác. Gác bằng TRIGGER trên
