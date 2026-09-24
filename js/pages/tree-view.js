@@ -7,6 +7,7 @@
 //            pages/{person-detail,person-edit,person-list,review,settings,
 //            backup,chon-gia-pha,import-export,export-image}
 // Phiên bản: 1.38.0 · Cập nhật: 24/09/2026 (b128a) — vẽ bằng `chiMucVe()`
+// Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục)
 // ============================================================
 //
 // ⚠ HAI CHỈ MỤC: vẽ bằng `layChiMucVe()` (chỉ người trong cây); mở thẻ/form

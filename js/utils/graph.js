@@ -4,6 +4,7 @@
 // Lớp      : utils
 // Phụ thuộc: (không)
 // Phiên bản: 0.5.0 · Cập nhật: 24/09/2026 (b128a) — thêm `chiMucVe()`
+// Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục)
 // ============================================================
 //
 // ⚠ HAI NHÓM CHỈ MỤC, HAI VIỆC — đừng dùng lẫn (chủ dự án 24/09/2026):

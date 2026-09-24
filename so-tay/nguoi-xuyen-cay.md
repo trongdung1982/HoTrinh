@@ -91,9 +91,12 @@ Hàng rào 1 gác CẢ vẽ LẪN sửa. Vi phạm là từ chối, không có n
   mình A" và các cặp trong cây vẫn chọn được. B không có cửa sửa nào ở đây.
 - Form nào đụng quan hệ thì phải tự bỏ phần ngoài cây TRƯỚC khi gửi, đừng
   để máy chủ báo lỗi: `form-sap-thu-tu.js` giữ con ngoài cây đứng yên, và
-  không mở với cặp có vợ/chồng ngoài cây. **Các form khác CHƯA soát** (thêm
-  con vào cặp có vợ/chồng ngoài cây, xoá người có hôn nhân ra ngoài cây…):
-  hôm nay chúng hỏng TO TIẾNG bằng `ngoairao`, không hỏng im lặng.
+  không mở với cặp có vợ/chồng ngoài cây; *Thêm con* khoá cặp A–B. **Các
+  form khác CHƯA soát** (sửa cặp A–B trong khối Quan hệ của form người, xoá
+  người có hôn nhân ra ngoài cây…): hỏng TO TIẾNG bằng `ngoairao`, không im.
+- **Ô "đã có trong hệ thống chưa" KHÔNG liệt kê người đã thuộc cây đang mở**
+  (`tim_nguoi_moi_cay`, cố ý). Gõ đúng người ấy → dòng nhắc chỉ đường
+  *🔗 Kết nối* trên sơ đồ. Ca thật 24/09: P0747 đã kéo vào T388 từ trước.
 - `domains/` vốn đã lọc theo `personById`, nên `chiMucVe()` không đổi một nét
   vẽ nào (đo 681 + 59 trung tâm). Nó tồn tại để luật nằm ở MỘT chỗ gọi tên
   được, không dựa vào việc mười file `domains/` cùng nhớ lọc.

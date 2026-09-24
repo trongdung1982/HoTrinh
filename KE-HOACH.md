@@ -99,11 +99,12 @@ cha mẹ, vợ chồng, con của B ở ngoài, không vẽ. Nhưng THẺ của 
 (kèm mã) cha mẹ, vợ chồng, con, cha mẹ nuôi, anh chị em… Hai nhóm hàm cho hai
 việc, không dùng chung. Mỗi sơ đồ chỉ có MỘT tập người — không có "hai cây".
 
-**✓ b128a (24/09) — rào thép, `32` đã dán.** Lỗi ① (`loi_2_cay_1.png`) ở
-đường GHI, không ở tầng vẽ — `so-tay/nguoi-xuyen-cay.md` mục *RÀO THÉP*.
-Đo: `do-b128a.mjs` 19/19 · `../kiem-thu/kiem-rao-thep.mjs` 14/14.
-⚠ Dữ liệu thật: *H9* có thể còn nằm ở cây 1 từ lần lỗi — dán `32` xong, xem
-lại cây 1; còn thì rút *H9* khỏi cây 1 trong app. Chờ chủ dự án bấm.
+**✓ b128a (24/09) — rào thép, `32` đã dán.** Lỗi ① ở đường GHI, không ở
+tầng vẽ — `so-tay/nguoi-xuyen-cay.md` mục *RÀO THÉP*.
+Đo: `do-b128a` 20/20 · `kiem-rao-thep` 21/21.
+⚠ Chờ chủ dự án bấm: ① cây 1 còn *H9* thì rút khỏi cây 1 · ② sắp thứ tự con
+*lê tình thương* ở cây 1 → báo "Không sắp được" · ③ *+ Con* cho anh ấy → cặp
+với *Hai b* mờ, "Một mình" chọn sẵn · ④ nối P0747 ở T388 bằng 🔗 Kết nối.
 
 **b128b — VẼ BA KHỐI** (thuật toán chủ dự án tả): từ người trung tâm truy
 ngược lên, dựng khối huyết thống của cha và của mẹ. Khối 1 = nhánh cha (khối
