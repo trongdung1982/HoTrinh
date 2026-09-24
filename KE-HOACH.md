@@ -3,7 +3,7 @@
 *Cập nhật 24/09/2026 · b128a xong, `32` đã dán. Chủ dự án chốt lại:
 **hàng rào 1 là RÀO THÉP** cho cả vẽ lẫn sửa — dòng "luật vẽ cũ sai" hôm trước
 là đọc sai. b128b: ④ xong, ③ hết nhờ b128a, ② đã đo ra gốc. Kế tiếp:
-b128b-2 (dựng `datBaKhoi()` mới). Chủ dự án vẫn còn bấm thử b128a. Rồi b127d, b126.*
+b128b-2 (dựng `datBaKhoi()` mới). b128a đã bấm đạt. Rồi b127d, b126.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -103,16 +103,15 @@ việc, không dùng chung. Mỗi sơ đồ chỉ có MỘT tập người — k
 **✓ b128a (24/09) — rào thép, `32` đã dán.** Lỗi ① ở đường GHI, không ở
 tầng vẽ — `so-tay/nguoi-xuyen-cay.md` mục *RÀO THÉP*.
 Đo: `do-b128a` 20/20 · `kiem-rao-thep` 21/21.
-✓ Chủ dự án bấm ①②③ đạt (24/09). Lộ lỗi mới, đã vá: khai lại ĐÚNG quan hệ
-đã có bị `31` chặn — `so-tay/nguoi-xuyen-cay.md`. ⚠ Chờ bấm: TH957 thêm vợ
-*Sáng* (người có sẵn) cho *lê tình thương* → Sáng vào cây, hiện cạnh anh ấy.
+✓ Chủ dự án bấm đạt hết (24/09), kể cả vá "khai lại ĐÚNG quan hệ đã có =
+chỉ kéo người vào" — `so-tay/nguoi-xuyen-cay.md`.
 
 **b128b — VẼ BA KHỐI** (thuật toán chủ dự án tả): từ người trung tâm truy
 ngược lên, dựng khối huyết thống của cha và của mẹ. Khối 1 = nhánh cha (khối
 con theo trực hệ) · khối 2 = nhánh mẹ (như thế) · khối 3 = anh chị em + con
 của người trung tâm. Vẽ từ trên xuống theo từng khối nhỏ rồi ghép thành khối
 lớn; vẽ xong mỗi khối biết chính xác điểm nối ở cạnh dưới → sơ đồ cân đối.
-✓ Được sửa `domains/layout.js` (24/09) · ✓ ④ lề điện thoại · ✓ ③ hết nhờ
+✓ Được sửa `domains/layout.js` (24/09) · ✓ ④ lề điện thoại (chủ dự án bấm đạt) · ✓ ③ hết nhờ
 `chiMucVe()` (ảnh chụp trước b128a) · ✓ bộ bất biến đo nhánh này:
 `node --import ./sang-supabase.mjs chay.mjs` (`../kiem-thu/`).
 **②** — đo `../kiem-thu/do-b128b.mjs [đời]`. Chùm MỘT con gãy khuỷu là CỐ Ý
