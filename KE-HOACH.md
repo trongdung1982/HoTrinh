@@ -2,7 +2,8 @@
 
 *Cập nhật 24/09/2026 · b128a xong, `32` đã dán. Chủ dự án chốt lại:
 **hàng rào 1 là RÀO THÉP** cho cả vẽ lẫn sửa — dòng "luật vẽ cũ sai" hôm trước
-là đọc sai. Kế tiếp: chủ dự án bấm thử b128a → b128b (vẽ ba khối). Rồi b127d, b126.*
+là đọc sai. b128b: ④ xong, ③ hết nhờ b128a, ② đã đo ra gốc. Kế tiếp:
+b128b-2 (dựng `datBaKhoi()` mới). Chủ dự án vẫn còn bấm thử b128a. Rồi b127d, b126.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -111,19 +112,16 @@ ngược lên, dựng khối huyết thống của cha và của mẹ. Khối 1 
 con theo trực hệ) · khối 2 = nhánh mẹ (như thế) · khối 3 = anh chị em + con
 của người trung tâm. Vẽ từ trên xuống theo từng khối nhỏ rồi ghép thành khối
 lớn; vẽ xong mỗi khối biết chính xác điểm nối ở cạnh dưới → sơ đồ cân đối.
-`layout.js` đã có *"luật BA KHỐI đệ quy"* từ b86b — việc đầu là đo nó lệch
-thuật toán trên ở đâu, trên đúng các ảnh lỗi:
-
-| Lỗi | Ảnh | Thấy gì |
-|---|---|---|
-| ② Nét cha mẹ → con gấp chữ Z | `loi_2_cay_2.png` | Điểm thả từ cặp cha mẹ không nằm trên khoảng các con |
-| ③ Nốt lửng sai hướng | `not_lung.png` | Cặp một người còn con chưa vẽ → nốt chĩa NGANG vào em gái, lẽ ra chĩa xuống |
-| ④ Điện thoại: lề sơ đồ hẹp | (lời chủ dự án) | Người ở mép bị nút chức năng che — `pages/tree-view.js` |
-
-⚠ ②③ nằm trong `domains/layout.js` — trước khi sửa: chủ dự án cho phép sửa
-`domains/` (luật `BAT-DAU.md` mục 1) + trỏ bộ bất biến `../kiem-thu/` sang
-`supabase/js` (`/kiem-tra` phép 9). Cần bản dữ liệu thật của cây 2 (`T388`?)
-để tái hiện ②. Nhìn bằng mắt, đo trên cây 681. Ảnh: `../anh_supabase/`.
+✓ Được sửa `domains/layout.js` (24/09) · ✓ ④ lề điện thoại · ✓ ③ hết nhờ
+`chiMucVe()` (ảnh chụp trước b128a) · ✓ bộ bất biến đo nhánh này:
+`node --import ./sang-supabase.mjs chay.mjs` (`../kiem-thu/`).
+**②** — đo `../kiem-thu/do-b128b.mjs [đời]`. Chùm MỘT con gãy khuỷu là CỐ Ý
+(nhóm 9b). Lỗi thật: chùm ≥2 con thả ngoài khoảng con — cây 59: 0 · cây 681:
+4 cặp. Gốc `layout.js:1306` bỏ dở khi dời con sẽ đè ô. Cùng gốc, xấu hơn:
+`../kiem-thu/b128b-p0185.png` — trung tâm mép trái, cha mẹ mép phải.
+**Chia bước:** b128b-2 dựng `datBaKhoi()` mới cạnh cái cũ (khối từ dưới lên,
+trả điểm nối cạnh dưới) · b128b-3 so hai bản 59 + 681 × mọi trung tâm, nhìn
+ảnh · b128b-4 thay hẳn, xoá đường vá.
 
 ### ⚠ b127d — ĐỀ NGHỊ CHỈNH SỬA quan hệ → QTHT duyệt (tách 24/09/2026)
 
@@ -173,7 +171,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Huy hiệu *đơn chờ duyệt* trên nút Gia phả đếm theo cây ĐANG MỞ** (`napSoDem(phien.treeId)`) — chỗ duy nhất của trang còn dính cây đang mở. Có từ b101, b117 chỉ dời nút | `khung.js` · luật 5a |
 | ⚠ **Ai gọi `don_thung_rac()`** — nút bấm tay hay trigger Apps Script đêm? Chưa hỏi chủ dự án | `THIET-KE-NHIEU-CAY.md` mục 11.6 |
 | ⚠ **b103 → b105 của Antigravity vẫn nằm NGOÀI repo**, trong `codex/`, mới dán lên Staging. Soi lướt: `12` và `13` không thêm luật ghi nào — nhưng chưa rà kỹ, chưa đo | `PHOI-HOP-AI.md` |
-| ⚠ **Bộ bất biến bố cục đang gác nhầm nhánh** — xem ngay dưới bảng | `/kiem-tra` phép 9 |
+| ⚠ **Bộ bất biến bố cục đang gác nhầm nhánh** — xem ngay dưới bảng. Đường chạy tạm đã có: `--import ./sang-supabase.mjs` (b128b) | `/kiem-tra` phép 9 |
 | ⚠ **`index.html` → Cài đặt: "Dòng họ" và vai trò CỐ ĐỊNH TRONG MÃ** — tồn dư thời một cây, phải đọc từ chỗ khai của b126 | `js/pages/settings.js` |
 | ⚠ **Sao lưu KHÔNG chép ảnh** — chỉ liệt kê. Ảnh vẫn nằm đúng một chỗ | `KIEN-TRUC.md` mục 7 |
 | ⚠ **Chưa ai thử KHÔI PHỤC từ file sao lưu** — *có file* khác *khôi phục được* | `sao-luu/HUONG-DAN-SAO-LUU.md` |
