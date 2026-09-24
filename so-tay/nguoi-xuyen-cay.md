@@ -102,7 +102,7 @@ Hàng rào 1 gác CẢ vẽ LẪN sửa. Vi phạm là từ chối, không có n
   App cũ đẻ cặp THỨ HAI → `31` chặn. Nay `keoQuaQuanHeCu()` (`person-edit.js`,
   ba cửa) thấy quan hệ cùng loại trong `state.tree` → gửi NGUYÊN bản ghi vành
   đai (đúng `revision`), không gửi quan hệ. ⚠ Gửi mã trần là xoá tên. Khác
-  loại thì `31` vẫn chặn. Không đổi SQL — `ban-thu-sql/do-b128a.mjs` L6.
+  loại — kể cả đẻ ↔ nuôi — thì đi đường cũ, máy chủ chặn. Không đổi SQL — `ban-thu-sql/do-b128a.mjs` L6.
 - `domains/` vốn đã lọc theo `personById`, nên `chiMucVe()` không đổi một nét
   vẽ nào (đo 681 + 59 trung tâm). Nó tồn tại để luật nằm ở MỘT chỗ gọi tên
   được, không dựa vào việc mười file `domains/` cùng nhớ lọc.

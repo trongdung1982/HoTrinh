@@ -8,7 +8,7 @@
 //            xoa,anh}.js, pages/quan-tri/o-goi-y.js, state,
 //            domains/{person,union,validate,media,purge,render},
 //            services/repo, utils/{graph,text,date,image,avatar}, config
-// Phiên bản: 1.51.0 · Cập nhật: 24/09/2026 21:50 — khai lại ĐÚNG quan hệ đã có = chỉ kéo người vào (`keoQuaQuanHeCu`)
+// Phiên bản: 1.51.1 · Cập nhật: 24/09/2026 21:55 — khai lại ĐÚNG quan hệ đã có (cả loại đẻ/nuôi) = chỉ kéo người vào (`keoQuaQuanHeCu`)
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/o-goi-y.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -2080,7 +2080,7 @@ async function handleAddChild() {
   const boi    = (state.phien && state.phien.email) || '';
   const quanHe = docQuanHeMoi();
 
-  if (noiVao && (await keoQuaQuanHeCu('con', noiVao.chaMeId)) !== undefined) return;
+  if (noiVao && (await keoQuaQuanHeCu('con', noiVao.chaMeId, quanHe)) !== undefined) return;
 
   const dung = dungCayThemCon(state.tree, gomThayDoi(), quanHe, { boi, luc });
   if (!dung) {
@@ -2359,10 +2359,13 @@ function dungNguoiCoSan(tree, id) {
  *   loai 'banDoi' : `mocId` và `nguoiId` cùng là vợ/chồng một cặp
  *   loai 'chaMe'  : `nguoiId` là vợ/chồng của cặp có con `mocId`
  *   loai 'con'    : `mocId` là vợ/chồng của cặp có con `nguoiId`
+ * ⚠ Cha mẹ – con phải khớp CẢ loại (`quanHe`: đẻ · nuôi · …). Đang là con nuôi
+ *   mà khai con đẻ là khai KHÁC sự thật → null → đi đường cũ, `31` chặn.
  */
-function quanHeDaCoSan(loai, mocId, nguoiId) {
+function quanHeDaCoSan(loai, mocId, nguoiId, quanHe) {
   const ds = (state.tree && Array.isArray(state.tree.unions)) ? state.tree.unions : [];
-  const laCon = (u, id) => Array.isArray(u.children) && u.children.some((c) => c && c.personId === id);
+  const laCon = (u, id) => Array.isArray(u.children) && u.children.some((c) =>
+    c && c.personId === id && (c.relation || 'birth') === (quanHe || 'birth'));
   const laCap = (u, id) => Array.isArray(u.partners) && u.partners.includes(id);
   return ds.find((u) => u && !u.deleted && (
     loai === 'banDoi' ? laCap(u, mocId) && laCap(u, nguoiId)
@@ -2376,9 +2379,9 @@ function quanHeDaCoSan(loai, mocId, nguoiId) {
  * người gửi kèm vào `v_keo_vao`; cặp `u` tự thành cặp trong cây.
  * Trả `undefined` = không làm (không phải ca này) → nơi gọi đi đường cũ.
  */
-async function keoQuaQuanHeCu(loai, mocId) {
+async function keoQuaQuanHeCu(loai, mocId, quanHe) {
   if (!nguoiCoSanChon) return undefined;
-  const u = quanHeDaCoSan(loai, mocId, nguoiCoSanChon.id);
+  const u = quanHeDaCoSan(loai, mocId, nguoiCoSanChon.id, quanHe);
   if (!u) return undefined;
   const banGhi = ((state.tree && state.tree.vanhDai) || []).find((p) => p && p.id === nguoiCoSanChon.id);
   if (!banGhi) return undefined;   // không có bản ghi đủ cột → đường cũ, máy chủ tự báo
@@ -3729,7 +3732,8 @@ async function handleAddNguoiThan() {
   const laChaMe = N.cheDo === 'themChaMe';
 
   if (noiVao && (await keoQuaQuanHeCu(laChaMe ? 'chaMe' : 'banDoi',
-                                      laChaMe ? noiVao.childId : noiVao.banDoiId)) !== undefined) return;
+                                      laChaMe ? noiVao.childId : noiVao.banDoiId,
+                                      quanHe)) !== undefined) return;
 
   const dung = laChaMe
     ? dungCayThemChaMe(state.tree, gomThayDoi(), quanHe, { boi, luc })
