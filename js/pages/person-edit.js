@@ -8,7 +8,7 @@
 //            xoa,anh}.js, pages/quan-tri/o-goi-y.js, state,
 //            domains/{person,union,validate,media,purge,render},
 //            services/repo, utils/{graph,text,date,image,avatar}, config
-// Phiên bản: 1.49.0 · Cập nhật: 24/09/2026 (b128a) — Thêm con: khoá cặp có vợ/chồng ngoài cây
+// Phiên bản: 1.50.0 · Cập nhật: 24/09/2026 (b128a) — khoá cặp ngoài cây · ô tìm nhắc người đã trong cây
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/o-goi-y.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -243,7 +243,7 @@ import { luuCay, suaDuoc, timNguoiMoiCay, docNguoiTheoMa } from '../services/rep
 import { taiAnh, xoaAnhThat } from '../services/tuong-thich.js';
 import { ganGoiY, dongNguoiCayKhac } from './quan-tri/o-goi-y.js';
 import { buildIndex } from '../utils/graph.js';
-import { fullName, coGiaTri, removeDiacritics, doiSongNguoi } from '../utils/text.js';
+import { fullName, coGiaTri, removeDiacritics, doiSongNguoi, matchesSearch } from '../utils/text.js';
 import { formatDate, parseLooseDate, stampNow, mocNgay } from '../utils/date.js';
 import { compressImage, driveThumbUrl, dataUri, moTaCo }
   from '../utils/image.js';
@@ -895,10 +895,29 @@ function khoiTimNguoiCoSan() {
     the.append(duoi);
   }
 
+  // Hộp này CỐ Ý không tìm người đã thuộc cây đang mở (`tim_nguoi_moi_cay`).
+  // Gõ đúng người ấy mà danh sách im lặng thì người dùng tưởng họ không tồn
+  // tại (lời chủ dự án 24/09/2026, P0747 ở T388) — nên nói ra đường đúng.
+  const nhac = document.createElement('div');
+  nhac.style.cssText = 'margin-top:5px;font-size:12px;line-height:1.5;color:#8a5a2b';
+  const nhacNguoiTrongCay = (chuoi) => {
+    nhac.textContent = '';
+    const kim = String(chuoi || '').trim();
+    if (kim.length < 2 || !state.index) return;
+    const thay = [...state.index.personById.values()].filter((p) =>
+      p.id.toLowerCase() === kim.toLowerCase() || matchesSearch(fullName(p), kim)).slice(0, 3);
+    if (thay.length === 0) return;
+    nhac.textContent = thay.map((p) => fullName(p) + ' (' + p.id + ')').join(', ') +
+      ' đã có trong gia phả này nên ô này không liệt kê. Muốn nối làm vợ/chồng, ' +
+      'cha mẹ hay con: đóng form, bấm vào ô của người này trên sơ đồ → 🔗 Kết nối.';
+  };
+
   ganGoiY(oNhap, {
     tim: async (chuoi) => {
       const kq = await timNguoiMoiCay(chuoi);
-      return kq.ok ? kq.ds : [];
+      const ds = kq.ok ? kq.ds : [];
+      if (ds.length === 0) nhacNguoiTrongCay(chuoi); else nhac.textContent = '';
+      return ds;
     },
     ve: dongNguoiCayKhac,
     giaTri: (m) => m.ten,
@@ -947,7 +966,7 @@ function khoiTimNguoiCoSan() {
     capNhatKhoaCaNhan();
   }
 
-  boc.append(oNhap, the);
+  boc.append(oNhap, nhac, the);
   return [veNhan('Người này đã có trong hệ thống chưa?'), boc];
 }
 
