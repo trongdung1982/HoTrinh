@@ -118,7 +118,7 @@ Hàng rào 1 gác CẢ vẽ LẪN sửa. Vi phạm là từ chối, không có n
    | Bước | Việc | Điểm dừng |
    |---|---|---|
    | ✓ **b127b** | xem dưới bảng | Cây `T388`: thẻ đủ vợ/con; sơ đồ không đổi một nét — chờ chủ dự án bấm |
-   | **b127d** *(tách 24/09, chủ dự án đồng ý)* | ① **Đề nghị chỉnh sửa** quan hệ → QTHT duyệt (bảng mới + nút gửi + khu duyệt). ② Sửa/xoá quan hệ có MỘT ĐẦU NGOÀI cây đang mở → QTHT duyệt | — |
+   | **b127d** *(tách 24/09, chủ dự án đồng ý)* | **Đề nghị GỠ** quan hệ đã khoá / có một đầu ngoài cây → QTHT duyệt, máy chủ tự gỡ. ✓ d-1 `33` (25/09); các bước: `KE-HOACH.md` | d-2, d-3 |
    ✓ **b127c** 24/09 — A–B đã nối thẳng (vợ/chồng · cha mẹ–con) ở một hôn
    nhân sống thì không nối thêm ở hôn nhân khác. Gác bằng TRIGGER trên
    `unions` + `union_children` (không chép lại `luu_cay()`), lỗi `GP409` hint

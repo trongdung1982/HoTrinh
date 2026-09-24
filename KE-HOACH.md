@@ -54,6 +54,7 @@ ngày 22/09 · `29` ngày 23/09; chủ dự án đọc lại bảng tự kiểm 
 **`31` (b127c) — ĐÃ DÁN lên THẬT 24/09**: 2 trigger, 0 cặp trùng từ trước.
 **`32` (b128a) — ĐÃ DÁN lên THẬT 24/09**, tự kiểm 4/4 ĐẠT. ⚠ Bản đứng cuối
 của `luu_cay()` — dán lại `27`/`28` sau nó là mở lại lỗ, im lặng.
+**`33` (b127d-1) — CHƯA DÁN.** Chỉ thêm, không đè hàm nào; tự kiểm `1|0|5|0`.
 
 ---
 
@@ -92,10 +93,15 @@ gắn tài khoản ↔ người là việc của b126 (Hồ sơ cá nhân), **b1
 
 ### ⚠ b127d — ĐỀ NGHỊ CHỈNH SỬA quan hệ → QTHT duyệt (tách 24/09/2026)
 
-① Người dùng gửi đề nghị sửa quan hệ đã khoá (`31` chặn khai lần hai) →
-QTHT duyệt: bảng mới + nút gửi + khu duyệt. ② Sửa/xoá/thêm con cho quan hệ
-có một đầu ngoài cây: từ `32` máy chủ TỪ CHỐI (`ngoairao`); b127d mở đường
-đề nghị → QTHT duyệt. Chi tiết: `so-tay/nguoi-xuyen-cay.md` mục *Cách mở lại*.
+Chủ dự án chốt 25/09: **hai loại, đều là GỠ** — gỡ con khỏi cặp cha mẹ ·
+gỡ vợ/chồng khỏi hôn nhân. Duyệt = máy chủ TỰ gỡ (rào `32` chặn cả QTHT sửa
+tay). Đổi đẻ↔nuôi để sau. Luật: đầu file `luoc-do/33`.
+
+| Bước | Việc | Điểm dừng |
+|---|---|---|
+| ✓ **d-1** | `33`: bảng + 5 hàm, bàn thử `do-b127d.mjs` 40/40 | Chủ dự án dán `33` |
+| **d-2** | Nút *✉ Đề nghị sửa* ở cặp đang khoá trong form người + `sb`/`repo` | Gửi được một đề nghị thật |
+| **d-3** | Khu duyệt trong `QuanTri.html` | Duyệt một đề nghị, quan hệ gỡ đúng |
 ⚠ b127b chưa bấm thật: thẻ người kéo sang `T388` phải đủ vợ/con.
 
 ### ⚠⚠ b126 — GẮN NGƯỜI và DÒNG HỌ về HỒ SƠ CÁ NHÂN (chốt 23/09/2026)
