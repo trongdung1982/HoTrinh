@@ -3,8 +3,15 @@
 // Vai trò  : Duyệt đồ thị dùng chung. MỌI hàm ở đây bắt buộc có tập visited.
 // Lớp      : utils
 // Phụ thuộc: (không)
-// Phiên bản: 0.4.0 · Cập nhật: 23/09/2026 (b127b) — `buildIndex` thêm `vanhDaiById`
+// Phiên bản: 0.5.0 · Cập nhật: 24/09/2026 (b128a) — thêm `chiMucVe()`
 // ============================================================
+//
+// ⚠ HAI NHÓM CHỈ MỤC, HAI VIỆC — đừng dùng lẫn (chủ dự án 24/09/2026):
+//   • VẼ        — `chiMucVe(tree)`. Chỉ người TRONG cây, và quan hệ đã gọt
+//                 còn đúng những đầu trong cây. Rào thép: không ai ngoài cây
+//                 lọt tới `domains/` vẽ hình.
+//   • THÔNG TIN — `buildIndex(tree)` = `state.index`. Đủ quan hệ + vành đai,
+//                 để thẻ/form kể tên cha mẹ, vợ chồng, con ở mọi cây.
 //
 // CẢNH BÁO: Gia phả là ĐỒ THỊ, không phải cây. Hôn nhân giữa hai nhánh
 // cùng họ tạo ra nhiều đường đi giữa hai điểm. Thiếu tập visited là
@@ -137,6 +144,36 @@ export function buildIndex(tree) {
   }
 
   return { personById, unionById, unionsAsPartner, unionsAsChild, vanhDaiById };
+}
+
+/**
+ * Chỉ mục dành RIÊNG cho việc VẼ sơ đồ — rào thép của hàng rào 1.
+ *
+ * Sơ đồ chỉ có MỘT tập người: những ai thuộc cây (`tree.persons`). Mỗi hôn
+ * nhân được gọt còn vợ/chồng + con trong tập ấy; cặp không còn vợ/chồng nào
+ * trong cây thì bỏ (con của họ trong cây đứng như người không cha mẹ). Không
+ * mang `vanhDai`. Bản sao — không sửa `tree`, vì `tree` là thứ app sửa rồi lưu.
+ *
+ * @param {object} tree  `state.tree`
+ * @returns {object}     cùng hình dạng `buildIndex()`, `vanhDaiById` rỗng
+ */
+export function chiMucVe(tree) {
+  const persons = (tree && Array.isArray(tree.persons)) ? tree.persons : [];
+  const trong = new Set();
+  for (const p of persons) if (p && p.id && !p.deleted) trong.add(p.id);
+
+  const unions = [];
+  for (const u of (tree && Array.isArray(tree.unions)) ? tree.unions : []) {
+    if (!u || !u.id || u.deleted) continue;
+    const partners = (Array.isArray(u.partners) ? u.partners : []).filter((id) => trong.has(id));
+    if (partners.length === 0) continue;
+    const children = (Array.isArray(u.children) ? u.children : [])
+      .filter((c) => c && trong.has(c.personId));
+    const gon = { partners, children };
+    if (Array.isArray(u.partnerOrder)) gon.partnerOrder = u.partnerOrder.filter((id) => trong.has(id));
+    unions.push(Object.assign({}, u, gon));
+  }
+  return buildIndex({ persons, unions });
 }
 
 /**

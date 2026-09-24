@@ -6,7 +6,46 @@
 //            utils/{text,glyph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
 //            backup,chon-gia-pha,import-export,export-image}
-// Phiên bản: 1.37.0 · Cập nhật: 01/09/2026 10:30
+// Phiên bản: 1.38.0 · Cập nhật: 24/09/2026 (b128a) — vẽ bằng `chiMucVe()`
+// ============================================================
+//
+// ⚠ HAI CHỈ MỤC: vẽ bằng `layChiMucVe()` (chỉ người trong cây); mở thẻ/form
+// bằng `state.index` (đủ quan hệ + vành đai). Đừng đưa `state.index` vào ba
+// hàm vẽ dưới đây — rào thép b128a.
+//
+// Luật BA BƯỚC vẽ · bố cục nút · ZOOM VÀ KÉO: khối ghi chú ngay dưới các
+// dòng import — đọc trước khi sửa phần vẽ hay cử chỉ.
+
+import { state, notify } from '../state.js';
+import { computeVisibleSet, findStubPoints } from '../domains/bloodline.js';
+import { computeLayout } from '../domains/layout.js';
+import { renderTree } from '../domains/render.js';
+import { getSpouses, getParents, getChildren, getSiblings } from '../domains/union.js';
+import { fullName, doiSongNguoi } from '../utils/text.js';
+import { chiMucVe } from '../utils/graph.js';
+import { openPersonMenu, openPersonDetail, openUnionDetail,
+         closePersonDetail } from './person-detail.js';
+import { openPersonForm, closePersonForm, quickAddChild, quickAddParent,
+         quickAddSpouse, linkExisting, goNoiNguoi, xoaNguoi,
+         openUnionForm, openMergeForm, openSapThuTu, openSuaCon, openFamilyForm,
+         khoiPhucNhieu, donThungRac, themNguoiDauTien,
+         chuyenVaoThungRac } from './person-edit.js';
+import { openPersonList, closePersonList, openThungRac,
+         openDanhSachGiaDinh } from './person-list.js';
+import { openReview, closeReview } from './review.js';
+import { openSettings, closeSettings } from './settings.js';
+import { openBackup, closeBackup } from './backup.js';
+import { openChonGiaPha, closeChonGiaPha } from './chon-gia-pha.js';
+import { openXuatGedcom, closeXuatGedcom, openNhapGedcom, closeNhapGedcom }
+  from './import-export.js';
+import { xuatAnhPNG, inSoDo, xuatAnhDoPhanGiaiCao, xuatPdfDoPhanGiaiCao, docCoSoDo,
+         xuatPdfNhieuTrang, xemTruocNhieuTrang }
+  from './export-image.js';
+import { veBieuTuongTron } from '../utils/glyph.js';
+import { rongHop, caoHop, leLopPhu } from '../config.js';
+
+// ============================================================
+// BA BƯỚC VẼ · BỐ CỤC NÚT
 // ============================================================
 //
 // Ba bước, gọi liền nhau, KHÔNG được đảo thứ tự (QUY-TAC-VE §11):
@@ -61,33 +100,6 @@
 //   3. Sơ đồ nhỏ hơn khung thì phải căn giữa bằng `padding` của khung cuộn,
 //      KHÔNG bằng flexbox: phần tử flex căn giữa mà tràn khung thì phần thò
 //      ra bên trái không cuộn tới được — lỗi kinh điển, đã tránh có chủ ý.
-
-import { state, notify } from '../state.js';
-import { computeVisibleSet, findStubPoints } from '../domains/bloodline.js';
-import { computeLayout } from '../domains/layout.js';
-import { renderTree } from '../domains/render.js';
-import { getSpouses, getParents, getChildren, getSiblings } from '../domains/union.js';
-import { fullName, doiSongNguoi } from '../utils/text.js';
-import { openPersonMenu, openPersonDetail, openUnionDetail,
-         closePersonDetail } from './person-detail.js';
-import { openPersonForm, closePersonForm, quickAddChild, quickAddParent,
-         quickAddSpouse, linkExisting, goNoiNguoi, xoaNguoi,
-         openUnionForm, openMergeForm, openSapThuTu, openSuaCon, openFamilyForm,
-         khoiPhucNhieu, donThungRac, themNguoiDauTien,
-         chuyenVaoThungRac } from './person-edit.js';
-import { openPersonList, closePersonList, openThungRac,
-         openDanhSachGiaDinh } from './person-list.js';
-import { openReview, closeReview } from './review.js';
-import { openSettings, closeSettings } from './settings.js';
-import { openBackup, closeBackup } from './backup.js';
-import { openChonGiaPha, closeChonGiaPha } from './chon-gia-pha.js';
-import { openXuatGedcom, closeXuatGedcom, openNhapGedcom, closeNhapGedcom }
-  from './import-export.js';
-import { xuatAnhPNG, inSoDo, xuatAnhDoPhanGiaiCao, xuatPdfDoPhanGiaiCao, docCoSoDo,
-         xuatPdfNhieuTrang, xemTruocNhieuTrang }
-  from './export-image.js';
-import { veBieuTuongTron } from '../utils/glyph.js';
-import { rongHop, caoHop, leLopPhu } from '../config.js';
 
 // id của `khungCuon` — CSS `@media print` của `export-image.js` (`inSoDo`)
 // cần một mốc để ẩn hết trang rồi hiện lại đúng khung này. Đặt hằng ở đây,
@@ -173,6 +185,17 @@ export function mountTreeView(containerEl) {
  * Không dùng subscribe() của state: người gọi đổi state xong gọi thẳng hàm
  * này. Vẽ lại cả sơ đồ hai lần cho một lần bấm là thứ nhìn thấy được bằng mắt.
  */
+let veCua = null;   // { tree, index, ve } — chỉ mục VẼ dựng lần gần nhất
+
+/** Chỉ mục VẼ của cây đang mở; dựng lại khi `state.tree`/`state.index` đổi. */
+function layChiMucVe() {
+  if (!state.index || !state.tree) return state.index;
+  if (!veCua || veCua.tree !== state.tree || veCua.index !== state.index) {
+    veCua = { tree: state.tree, index: state.index, ve: chiMucVe(state.tree) };
+  }
+  return veCua.ve;
+}
+
 export function refresh() {
   if (!svgEl) return;
   donKhung();
@@ -182,7 +205,10 @@ export function refresh() {
   // gọi ở đâu cũng cho cùng kết quả — khác hẳn ba việc cuối hàm.
   capNhatNutPhamVi();
 
-  const index = state.index;
+  // ⚠ Sơ đồ đọc CHỈ MỤC VẼ (rào thép, b128a), không đọc `state.index` — cái
+  // ấy mang cả quan hệ ra ngoài cây để thẻ kể tên. Bấm vào ô thì mở thẻ bằng
+  // `state.index`: hai nhóm, hai việc (`utils/graph.js` đầu file).
+  const index = layChiMucVe();
   const focus = state.focusPersonId;
 
   // GIA PHẢ RỖNG đứng riêng, TRƯỚC lời nhắn "chưa chọn được người trung tâm" —
@@ -307,7 +333,7 @@ export function setFocusPerson(personId) {
  * nếu không người dùng bấm vào mà không biết mình vừa đi đâu.
  */
 function moNotCut(stub, visible) {
-  const ds = nguoiSauNotCut(state.index, visible, stub);
+  const ds = nguoiSauNotCut(layChiMucVe(), visible, stub);
   if (ds.length === 0) return;
   if (ds.length === 1) { setFocusPerson(ds[0]); return; }
   hienDanhSachChon(ds);

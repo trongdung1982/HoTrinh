@@ -5,6 +5,7 @@
 ⚠ **TRẦN CỨNG 80 DÒNG · 8 KB · mỗi dòng ≤ 400 ký tự** — đo: `kiem-thu/do-gon.mjs`.
 Vượt trần (file này hay `KE-HOACH.md`) thì **CẮT việc đã xong** — không dời
 kế hoạch đang dùng sang file khác, **đừng nới trần**.
+mọi file vượt trần cứng 50% thì bắt đầu tách file.
 
 ## Việc hôm nay → đọc file nào
 
@@ -19,12 +20,12 @@ kế hoạch đang dùng sang file khác, **đừng nới trần**.
 | Đụng phân quyền, RLS | ⚠⚠ **`so-tay/phan-quyen.md` trước tiên** — nó nói hàm nào ĐỨNG CUỐI ở file nào, và cặp hàng rào phải đi liền nhau · `THIET-KE-NHIEU-CAY.md` **11.3** *(bảng 5 hạng)* · `DU-LIEU.md` mục 2 + **2a** + **2b** · `luoc-do/13` *(không tự đặt quyền cho mình)* · `11` ⚠ *(cờ quyền: CHỈ luật ĐỌC)* · `17` *(cờ `duoc_tao_cay`)* · `18` *(bốn cửa + `la_thanh_vien` · `ds_thanh_vien` · `ds_cho_duyet`)* · `20` *(`ds_tai_khoan_he_thong`)* · `21` *(đề xuất gắn mã người)* · ⚠⚠ **`23`** *(ĐỨNG CUỐI 13 hàm, gồm `la_quan_tri_he_thong` · `la_thanh_vien` · `co_the_xem_cay` · `co_the_sua` · `ds_gia_pha` — dán lại `11`/`14`/`16`/`18`/`20` thì PHẢI dán lại nó)* · `06` · `07` · `02-rls.sql` |
 | **Ai là "quản trị"?** — trước khi gõ chữ ấy | ⚠ Ba hạng khác nhau: **Quản trị hệ thống** = cờ `tai_khoan` · **Chủ cây** = cột `trees.chu_so_huu` · **Quản trị gia phả** = `tree_members.role='quan_tri'`, **chỉ sửa + duyệt nội dung, KHÔNG đổi quyền**. Mã `quan_tri_he_thong` **không** đặt vào `tree_members` được nữa. ⚠ **Quyền DỰNG cây là hạng thứ tư** = cờ `tai_khoan.duoc_tao_cay`, **tách hẳn** khỏi ba hạng trên (b110b) |
 | Đụng kiểm duyệt nội dung, hoàn tác | `luoc-do/08-kiem-duyet.sql` · `03-ham-luu-cay.sql` khối *chụp ảnh* · `kiem-thu/thu-hoan-tac.sql` · bảng TRƯỚC/SAU: `luoc-do/19-kiem-duyet-chi-tiet.sql` + `js/domains/so-sanh.js` (b111) |
-| **Đụng nhiều cây · quyền cấp hệ thống · tạo cây · mã xuyên cây** | ⚠ `THIET-KE-NHIEU-CAY.md` **trước tiên** · ⚠⚠ người xuyên cây (kéo người · vành đai · khoá quan hệ trùng `31`) — `so-tay/nguoi-xuyen-cay.md`; báo trùng/gộp CHƯA dựng |
+| **Đụng nhiều cây · quyền cấp hệ thống · tạo cây · mã xuyên cây** | ⚠ `THIET-KE-NHIEU-CAY.md` **trước tiên** · ⚠⚠ người xuyên cây, rào thép `32` — `so-tay/nguoi-xuyen-cay.md` |
 | **Đụng trang `QuanTri.html` — bất cứ khu nào** | ⚠⚠ **`so-tay/trang-quan-tri.md` trước tiên** — giao diện = NGUYÊN FILE quantri3 dựng bằng máy (b118d), JS chỉ đổ dữ liệu vào section của mình, không vẽ lại; sổ tay ấy giữ mọi bẫy đã gặp (bản giả `sb-gia.mjs`, font, menu bị cắt) · `THIET-KE-QUAN-TRI.md` · `js/pages/quan-tri/` · ⚠ **nhìn bằng mắt trước khi báo xong**: `so-quantri3.mjs` *(so với prototype)* + `xem-khung-quan-tri.mjs` *(cảnh app riêng)*, cả hai ở `../kiem-thu/` · ⚠ **không màn hình nào ngầm định "cây đang mở"** — mọi chỗ gán quyền gọi tên cây (b110b); ngoại lệ duy nhất là hai cờ cấp tài khoản |
 | Bàn thử SQL tại chỗ · phép ĐO hàng rào · tên/mã vai trò | `../kiem-thu/ban-thu-sql/` *(ngoài repo, CÓ trên máy này)* — `do-b102`→`do-b118b` ⚠ tiếng Việt vào psql phải đi bằng `-f`, không `-c` · tên vai: `config.js` hàm `vaiTroBangChu()` |
 | Đụng **ô gợi ý** (bốn chỗ dùng chung `o-goi-y.js`) | ⚠ `so-tay/o-goi-y.md` — sáu cái bẫy, hai cái từng nuốt mất cú bấm |
 | Duyệt/gắn tài khoản, hỏi "sao tôi không sửa được" | `HUONG-DAN-PHAN-QUYEN.md` |
-| Đụng cách VẼ sơ đồ | ⚠⚠ **luật vẽ đang xét lại — `KE-HOACH.md` b128** · `../tai-lieu/QUY-TAC-VE_V14.md` · `BAT-DAU.md` mục 6 |
+| Đụng cách VẼ sơ đồ | ⚠⚠ vẽ bằng `chiMucVe()`, thẻ/form bằng `state.index` — không lẫn · `KE-HOACH.md` b128 · `../tai-lieu/QUY-TAC-VE_V14.md` |
 | Đụng thẻ người · thẻ gia đình · menu vòng tròn | `so-tay/the-thong-tin.md` |
 | Đụng ảnh | `KIEN-TRUC.md` mục 7 ⚠ có câu chưa chốt |
 | Đụng sao lưu, trigger Apps Script | `sao-luu/SaoLuu.gs` · `luoc-do/05-sao-luu.sql` · `kiem-thu/kiem-sao-luu.mjs` |

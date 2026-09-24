@@ -1,8 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 24/09/2026 · b127a–c xong (`30`, `31` đã dán). Chủ dự án khẳng định
-**luật vẽ cũ sai** (hàng rào "cây = ranh vẽ cứng") — việc kế tiếp: **b128**
-chốt lại cách vẽ theo dữ liệu nền. Rồi b127d, b126.*
+*Cập nhật 24/09/2026 · b128a xong trên máy (`32` CHƯA dán). Chủ dự án chốt lại:
+**hàng rào 1 là RÀO THÉP** cho cả vẽ lẫn sửa — dòng "luật vẽ cũ sai" hôm trước
+là đọc sai. Kế tiếp: dán `32` → b128b (vẽ ba khối). Rồi b127d, b126.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. File này nạp ở đầu MỌI phiên: mỗi dòng
 thừa ở đây nhân với số phiên còn lại. Vượt trần là có thứ đứng nhầm chỗ,
@@ -53,6 +53,9 @@ ngày 22/09 · `29` ngày 23/09; chủ dự án đọc lại bảng tự kiểm 
 
 **`30` (b127a) — ĐÃ DÁN lên THẬT 23/09**, chạy thành công.
 **`31` (b127c) — ĐÃ DÁN lên THẬT 24/09**: 2 trigger, 0 cặp trùng từ trước.
+**`32` (b128a) — CHƯA DÁN.** Bàn thử `do-b128a.mjs` 19/19. Dán xong: bảng tự
+kiểm 4 dòng ĐẠT. ⚠ Bản đứng cuối của `luu_cay()` — dán lại `27`/`28` sau nó
+là mở lại lỗ, im lặng.
 
 ---
 
@@ -68,18 +71,11 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 `sb.js` không phải danh sách hàm máy chủ (`THIET-KE-QUAN-TRI.md` 9.5).
 ⚠ Khung KHÔNG đổi sang tab ngang: thanh trái, dưới 850px mới thành hàng thẻ.
 
-### ⚠⚠ Một người một bản ghi toàn phần mềm — b121 → b124
+### ⚠⚠ Một người một bản ghi — b121 → b124 (xong, trừ b124b)
 
-`THIET-KE-NHIEU-CAY.md` mục 6 (thay b120, `noi_ve` bỏ). **b121 · b122a · b122b
-· b122c (dán) xong**; sổ tay: `so-tay/luu-du-lieu.md`.
-
+Sổ tay: `so-tay/luu-du-lieu.md` · kéo người, b124b chưa dựng:
+`so-tay/nguoi-xuyen-cay.md` · b124c: `so-tay/phan-quyen.md` *Nới hẹp tự duyệt*.
 ⚠ Staging vẫn lệch thật tới khi dán `26`+`27`+`28` sang đó.
-
-**⚠ Ô kéo người (b124a) BẬT LẠI 23/09** để chủ dự án thử, trước b127b/b127c;
-b124b vẫn chưa dựng. Thứ tự mở lại · dữ liệu thử: **`so-tay/nguoi-xuyen-cay.md`**.
-
-**b124c XONG 23/09/2026** — `29` + `sb.laQuanTriCay()` + nới nút Duyệt. Luật,
-chỗ chưa với tới, điểm dừng: `so-tay/phan-quyen.md` mục *Nới hẹp tự duyệt*.
 ⚠ Ô gợi ý trên điện thoại thật chưa ai bấm lại — `so-tay/o-goi-y.md`.
 
 ### ⚠ b125 — BẢNG NGƯỜI trong trang Quản trị (chủ dự án chốt 23/09/2026)
@@ -94,36 +90,47 @@ gắn tài khoản ↔ người là việc của b126 (Hồ sơ cá nhân), **b1
 | **b125d** | Chọn nhiều dòng + sửa hàng loạt một trường | Sửa 10 người một lượt, hoàn tác được |
 | **b125e** | Xuất Excel; nối vào đường NHẬP đã có | Xuất ra mở được bằng Excel |
 
-b125a xong, chủ dự án bấm trên app thật cây 681 người: đọc nhanh, cuộn ngang
-gọn. ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
+⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
 
-### ⚠⚠ b128 — LUẬT VẼ SAI, sửa theo dữ liệu nền (chủ dự án 24/09/2026) — LÀM TRƯỚC
+### ⚠⚠ b128 — RÀO THÉP + VẼ BA KHỐI (chủ dự án chốt 24/09/2026) — LÀM TRƯỚC
 
-Chủ dự án: *"theo luật mới về dữ liệu nền bất biến thì luật vẽ cũ sai"* —
-**cần làm theo phương pháp chủ dự án đã đề xuất nhưng bị xếp lại** — chủ dự
-án xác nhận 24/09 ("đồng ý đề xuất") đó là lời 22/09 ở
-`so-tay/nguoi-xuyen-cay.md`: *"thêm người ở cây khác thì bấm người đó sẽ vẽ
-đủ mối quan hệ của họ"*. Phiên đầu b128 = THIẾT KẾ (vẽ lan tới đâu, cây còn
-giữ vai gì: mục lục · quyền sửa), chưa viết mã. Ảnh ở `../anh_supabase/`
-(ngoài repo). Bốn lỗi:
+**Lời chủ dự án, giữ nguyên ý:** hàng rào 1 là rào thép — nội dung VẼ và
+SỬA đều giới hạn trong cây; vi phạm là từ chối. Thêm B vào cây = chỉ B vào;
+cha mẹ, vợ chồng, con của B ở ngoài, không vẽ. Nhưng THẺ của B kể đủ tên
+(kèm mã) cha mẹ, vợ chồng, con, cha mẹ nuôi, anh chị em… Hai nhóm hàm cho hai
+việc, không dùng chung. Mỗi sơ đồ chỉ có MỘT tập người — không có "hai cây".
 
-| Lỗi | Ảnh | Thấy gì | Chạm |
-|---|---|---|---|
-| ① Hàng rào vẽ cứng | `loi_2_cay_1.png` · `loi_2_cay_2.png` | Thêm cha mẹ cho *lê thị vợ thử H9* ở cây 2 → cây 1 (trước đó đúng) vẽ chị dưới *lê tình thương* như con của cặp MỘT người: mẹ *Nguyễn Thị Hai b* không thuộc cây 1 nên nửa cặp bị cắt | `doc_cay` · `graph.js` · thiết kế mục 6 |
-| ② Nét cha mẹ → con gấp chữ Z | `loi_2_cay_2.png` | Điểm thả từ cặp cha mẹ không nằm trên khoảng các con (Nguyễn Văn Một → Nguyễn Thị Hai b; lê tình thương + Hai b → hai con) | `domains/layout.js` |
-| ③ Nốt lửng sai hướng | `not_lung.png` | Nốt của *lê tình thương* chĩa ngang vào em gái bên phải | `domains/layout.js` / `render.js` |
-| ④ Điện thoại: lề sơ đồ hẹp | (lời chủ dự án) | Người ở mép bị nút chức năng che | `pages/tree-view.js` |
+**✓ b128a (24/09) — rào thép, chờ dán `32`.** Lỗi ① (`loi_2_cay_1.png`) ở
+đường GHI, không ở tầng vẽ — `so-tay/nguoi-xuyen-cay.md` mục *RÀO THÉP*.
+Đo: `do-b128a.mjs` 19/19 · `../kiem-thu/kiem-rao-thep.mjs` 14/14.
+⚠ Dữ liệu thật: *H9* có thể còn nằm ở cây 1 từ lần lỗi — dán `32` xong, xem
+lại cây 1; còn thì rút *H9* khỏi cây 1 trong app. Chờ chủ dự án bấm.
 
-⚠ ②③ nằm trong `domains/` — luật "không sửa `domains/`" + `/kiem-tra` phép 9
-(bộ bất biến `../kiem-thu/` vẫn đo `giapha/js`). Phải có chủ dự án cho phép và
-trỏ bộ bất biến sang nhánh mới TRƯỚC khi sửa. Nhìn bằng mắt, đo trên cây 681.
+**b128b — VẼ BA KHỐI** (thuật toán chủ dự án tả): từ người trung tâm truy
+ngược lên, dựng khối huyết thống của cha và của mẹ. Khối 1 = nhánh cha (khối
+con theo trực hệ) · khối 2 = nhánh mẹ (như thế) · khối 3 = anh chị em + con
+của người trung tâm. Vẽ từ trên xuống theo từng khối nhỏ rồi ghép thành khối
+lớn; vẽ xong mỗi khối biết chính xác điểm nối ở cạnh dưới → sơ đồ cân đối.
+`layout.js` đã có *"luật BA KHỐI đệ quy"* từ b86b — việc đầu là đo nó lệch
+thuật toán trên ở đâu, trên đúng các ảnh lỗi:
+
+| Lỗi | Ảnh | Thấy gì |
+|---|---|---|
+| ② Nét cha mẹ → con gấp chữ Z | `loi_2_cay_2.png` | Điểm thả từ cặp cha mẹ không nằm trên khoảng các con |
+| ③ Nốt lửng sai hướng | `not_lung.png` | Cặp một người còn con chưa vẽ → nốt chĩa NGANG vào em gái, lẽ ra chĩa xuống |
+| ④ Điện thoại: lề sơ đồ hẹp | (lời chủ dự án) | Người ở mép bị nút chức năng che — `pages/tree-view.js` |
+
+⚠ ②③ nằm trong `domains/layout.js` — trước khi sửa: chủ dự án cho phép sửa
+`domains/` (luật `BAT-DAU.md` mục 1) + trỏ bộ bất biến `../kiem-thu/` sang
+`supabase/js` (`/kiem-tra` phép 9). Cần bản dữ liệu thật của cây 2 (`T388`?)
+để tái hiện ②. Nhìn bằng mắt, đo trên cây 681. Ảnh: `../anh_supabase/`.
 
 ### ⚠ b127d — ĐỀ NGHỊ CHỈNH SỬA quan hệ → QTHT duyệt (tách 24/09/2026)
 
 ① Người dùng gửi đề nghị sửa quan hệ đã khoá (`31` chặn khai lần hai) →
-QTHT duyệt: bảng mới + nút gửi + khu duyệt. ② Sửa/xoá quan hệ có một đầu
-ngoài cây đang mở → QTHT duyệt. Đi SAU b128 — cách vẽ đổi thì "ngoài cây"
-có thể đổi nghĩa. Chi tiết: `so-tay/nguoi-xuyen-cay.md` mục *Cách mở lại*.
+QTHT duyệt: bảng mới + nút gửi + khu duyệt. ② Sửa/xoá/thêm con cho quan hệ
+có một đầu ngoài cây: từ `32` máy chủ TỪ CHỐI (`ngoairao`); b127d mở đường
+đề nghị → QTHT duyệt. Chi tiết: `so-tay/nguoi-xuyen-cay.md` mục *Cách mở lại*.
 ⚠ b127b chưa bấm thật: thẻ người kéo sang `T388` phải đủ vợ/con.
 
 ### ⚠⚠ b126 — GẮN NGƯỜI và DÒNG HỌ về HỒ SƠ CÁ NHÂN (chốt 23/09/2026)

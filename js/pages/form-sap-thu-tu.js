@@ -5,8 +5,14 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: pages/person-edit.js (nền dùng chung), state,
 //            domains/{union,render}, utils/{text,date,image,avatar}
-// Phiên bản: 1.1.0 · Cập nhật: 23/09/2026 (b127b) — con ở vành đai hiện tên
+// Phiên bản: 1.2.0 · Cập nhật: 24/09/2026 (b128a) — rào thép: chỉ sắp con TRONG cây
+// Sổ tay   : so-tay/nguoi-xuyen-cay.md
 // ============================================================
+//
+// ⚠ **Rào thép (b128a, `luoc-do/32`).** Con ở vành đai (ngoài cây) KHÔNG hiện
+// trong hộp và KHÔNG đổi chỗ: nó giữ nguyên vị trí, con trong cây xếp vào các
+// chỗ còn lại. Gửi dòng con ngoài cây lên là máy chủ từ chối `ngoairao`. Cặp
+// có vợ/chồng ngoài cây thì không sắp được từ cây này — báo bằng chữ.
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 3 của
 // `tai-lieu/BAN-DO-TACH_V01.md`). Mã bên trong KHÔNG đổi một dòng nào.
@@ -187,6 +193,21 @@ function thuTuDangCo(u) {
     .map((c) => c.personId);
 }
 
+/** Người ngoài cây đang mở — `vanhDaiById` chỉ chứa đúng họ (b127b). */
+function ngoaiCay(id) {
+  return !!(state.index && state.index.vanhDaiById && state.index.vanhDaiById.has(id));
+}
+
+/**
+ * Ghép thứ tự người dùng sắp (chỉ con TRONG cây) vào hàng đầy đủ: con ngoài
+ * cây đứng yên đúng vị trí cũ, con trong cây lấp các chỗ còn lại theo thứ tự
+ * mới. `reorderChildren()` cần một hoán vị ĐỦ, nên phải ghép rồi mới gọi.
+ */
+function ghepThuTuDu(dayDu, trongCay) {
+  let i = 0;
+  return dayDu.map((id) => (ngoaiCay(id) ? id : trongCay[i++]));
+}
+
 /** Giống hệt `soOrder()` trong `domains/union.js` — thiếu `order` thì xếp cuối. */
 function soThuTuCon(c) {
   const n = Number(c && c.order);
@@ -197,10 +218,20 @@ function moManSap(unionId, mocId, laCon, xuLy) {
   const u = timCapTrongCay(unionId);
   if (!u) return;
 
+  const voChongNgoai = (Array.isArray(u.partners) ? u.partners : []).find(ngoaiCay);
+  if (voChongNgoai) {
+    const p = state.index.vanhDaiById.get(voChongNgoai);
+    moHopBao('Không sắp được từ gia phả này',
+      'Cặp này có ' + ((p && fullName(p)) || voChongNgoai) + ' (' + voChongNgoai +
+      ') — người không thuộc gia phả đang mở. Thứ tự con của cặp ấy chỉ sắp ' +
+      'được ở gia phả có cả hai vợ chồng.', false);
+    return;
+  }
+
   closePersonForm();
   N.xuLyNgoai = xuLy || {};
   N.cheDo     = 'sapThuTu';
-  sapCtx    = { unionId, mocId, laCon, thuTu: thuTuDangCo(u) };
+  sapCtx    = { unionId, mocId, laCon, thuTu: thuTuDangCo(u).filter((id) => !ngoaiCay(id)) };
 
   N.lopPhu = document.createElement('div');
   N.lopPhu.style.cssText = KIEU_LOP_PHU;
@@ -277,10 +308,8 @@ function veDayCon() {
  * nút *Xong* xuống dưới mép màn hình.
  */
 function veTheCon(id, i) {
-  // Người vành đai (b127b) là con ở gia phả khác — có tên, không phải thùng rác.
-  const bien = state.index && state.index.vanhDaiById && state.index.vanhDaiById.get(id);
-  const p = timNguoiTrongCay(id) || bien || null;
-  const conTrong = !!(state.index && state.index.personById.has(id)) || !!bien;
+  const p = timNguoiTrongCay(id);
+  const conTrong = !!(state.index && state.index.personById.has(id));
   const dangKeo  = !!(sapKeo && sapKeo.tu === i);
 
   const the = document.createElement('div');
@@ -451,7 +480,7 @@ function sapTheoTuoi() {
     return;
   }
 
-  sapCtx.thuTu = kq.thuTuMoi.slice();
+  sapCtx.thuTu = kq.thuTuMoi.filter((id) => !ngoaiCay(id));
   veDayCon();
   hienNhan('Đã xếp thử theo tuổi. Người thiếu năm sinh giữ nguyên chỗ cũ. ' +
            'Phép này tính từ thứ tự ĐANG LƯU nên nó bỏ qua những gì bạn vừa ' +
@@ -473,12 +502,21 @@ async function handleSaveThuTu() {
     return;
   }
 
-  if (thuTuDangCo(cu).join('|') === sapCtx.thuTu.join('|')) {
+  const dayDu = thuTuDangCo(cu);
+  const thuTuMoi = ghepThuTuDu(dayDu, sapCtx.thuTu);
+  if (dayDu.join('|') === thuTuMoi.join('|')) {
     hienNhan('Chưa đổi chỗ ai cả, nên không có gì để lưu.', false);
     return;
   }
 
-  const kq = reorderChildren(state.tree, unionId, sapCtx.thuTu);
+  const kq = reorderChildren(state.tree, unionId, thuTuMoi);
+  // Con ngoài cây: giữ NGUYÊN dòng cũ (cả số `order`), để khác biệt không
+  // gửi dòng ấy lên — gửi là `ngoairao`.
+  if (kq) {
+    kq.union.children = kq.union.children.map((c) => (ngoaiCay(c.personId)
+      ? Object.assign({}, cu.children.find((x) => x && x.personId === c.personId))
+      : c));
+  }
   if (!kq) {
     hienNhan('Không ghi được thứ tự này — danh sách người con vừa đổi ở nơi ' +
              'khác. Tải lại trang rồi sắp lại.', true);

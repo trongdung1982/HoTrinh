@@ -57,26 +57,9 @@ dưới đây là hai chỗ đã biết từ trước, **nghi vấn** là nguồ
 - Cờ `deleted` và xoá cứng hôn nhân là CHUNG mọi cây — xoá một cặp ở cây B là
   mất ở cây A. *(Chưa lộ vì trước 21/09 không cây nào dùng chung người.)*
 
-## Câu hỏi PHẢI chốt trước khi viết lại một dòng mã
+## Năm câu thiết kế — ĐÃ CHỐT 23/09/2026
 
-Ghi câu trả lời vào `THIET-KE-NHIEU-CAY.md` mục 6, rồi mới mở phiên mã.
-
-1. **Cây là gì?** Một danh sách người do tay chọn (hôm nay) — hay một **cửa sổ
-   nhìn vào đồ thị chung**, định nghĩa bằng một người gốc + luật lan (huyết
-   thống, bao nhiêu đời, có kèm dâu/rể không)?
-2. **Ranh giới cứng hay mềm?** Người xuyên cây đứng ở mép cây: vẽ họ **đến
-   đâu**? Chỉ họ · họ + vợ/chồng · cả nhánh? Cái phần "bên kia" hiện ra thế nào
-   — ẩn hẳn, hay **nốt tròn bấm được** như luật ẩn nhánh không cùng huyết thống
-   (`tai-lieu/QUY-TAC-VE`) — bấm thì mở sang cây kia, hay vẽ tại chỗ?
-3. **Thẻ gia đình của một người xuyên cây kể gì?** Mọi hôn nhân, mọi con trong
-   cả phần mềm (đúng với "một người, thông tin gia đình duy nhất") — hay chỉ
-   những gì trong cây đang mở? Nếu kể hết: người xem cây B có được thấy tên vợ
-   ông X mà vợ ấy chỉ nằm ở cây A kín không?
-4. **Thêm/sửa/xoá quan hệ từ cây B** mà một đầu nằm ngoài B: ai duyệt — quản
-   trị B, quản trị A, hay cả hai? Xoá cặp ở B có được xoá ở A không?
-5. **Kéo một người vào = kéo gì theo?** Chỉ người ấy, hay tự thêm cả cha mẹ/
-   vợ/con vào `tree_persons` của cây mới?
-
+*(Năm câu hỏi gốc: `git log -p` file này.)*
 ✓ **Cả năm câu đã chốt 23/09/2026** — `THIET-KE-NHIEU-CAY.md` mục 6, *HAI HÀNG
 RÀO*: cây (`tree_persons`) vẫn là ranh vẽ cứng; người ngoài cây có dây nối vào
 (vùng biên) không có thẻ riêng, không vẽ, chỉ bổ sung dòng "vợ/con: …" vào thẻ
@@ -85,6 +68,32 @@ thì khoá, sai thì gửi đề nghị chỉnh sửa cho QTHT duyệt; người
 nào là trạng thái hợp lệ, quản lý ở `quantri.html`. Trực hệ có hai nhánh
 riêng — vẽ (từ người trung tâm) và sửa (từ người tài khoản sở hữu, duyệt
 trong cây).
+
+## ⚠⚠ RÀO THÉP — chủ dự án chốt 24/09/2026 (b128a)
+
+Hàng rào 1 gác CẢ vẽ LẪN sửa. Vi phạm là từ chối, không có ngoại lệ.
+
+| Nhóm | Dữ liệu | Ai dùng |
+|---|---|---|
+| **VẼ** | `chiMucVe(state.tree)` — chỉ người trong cây, quan hệ gọt còn đầu trong cây | `pages/tree-view.js` → `domains/` vẽ hình |
+| **THÔNG TIN** | `state.index` = `buildIndex()` — đủ quan hệ + `vanhDaiById` | thẻ, form, danh sách |
+| **GHI** | `luu_cay()` bản `32` | mọi lần lưu |
+
+- **Kéo vào = chỉ quan hệ MỚI KHAI.** Gửi lại quan hệ đã có KHÔNG kéo ai.
+  Trước `32`: sắp thứ tự con ở cây 1 → cạnh con của *H9* (ngoài cây) đi lên →
+  *H9* bị ghi vào cây 1 (`loi_2_cay_1.png`). Lỗ ấy mở từ `30`, khi app bắt đầu
+  giữ quan hệ ra ngoài cây để thẻ kể tên — dữ liệu của nhóm THÔNG TIN lọt
+  sang đường GHI.
+- **Quan hệ có một đầu ngoài cây: không sửa, không xoá, không thêm con** từ
+  cây này → `ngoairao`, câu báo có tên người ngoài cây. Đường hợp lệ: b127d.
+- Form nào đụng quan hệ thì phải tự bỏ phần ngoài cây TRƯỚC khi gửi, đừng
+  để máy chủ báo lỗi: `form-sap-thu-tu.js` giữ con ngoài cây đứng yên, và
+  không mở với cặp có vợ/chồng ngoài cây. **Các form khác CHƯA soát** (thêm
+  con vào cặp có vợ/chồng ngoài cây, xoá người có hôn nhân ra ngoài cây…):
+  hôm nay chúng hỏng TO TIẾNG bằng `ngoairao`, không hỏng im lặng.
+- `domains/` vốn đã lọc theo `personById`, nên `chiMucVe()` không đổi một nét
+  vẽ nào (đo 681 + 59 trung tâm). Nó tồn tại để luật nằm ở MỘT chỗ gọi tên
+  được, không dựa vào việc mười file `domains/` cùng nhớ lọc.
 
 ## Cách mở lại, theo thứ tự
 
