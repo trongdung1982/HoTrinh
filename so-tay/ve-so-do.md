@@ -24,6 +24,11 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
 - **Người trung tâm văng ra mép, cha mẹ ở mép kia** — P0185. Ghép khối con
   theo BAO HÌNH chữ nhật: cả khối cháu chắt của người anh chắn chỗ cả những
   hàng cô không đứng. Cách mới ghép theo VIỀN TỪNG HÀNG (`canhPhai()`).
+- **Người không con bị ép sát một bên** — bà Ảo P0349 (tâm P0228, cây 681).
+  Ghép VIỀN (sửa P0185) cho bà trượt sát bà Sang, trống 456px về phía ông
+  Huấn; cách cũ ghép HỘP nên bà đứng giữa, chủ dự án thấy đẹp hơn. Nay ghép
+  viền xong thì khối GIỮA còn trống hai bên đứng giữa khoảng trống
+  (`canVaoKhoangTrong()`) — P0185 vẫn đúng vì nó hết chỗ trống.
 - **Union riêng của người được hấp thụ** (con ghi một mình mẹ, U0180) không
   thuộc dải nào → rơi lưới an toàn. Cách mới cho dải nhận union ấy.
 - **LỖI DỮ LIỆU trông như lỗi vẽ** — U0180: Hạt, Thu ghi là con bà Hồi mà

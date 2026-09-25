@@ -3,7 +3,7 @@
 // Vai trò  : Tính TOẠ ĐỘ các ô người, đường nối và nốt cụt. Không vẽ gì cả.
 // Lớp      : domains — HÀM THUẦN. Không gọi services, không chạm DOM.
 // Phụ thuộc: config (LAYOUT, PHOTO)
-// Phiên bản: 1.22.0 · Cập nhật: 25/09/2026 20:21
+// Phiên bản: 1.23.0 · Cập nhật: 25/09/2026 20:49
 // ⚠ b128b: HAI cách xếp nằm cạnh nhau — cũ `datMoiKhoi()` + bốn lượt vá, mới
 //   `datBaKhoi()` (mục 4b). Chọn bằng `LAYOUT.xepBaKhoi` / `tuyChon.baKhoi`.
 // Sổ tay   : so-tay/ve-so-do.md
@@ -1791,7 +1791,38 @@ function xepKhit(ds, khe) {
     gop(acc, k);
     if (typeof k.neoX === 'number') tamTruoc = k.neoX;
   }
-  return acc;
+  if (!canVaoKhoangTrong(ds, khe)) return acc;
+  const moi = khoiRong();                 // viền của `acc` là bản sao — dựng lại
+  for (const k of ds) gop(moi, k);
+  return moi;
+}
+
+/**
+ * Khối ở GIỮA còn trống cả hai bên (hàng sâu của hai khối kề nhau đã giữ khoảng
+ * cách) thì đứng giữa khoảng trống, không dính sát bên trái. Ca bà Ảo P0349
+ * (tâm P0228, cây 681): ghép viền đẩy bà sát bà Sang, trống 456px về phía ông
+ * Huấn; cách cũ ghép hộp chữ nhật nên bà đứng giữa — chủ dự án chọn cách cũ.
+ * Sửa `ds` tại chỗ; trả `true` nếu có khối bị dời.
+ */
+function canVaoKhoangTrong(ds, khe) {
+  let coDoi = false;
+  for (let i = 1; i < ds.length - 1; i++) {
+    const k = ds[i];
+    const trai = khoiRong(), phai = khoiRong();
+    for (let j = 0; j < i; j++) gop(trai, ds[j]);
+    for (let j = i + 1; j < ds.length; j++) gop(phai, ds[j]);
+    const lui = -canhPhai(trai.vien, k.vien, khe);     // dời trái được bấy nhiêu
+    const tien = -canhPhai(k.vien, phai.vien, khe);    // dời phải được bấy nhiêu
+    if (!Number.isFinite(lui) || !Number.isFinite(tien)) continue;
+    let d = (tien - lui) / 2;
+    if (typeof k.neoX === 'number') {
+      const neoTrai = ds[i - 1].neoX, neoPhai = ds[i + 1].neoX;
+      if (typeof neoTrai === 'number') d = Math.max(d, neoTrai + RONG + khe - k.neoX);
+      if (typeof neoPhai === 'number') d = Math.min(d, neoPhai - RONG - khe - k.neoX);
+    }
+    if (Math.abs(d) > 0.5) { dich(k, d); coDoi = true; }
+  }
+  return coDoi;
 }
 
 /**
