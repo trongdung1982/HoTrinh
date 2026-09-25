@@ -1,8 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 25/09/2026 05:45 · b128 XONG: rào thép (`32`) + vẽ BA KHỐI —
-chủ dự án xem: bản mới đẹp hơn, app mặc định MỚI, nút Cũ/Mới dưới 🔍 giữ tới
-khi chủ dự án bảo gỡ (`so-tay/ve-so-do.md`). Kế tiếp: b127d, rồi b126.*
+*Cập nhật 25/09/2026 07:04 · b127d-1 XONG trên bàn thử: SQL `33` đề nghị
+GỠ quan hệ, **chờ chủ dự án dán**. Cùng phiên: nốt cụt thiếu con mọc XUỐNG
+(P0413). Nút Cũ/Mới dưới 🔍 giữ tới khi chủ dự án bảo gỡ (`so-tay/ve-so-do.md`).
+Kế tiếp: b127d-2, b127d-3, rồi b126.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
 **đừng nới trần**. Ba luật giữ nó gọn:
