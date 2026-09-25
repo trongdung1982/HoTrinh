@@ -54,7 +54,8 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
   25/09/2026), tính bằng `tapHuyetThong()` (`utils/graph.js`). KHÔNG lọc theo
   "vùng biên" (`edge`): họ hàng xa lấy người trong họ đứng vùng biên mà vẫn là
   huyết thống — 6 lượt cây 59, 4 lượt cây 681 (P0468, P0471 tâm P0469) từng
-  bị ẩn oan.
+  bị ẩn oan. Vợ/chồng của CHÍNH người trung tâm cũng ẩn — chủ dự án đã cân
+  nhắc giữ lại rồi chốt ẩn (25/09/2026), đừng đổi.
 
 ## Bộ kiểm — cái bẫy
 - ⚠ `kiem-buoc-80.mjs` chạy trong CHROME nên `--import ./sang-supabase.mjs`

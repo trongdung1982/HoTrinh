@@ -250,6 +250,8 @@ export function refresh() {
   // Ẩn đúng người KHÔNG CÙNG HUYẾT THỐNG với người trung tâm (định nghĩa dâu/rể
   // của chủ dự án, 25/09/2026) — không lọc theo "vùng biên": họ hàng xa lấy
   // người trong họ cũng đứng vùng biên mà vẫn là huyết thống (P0468, tâm P0469).
+  // Vợ/chồng của người trung tâm CŨNG ẩn — không cùng huyết thống (chủ dự án
+  // chốt 25/09/2026).
   if (state.showInLaws === false) {
     const huyet = tapHuyetThong(index, focus);
     visible = new Map([...visible].filter(([id]) => huyet.has(id)));
