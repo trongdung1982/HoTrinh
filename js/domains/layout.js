@@ -3,7 +3,7 @@
 // Vai trò  : Tính TOẠ ĐỘ các ô người, đường nối và nốt cụt. Không vẽ gì cả.
 // Lớp      : domains — HÀM THUẦN. Không gọi services, không chạm DOM.
 // Phụ thuộc: config (LAYOUT, PHOTO)
-// Phiên bản: 1.20.1 · Cập nhật: 25/09/2026 06:30
+// Phiên bản: 1.21.0 · Cập nhật: 25/09/2026 19:35
 // ⚠ b128b: HAI cách xếp nằm cạnh nhau — cũ `datMoiKhoi()` + bốn lượt vá, mới
 //   `datBaKhoi()` (mục 4b). Chọn bằng `LAYOUT.xepBaKhoi` / `tuyChon.baKhoi`.
 // Sổ tay   : so-tay/ve-so-do.md
@@ -1871,11 +1871,9 @@ function khoiDuoi(ct, neoId) {
   let p;
   const dau = chum[0], cuoi = chum[chum.length - 1];
   if (chum.length === 1 && dau.khoi.length === 1) {
-    // Một người con: CĂN MÉP về phía đối diện bạn đời của con (b85e), không
-    // có bạn đời thì con đứng dưới người neo (b85b) — y như `datCum()`.
-    const phia = phiaBanDoi(ct, dau.khoi[0].conId);
-    const moc = phia > 0 ? p0[p0.length - 1] : phia < 0 ? p0[0] : dai.dxP;
-    p = p0.map((v) => v + dau.lo - (moc + RONG / 2));
+    // Một người con: con đứng THẲNG dưới điểm thả, nét không gãy chữ Z.
+    // Chủ dự án bác luật gãy khuỷu kiểu QFT (§9b, b85b/e) ngày 25/09/2026.
+    p = p0.map((v) => v + dau.lo - kheTu(p0, dau.unionId));
   } else {
     const lMuon = (dau.tam + cuoi.tam) / 2 - (kheTu(p0, dau.unionId) + kheTu(p0, cuoi.unionId)) / 2;
     p = xepDai(p0, chum, viTriKhe, kheTu, lMuon);
@@ -1904,9 +1902,9 @@ function khoiDuoi(ct, neoId) {
 }
 
 /**
- * Đặt các ô của một dải nhiều chùm con. Luật: chùm ≥2 con thì điểm thả (khe)
- * phải nằm TRONG khoảng các con của chùm ấy. Chùm một con được phép gãy
- * khuỷu (nhóm 9b), không ràng buộc.
+ * Đặt các ô của một dải nhiều chùm con. Luật: điểm thả (khe) của MỌI chùm
+ * phải nằm TRONG khoảng các con của chùm ấy — chùm một con thì đúng trên
+ * đầu con (chủ dự án bác gãy khuỷu §9b, 25/09/2026).
  *
  * Bước 1 — không giãn: tìm độ dời chung thoả mọi chùm, chọn cái gần cách căn
  * cũ nhất (trung điểm hai chùm ngoài cùng). Bước 2 — không có độ dời nào như
@@ -1916,7 +1914,7 @@ function khoiDuoi(ct, neoId) {
  * khe đi đủ, vì khe là trung điểm.
  */
 function xepDai(p0, chum, viTriKhe, kheTu, lMuon) {
-  const rang = chum.filter((c) => c.khoi.length >= 2);
+  const rang = chum;
   let lo = -Infinity, hi = Infinity;
   for (const c of rang) {
     const k = kheTu(p0, c.unionId);
@@ -2020,8 +2018,7 @@ function khoiTren(ct, X) {
  *
  *   · Đủ hai bên: xếp khít, TRUNG ĐIỂM hai điểm nối rơi đúng `noi` (b86b —
  *     đo trên ảnh QFT `so do 3 khoi.png`, lệch nửa pixel).
- *   · Chỉ một bên: CĂN MÉP (b85e) — tổ tiên né sang phía đối diện bạn đời,
- *     người trong cùng của hàng cha mẹ đứng thẳng trên đầu con.
+ *   · Chỉ một bên: điểm nối của hàng cha mẹ đứng thẳng trên đầu con.
  *
  * Hai khối tổ tiên thường không chung hàng nào với `k`; lỡ chung (dữ liệu có
  * hôn nhân trong họ) thì đẩy ra hai bên cho tới khi hết chồng.
@@ -2035,11 +2032,10 @@ function treoToTien(ct, k, doiTac, noi) {
   if (co.length === 0) return k;
 
   if (co.length === 1) {
-    const { p, t, j } = co[0];
-    const x = tamTrong(k, p);
-    const nhieu = doiTac.length > 1;
-    const moc = nhieu && j === 0 ? t.mepPhai : nhieu && j === doiTac.length - 1 ? t.mepTrai : t.noi;
-    dich(t, x - moc);
+    // Điểm thả của cha mẹ đứng THẲNG trên đầu con — không gãy chữ Z
+    // (chủ dự án bác lối căn mép b85e, 25/09/2026).
+    const { p, t } = co[0];
+    dich(t, tamTrong(k, p) - t.noi);
   } else {
     const acc = khoiRong();
     for (const o of co) {
@@ -2201,7 +2197,20 @@ function datGanNhat(ct, viTri, k, x0) {
 function thieuBanDoiCua(ct, unionId) {
   const uGoc = ct.index.unionById.get(unionId);
   const ds = (uGoc && Array.isArray(uGoc.partners)) ? uGoc.partners : [];
-  return ds.some((pid) => pid && !ct.visibleSet.has(pid));
+  return ds.some((pid) => pid && ct.index.personById.has(pid) && !ct.visibleSet.has(pid));
+}
+
+/** Union này còn người con nào bị ẩn không? Đọc dữ liệu GỐC, như trên. */
+function conAnCua(ct, unionId) {
+  const uGoc = ct.index.unionById.get(unionId);
+  const ds = (uGoc && Array.isArray(uGoc.children)) ? uGoc.children : [];
+  return ds.some((c) => c && c.personId && ct.index.personById.has(c.personId) &&
+                        !ct.visibleSet.has(c.personId));
+}
+
+/** Nốt cụt mọc NGANG chỉ khi ẩn mỗi vợ/chồng; còn con ẩn thì mọc XUỐNG. */
+function notMocNgang(ct, unionId) {
+  return thieuBanDoiCua(ct, unionId) && !conAnCua(ct, unionId);
 }
 
 /**
@@ -2224,7 +2233,7 @@ function unionCoNotNeXuong(ct, stubPoints) {
   for (const sp of stubPoints) {
     if (!sp || sp.direction === 'up') continue;
     const u = ct.unionHT.get(sp.unionId);
-    if (!u || thieuBanDoiCua(ct, sp.unionId)) continue;
+    if (!u || notMocNgang(ct, sp.unionId)) continue;
     if (!u.children.some((c) => ct.nodeById.has(c.personId))) continue;
     const dai = ct.dai.get(sp.personId);
     ra.set(sp.unionId, dai ? dai.huong : 1);
@@ -2667,12 +2676,12 @@ function viTriNotCut(ct, treoCua, sp, nut) {
   const treo = treoCua.get(sp.unionId);
   const dai  = ct.dai.get(sp.personId);
 
-  const thieuBanDoi = thieuBanDoiCua(ct, sp.unionId);
+  const thieuBanDoi = notMocNgang(ct, sp.unionId);
 
-  // ⚠ Hôn nhân MỘT NGƯỜI mà mọi con đều ẩn thì không có trong `unionHT` (không
-  // còn gì để nối) — `!u` ở đây KHÔNG có nghĩa là thiếu bạn đời. Nốt mọc theo
-  // hướng sơ đồ sẽ vẽ tiếp: thiếu con thì XUỐNG (ca P0413 Nguyễn Trọng Chính,
-  // U0182, cây 681, 25/09/2026 — trước đó mọc ngang như thiếu vợ).
+  // ⚠ Còn CON ẩn thì nốt mọc XUỐNG, kể cả khi vợ/chồng cũng ẩn — ngang là chỗ
+  // của vợ/chồng, mắt đọc thành "còn một người vợ" (P0413 cây 681; lê tình
+  // thương, Lê bản biết cây TH957 — chủ dự án 25/09/2026). `!u` = mọi con đều
+  // ẩn nên union không có trong `unionHT`: thả thẳng từ đáy ô người ấy.
   if (!u && !thieuBanDoi) {
     const x = nut.x + RONG / 2;
     const yDay = nut.y + CAO + LAYOUT.vGap - LAYOUT.stubRadius - 2;

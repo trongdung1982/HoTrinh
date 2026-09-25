@@ -9,8 +9,11 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
   `localStorage` (`giapha.xepBaKhoi`). ⚠ **Chỉ gỡ nút / cách cũ khi chủ dự án
   yêu cầu** (chốt 25/09/2026). Bộ kiểm: `LAYOUT.xepBaKhoi` (config) — bật
   bằng `--import ./ba-khoi.mjs`.
-- Chùm MỘT con được gãy khuỷu (nhóm 9b). Chùm ≥2 con: điểm thả phải nằm TRONG
-  khoảng các con — đo bằng `../kiem-thu/do-b128b.mjs [đời]`.
+- ⚠ **Không gãy chữ Z** (chủ dự án bác §9b/b85e, 25/09/2026): điểm thả của MỌI
+  chùm nằm TRONG khoảng các con — chùm một con thì thẳng trên đầu con, cả ở
+  khối con cháu (`khoiDuoi`, `xepDai`) lẫn khối tổ tiên (`treoToTien`). Đo:
+  `node --import ./ba-khoi.mjs ../kiem-thu/do-b128b.mjs 2` — còn lệch chỉ là
+  ca hai bên đều có ông bà (cặp hẹp hơn hai cặp cha mẹ), cha mẹ nuôi, U0180.
 
 ## Lỗi đã gặp — áp cho MỌI file trong "Gồm"
 - **Dải nhiều vợ: điểm thả rơi ngoài đàn con** — U0064·U0071·U0074 (cây 681).
@@ -31,7 +34,9 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
   ẩn): mọc NGANG như thiếu vợ. Luật chủ dự án: nốt mọc theo hướng sơ đồ sẽ vẽ
   tiếp khi bấm người ấy làm trung tâm. Gốc: union một người hết con hiển thị
   thì không có trong `unionHT`, và `viTriNotCut()` đọc `!u` thành "thiếu bạn
-  đời". Nay chỉ `thieuBanDoiCua()` mới cho mọc ngang (áp cả hai cách xếp).
+  đời". **Lần hai** (cây TH957, lê tình thương · Lê bản biết): vợ VÀ con cùng
+  ẩn vẫn mọc ngang. Luật chốt: còn CON ẩn → XUỐNG; chỉ ẩn mỗi vợ/chồng → NGANG
+  (`notMocNgang()`). Ca dựng lại: `../kiem-thu/do-th957.mjs` + `cay-th957.json`.
 
 ## Vì sao làm thế này
 - Khối tính TỪ DƯỚI LÊN, mỗi khối trả điểm nối cạnh dưới (`noi`) → khối trên

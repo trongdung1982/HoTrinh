@@ -1,9 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 25/09/2026 07:04 · b127d-1 XONG trên bàn thử: SQL `33` đề nghị
-GỠ quan hệ, **chờ chủ dự án dán**. Cùng phiên: nốt cụt thiếu con mọc XUỐNG
-(P0413). Nút Cũ/Mới dưới 🔍 giữ tới khi chủ dự án bảo gỡ (`so-tay/ve-so-do.md`).
-Kế tiếp: b127d-2, b127d-3, rồi b126.*
+*Cập nhật 25/09/2026 19:35 · `33` ĐÃ DÁN. Nốt cụt còn con ẩn mọc XUỐNG + bỏ
+chữ Z chùm một con (`so-tay/ve-so-do.md`) — chờ chủ dự án nhìn lại TH957.
+Nút Cũ/Mới dưới 🔍 giữ tới khi chủ dự án bảo gỡ. Kế tiếp: b127d-2, b127d-3, rồi b126.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
 **đừng nới trần**. Ba luật giữ nó gọn:
@@ -55,7 +54,7 @@ ngày 22/09 · `29` ngày 23/09; chủ dự án đọc lại bảng tự kiểm 
 **`31` (b127c) — ĐÃ DÁN lên THẬT 24/09**: 2 trigger, 0 cặp trùng từ trước.
 **`32` (b128a) — ĐÃ DÁN lên THẬT 24/09**, tự kiểm 4/4 ĐẠT. ⚠ Bản đứng cuối
 của `luu_cay()` — dán lại `27`/`28` sau nó là mở lại lỗ, im lặng.
-**`33` (b127d-1) — CHƯA DÁN.** Chỉ thêm, không đè hàm nào; tự kiểm `1|0|5|0`.
+**`33` (b127d-1) — ĐÃ DÁN lên THẬT 25/09**, tự kiểm `1|0|5|0` đúng như bàn thử.
 
 ---
 
@@ -100,7 +99,7 @@ tay). Đổi đẻ↔nuôi để sau. Luật: đầu file `luoc-do/33`.
 
 | Bước | Việc | Điểm dừng |
 |---|---|---|
-| ✓ **d-1** | `33`: bảng + 5 hàm, bàn thử `do-b127d.mjs` 40/40 | Chủ dự án dán `33` |
+| ✓ **d-1** | `33`: bảng + 5 hàm, bàn thử `do-b127d.mjs` 40/40 | ✓ đã dán 25/09 |
 | **d-2** | Nút *✉ Đề nghị sửa* ở cặp đang khoá trong form người + `sb`/`repo` | Gửi được một đề nghị thật |
 | **d-3** | Khu duyệt trong `QuanTri.html` | Duyệt một đề nghị, quan hệ gỡ đúng |
 ⚠ b127b chưa bấm thật: thẻ người kéo sang `T388` phải đủ vợ/con.
