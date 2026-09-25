@@ -6,7 +6,7 @@
 //            utils/{text,glyph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
 //            backup,chon-gia-pha,import-export,export-image}
-// Phiên bản: 1.43.0 · Cập nhật: 25/09/2026 23:50
+// Phiên bản: 1.44.0 · Cập nhật: 25/09/2026 23:59
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (nút Cũ/Mới)
 // ============================================================
 //
@@ -23,7 +23,7 @@ import { computeLayout } from '../domains/layout.js';
 import { renderTree } from '../domains/render.js';
 import { getSpouses, getParents, getChildren, getSiblings } from '../domains/union.js';
 import { fullName, doiSongNguoi } from '../utils/text.js';
-import { chiMucVe, tapHuyetThong } from '../utils/graph.js';
+import { chiMucVe, tapHuyetThong, themDauRe } from '../utils/graph.js';
 import { openPersonMenu, openPersonDetail, openUnionDetail,
          closePersonDetail } from './person-detail.js';
 import { openPersonForm, closePersonForm, quickAddChild, quickAddParent,
@@ -255,6 +255,8 @@ export function refresh() {
   if (state.showInLaws === false) {
     const huyet = tapHuyetThong(index, focus);
     visible = new Map([...visible].filter(([id]) => huyet.has(id)));
+  } else {
+    visible = themDauRe(index, visible, focus);
   }
 
   if (visible.size === 0) {
@@ -1555,6 +1557,24 @@ let oNhapHauDue = null;
 
 let thanToTien = null, tomTatToTien = null, xoToTien = false;
 let thanHauDue = null, tomTatHauDue = null, xoHauDue = false;
+let cotTren = null, cotDuoi = null, daGanDongKhiBamNgoai = false;
+
+/**
+ * Bấm ra NGOÀI hai cột (lên sơ đồ, nút khác…) thì cột đang xổ tự thu lại
+ * (chủ dự án 25/09/2026). Gắn một lần lên `document`, pha bắt, vì hai cột
+ * không nằm trong khung sơ đồ và mountTreeView() dựng lại được.
+ */
+function ganDongKhiBamNgoai() {
+  if (daGanDongKhiBamNgoai) return;
+  daGanDongKhiBamNgoai = true;
+  document.addEventListener('pointerdown', (e) => {
+    if (!xoToTien && !xoHauDue) return;
+    const t = e.target;
+    if ((cotTren && cotTren.contains(t)) || (cotDuoi && cotDuoi.contains(t))) return;
+    datXo('tren', false);
+    datXo('duoi', false);
+  }, true);
+}
 
 /** Cột trên trái — chọn vẽ lên bao nhiêu đời tổ tiên. */
 function veCotToTien() {
@@ -1573,6 +1593,8 @@ function veCotToTien() {
   tomTatToTien = nutTomTat(() => datXo('tren', !xoToTien));
   // Nút tóm tắt ở TRÊN, bốn nấc xổ xuống dưới — cột này neo mép trên.
   hop.append(tomTatToTien, thanToTien);
+  cotTren = hop;
+  ganDongKhiBamNgoai();
   return hop;
 }
 
@@ -1598,6 +1620,7 @@ function veCotHauDue() {
   // Nút tóm tắt ở DƯỚI, các nấc mọc NGƯỢC LÊN — cột này neo mép dưới, để nút
   // tóm tắt đứng yên một chỗ khi xổ ra và thu lại.
   hop.append(thanHauDue, tomTatHauDue);
+  cotDuoi = hop;
   return hop;
 }
 

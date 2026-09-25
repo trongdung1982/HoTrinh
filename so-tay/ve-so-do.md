@@ -56,6 +56,11 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
   huyết thống — 6 lượt cây 59, 4 lượt cây 681 (P0468, P0471 tâm P0469) từng
   bị ẩn oan. Vợ/chồng của CHÍNH người trung tâm cũng ẩn — chủ dự án đã cân
   nhắc giữ lại rồi chốt ẩn (25/09/2026), đừng đổi.
+- ⚠ **Hiện dâu/rể thì hiện ĐỦ**: `computeVisibleSet()` chỉ lấy vợ/chồng khi
+  cặp CÓ CON đang vẽ, nên chọn "Con" mất hết dâu/rể của các con. Bù bằng bước
+  hậu kỳ `themDauRe()` (`utils/graph.js`) — vợ/chồng mọi người `full` trừ tổ
+  tiên. Không sửa `bloodline.js` (bản chép nguyên). Chụp theo đường của app:
+  `DUOI=1 node ../kiem-thu/xem-b128b.mjs … ` (DUOI = số đời dưới).
 
 ## Bộ kiểm — cái bẫy
 - ⚠ `kiem-buoc-80.mjs` chạy trong CHROME nên `--import ./sang-supabase.mjs`

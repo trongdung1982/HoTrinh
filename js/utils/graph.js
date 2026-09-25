@@ -3,7 +3,7 @@
 // Vai trò  : Duyệt đồ thị dùng chung. MỌI hàm ở đây bắt buộc có tập visited.
 // Lớp      : utils
 // Phụ thuộc: (không)
-// Phiên bản: 0.6.0 · Cập nhật: 25/09/2026 23:50
+// Phiên bản: 0.7.0 · Cập nhật: 25/09/2026 23:59
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục)
 // ============================================================
 //
@@ -53,6 +53,33 @@ export function tapHuyetThong(index, tamId) {
     .filter((p) => p && index.personById.has(p));
   if (!index.personById.has(tamId)) return new Set();
   return bfs([...bfs(tamId, chaMe)], con);
+}
+
+/**
+ * THÊM DÂU/RỂ vào tập vẽ: vợ/chồng của mọi người `full` (trừ tổ tiên của
+ * `tamId`) mà chưa có trong tập, gắn nhãn `'edge'`. `computeVisibleSet()` chỉ
+ * lấy vợ/chồng khi cặp CÓ CON đang vẽ — chọn đời "Con" là mất hết dâu/rể của
+ * các con (chủ dự án 25/09/2026). Trả Map MỚI, không sửa `visible`.
+ *
+ * @param {object} index
+ * @param {Map<string,'full'|'edge'>} visible
+ * @param {string} tamId
+ * @returns {Map<string,'full'|'edge'>}
+ */
+export function themDauRe(index, visible, tamId) {
+  const toTien = bfs(tamId, (id) => (index.unionsAsChild.get(id) || [])
+    .flatMap((u) => (index.unionById.get(u) || {}).partners || [])
+    .filter((p) => index.personById.has(p)));
+  const ra = new Map(visible);
+  for (const [id, kieu] of visible) {
+    if (kieu !== 'full' || (id !== tamId && toTien.has(id))) continue;
+    for (const u of index.unionsAsPartner.get(id) || []) {
+      for (const p of (index.unionById.get(u) || {}).partners || []) {
+        if (p && index.personById.has(p) && !ra.has(p)) ra.set(p, 'edge');
+      }
+    }
+  }
+  return ra;
 }
 
 /**
