@@ -5,7 +5,7 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.30.0 · Cập nhật: 24/09/2026 (b127c) — `luuCay()` dịch `quanhetrung`
+// Phiên bản: 0.31.0 · Cập nhật: 26/09/2026 (b127d-2) — `nopDeNghiQuanHe()`
 //            Lịch sử: `git log -p js/services/sb.js`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
@@ -2259,6 +2259,33 @@ export async function dsXinDoiVai(treeId) {
     xinVaiLuc: r.xin_vai_luc || '',
     xinVaiLyDo: r.xin_vai_ly_do || '',
   }));
+}
+
+// ============================================================
+// Đề nghị sửa quan hệ đã khoá — `luoc-do/33-de-nghi-quan-he.sql` (b127d-2)
+// ============================================================
+//
+// Rào thép `32` chặn sửa quan hệ có một đầu ngoài cây, kể cả với Quản trị hệ
+// thống — không cây nào chứa cả hai người thì không ai sửa tay được. Đây là
+// lối duy nhất còn lại: gửi đề nghị, Quản trị hệ thống duyệt, máy chủ TỰ GỠ.
+
+/**
+ * Nộp đề nghị GỠ một quan hệ đã khoá.
+ * @param {string} treeId
+ * @param {'go_con'|'go_vo_chong'} loai
+ * @param {string} unionId
+ * @param {string} personId
+ * @param {string} lyDo
+ */
+export async function nopDeNghiQuanHe(treeId, loai, unionId, personId, lyDo) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('nop_de_nghi_quan_he', {
+    p_tree: treeId, p_loai: String(loai || ''), p_union: String(unionId || ''),
+    p_person: String(personId || ''), p_ly_do: String(lyDo || ''),
+  });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
 }
 
 // ============================================================

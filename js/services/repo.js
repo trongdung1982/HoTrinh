@@ -4,8 +4,7 @@
 // Lớp      : services — được gọi bởi: pages · gọi: services/sb,
 //            services/hinh-dang, utils, state
 // Phụ thuộc: services/sb.js, services/hinh-dang.js, utils/graph.js, state.js
-// Phiên bản: 0.6.0 · Cập nhật: 22/09/2026 (b124a2) — hai cửa của ô gợi ý
-//            "đã có trong phần mềm chưa": `timNguoiMoiCay` · `docNguoiTheoMa`
+// Phiên bản: 0.7.0 · Cập nhật: 26/09/2026 (b127d-2) — `nopDeNghiQuanHe()`
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -180,6 +179,16 @@ export async function docNguoiTheoMa(ma) {
   const kq = await sb.docNguoiTheoMa(ma);
   if (!kq.ok) return { ok: false, loi: kq.loi, nguoi: null };
   return { ok: true, loi: null, nguoi: rapMotNguoi(kq.dong) };
+}
+
+/**
+ * Nộp đề nghị GỠ một quan hệ đã khoá (b127d-2) — `luoc-do/33`. Máy chủ tự xét
+ * người gửi có phải thành viên của cây và quan hệ có chạm cây ấy không; ở đây
+ * chỉ điền sẵn `state.treeId`.
+ */
+export async function nopDeNghiQuanHe(loai, unionId, personId, lyDo) {
+  if (!state.treeId) return { ok: false, loi: 'Chưa biết đang mở gia phả nào.' };
+  return sb.nopDeNghiQuanHe(state.treeId, loai, unionId, personId, lyDo);
 }
 
 /**

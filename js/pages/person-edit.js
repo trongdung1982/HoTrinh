@@ -8,7 +8,7 @@
 //            xoa,anh}.js, pages/quan-tri/o-goi-y.js, state,
 //            domains/{person,union,validate,media,purge,render},
 //            services/repo, utils/{graph,text,date,image,avatar}, config
-// Phiên bản: 1.51.1 · Cập nhật: 24/09/2026 21:55 — khai lại ĐÚNG quan hệ đã có (cả loại đẻ/nuôi) = chỉ kéo người vào (`keoQuaQuanHeCu`)
+// Phiên bản: 1.52.0 · Cập nhật: 26/09/2026 — khối Quan hệ: cặp ngoài cây khoá + nút ✉ Đề nghị sửa (b127d-2)
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/o-goi-y.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -239,7 +239,8 @@ import { attachMedia, detachMedia, setPortrait, clearPortrait,
          getMediaFor, getPortrait } from '../domains/media.js';
 import { planPurge, applyPurge, moTaKePurge } from '../domains/purge.js';
 import { mauVien } from '../domains/render.js';
-import { luuCay, suaDuoc, timNguoiMoiCay, docNguoiTheoMa } from '../services/repo.js';
+import { luuCay, suaDuoc, timNguoiMoiCay, docNguoiTheoMa,
+         nopDeNghiQuanHe } from '../services/repo.js';
 import { taiAnh, xoaAnhThat } from '../services/tuong-thich.js';
 import { ganGoiY, dongNguoiCayKhac } from './quan-tri/o-goi-y.js';
 import { buildIndex } from '../utils/graph.js';
@@ -1321,10 +1322,19 @@ function docQuanHe(index, personId) {
     const muc = (Array.isArray(u.children) ? u.children : [])
       .find((c) => c && c.personId === personId);
     const cu = (muc && muc.relation) || 'birth';
-    ra.chaMe.push({ unionId: u.id, ten: keTenPartner(u.id), cu, moi: cu });
+    // Rào thép (b128a): cặp cha mẹ có một đầu ngoài cây thì KHOÁ — không sửa
+    // được ở đây, chỉ còn đường gửi đề nghị (b127d-2, nút ✉).
+    ra.chaMe.push({ unionId: u.id, ten: keTenPartner(u.id), cu, moi: cu,
+                     ngoai: capCoNguoiNgoaiCay(u) });
   }
 
-  for (const u of getPartnerUnions(index, personId)) {
+  // Union PARTNER dùng chung cho cả nhóm Vợ/chồng lẫn nhóm Con: một cặp có
+  // đầu ngoài cây thì khoá cả hai, và tính `capCoNguoiNgoaiCay` một lần rồi
+  // tra theo mã cặp — không tính lại cho từng con.
+  const dsCapBanDoi = getPartnerUnions(index, personId);
+  const ngoaiTheoCap = new Map(dsCapBanDoi.map((u) => [u.id, capCoNguoiNgoaiCay(u)]));
+
+  for (const u of dsCapBanDoi) {
     // `maTrangThaiCap` giữ đúng phép chuẩn hoá của `handleSaveUnion`: thiếu
     // `status` thì coi là 'married', nhưng một mã khác hai mã quen thì GIỮ
     // NGUYÊN chứ không ép về 'married' — cùng lối với mã loại tên lạ ở bước 33.
@@ -1335,6 +1345,7 @@ function docQuanHe(index, personId) {
       ttCu, ttMoi: ttCu,
       bacCu:  rankCua(u, personId),
       bacMoi: String(rankCua(u, personId)),
+      ngoai:  ngoaiTheoCap.get(u.id) || null,
     });
   }
 
@@ -1345,6 +1356,7 @@ function docQuanHe(index, personId) {
       ten:      tenNguoi(m.personId),
       cu:       m.relation,
       moi:      m.relation,
+      ngoai:    ngoaiTheoCap.get(m.unionId) || null,
     });
   }
 
@@ -1448,16 +1460,30 @@ function oChonQuanHe(nhan, maCu, phia, khiDoi) {
 }
 
 function veHangChaMe(m, i) {
-  return veMucQuanHe(m.ten, [
-    oChonQuanHe('Quan hệ với cha mẹ ' + (i + 1), m.cu, 'chaMe',
-                (ma) => { m.moi = ma; }),
-  ]);
+  const chon = oChonQuanHe('Quan hệ với cha mẹ ' + (i + 1), m.cu, 'chaMe',
+                            (ma) => { m.moi = ma; });
+  if (!m.ngoai) return veMucQuanHe(m.ten, [chon]);
+
+  // Rào thép: cặp cha mẹ có một đầu ngoài cây — không sửa được ở đây (luật 11),
+  // gỡ chính mocId khỏi con của cặp này là đúng thứ hàng này đang hỏi.
+  chon.disabled = true;
+  const { nut, ghiChu } = veKhoaNgoaiCay('go_con', m.unionId, quanHe.mocId, m.ngoai);
+  const muc = veMucQuanHe(m.ten, [chon, nut]);
+  muc.append(ghiChu);
+  return muc;
 }
 
 function veHangCon(m, i) {
-  return veMucQuanHe(m.ten, [
-    oChonQuanHe('Quan hệ với con ' + (i + 1), m.cu, 'con', (ma) => { m.moi = ma; }),
-  ]);
+  const chon = oChonQuanHe('Quan hệ với con ' + (i + 1), m.cu, 'con', (ma) => { m.moi = ma; });
+  if (!m.ngoai) return veMucQuanHe(m.ten, [chon]);
+
+  // Cặp cha/mẹ của con này có một đầu ngoài cây — gỡ đúng người con của hàng
+  // này khỏi cặp ấy, không đụng tới các con khác của cùng cặp.
+  chon.disabled = true;
+  const { nut, ghiChu } = veKhoaNgoaiCay('go_con', m.unionId, m.personId, m.ngoai);
+  const muc = veMucQuanHe(m.ten, [chon, nut]);
+  muc.append(ghiChu);
+  return muc;
 }
 
 function veHangBanDoi(m, i) {
@@ -1491,7 +1517,133 @@ function veHangBanDoi(m, i) {
   bac.style.cssText = KIEU_O + 'flex:0 0 56px;width:56px;min-width:0;text-align:center';
   bac.addEventListener('input', () => { m.bacMoi = bac.value; });
 
-  return veMucQuanHe(m.ten, [chon, bac]);
+  if (!m.ngoai) return veMucQuanHe(m.ten, [chon, bac]);
+
+  // Rào thép: gỡ NGƯỜI NGOÀI CÂY khỏi hôn nhân, không gỡ mocId — mocId có thể
+  // đang là cha/mẹ của các con chung trong cùng cặp này, gỡ mocId sẽ làm mất
+  // luôn quan hệ cha/mẹ ấy mà hàng này không hề nói tới.
+  chon.disabled = true;
+  bac.disabled = true;
+  const { nut, ghiChu } = veKhoaNgoaiCay('go_vo_chong', m.unionId, m.ngoai.id, m.ngoai);
+  const muc = veMucQuanHe(m.ten, [chon, bac, nut]);
+  muc.append(ghiChu);
+  return muc;
+}
+
+/**
+ * Nút ✉ + dòng ghi chú cho một hàng của khối Quan hệ bị KHOÁ vì cặp có người
+ * ngoài cây (rào thép b128a, `so-tay/nguoi-xuyen-cay.md`). Khối này chỉ SỬA
+ * quan hệ đã có (luật 11 đầu file) nên không có đường gỡ nào khác — bấm nút mở
+ * một ô nhỏ để gõ lý do và gửi `repo.nopDeNghiQuanHe()` (b127d-2, `luoc-do/33`).
+ * Quản trị hệ thống duyệt thì máy chủ TỰ GỠ; ở đây chỉ nộp đơn.
+ *
+ * @param {'go_con'|'go_vo_chong'} loai
+ * @param {string} unionId
+ * @param {string} personId  người sẽ bị gỡ khỏi cặp nếu đề nghị được duyệt
+ * @param {{id:string, p:object}} ngoai  người ngoài cây làm hàng này bị khoá
+ * @returns {{nut:HTMLElement, ghiChu:HTMLElement}}
+ */
+function veKhoaNgoaiCay(loai, unionId, personId, ngoai) {
+  const tenNgoai = (ngoai && ngoai.p && fullName(ngoai.p)) || (ngoai && ngoai.id) || '';
+
+  const ghiChu = document.createElement('div');
+  ghiChu.textContent =
+    tenNgoai + ' không thuộc gia phả này nên không sửa được ở đây. Sai thì gửi ' +
+    'đề nghị để Quản trị hệ thống gỡ.';
+  ghiChu.style.cssText = 'font-size:11px;line-height:1.4;color:#8a8078;margin-top:2px';
+
+  const nut = document.createElement('button');
+  nut.type = 'button';
+  nut.textContent = '✉ Đề nghị sửa';
+  nut.setAttribute('aria-label', 'Đề nghị gỡ quan hệ với ' + tenNgoai);
+  nut.style.cssText =
+    'flex:0 0 auto;min-height:36px;padding:0 10px;font-size:12px;font-family:inherit;' +
+    'border-radius:8px;cursor:pointer;touch-action:manipulation;' +
+    'background:#faf8f5;color:#5c554e;border:1px solid #e6e0d8';
+
+  let boc = null;   // ô gõ lý do, dựng lúc bấm — mỗi lúc chỉ một cái mở
+  nut.addEventListener('click', () => {
+    if (boc) { boc.remove(); boc = null; return; }
+    boc = veHopGuiDeNghi(loai, unionId, personId, tenNgoai, () => {
+      boc = null;
+      nut.disabled = true;
+      nut.textContent = '✉ Đã gửi — chờ duyệt';
+    });
+    ghiChu.after(boc);
+  });
+
+  return { nut, ghiChu };
+}
+
+/** Ô nhỏ: một lý do + nút Gửi/Thôi, gọi thẳng `repo.nopDeNghiQuanHe()`. */
+function veHopGuiDeNghi(loai, unionId, personId, tenNgoai, khiXong) {
+  const boc = document.createElement('div');
+  boc.style.cssText =
+    'margin-top:6px;padding:8px;border-radius:8px;background:#faf8f5;' +
+    'border:1px solid #e6e0d8';
+
+  const nhan = document.createElement('div');
+  nhan.textContent = 'Vì sao quan hệ với ' + tenNgoai + ' cần gỡ?';
+  nhan.style.cssText = 'font-size:12px;color:#5c554e;margin-bottom:4px';
+
+  const oLyDo = document.createElement('textarea');
+  oLyDo.rows = 2;
+  oLyDo.maxLength = 1000;
+  oLyDo.placeholder = 'Bắt buộc — Quản trị hệ thống đọc câu này để quyết định.';
+  oLyDo.style.cssText = KIEU_O + 'font-family:inherit;resize:vertical';
+
+  const loi = document.createElement('div');
+  loi.style.cssText =
+    'margin-top:6px;padding:7px 9px;font-size:12px;line-height:1.4;border-radius:7px;' +
+    'color:#8a3a2a;background:#fbf0ec;border:1px solid #f0d8d0';
+  loi.hidden = true;
+
+  const bGui = document.createElement('button');
+  bGui.type = 'button';
+  bGui.textContent = 'Gửi đề nghị';
+  bGui.style.cssText = KIEU_NUT_CHAN +
+    'flex:1 1 auto;background:#8a6a3a;color:#fffdf9;border:1px solid #8a6a3a;font-weight:600';
+
+  const bHuy = document.createElement('button');
+  bHuy.type = 'button';
+  bHuy.textContent = 'Thôi';
+  bHuy.style.cssText = KIEU_NUT_CHAN +
+    'flex:0 0 auto;background:#fffdf9;color:#2a2622;border:1px solid #e6e0d8';
+  bHuy.addEventListener('click', () => boc.remove());
+
+  const hang = document.createElement('div');
+  hang.style.cssText = 'display:flex;gap:6px;margin-top:6px';
+  hang.append(bGui, bHuy);
+
+  bGui.addEventListener('click', async () => {
+    const lyDo = oLyDo.value.trim();
+    if (!lyDo) {
+      loi.textContent = 'Cần ghi lý do trước khi gửi.';
+      loi.hidden = false;
+      return;
+    }
+    bGui.disabled = true; bHuy.disabled = true; oLyDo.disabled = true;
+    bGui.textContent = 'Đang gửi…';
+    loi.hidden = true;
+
+    let kq;
+    try { kq = await nopDeNghiQuanHe(loai, unionId, personId, lyDo); }
+    catch (e) { kq = { ok: false, loi: (e && e.message) || 'Lỗi không rõ.' }; }
+
+    if (!kq || kq.ok === false) {
+      bGui.disabled = false; bHuy.disabled = false; oLyDo.disabled = false;
+      bGui.textContent = 'Gửi đề nghị';
+      loi.textContent = (kq && (kq.loi || kq.lyDo)) || 'Máy chủ từ chối.';
+      loi.hidden = false;
+      return;
+    }
+
+    if (typeof khiXong === 'function') khiXong();
+    boc.remove();
+  });
+
+  boc.append(nhan, oLyDo, loi, hang);
+  return boc;
 }
 
 /**
