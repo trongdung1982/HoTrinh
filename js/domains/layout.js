@@ -3,7 +3,7 @@
 // Vai trò  : Tính TOẠ ĐỘ các ô người, đường nối và nốt cụt. Không vẽ gì cả.
 // Lớp      : domains — HÀM THUẦN. Không gọi services, không chạm DOM.
 // Phụ thuộc: config (LAYOUT, PHOTO)
-// Phiên bản: 1.21.0 · Cập nhật: 25/09/2026 19:35
+// Phiên bản: 1.22.0 · Cập nhật: 25/09/2026 20:21
 // ⚠ b128b: HAI cách xếp nằm cạnh nhau — cũ `datMoiKhoi()` + bốn lượt vá, mới
 //   `datBaKhoi()` (mục 4b). Chọn bằng `LAYOUT.xepBaKhoi` / `tuyChon.baKhoi`.
 // Sổ tay   : so-tay/ve-so-do.md
@@ -2194,24 +2194,21 @@ function datGanNhat(ct, viTri, k, x0) {
  * ⚠ Đọc từ dữ liệu GỐC chứ không đọc `unionHT` — `unionHT` đã lọc mất đúng
  * những người đang bị ẩn, hỏi nó thì bao giờ cũng nghe "đủ cả".
  */
-function thieuBanDoiCua(ct, unionId) {
+function soBanDoiAn(ct, unionId) {
   const uGoc = ct.index.unionById.get(unionId);
   const ds = (uGoc && Array.isArray(uGoc.partners)) ? uGoc.partners : [];
-  return ds.some((pid) => pid && ct.index.personById.has(pid) && !ct.visibleSet.has(pid));
+  return ds.filter((pid) => pid && ct.index.personById.has(pid) && !ct.visibleSet.has(pid)).length;
 }
+function thieuBanDoiCua(ct, unionId) { return soBanDoiAn(ct, unionId) > 0; }
 
-/** Union này còn người con nào bị ẩn không? Đọc dữ liệu GỐC, như trên. */
-function conAnCua(ct, unionId) {
+/** Số con của union đang bị ẩn. Đọc dữ liệu GỐC, như trên. */
+function soConAn(ct, unionId) {
   const uGoc = ct.index.unionById.get(unionId);
   const ds = (uGoc && Array.isArray(uGoc.children)) ? uGoc.children : [];
-  return ds.some((c) => c && c.personId && ct.index.personById.has(c.personId) &&
-                        !ct.visibleSet.has(c.personId));
+  return ds.filter((c) => c && c.personId && ct.index.personById.has(c.personId) &&
+                          !ct.visibleSet.has(c.personId)).length;
 }
-
-/** Nốt cụt mọc NGANG chỉ khi ẩn mỗi vợ/chồng; còn con ẩn thì mọc XUỐNG. */
-function notMocNgang(ct, unionId) {
-  return thieuBanDoiCua(ct, unionId) && !conAnCua(ct, unionId);
-}
+function conAnCua(ct, unionId) { return soConAn(ct, unionId) > 0; }
 
 /**
  * NHỮNG UNION SẼ MỌC NỐT CỤT "CẶP ĐỦ, THIẾU CON" — trả `Map<unionId, hướng>`.
@@ -2233,7 +2230,7 @@ function unionCoNotNeXuong(ct, stubPoints) {
   for (const sp of stubPoints) {
     if (!sp || sp.direction === 'up') continue;
     const u = ct.unionHT.get(sp.unionId);
-    if (!u || notMocNgang(ct, sp.unionId)) continue;
+    if (!u || !conAnCua(ct, sp.unionId)) continue;
     if (!u.children.some((c) => ct.nodeById.has(c.personId))) continue;
     const dai = ct.dai.get(sp.personId);
     ra.set(sp.unionId, dai ? dai.huong : 1);
@@ -2635,7 +2632,18 @@ function dungNotCut(ct, unions, stubPoints) {
   const treoCua = new Map(unions.map((t) => [t.id, t]));
   const gop = new Map();
 
+  // Một union 'side' thiếu CẢ vợ/chồng LẪN con → HAI nốt: ngang cho vợ/chồng,
+  // xuống cho con, mỗi nốt đếm phần của mình (chủ dự án 25/09/2026).
+  const ds = [];
   for (const sp of stubPoints) {
+    if (!sp || sp.direction === 'up') { ds.push(sp); continue; }
+    const nBd = soBanDoiAn(ct, sp.unionId), nCon = soConAn(ct, sp.unionId);
+    if (nBd > 0) ds.push({ ...sp, ep: 'ngang', hiddenCount: nCon > 0 ? nBd : sp.hiddenCount });
+    if (nCon > 0) ds.push({ ...sp, ep: 'xuong', hiddenCount: nBd > 0 ? nCon : sp.hiddenCount });
+    if (nBd === 0 && nCon === 0) ds.push(sp);
+  }
+
+  for (const sp of ds) {
     const nut = ct.nodeById.get(sp && sp.personId);
     if (!nut) continue;
     const diem = viTriNotCut(ct, treoCua, sp, nut);
@@ -2676,12 +2684,12 @@ function viTriNotCut(ct, treoCua, sp, nut) {
   const treo = treoCua.get(sp.unionId);
   const dai  = ct.dai.get(sp.personId);
 
-  const thieuBanDoi = notMocNgang(ct, sp.unionId);
+  // `ep` do `dungNotCut()` định: NGANG là chỗ của vợ/chồng, XUỐNG là chỗ của
+  // con (P0413 cây 681; TH957 — chủ dự án 25/09/2026).
+  const thieuBanDoi = sp.ep ? sp.ep === 'ngang' : thieuBanDoiCua(ct, sp.unionId);
 
-  // ⚠ Còn CON ẩn thì nốt mọc XUỐNG, kể cả khi vợ/chồng cũng ẩn — ngang là chỗ
-  // của vợ/chồng, mắt đọc thành "còn một người vợ" (P0413 cây 681; lê tình
-  // thương, Lê bản biết cây TH957 — chủ dự án 25/09/2026). `!u` = mọi con đều
-  // ẩn nên union không có trong `unionHT`: thả thẳng từ đáy ô người ấy.
+  // `!u` = mọi con đều ẩn nên union không có trong `unionHT`: thả thẳng từ
+  // đáy ô người ấy, KHÔNG có nghĩa là thiếu bạn đời.
   if (!u && !thieuBanDoi) {
     const x = nut.x + RONG / 2;
     const yDay = nut.y + CAO + LAYOUT.vGap - LAYOUT.stubRadius - 2;

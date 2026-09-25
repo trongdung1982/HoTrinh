@@ -34,9 +34,16 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
   ẩn): mọc NGANG như thiếu vợ. Luật chủ dự án: nốt mọc theo hướng sơ đồ sẽ vẽ
   tiếp khi bấm người ấy làm trung tâm. Gốc: union một người hết con hiển thị
   thì không có trong `unionHT`, và `viTriNotCut()` đọc `!u` thành "thiếu bạn
-  đời". **Lần hai** (cây TH957, lê tình thương · Lê bản biết): vợ VÀ con cùng
-  ẩn vẫn mọc ngang. Luật chốt: còn CON ẩn → XUỐNG; chỉ ẩn mỗi vợ/chồng → NGANG
-  (`notMocNgang()`). Ca dựng lại: `../kiem-thu/do-th957.mjs` + `cay-th957.json`.
+  đời". **Luật chốt** (chủ dự án 25/09/2026, cây TH957): vợ/chồng ẩn → nốt
+  NGANG; con ẩn → nốt XUỐNG; ẩn cả hai → vẽ **CẢ HAI nốt**, mỗi nốt đếm phần
+  mình (`dungNotCut()` tách, `viTriNotCut()` đọc `sp.ep`). Đừng gộp thành một.
+  Con đã xoá hoặc ở cây khác không tính (rào vẽ của cây) — ca lê tình thương.
+
+## Bộ kiểm — cái bẫy
+- ⚠ `kiem-buoc-80.mjs` chạy trong CHROME nên `--import ./sang-supabase.mjs`
+  KHÔNG tác dụng — nó đo `giapha/` đóng băng dù báo xanh. Đo mã mới bằng
+  `../kiem-thu/kiem-buoc-80-sb.mjs [moi|cu]`. Nhóm 9b (bắt khuỷu) nay lỗi thời:
+  HỎNG ở đó là đúng luật mới; mọi nhóm khác phải 0.
 
 ## Vì sao làm thế này
 - Khối tính TỪ DƯỚI LÊN, mỗi khối trả điểm nối cạnh dưới (`noi`) → khối trên
