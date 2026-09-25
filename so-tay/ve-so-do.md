@@ -43,6 +43,13 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
   NGANG; con ẩn → nốt XUỐNG; ẩn cả hai → vẽ **CẢ HAI nốt**, mỗi nốt đếm phần
   mình (`dungNotCut()` tách, `viTriNotCut()` đọc `sp.ep`). Đừng gộp thành một.
   Con đã xoá hoặc ở cây khác không tính (rào vẽ của cây) — ca lê tình thương.
+- **Chỗ đứng nốt** (chủ dự án 25/09/2026): nốt NGANG sát vòng ảnh — trừ khi
+  người ngoài cùng dải là bạn đời (bà Hoài, tâm P0010: sát vòng ảnh bà thì đọc
+  thành nốt của bà). Nốt XUỐNG thẳng dưới người: nét từ đáy bảng tên, nốt sát
+  đáy ô — có nét ngang chạy qua (nét bộ cha mẹ thứ hai) thì lùi về đáy khe
+  (`netNgangCat()`). Nốt LÊN bỏ khi cha/mẹ của bộ ấy đang vẽ đủ — bỏ chọn
+  dâu/rể từng làm MỌI con mọc nốt lên đè thanh ngang. Chụp cảnh ẩn dâu/rể:
+  `AN_DAU_RE=1 node ../kiem-thu/xem-b128b.mjs …`.
 
 ## Bộ kiểm — cái bẫy
 - ⚠ `kiem-buoc-80.mjs` chạy trong CHROME nên `--import ./sang-supabase.mjs`

@@ -3,7 +3,7 @@
 // Vai trò  : Tính TOẠ ĐỘ các ô người, đường nối và nốt cụt. Không vẽ gì cả.
 // Lớp      : domains — HÀM THUẦN. Không gọi services, không chạm DOM.
 // Phụ thuộc: config (LAYOUT, PHOTO)
-// Phiên bản: 1.23.0 · Cập nhật: 25/09/2026 20:49
+// Phiên bản: 1.24.0 · Cập nhật: 25/09/2026 23:33
 // ⚠ b128b: HAI cách xếp nằm cạnh nhau — cũ `datMoiKhoi()` + bốn lượt vá, mới
 //   `datBaKhoi()` (mục 4b). Chọn bằng `LAYOUT.xepBaKhoi` / `tuyChon.baKhoi`.
 // Sổ tay   : so-tay/ve-so-do.md
@@ -89,6 +89,7 @@
 
 import { LAYOUT, PHOTO } from '../config.js';
 import { rankCua } from './union.js';
+import { VE } from './render.js';
 
 const RONG = LAYOUT.nodeWidth;
 const DEM  = 24;                  // lề quanh sơ đồ khi tính bounds
@@ -222,6 +223,7 @@ export function computeLayout(index, focusPersonId, visibleSet, scope, stubPoint
 
   const unions = dungDiemTreo(ct, stubPoints);
   const links  = dungDuongNoi(ct, unions);
+  ct.links = links;          // nốt cụt sát ô phải né nét đã vẽ — `netNgangCat()`
   const stubs  = dungNotCut(ct, unions, stubPoints);
 
   return { nodes, unions, links, stubs, bounds: tinhBounds(nodes, links, stubs) };
@@ -2232,6 +2234,20 @@ function soBanDoiAn(ct, unionId) {
 }
 function thieuBanDoiCua(ct, unionId) { return soBanDoiAn(ct, unionId) > 0; }
 
+/** Có đoạn kẻ NGANG nào chạm nốt tròn tâm (x, y) không — chừa thêm 2px. */
+function netNgangCat(ct, x, y) {
+  const r = LAYOUT.stubRadius + 2;
+  for (const l of ct.links || []) {
+    const p = l.points || [];
+    for (let i = 1; i < p.length; i++) {
+      const [x0, y0] = p[i - 1], [x2, y2] = p[i];
+      if (Math.abs(y0 - y2) > 0.5 || Math.abs(y0 - y) > r) continue;
+      if (x >= Math.min(x0, x2) - r && x <= Math.max(x0, x2) + r) return true;
+    }
+  }
+  return false;
+}
+
 /** Số con của union đang bị ẩn. Đọc dữ liệu GỐC, như trên. */
 function soConAn(ct, unionId) {
   const uGoc = ct.index.unionById.get(unionId);
@@ -2675,6 +2691,13 @@ function dungNotCut(ct, unions, stubPoints) {
   }
 
   for (const sp of ds) {
+    // Nốt LÊN thừa khi cha hoặc mẹ của bộ ấy đang vẽ đầy đủ: người bị ẩn đã
+    // có nốt NGANG cạnh bạn đời (ca bỏ chọn dâu/rể — mọi con đều mọc nốt lên
+    // đè thanh ngang, chủ dự án 25/09/2026).
+    if (sp && sp.direction === 'up') {
+      const u = ct.index.unionById.get(sp.unionId);
+      if (u && (u.partners || []).some((p) => ct.visibleSet.get(p) === 'full')) continue;
+    }
     const nut = ct.nodeById.get(sp && sp.personId);
     if (!nut) continue;
     const diem = viTriNotCut(ct, treoCua, sp, nut);
@@ -2721,10 +2744,18 @@ function viTriNotCut(ct, treoCua, sp, nut) {
 
   // `!u` = mọi con đều ẩn nên union không có trong `unionHT`: thả thẳng từ
   // đáy ô người ấy, KHÔNG có nghĩa là thiếu bạn đời.
+  // Nét bắt đầu ngay ĐÁY BẢNG TÊN (một dòng), nốt nằm sát đáy ô — cao hơn
+  // thanh ngang gom con (CAO + khoangSatChu) để không bị xâu vào dây.
+  // Có nét ngang chạy qua chỗ ấy (nét bộ cha mẹ thứ hai chạy ngay dưới đáy ô,
+  // ca P0007 tâm P0010) thì lùi về đáy khe như trước.
   if (!u && !thieuBanDoi) {
     const x = nut.x + RONG / 2;
-    const yDay = nut.y + CAO + LAYOUT.vGap - LAYOUT.stubRadius - 2;
-    return { x, y: yDay, x1: x, y1: nut.y + CAO, angle: 90 };
+    const dayTen = PHOTO.leTrenO + 2 * PHOTO.banKinhTrenO - VE.deLenAnh +
+                   VE.leTrongBang * 2 + VE.buocDongTen;
+    let yNot = Math.min(nut.y + CAO + LAYOUT.stubRadius - 3,
+                        nut.y + CAO + LAYOUT.khoangSatChu - LAYOUT.stubRadius - 2);
+    if (netNgangCat(ct, x, yNot)) yNot = nut.y + CAO + LAYOUT.vGap - LAYOUT.stubRadius - 2;
+    return { x, y: yNot, x1: x, y1: nut.y + dayTen, angle: 90 };
   }
 
   if (thieuBanDoi) {
@@ -2753,7 +2784,24 @@ function viTriNotCut(ct, treoCua, sp, nut) {
     const y = dai
       ? nut.y + MUC_NET - (dai.mucNet.get(sp.unionId) || 0) * dai.buocNet
       : nut.y + MUC_NET;
-    return { x: mepDai + huong * LN, y, x1: mepDai, y1: y, angle: huong > 0 ? 0 : 180 };
+    // Mọc từ MÉP VÒNG ẢNH, không từ mép ô — ô rộng hơn vòng ảnh `LE_ANH` mỗi
+    // bên, nét bắt đầu ở mép ô thì hở một khoảng (chủ dự án 25/09/2026).
+    // Chỉ khi người đứng NGOÀI CÙNG dải là chính chủ nốt: sát vòng ảnh bạn đời
+    // thì mắt đọc thành nốt của bạn đời (bà Hoài, tâm P0010), nên giữ mép ô.
+    let ngoaiCung = sp.personId;
+    if (daiNg) {
+      let dxMep = null;
+      for (const [id, d] of daiNg.dx) {
+        if (dxMep === null || (huong > 0 ? d > dxMep : d < dxMep)) { dxMep = d; ngoaiCung = id; }
+      }
+    }
+    const R  = PHOTO.banKinhTrenO;
+    const dy = Math.min(Math.abs(y - nut.y - MUC_NET), R);
+    let x1 = ngoaiCung === sp.personId
+      ? mepDai - huong * (LE_ANH + R - Math.sqrt(R * R - dy * dy))
+      : mepDai;
+    if (x1 !== mepDai && netNgangCat(ct, x1 + huong * LN, y)) x1 = mepDai;
+    return { x: x1 + huong * LN, y, x1, y1: y, angle: huong > 0 ? 0 : 180 };
   }
 
   // Cặp đủ, thiếu con.

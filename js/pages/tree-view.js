@@ -6,7 +6,7 @@
 //            utils/{text,glyph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
 //            backup,chon-gia-pha,import-export,export-image}
-// Phiên bản: 1.41.0 · Cập nhật: 25/09/2026 05:45 (nút Cũ/Mới dưới 🔍, mặc định Mới)
+// Phiên bản: 1.42.0 · Cập nhật: 25/09/2026 23:33
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (nút Cũ/Mới)
 // ============================================================
 //
@@ -1509,9 +1509,9 @@ function hienDanhSachChon(danhSachId) {
 // rồi gọi `refresh()`. KHÔNG đụng vào `bloodline.js` — bộ số kiểm thử năm con
 // số của chat 1.2 đo chính hàm đó, sửa nó là mất căn cứ chấm điểm.
 //
-// Nấc "Con và Vợ/Chồng" KHÔNG phải một đời khác: nó cùng `descendants = 1` với
-// nấc "Con", chỉ khác `spouseOfDescendants`. Vì thế phải so CẢ HAI trường mới
-// biết nút nào đang được chọn.
+// Cột "Đời dưới" (chủ dự án chốt 25/09/2026): Con → Cháu → Không giới hạn →
+// nhập số đời → hộp Dâu/rể. Nấc chỉ chọn SỐ ĐỜI; vẽ hay ẩn vợ/chồng của con
+// cháu chỉ do hộp Dâu/rể — nấc "Con và Vợ/Chồng" cũ trùng việc ấy nên bỏ.
 
 const NAC_TO_TIEN = [
   { nhan: 'Không giới hạn', ancestors: 0, moTa: 'Vẽ lên hết các đời tổ tiên' },
@@ -1521,14 +1521,9 @@ const NAC_TO_TIEN = [
 ];
 
 const NAC_HAU_DUE = [
-  { nhan: 'Con', descendants: 1, spouseOfDescendants: false,
-    moTa: 'Chỉ vẽ xuống một đời, không vẽ vợ/chồng của con' },
-  { nhan: 'Con và Vợ/Chồng', descendants: 1, spouseOfDescendants: true, canDauRe: true,
-    moTa: 'Vẽ xuống một đời, kèm vợ/chồng của con' },
-  { nhan: 'Cháu', descendants: 2, spouseOfDescendants: true,
-    moTa: 'Vẽ xuống hai đời' },
-  { nhan: 'Không giới hạn', descendants: 0, spouseOfDescendants: true,
-    moTa: 'Vẽ xuống hết các đời hậu duệ' },
+  { nhan: 'Con',            descendants: 1, moTa: 'Vẽ xuống một đời' },
+  { nhan: 'Cháu',           descendants: 2, moTa: 'Vẽ xuống hai đời' },
+  { nhan: 'Không giới hạn', descendants: 0, moTa: 'Vẽ xuống hết các đời hậu duệ' },
 ];
 
 // --- Vì sao hai cột nút THU GỌN được -------------------------------------
@@ -1624,10 +1619,11 @@ function datPhamViToTien(nac) {
 function datPhamViHauDue(nac) {
   const sc = state.scope;
   datXo('duoi', false);
+  // `spouseOfDescendants` luôn bật — ẩn dâu/rể là việc của hộp Dâu/rể.
   if (sc.descendants === nac.descendants &&
-      sc.spouseOfDescendants === nac.spouseOfDescendants) { capNhatNutPhamVi(); return; }
+      sc.spouseOfDescendants !== false) { capNhatNutPhamVi(); return; }
   sc.descendants         = nac.descendants;
-  sc.spouseOfDescendants = nac.spouseOfDescendants;
+  sc.spouseOfDescendants = true;
   notify();
   refresh();
 }
@@ -1649,9 +1645,7 @@ function datPhamViToTienSo(soDoi) {
  * Áp dụng số đời HẬU DUỆ gõ tay.
  *
  * KHÔNG đụng `spouseOfDescendants`. Người dùng gõ số ĐỜI thì chỉ số đời được
- * đổi — chuyện vẽ hay không vẽ vợ/chồng của con đã có nấc "Con" / "Con và
- * Vợ/Chồng" và công tắc "Dâu/rể" lo. Đổi lén thêm một thứ nữa là hứa một đằng
- * làm một nẻo.
+ * đổi — vẽ hay không vẽ vợ/chồng của con là việc của hộp "Dâu/rể".
  */
 function datPhamViHauDueSo(soDoi) {
   const sc = state.scope;
@@ -1669,14 +1663,7 @@ function datDauRe(bat) {
   refresh();
 }
 
-/**
- * Tô lại tám nút theo `state` hiện tại.
- *
- * Nấc "Con và Vợ/Chồng" MỜ ĐI khi đã tắt dâu/rể, vì lúc đó bộ lọc hậu kỳ gạt
- * hết nút biên và nấc này cho ra đúng cùng một sơ đồ với nấc "Con" — để nó
- * sáng như thường là hứa một thứ không xảy ra. Vẫn bấm được, có chủ ý: khoá
- * hẳn thì người dùng phải đoán vì sao nút chết.
- */
+/** Tô lại các nút theo `state` hiện tại. */
 function capNhatNutPhamVi() {
   const sc = state.scope || {};
   const hienDauRe = state.showInLaws !== false;
@@ -1686,14 +1673,7 @@ function capNhatNutPhamVi() {
   });
 
   nutHauDue.forEach((nut, i) => {
-    const nac = NAC_HAU_DUE[i];
-    datVeChon(nut, nac.descendants === (sc.descendants || 0) &&
-                   nac.spouseOfDescendants === (sc.spouseOfDescendants !== false));
-    const mo = nac.canDauRe === true && !hienDauRe;
-    nut.style.opacity = mo ? '0.45' : '1';
-    nut.title = mo
-      ? 'Đang ẩn dâu/rể nên nấc này vẽ ra đúng như nấc "Con"'
-      : nac.moTa;
+    datVeChon(nut, NAC_HAU_DUE[i].descendants === (sc.descendants || 0));
   });
 
   if (nutDauRe) {
@@ -1716,8 +1696,7 @@ function capNhatNutPhamVi() {
   }
 
   const nacTren = NAC_TO_TIEN.find((n) => n.ancestors === (sc.ancestors || 0));
-  const nacDuoi = NAC_HAU_DUE.find((n) => n.descendants === (sc.descendants || 0) &&
-                    n.spouseOfDescendants === (sc.spouseOfDescendants !== false));
+  const nacDuoi = NAC_HAU_DUE.find((n) => n.descendants === (sc.descendants || 0));
   if (tomTatToTien) {
     tomTatToTien.textContent = '▲ ' + (nacTren ? nacTren.nhan : sc.ancestors + ' đời trước');
     tomTatToTien.title = 'Đời trên — bấm để đổi';
