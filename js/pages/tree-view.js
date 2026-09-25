@@ -6,7 +6,7 @@
 //            utils/{text,glyph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
 //            backup,chon-gia-pha,import-export,export-image}
-// Phiên bản: 1.42.0 · Cập nhật: 25/09/2026 23:33
+// Phiên bản: 1.43.0 · Cập nhật: 25/09/2026 23:50
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (nút Cũ/Mới)
 // ============================================================
 //
@@ -23,7 +23,7 @@ import { computeLayout } from '../domains/layout.js';
 import { renderTree } from '../domains/render.js';
 import { getSpouses, getParents, getChildren, getSiblings } from '../domains/union.js';
 import { fullName, doiSongNguoi } from '../utils/text.js';
-import { chiMucVe } from '../utils/graph.js';
+import { chiMucVe, tapHuyetThong } from '../utils/graph.js';
 import { openPersonMenu, openPersonDetail, openUnionDetail,
          closePersonDetail } from './person-detail.js';
 import { openPersonForm, closePersonForm, quickAddChild, quickAddParent,
@@ -59,7 +59,8 @@ import { rongHop, caoHop, leLopPhu } from '../config.js';
 // đều nằm ở lớp `domains`, mà luật lớp chỉ cho `domains` gọi `utils` và
 // `config`. Nơi duy nhất được ghép chúng lại là đây, lớp `pages`.
 //
-// showInLaws là BỘ LỌC HẬU KỲ (QUY-TAC-VE §1) — lọc sau computeVisibleSet,
+// showInLaws là BỘ LỌC HẬU KỲ (QUY-TAC-VE §1) — ẩn người ngoài huyết thống,
+// lọc sau computeVisibleSet,
 // KHÔNG sửa vào trong nó, để bộ số kiểm thử của chat 1.2 còn nguyên giá trị.
 // Công tắc bật/tắt nằm cuối cột nút dưới trái (chat 1.6).
 //
@@ -246,9 +247,12 @@ export function refresh() {
   let visible = computeVisibleSet(index, focus, state.scope);
 
   // Bộ lọc hậu kỳ showInLaws, bật/tắt bằng công tắc cuối cột nút dưới trái.
-  // layout.js không cần biết núm này tồn tại — đã chạy thử cả 56 sơ đồ ở nấc tắt.
+  // Ẩn đúng người KHÔNG CÙNG HUYẾT THỐNG với người trung tâm (định nghĩa dâu/rể
+  // của chủ dự án, 25/09/2026) — không lọc theo "vùng biên": họ hàng xa lấy
+  // người trong họ cũng đứng vùng biên mà vẫn là huyết thống (P0468, tâm P0469).
   if (state.showInLaws === false) {
-    visible = new Map([...visible].filter(([, kieu]) => kieu !== 'edge'));
+    const huyet = tapHuyetThong(index, focus);
+    visible = new Map([...visible].filter(([id]) => huyet.has(id)));
   }
 
   if (visible.size === 0) {

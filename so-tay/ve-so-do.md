@@ -50,6 +50,11 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
   (`netNgangCat()`). Nốt LÊN bỏ khi cha/mẹ của bộ ấy đang vẽ đủ — bỏ chọn
   dâu/rể từng làm MỌI con mọc nốt lên đè thanh ngang. Chụp cảnh ẩn dâu/rể:
   `AN_DAU_RE=1 node ../kiem-thu/xem-b128b.mjs …`.
+- ⚠ **Dâu/rể = người KHÔNG CÙNG HUYẾT THỐNG với người trung tâm** (chủ dự án
+  25/09/2026), tính bằng `tapHuyetThong()` (`utils/graph.js`). KHÔNG lọc theo
+  "vùng biên" (`edge`): họ hàng xa lấy người trong họ đứng vùng biên mà vẫn là
+  huyết thống — 6 lượt cây 59, 4 lượt cây 681 (P0468, P0471 tâm P0469) từng
+  bị ẩn oan.
 
 ## Bộ kiểm — cái bẫy
 - ⚠ `kiem-buoc-80.mjs` chạy trong CHROME nên `--import ./sang-supabase.mjs`

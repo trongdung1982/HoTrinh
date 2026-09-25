@@ -3,7 +3,7 @@
 // Vai trò  : Duyệt đồ thị dùng chung. MỌI hàm ở đây bắt buộc có tập visited.
 // Lớp      : utils
 // Phụ thuộc: (không)
-// Phiên bản: 0.5.0 · Cập nhật: 24/09/2026 (b128a) — thêm `chiMucVe()`
+// Phiên bản: 0.6.0 · Cập nhật: 25/09/2026 23:50
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục)
 // ============================================================
 //
@@ -31,6 +31,28 @@
  */
 export function bfs(startIds, getNeighbors) {
   return new Set(bfsLevels(startIds, getNeighbors).keys());
+}
+
+/**
+ * NGƯỜI CÙNG HUYẾT THỐNG với `tamId`: mọi tổ tiên (không giới hạn đời) và mọi
+ * hậu duệ của họ lẫn của chính `tamId`. Ai ngoài tập này là dâu/rể — định
+ * nghĩa của chủ dự án (25/09/2026). Không cắt theo số đời đang vẽ: người họ
+ * hàng xa lấy người trong họ vẫn là huyết thống, dù đứng ở vùng biên.
+ *
+ * @param {object} index  cùng hình dạng `buildIndex()`
+ * @param {string} tamId
+ * @returns {Set<string>}
+ */
+export function tapHuyetThong(index, tamId) {
+  const unionIds = (bang, id) => bang.get(id) || [];
+  const chaMe = (id) => unionIds(index.unionsAsChild, id)
+    .flatMap((u) => (index.unionById.get(u) || {}).partners || [])
+    .filter((p) => index.personById.has(p));
+  const con = (id) => unionIds(index.unionsAsPartner, id)
+    .flatMap((u) => ((index.unionById.get(u) || {}).children || []).map((c) => c && c.personId))
+    .filter((p) => p && index.personById.has(p));
+  if (!index.personById.has(tamId)) return new Set();
+  return bfs([...bfs(tamId, chaMe)], con);
 }
 
 /**
