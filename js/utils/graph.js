@@ -4,7 +4,7 @@
 // Lớp      : utils
 // Phụ thuộc: (không)
 // Phiên bản: 0.7.0 · Cập nhật: 25/09/2026 23:59
-// Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục)
+// Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (dâu/rể)
 // ============================================================
 //
 // ⚠ HAI NHÓM CHỈ MỤC, HAI VIỆC — đừng dùng lẫn (chủ dự án 24/09/2026):

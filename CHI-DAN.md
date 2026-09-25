@@ -25,7 +25,7 @@ mọi file vượt trần cứng 50% thì bắt đầu tách file.
 | Bàn thử SQL tại chỗ · phép ĐO hàng rào · tên/mã vai trò | `../kiem-thu/ban-thu-sql/` *(ngoài repo, CÓ trên máy này)* — `do-b102`→`do-b118b` ⚠ tiếng Việt vào psql phải đi bằng `-f`, không `-c` · tên vai: `config.js` hàm `vaiTroBangChu()` |
 | Đụng **ô gợi ý** (bốn chỗ dùng chung `o-goi-y.js`) | ⚠ `so-tay/o-goi-y.md` — sáu cái bẫy, hai cái từng nuốt mất cú bấm |
 | Duyệt/gắn tài khoản, hỏi "sao tôi không sửa được" | `HUONG-DAN-PHAN-QUYEN.md` |
-| Đụng cách VẼ sơ đồ | ⚠⚠ vẽ bằng `chiMucVe()`, thẻ/form bằng `state.index` — không lẫn · `KE-HOACH.md` b128 · `../tai-lieu/QUY-TAC-VE_V14.md` |
+| Đụng cách VẼ sơ đồ, dâu/rể | ⚠⚠ **`so-tay/ve-so-do.md`** (đè `QUY-TAC-VE`) · vẽ `chiMucVe()`, thẻ/form `state.index` · `../tai-lieu/QUY-TAC-VE_V14.md` |
 | Đụng thẻ người · thẻ gia đình · menu vòng tròn | `so-tay/the-thong-tin.md` |
 | Đụng ảnh | `KIEN-TRUC.md` mục 7 ⚠ có câu chưa chốt |
 | Đụng sao lưu, trigger Apps Script | `sao-luu/SaoLuu.gs` · `luoc-do/05-sao-luu.sql` · `kiem-thu/kiem-sao-luu.mjs` |

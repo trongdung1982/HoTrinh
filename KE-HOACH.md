@@ -1,8 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 25/09/2026 19:35 · `33` ĐÃ DÁN. Nốt cụt: vợ/chồng NGANG + con XUỐNG,
-đủ cả hai nốt; bỏ chữ Z chùm một con (`so-tay/ve-so-do.md`) — chờ chủ dự án nhìn lại TH957.
-Nút Cũ/Mới dưới 🔍 giữ tới khi chủ dự án bảo gỡ. Kế tiếp: b127d-2, b127d-3, rồi b126.*
+*Cập nhật 26/09/2026 00:08 · `33` ĐÃ DÁN. Loạt sửa vẽ b128 (nốt cụt, chữ Z,
+khoảng trống, dâu/rể, hộp Đời dưới) — chủ dự án nghiệm thu 25/09; luật ở
+`so-tay/ve-so-do.md`. Nút Cũ/Mới dưới 🔍 giữ tới khi chủ dự án bảo gỡ.
+Kế tiếp: b127d-2, b127d-3, rồi b126.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
 **đừng nới trần**. Ba luật giữ nó gọn:
@@ -163,5 +164,8 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 Bộ kiểm bảo vệ `domains/layout.js` `import` từ `../giapha/js/` — bản ĐÃ ĐÓNG
 BĂNG — nên sửa `supabase/js/domains/` thì nó vẫn xanh vì đang đo file khác.
 Lý lẽ đầy đủ và ba đường chưa chọn: **`/kiem-tra` phép 9**. Đã thành sự thật ở
-`person.js` (b120, b122b — chủ dự án cho phép cả hai lần); `layout.js` vẫn
-giống hệt bản đóng băng nên chưa nguy hiểm.
+`person.js` (b120, b122b — chủ dự án cho phép cả hai lần) và **`layout.js`**
+(b128 — khác hẳn từ 25/09). ⚠ Đo `layout.js` phải qua `--import ./sang-supabase.mjs`
+hoặc `kiem-buoc-80-sb.mjs`; nhóm 9b (bắt khuỷu) ở đó đã lỗi thời — chủ dự án
+bác luật khuỷu 25/09. Đường chạy bằng đúng pipeline app (thêm/ẩn dâu/rể) chưa
+có trong bộ kiểm — `so-tay/ve-so-do.md`.

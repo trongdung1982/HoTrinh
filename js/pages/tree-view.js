@@ -3,11 +3,11 @@
 // Vai trò  : MÀN HÌNH CHÍNH — sơ đồ cây, đổi người trung tâm
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, domains/{bloodline,layout,render,union},
-//            utils/{text,glyph}, config,
+//            utils/{text,glyph,graph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
 //            backup,chon-gia-pha,import-export,export-image}
 // Phiên bản: 1.44.0 · Cập nhật: 25/09/2026 23:59
-// Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (nút Cũ/Mới)
+// Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (nút Cũ/Mới · dâu/rể)
 // ============================================================
 //
 // ⚠ HAI CHỈ MỤC: vẽ bằng `layChiMucVe()` (chỉ người trong cây); mở thẻ/form

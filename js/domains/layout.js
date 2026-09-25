@@ -2,7 +2,7 @@
 // giapha · js/domains/layout.js
 // Vai trò  : Tính TOẠ ĐỘ các ô người, đường nối và nốt cụt. Không vẽ gì cả.
 // Lớp      : domains — HÀM THUẦN. Không gọi services, không chạm DOM.
-// Phụ thuộc: config (LAYOUT, PHOTO)
+// Phụ thuộc: config (LAYOUT, PHOTO) · domains/union.js · domains/render.js (VE)
 // Phiên bản: 1.24.0 · Cập nhật: 25/09/2026 23:33
 // ⚠ b128b: HAI cách xếp nằm cạnh nhau — cũ `datMoiKhoi()` + bốn lượt vá, mới
 //   `datBaKhoi()` (mục 4b). Chọn bằng `LAYOUT.xepBaKhoi` / `tuyChon.baKhoi`.
