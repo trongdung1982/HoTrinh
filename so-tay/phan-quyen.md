@@ -52,6 +52,16 @@ Dán `37` trước `34` thì Postgres chỉ nói *"column … does not exist"*; 
 `do $$` hỏi thứ mình cần, thiếu thì `raise` câu tiếng Việt chỉ file phải dán
 trước — trong `begin`, cả file lùi. Đo: `do-b126c.mjs` Q1–Q5.
 
+### Đổi "một cây một đơn" thành "một tài khoản một đơn" đụng dữ liệu CŨ (26/09)
+
+Dán `35` lên THẬT gặp `23505` khi tạo chỉ mục "một tài khoản một đơn chờ":
+đời trước mỗi CÂY một đơn riêng, nên một tài khoản từng nộp ở hai cây đang
+giữ hai đơn cùng `trang_thai='cho'` — hợp lệ ở luật cũ, phá luật mới. Bàn
+thử không bắt được vì nó dựng từ dữ liệu TRỐNG. Chữa: `truncate table
+de_xuat_gan_nguoi;` trước khi dán lại — an toàn, đơn kiểu cũ chưa mang nghĩa
+toàn phần mềm. Rút ra: hẹp PHẠM VI một chỉ mục unique (cây → tài khoản) phải
+hỏi trước "dữ liệu cũ có phạm luật mới không", không hỏi thì lộ ra lúc dán.
+
 ## Nới hẹp luật tự duyệt — `29` (b124c, 23/09/2026)
 
 Luật mới, một câu: **người nộp đơn gắn mã cho chính mình tự duyệt được khi và
@@ -83,24 +93,20 @@ cân: `THIET-KE-NHIEU-CAY.md` 11.10.
 ### Gốc phạm vi trực hệ phải THUỘC CÂY (b122a)
 
 `pham_vi_sua()` bản `06` nhận `p_goc` vô điều kiện — an toàn khi khoá ngoại
-`(tree_id, person_id)` của `tree_members` bảo đảm gốc nằm trong cây. `26` bỏ khoá
-ấy, nên gốc trỏ sang người cây khác thì chính người đó lọt vào phạm vi sửa từ cây
-này. `27` chữa ở hai đầu: `pham_vi_sua` gốc ngoài cây → rỗng, và bốn cửa gắn mã
-(`moi_vao_cay` · `gan_nguoi_cho_thanh_vien` · `duyet_thanh_vien` ·
-`nop_de_xuat_gan`) hỏi `tree_persons`. ⚠ Bỏ một khoá ngoại là phải đi tìm mọi
-hàm từng dựa vào nó — `moi_vao_cay` không có trong danh sách 20 hàm của b121.
-Đo: `do-b122.mjs` L9 · G1–G5.
+`(tree_id, person_id)` của `tree_members` bảo đảm gốc nằm trong cây. `26` bỏ
+khoá ấy, nên gốc trỏ sang người cây khác lọt vào phạm vi sửa từ cây này. `27`
+chữa: `pham_vi_sua` gốc ngoài cây → rỗng; bốn cửa gắn mã hỏi `tree_persons`.
+⚠ Bỏ một khoá ngoại là phải tìm mọi hàm từng dựa vào nó — `moi_vao_cay` từng
+lọt khỏi danh sách 20 hàm của b121. Đo: `do-b122.mjs` L9 · G1–G5.
 
 ### Luật đọc gọi hàm cho TỪNG DÒNG là chậm — viết `cột in (select ds_…())`
 
 Hàm `security definer` viết bằng SQL không được Postgres gộp vào câu truy vấn,
 nên `using (co_the_xem_cay(tree_id))` lập kế hoạch lại mỗi dòng (~8ms trên bàn
 thử). Bản đầu của `26`: đọc cây 740 người 11 giây, luật hôn nhân nối bằng `or`
-treo **15 phút** — mà đúng về kết quả, bảng tự kiểm vẫn 8/8. `26` chữa bằng hàm
-trả DANH SÁCH (`ds_cay_xem_duoc` · `ds_nguoi_xem_duoc` · `ds_hon_nhan_xem_duoc`):
-không phụ thuộc dòng nên tính một lần mỗi câu → 1,2 giây. ⚠ Bảy luật của `11`
-trên `trees` · `sources` · `change_log`… vẫn gọi-từng-dòng — chưa đo, đừng coi
-là nhanh. Gác: `do-b121.mjs` R7.
+treo **15 phút** — đúng kết quả, bảng tự kiểm vẫn 8/8. `26` chữa bằng hàm trả
+DANH SÁCH (`ds_cay_xem_duoc`…): không phụ thuộc dòng, tính một lần mỗi câu →
+1,2 giây. ⚠ Bảy luật của `11` vẫn gọi từng dòng, chưa đo.
 
 ### Một nới ở hàm nền móng chỉ an toàn nhờ một hàng rào ở ĐẦU KIA
 
@@ -116,18 +122,11 @@ Q6 của `do-b118b.mjs` — **phải chạy cả hai**, Q5 một mình không n�
 
 ### Phép "không tắt người cuối cùng" phải TRỪ người đang bị đụng ra
 
-Bản `14` đếm `count(*) where la_quan_tri_he_thong = true`, kể cả chính người
-sắp bị hạ cờ. Cộng với luật khoá mềm thì nó đẻ ra một lời **từ chối SAI**, đo
-được: QT1 và QT2 đều là QTHT, QT1 khoá QT2 → chỉ QT1 còn đứng; nay QT1 muốn hạ
-nốt cờ của QT2 *(người đang bị khoá, không phục vụ gì)* thì phép đếm trả về 1
-và chặn — trong khi hạ xong vẫn còn nguyên QT1. `so_qtht_dung_tru(p_user)` chữa
-đúng chỗ đó (`do-b118b.mjs` Q8).
-
-⚠ **Và nói thẳng điều bàn thử KHÔNG chứng minh được:** nhánh từ chối ấy hôm nay
-**không với tới được** — người gọi bắt buộc là QTHT còn đứng và không trỏ vào
-chính mình được, nên phép đếm luôn ≥ 1. Giữ nó là giữ một đai an toàn cho ngày
-hàng rào người gọi bị nới, **không phải** một hàng rào đã được đo. Đừng viết
-vào báo cáo rằng nó đã đo.
+Đếm `count(*) where la_quan_tri_he_thong = true` mà KHÔNG trừ chính người sắp
+bị hạ cờ thì cộng với khoá mềm sinh ra từ chối SAI (QT1 khoá QT2, muốn hạ nốt
+cờ QT2 thì đếm ra 1 và chặn, dù hạ xong vẫn còn QT1). `so_qtht_dung_tru(p_user)`
+chữa (`do-b118b.mjs` Q8) — nhánh ấy hôm nay chưa với tới được (người gọi không
+trỏ vào chính mình), giữ nó là đai an toàn cho sau này, chưa phải hàng rào đã đo.
 
 ### Bảng tự kiểm cuối file SQL cũng hỏng được, và nó hỏng theo hướng tệ
 
