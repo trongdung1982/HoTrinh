@@ -100,10 +100,10 @@ là chuyện của TÀI KHOẢN, không của từng cây. Chủ tài khoản t�
 khai thay, **QTHT duyệt**; dòng họ chọn trong các cây mình là thành viên, QTHT
 tự chọn cho mình không cần duyệt.
 
-✓ **b126a+b126b+b126b2 XONG trên bàn thử (26/09), 72/72 ĐẠT — CHƯA DÁN lên
-Supabase nào.** `34`(đọc)+`35`(ghi)+`36`(khe tự duyệt lần đầu, chủ dự án chốt
-26/09) **phải dán CÙNG BUỔI**. Lý lẽ nằm trong ghi chú đầu mỗi file, đọc ở đó.
-Đo: `do-b126a.mjs` 19/19 · `do-b126b.mjs` 29/29 · `do-b126b2.mjs` 24/24.
+✓ **b126a→c XONG trên bàn thử (26/09), 96/96 ĐẠT — CHƯA DÁN lên Supabase
+nào.** `34→37` **phải dán CÙNG BUỔI**. Lý lẽ nằm trong ghi chú đầu mỗi file.
+Đo: `do-b126a.mjs` 19/19 · `do-b126b.mjs` 29/29 · `do-b126b2.mjs` 24/24 ·
+`do-b126c.mjs` 24/24.
 ⚠ Trước khi dán thật: chạy câu "chỗ lệch" ở `34` mục 3 trên dữ liệu 3 cây
 thật — chưa ai kiểm có tài khoản nào gắn khác mã ở hai cây không.
 
@@ -112,8 +112,8 @@ thật — chưa ai kiểm có tài khoản nào gắn khác mã ở hai cây kh
 | ✓ **b126a** | `tai_khoan.person_id`+`cay_chinh_id`; `nguoi_gan()` đọc tài khoản | Bàn thử 19/19 |
 | ✓ **b126b** | `de_xuat_gan_nguoi` bỏ `tree_id`; `gan_nguoi_tai_khoan()` gác QTHT | Bàn thử 29/29 |
 | ✓ **b126b2** | Chủ cây tự duyệt được NẾU lần đầu (chưa gắn ai) VÀ mã còn trống | Bàn thử 24/24 |
-| **b126c** | "Dòng họ" (`cay_chinh_id`): tự chọn cây mình là thành viên, QTHT duyệt, trừ QTHT tự chọn | Đổi cây chính, có duyệt |
-| **b126d** | Màn hình Hồ sơ cá nhân + tab duyệt; dọn cửa cũ; xoá `TEN_HO` cứng | Chủ dự án tự khai trên máy THẬT |
+| ✓ **b126c** | "Dòng họ" (`cay_chinh_id`, bảng `de_xuat_dong_ho`): tự chọn cây mình là thành viên đã duyệt, QTHT duyệt (không ngoại lệ); QTHT tự đặt cho mình qua `dat_dong_ho_qtht()`, không qua đơn | Bàn thử 24/24 |
+| **b126d** | Màn hình Hồ sơ cá nhân (hai đơn trên) + tab duyệt ở Quản trị hệ thống; dọn `gan_nguoi_cho_thanh_vien()`/`la_quan_tri_cay()` cũ nếu hết ai gọi; sửa `ds_tai_khoan_he_thong()` cột *Người được gắn*; xoá `TEN_HO` cứng ở `sb.js`/`settings.js` | Chủ dự án tự khai trên máy THẬT |
 
 Sổ tay: `so-tay/phan-quyen.md` · `so-tay/luu-du-lieu.md`.
 
