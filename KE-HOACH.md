@@ -2,9 +2,9 @@
 
 *Cập nhật 26/09/2026 · b126 XONG — SQL `34`→`38` đã dán lên Supabase thật,
 JS (Hồ sơ cá nhân, tab *Đơn Hồ sơ cá nhân*, `sb.js` chữ ký mới) đã chạy theo.
-Nút Cũ/Mới dưới 🔍 giữ tới khi chủ dự án bảo gỡ. **b111 đã soạn lại cách bấm
-thử** (bảng dưới) — chủ dự án bấm khi rảnh. Kế tiếp cho AI: **b125c** — sửa
-tại chỗ bảng người, việc XÂY MÃ chưa viết, khác bản chất với b111.*
+Nút Cũ/Mới dưới 🔍 giữ tới khi chủ dự án bảo gỡ. **b111 đã ĐO ĐẠT qua REST thật**
+(bảng dưới) — chỉ còn chủ dự án nhìn bằng mắt trên giao diện. Kế tiếp cho AI:
+**b125c** — sửa tại chỗ bảng người, việc XÂY MÃ chưa viết, khác bản chất b111.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
 **đừng nới trần**. Ba luật giữ nó gọn:
@@ -33,7 +33,7 @@ Quản trị hệ thống**.
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b111** — kiểm duyệt TRƯỚC/SAU | ✅ Sẵn sàng 26/09 — mã đã đo đạt từ 10/09, quyền b126 xong nên hết lý do hoãn. Cần một dòng CHỜ DUYỆT trước: tài khoản vai `sua` (không phải Quản trị) sửa một trường người bất kỳ → Lưu → vào hàng chờ. Rồi tài khoản Quản trị hệ thống → khu Kiểm duyệt → tab *Chờ duyệt* → bấm **Xem chi tiết** ở dòng ấy → phải thấy bảng Người · Trường · Trước · Sau, đúng trường vừa sửa |
+| **b111** — kiểm duyệt TRƯỚC/SAU | ✅ Máy chủ + domain đã ĐO ĐẠT 26/09 qua REST thật (dòng chờ `id=111` của `khach@io.vn` sửa P0770, tree T388): `chi_tiet_kiem_duyet()` trả đúng · `so-sanh.js bangPhang()` xếp đúng 1 dòng "Họ tên" đổi. **Còn thiếu duy nhất: nhìn bằng MẮT trên giao diện** — Quản trị hệ thống → khu Kiểm duyệt → tab *Chờ duyệt* → bấm **Xem chi tiết** ở dòng P0770 → đối chiếu đúng bảng trên |
 | **b111c** — đơn gắn mã | ✅ Dán xong 26/09 — bấm ở *Tài khoản của tôi → Mã người & Dòng họ* (nộp) và tab *Đơn Hồ sơ cá nhân* của Quản trị hệ thống (xét) |
 | **b117** — khu Tài khoản | ①bảng *Các gia phả tôi tham gia* đúng mã (tài khoản thường, qua RLS) ②đổi mật khẩu |
 | **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
