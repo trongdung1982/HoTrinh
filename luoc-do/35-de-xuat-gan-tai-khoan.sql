@@ -47,6 +47,16 @@
 
 begin;
 
+-- ⚠ HÀNG RÀO THỨ TỰ DÁN: thiếu `34` thì dừng ngay, nói bằng tiếng Việt.
+do $$
+begin
+  if not exists (select 1 from information_schema.columns
+                  where table_schema = 'public' and table_name = 'tai_khoan'
+                    and column_name = 'person_id') then
+    raise exception 'DỪNG: chưa dán 34-gan-nguoi-tai-khoan.sql. Dán 34 trước, rồi mới tới 35.';
+  end if;
+end $$;
+
 -- ============================================================
 -- 1. BẢNG ĐƠN — BỎ tree_id
 -- ============================================================

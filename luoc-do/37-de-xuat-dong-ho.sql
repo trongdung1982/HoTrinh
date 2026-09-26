@@ -28,6 +28,17 @@
 
 begin;
 
+-- ⚠ HÀNG RÀO THỨ TỰ DÁN (đặt 26/09 sau khi chủ dự án dán `37` trước `34` —
+--   Postgres báo "column tk.cay_chinh_id does not exist", không nói phải làm gì).
+do $$
+begin
+  if not exists (select 1 from information_schema.columns
+                  where table_schema = 'public' and table_name = 'tai_khoan'
+                    and column_name = 'cay_chinh_id') then
+    raise exception 'DỪNG: chưa dán 34-gan-nguoi-tai-khoan.sql. Thứ tự đúng: 34 → 35 → 36 → 37, cùng một buổi.';
+  end if;
+end $$;
+
 -- ============================================================
 -- 1. BẢNG ĐƠN
 -- ============================================================

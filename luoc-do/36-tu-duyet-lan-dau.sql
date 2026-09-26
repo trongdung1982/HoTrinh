@@ -33,6 +33,15 @@
 
 begin;
 
+-- ⚠ HÀNG RÀO THỨ TỰ DÁN: thiếu `35` thì dừng ngay, nói bằng tiếng Việt.
+do $$
+begin
+  if not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+                  where n.nspname = 'public' and p.proname = 'gan_nguoi_tai_khoan') then
+    raise exception 'DỪNG: chưa dán 35-de-xuat-gan-tai-khoan.sql. Thứ tự đúng: 34 → 35 → 36.';
+  end if;
+end $$;
+
 -- ============================================================
 -- 1. HAI HÀM HỎI NHỎ
 -- ============================================================

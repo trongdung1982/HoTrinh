@@ -41,6 +41,16 @@ Dán lại file bên trái thì phải dán tiếp các file bên phải, đúng
   chín, **không một lời báo**.
 - **Sau `26` KHÔNG dán lại `02`/`11`** — luật đọc trên bảng người của chúng hỏi
   `tree_id` đã bỏ; bản đứng cuối của bốn luật ấy ở `26` mục 5.
+- `34`→`35`→`36`→`37` (b126) — một chuỗi, **cùng lúc với JS b126d** (`35` bỏ
+  `p_tree` ở ba hàm đơn gắn mã `sb.js` còn gọi). `36` giữ bản cuối của
+  `duyet_de_xuat_gan()` + `gan_nguoi_tai_khoan()`.
+
+### File phụ thuộc cột mới phải tự chặn khi dán sai thứ tự (26/09)
+
+Dán `37` trước `34` thì Postgres chỉ nói *"column … does not exist"*; dòng
+*"Chạy SAU …"* không ai đọc lúc dán. Nay `35`/`36`/`37` mở đầu bằng khối
+`do $$` hỏi thứ mình cần, thiếu thì `raise` câu tiếng Việt chỉ file phải dán
+trước — trong `begin`, cả file lùi. Đo: `do-b126c.mjs` Q1–Q5.
 
 ## Nới hẹp luật tự duyệt — `29` (b124c, 23/09/2026)
 

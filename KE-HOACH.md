@@ -101,7 +101,10 @@ khai thay, **QTHT duyệt**; dòng họ chọn trong các cây mình là thành 
 tự chọn cho mình không cần duyệt.
 
 ✓ **b126a→c XONG trên bàn thử (26/09), 96/96 ĐẠT — CHƯA DÁN lên Supabase
-nào.** `34→37` **phải dán CÙNG BUỔI**. Lý lẽ nằm trong ghi chú đầu mỗi file.
+nào.** `34→37` **phải dán CÙNG BUỔI, và CÙNG LÚC với JS của b126d** — `35`
+đổi chữ ký ba hàm đơn gắn mã mà `sb.js` còn gọi kèm `p_tree`; dán trước là
+khu đơn gắn mã trong Quản trị báo lỗi. 26/09 chủ dự án dán thử `37` → bị chặn
+(thiếu `34`), không đổi gì; nay `35`/`36`/`37` tự báo thiếu file bằng tiếng Việt.
 Đo: `do-b126a.mjs` 19/19 · `do-b126b.mjs` 29/29 · `do-b126b2.mjs` 24/24 ·
 `do-b126c.mjs` 24/24.
 ⚠ Trước khi dán thật: chạy câu "chỗ lệch" ở `34` mục 3 trên dữ liệu 3 cây
