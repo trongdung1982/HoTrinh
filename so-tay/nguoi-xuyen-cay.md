@@ -19,10 +19,6 @@ Thêm người nào cũng là người MỚI, như trước b124a.
 | b124b *Báo trùng người giữa các cây* + hàm gộp | **CHƯA DỰNG, đóng băng theo** — cùng một câu hỏi bên dưới |
 | b124c nới hẹp luật tự duyệt đơn gắn mã (`THIET-KE-NHIEU-CAY.md` 11.10) | **KHÔNG thuộc chức năng này**, vẫn là việc kế tiếp được |
 
-⚠ **Dữ liệu thử còn lại:** lần thử 22/09 đã kéo một người từ cây `TH957` sang
-`T388` — họ vẫn nằm ở cả hai cây, cùng những hôn nhân đã khai ở `T388`. Dữ liệu
-giả, không khẩn. Muốn dọn: xoá người ấy **trong app, ở cây `T388`** — xoá chỉ
-rút họ khỏi cây ấy, bản ghi và cây `TH957` còn nguyên.
 
 ## Vì sao đóng băng — lời chủ dự án, 22/09/2026
 
@@ -118,7 +114,7 @@ Hàng rào 1 gác CẢ vẽ LẪN sửa. Vi phạm là từ chối, không có n
    | Bước | Việc | Điểm dừng |
    |---|---|---|
    | ✓ **b127b** | xem dưới bảng | Cây `T388`: thẻ đủ vợ/con; sơ đồ không đổi một nét — chờ chủ dự án bấm |
-   | **b127d** *(tách 24/09, chủ dự án đồng ý)* | **Đề nghị GỠ** quan hệ đã khoá / có một đầu ngoài cây → QTHT duyệt, máy chủ tự gỡ. ✓ d-1 `33` (25/09); các bước: `KE-HOACH.md` | d-2, d-3 |
+   | **b127d** *(tách 24/09)* | **Đề nghị GỠ** quan hệ khoá → QTHT duyệt, máy chủ tự gỡ. ✓ d-1 `33` · ✓ d-2 nút ✉ | d-3 |
    ✓ **b127c** 24/09 — A–B đã nối thẳng (vợ/chồng · cha mẹ–con) ở một hôn
    nhân sống thì không nối thêm ở hôn nhân khác. Gác bằng TRIGGER trên
    `unions` + `union_children` (không chép lại `luu_cay()`), lỗi `GP409` hint
@@ -137,6 +133,10 @@ Hàng rào 1 gác CẢ vẽ LẪN sửa. Vi phạm là từ chối, không có n
    - *Sắp thứ tự con* vốn đưa ĐỦ các con (kể cả ngoài cây) cho
      `reorderChildren()`, nên sắp được; con vành đai nay hiện tên thay vì bị
      ghi nhầm "trong thùng rác".
+   ✓ **b127d-2** 26/09 — `person-edit.js` khối Quan hệ: hàng `ngoai` khoá ô
+   sửa, nút ✉ gọi `repo.nopDeNghiQuanHe()`. ⚠ Hàng Vợ chồng gỡ NGƯỜI NGOÀI
+   CÂY, không gỡ `mocId` (mất luôn quan hệ với con chung); hàng Cha mẹ/Con gỡ
+   đúng người của hàng đó. d-3 đọc theo quy ước này.
 4. ✓ `CAN_KEO_NGUOI_XUYEN_CAY = true` — chủ dự án bật 23/09, trước b127b/c.
 5. b124b (Báo trùng + gộp) đi sau cùng — gộp hai người là đổ hai nhánh vào nhau,
    nên càng phụ thuộc câu 1–5.

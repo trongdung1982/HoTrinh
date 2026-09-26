@@ -1,9 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 26/09/2026 00:08 · `33` ĐÃ DÁN. Loạt sửa vẽ b128 (nốt cụt, chữ Z,
-khoảng trống, dâu/rể, hộp Đời dưới) — chủ dự án nghiệm thu 25/09; luật ở
-`so-tay/ve-so-do.md`. Nút Cũ/Mới dưới 🔍 giữ tới khi chủ dự án bảo gỡ.
-Kế tiếp: b127d-2, b127d-3, rồi b126.*
+*Cập nhật 26/09/2026 12:03 · `33` ĐÃ DÁN. b127d-2 xong (nút ✉ Đề nghị sửa
+trong form người) — chưa ai bấm thử thật. Nút Cũ/Mới dưới 🔍 giữ tới khi chủ
+dự án bảo gỡ. Kế tiếp: b127d-3, rồi b126.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
 **đừng nới trần**. Ba luật giữ nó gọn:
@@ -101,8 +100,8 @@ tay). Đổi đẻ↔nuôi để sau. Luật: đầu file `luoc-do/33`.
 | Bước | Việc | Điểm dừng |
 |---|---|---|
 | ✓ **d-1** | `33`: bảng + 5 hàm, bàn thử `do-b127d.mjs` 40/40 | ✓ đã dán 25/09 |
-| **d-2** | Nút *✉ Đề nghị sửa* ở cặp đang khoá trong form người + `sb`/`repo` | Gửi được một đề nghị thật |
-| **d-3** | Khu duyệt trong `QuanTri.html` | Duyệt một đề nghị, quan hệ gỡ đúng |
+| ✓ **d-2** | Nút *✉ Đề nghị sửa* ở cặp đang khoá trong form người + `sb`/`repo` (`nopDeNghiQuanHe`) | ✓ 26/09 — chủ dự án CHƯA bấm thử thật |
+| **d-3** | Khu duyệt trong `QuanTri.html` (`dsDeNghiQuanHe` · `duyetDeNghiQuanHe` · `tuChoiDeNghiQuanHe` chưa có ở `sb.js`) | Duyệt một đề nghị, quan hệ gỡ đúng |
 ⚠ b127b chưa bấm thật: thẻ người kéo sang `T388` phải đủ vợ/con.
 
 ### ⚠⚠ b126 — GẮN NGƯỜI và DÒNG HỌ về HỒ SƠ CÁ NHÂN (chốt 23/09/2026)
