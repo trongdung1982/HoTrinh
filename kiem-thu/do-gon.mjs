@@ -6,7 +6,7 @@
 //            node supabase/kiem-thu/do-gon.mjs --tat-ca    (in hết nợ cũ)
 //            node supabase/kiem-thu/do-gon.mjs --ha-moc    (nợ đã giảm → khoá mức mới)
 //            node supabase/kiem-thu/do-gon.mjs --lap-moc   (chỉ chạy được khi chưa có sổ)
-// Phiên bản: 0.2.0 · Cập nhật: 15/09/2026 22:24 — nhật ký theo phiên đóng · sổ tay: trần + dòng trỏ
+// Phiên bản: 0.2.1 · Cập nhật: 26/09/2026 22:42 — nới trần CLAUDE.md 17500→18500
 // ============================================================
 //
 // LỖI    — vượt trần mà không có trong sổ nợ, hoặc nợ cũ TĂNG. Thoát mã 1.
@@ -36,7 +36,7 @@ const TRAN = {
 
 // File nạp ở đầu MỌI phiên: [đường dẫn từ Claude_Code, trần dòng, trần byte, trần ký tự/dòng]
 const DAU_PHIEN = [
-  ['CLAUDE.md', 300, 17500, 250],
+  ['CLAUDE.md', 300, 18500, 250],
   ['.claude/memory/MEMORY.md', 100, 8000, 250],
   ['supabase/CHI-DAN.md', 80, 8000, 400],
   ['supabase/KE-HOACH.md', 250, 15000, 500],

@@ -88,7 +88,7 @@ gắn tài khoản ↔ người là việc của b126 (Hồ sơ cá nhân), **b1
 
 | Bước | Việc | Điểm dừng |
 |---|---|---|
-| **b125c** ⏸ | Sửa tại chỗ các trường, Lưu theo dòng qua `luu_cay()`. Hoãn hết hạn 26/09 (như b111) | Thành viên thường sửa → vào hàng chờ; quản trị → ghi thẳng |
+| **b125c** ← KẾ TIẾP | Sửa tại chỗ các trường, Lưu theo dòng qua `luu_cay()`. Hết lý do hoãn (quyền b126 xong) | Thành viên thường sửa → vào hàng chờ; quản trị → ghi thẳng |
 | **b125d** | Chọn nhiều dòng + sửa hàng loạt một trường | Sửa 10 người một lượt, hoàn tác được |
 | **b125e** | Xuất Excel; nối vào đường NHẬP đã có | Xuất ra mở được bằng Excel |
 
