@@ -98,9 +98,23 @@ Luật, lý lẽ, danh sách chỗ bị đụng: **`THIET-KE-NHIEU-CAY.md` mục
 *Gắn người và dòng họ*. Tóm: một người duy nhất, một tài khoản duy nhất → gắn
 là chuyện của TÀI KHOẢN, không của từng cây. Chủ tài khoản tự khai, không ai
 khai thay, **QTHT duyệt**; dòng họ chọn trong các cây mình là thành viên, QTHT
-tự chọn cho mình không cần duyệt. Đổi nền móng (`pham_vi_sua` · `nguoi_gan` ·
-bốn cửa gắn mã · `de_xuat_gan_nguoi` đang mang `tree_id`) — **chia bước và đo
-trên bàn thử trước, đừng dán thẳng**.
+tự chọn cho mình không cần duyệt.
+
+✓ **b126a+b126b XONG trên bàn thử (26/09), 48/48 ĐẠT — CHƯA DÁN lên Supabase
+nào.** `34`(đọc)+`35`(ghi) **phải dán CÙNG BUỔI** — lý lẽ, và quyết định rút
+lại ngoại lệ tự duyệt của `29`, nằm trong ghi chú đầu `35`, đọc ở đó, đừng
+chép lại đây. Đo: `do-b126a.mjs` 19/19 · `do-b126b.mjs` 29/29.
+⚠ Trước khi dán thật: chạy câu "chỗ lệch" ở `34` mục 3 trên dữ liệu 3 cây
+thật — chưa ai kiểm có tài khoản nào gắn khác mã ở hai cây không.
+
+| Bước | Việc | Điểm dừng |
+|---|---|---|
+| ✓ **b126a** | `tai_khoan.person_id`+`cay_chinh_id`; `nguoi_gan()` đọc tài khoản | Bàn thử 19/19 |
+| ✓ **b126b** | `de_xuat_gan_nguoi` bỏ `tree_id`; `gan_nguoi_tai_khoan()` gác QTHT | Bàn thử 29/29 |
+| **b126c** | "Dòng họ" (`cay_chinh_id`): tự chọn cây mình là thành viên, QTHT duyệt, trừ QTHT tự chọn | Đổi cây chính, có duyệt |
+| **b126d** | Màn hình Hồ sơ cá nhân + tab duyệt; dọn cửa cũ; xoá `TEN_HO` cứng | Chủ dự án tự khai trên máy THẬT |
+
+Sổ tay: `so-tay/phan-quyen.md` · `so-tay/luu-du-lieu.md`.
 
 ### Sau đó — chưa đặt số, chưa chốt
 
