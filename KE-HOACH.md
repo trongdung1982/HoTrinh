@@ -46,11 +46,11 @@ Quản trị hệ thống**.
 Luật dán lại (file nào kéo theo file nào): **`so-tay/phan-quyen.md`** mục
 *Chuỗi dán lại*.
 
-**Đã dán lên CẢ HAI Supabase (thật + Staging): `01` → `21`, không sót file
-nào.** `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
+**`01`→`21` từng dán lên cả thật và Staging; Staging đã XOÁ HOÀN TOÀN 26/09
+— chỉ còn MỘT Supabase (thật) từ nay.** `04-view-ma-da-dung.sql` là view phụ
+trợ, không thuộc chuỗi.
 
 **`22`→`33` — ĐÃ DÁN lên THẬT, tự kiểm ĐẠT cả** (ngày dán từng file: `git log`).
-⚠ **Chưa rõ Staging từ `22` trở đi** — hỏi lại trước khi coi hai máy đồng bộ.
 ⚠ `32` là bản đứng cuối của `luu_cay()` — dán lại `27`/`28` sau nó là mở lại
 lỗ, im lặng.
 
@@ -79,7 +79,6 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 
 Sổ tay: `so-tay/luu-du-lieu.md` · kéo người, b124b chưa dựng:
 `so-tay/nguoi-xuyen-cay.md` · b124c: `so-tay/phan-quyen.md` *Nới hẹp tự duyệt*.
-⚠ Staging vẫn lệch thật tới khi dán `26`+`27`+`28` sang đó.
 ⚠ Ô gợi ý trên điện thoại thật chưa ai bấm lại — `so-tay/o-goi-y.md`.
 
 ### ⚠ b125 — BẢNG NGƯỜI trong trang Quản trị (chủ dự án chốt 23/09/2026)
@@ -126,7 +125,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **b127b chưa bấm thật**: thẻ người kéo sang `T388` phải đủ vợ/con | — |
 | ⚠ **Huy hiệu *đơn chờ duyệt* trên nút Gia phả đếm theo cây ĐANG MỞ** (`napSoDem(phien.treeId)`) — chỗ duy nhất của trang còn dính cây đang mở. Có từ b101, b117 chỉ dời nút | `khung.js` · luật 5a |
 | ⚠ **Ai gọi `don_thung_rac()`** — nút bấm tay hay trigger Apps Script đêm? Chưa hỏi chủ dự án | `THIET-KE-NHIEU-CAY.md` mục 11.6 |
-| ⚠ **b103 → b105 của Antigravity vẫn nằm NGOÀI repo**, trong `codex/`, mới dán lên Staging. Soi lướt: `12` và `13` không thêm luật ghi nào — nhưng chưa rà kỹ, chưa đo | `PHOI-HOP-AI.md` |
+| ⚠ **b103 → b105 của Antigravity vẫn nằm NGOÀI repo**, trong `codex/`. Từng dán thử lên Staging nhưng Staging đã XOÁ 26/09 — nay chưa dán ở đâu cả, chưa rà kỹ, chưa đo | `PHOI-HOP-AI.md` |
 | ⚠ **Bộ bất biến bố cục đang gác nhầm nhánh** — xem ngay dưới bảng. Đường chạy tạm: `--import ./sang-supabase.mjs` (b128b) — ⚠ KHÔNG ăn vào bài chạy trong Chrome; `kiem-buoc-80` dùng bản `kiem-buoc-80-sb.mjs` | `/kiem-tra` phép 9 |
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |
 | Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
