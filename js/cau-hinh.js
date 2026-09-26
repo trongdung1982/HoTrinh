@@ -3,7 +3,8 @@
 // Vai trò  : FILE DUY NHẤT chủ dự án sửa tay. Thay cho gas/Config.gs.
 // Lớp      : config — không gọi file nào khác
 // Phụ thuộc: (không)
-// Phiên bản: 0.1.0 · Cập nhật: 02/09/2026 22:45
+// Phiên bản: 0.2.0 · Cập nhật: 26/09/2026 — bỏ `TEN_HO` (b126d, dòng họ nay
+//            tự chọn theo tài khoản ở Hồ sơ cá nhân, không còn cố định)
 // ============================================================
 //
 // ⚠ **Chỉ sửa những dòng có chữ ĐIỀN VÀO ĐÂY.** Mọi thứ khác trong thư mục
@@ -48,7 +49,6 @@ export const SUPABASE_KHOA_CONG_KHAI =
 // Dùng ở màn hình từ chối, khi một người chưa được cấp quyền mở app. Câu chữ
 // phải nói rõ người ta PHẢI LÀM GÌ, không hiện lỗi kỹ thuật thô.
 
-export const TEN_HO        = 'họ Nguyễn Trọng Bắc';
 export const NGUOI_QUAN_LY = 'trongdung1982@gmail.com';
 
 // ------------------------------------------------------------

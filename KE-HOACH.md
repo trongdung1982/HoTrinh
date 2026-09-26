@@ -1,8 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 26/09/2026 · b126a→c (SQL `34`→`37`) xong trên bàn thử, CHƯA DÁN.
-Nút Cũ/Mới dưới 🔍 giữ tới khi chủ dự án bảo gỡ. Kế tiếp: **b126d** — màn
-hình Hồ sơ cá nhân, rồi dán `34`→`37` cùng lúc với JS ấy.*
+*Cập nhật 26/09/2026 · b126a→d xong (SQL `34`→`38` + JS: Hồ sơ cá nhân, tab
+*Đơn Hồ sơ cá nhân*, `sb.js` chữ ký mới) — tất cả trên bàn thử/màn hình giả,
+CHƯA DÁN lên Supabase thật. Nút Cũ/Mới dưới 🔍 giữ tới khi chủ dự án bảo gỡ.
+Kế tiếp: **dán `34`→`38`** lên Supabase thật (chủ dự án bấm, xem mục SQL).*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
 **đừng nới trần**. Ba luật giữ nó gọn:
@@ -32,7 +33,7 @@ Quản trị hệ thống**.
 | Điểm dừng | Bấm gì |
 |---|---|
 | **b111** — kiểm duyệt TRƯỚC/SAU | ⏸ **Hoãn** — quyền đang chỉnh lý (b126 · gom một cửa quyền). Chỉnh xong mới soạn lại cách bấm |
-| **b111c** — đơn gắn mã | ⏸ Chờ b126d — sau khi dán `34`→`37`, đơn đi theo tài khoản; soạn lại cách bấm theo luật `36` |
+| **b111c** — đơn gắn mã | ⏸ JS xong (b126d) — chờ dán `34`→`38`. Sau đó bấm ở *Tài khoản của tôi → Mã người & Dòng họ* (nộp) và tab *Đơn Hồ sơ cá nhân* của Quản trị hệ thống (xét) |
 | **b117** — khu Tài khoản | ①bảng *Các gia phả tôi tham gia* đúng mã (tài khoản thường, qua RLS) ②đổi mật khẩu |
 | **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
 | **b127d** — đề nghị sửa quan hệ (`33`, xong d-1→d-3) | Form người có quan hệ ngoài cây: bấm ✉ gửi đề nghị → Quản trị hệ thống → tab *Đề nghị sửa quan hệ* → Duyệt (gỡ) hoặc Từ chối |
@@ -47,19 +48,18 @@ Luật dán lại (file nào kéo theo file nào): **`so-tay/phan-quyen.md`** m�
 **Đã dán lên CẢ HAI Supabase (thật + Staging): `01` → `21`, không sót file
 nào.** `04-view-ma-da-dung.sql` là view phụ trợ, không thuộc chuỗi.
 
-**`22`→`29` — ĐÃ DÁN lên THẬT, tự kiểm ĐẠT cả** (`26`+`27` ngày 18/09 · `28`
-ngày 22/09 · `29` ngày 23/09; chủ dự án đọc lại bảng tự kiểm từng lần).
+**`22`→`33` — ĐÃ DÁN lên THẬT, tự kiểm ĐẠT cả** (ngày dán từng file: `git log`).
 ⚠ **Chưa rõ Staging từ `22` trở đi** — hỏi lại trước khi coi hai máy đồng bộ.
+⚠ `32` là bản đứng cuối của `luu_cay()` — dán lại `27`/`28` sau nó là mở lại
+lỗ, im lặng.
 
-**`30` (b127a) — ĐÃ DÁN lên THẬT 23/09**, chạy thành công.
-**`31` (b127c) — ĐÃ DÁN lên THẬT 24/09**: 2 trigger, 0 cặp trùng từ trước.
-**`32` (b128a) — ĐÃ DÁN lên THẬT 24/09**, tự kiểm 4/4 ĐẠT. ⚠ Bản đứng cuối
-của `luu_cay()` — dán lại `27`/`28` sau nó là mở lại lỗ, im lặng.
-**`33` (b127d-1) — ĐÃ DÁN lên THẬT 25/09**, tự kiểm `1|0|5|0` đúng như bàn thử.
-**`34`→`37` (b126a→c) — ⛔ CHƯA DÁN, ĐỪNG DÁN tới khi JS b126d xong**: `35`
-bỏ `p_tree` ở ba hàm đơn gắn mã `sb.js` còn gọi. Dán một lượt `34→35→36→37`
-cùng lúc với JS ấy. ⚠ Trước đó chạy câu "chỗ lệch" ở `34` mục 3 trên dữ liệu
-thật. 26/09 chủ dự án dán thử `37` → bị chặn (thiếu `34`), không đổi gì.
+**`34`→`38` (b126a→d) — ⛔ CHƯA DÁN — JS ĐÃ XONG, giờ dán được**: `35` bỏ
+`p_tree` ở ba hàm đơn gắn mã `sb.js` còn gọi; `38` sửa `ds_tai_khoan_he_
+thong()` cột *Người được gắn* (nay một mã). Dán một lượt `34→35→36→37→38`.
+⚠ Trước đó chạy câu "chỗ lệch" ở `34` mục 3 trên dữ liệu thật — có dòng thì
+tự tay chọn mã trước, đừng để hàm tự chọn. 26/09 chủ dự án dán thử `37` →
+bị chặn (thiếu `34`), không đổi gì; cả năm file đã chạy sạch trên bàn thử
+26/09 (kể cả `38`, tự kiểm 6/6).
 
 ---
 
@@ -104,16 +104,30 @@ là chuyện của TÀI KHOẢN, không của từng cây. Chủ tài khoản t�
 khai thay, **QTHT duyệt**; dòng họ chọn trong các cây mình là thành viên, QTHT
 tự chọn cho mình không cần duyệt.
 
-Phần SQL xong trên bàn thử (`34`→`37`, trạng thái dán ở mục *SQL* trên).
+Phần SQL xong trên bàn thử (`34`→`38`, trạng thái dán ở mục *SQL* trên).
 Hàm máy chủ mà màn hình phải gọi — đọc đầu từng file: `35` (đơn gắn mã, không
 còn `p_tree`) · `36` (khe tự duyệt lần đầu của chủ cây) · `37` (đơn dòng họ +
 `dat_dong_ho_qtht`). Bàn thử: `do-b126a`/`b`/`b2`/`c.mjs`.
 
-| Bước | Việc | Điểm dừng |
-|---|---|---|
-| **b126d** | Màn hình Hồ sơ cá nhân (đơn gắn mã + đơn dòng họ) + tab duyệt hai loại đơn ở Quản trị hệ thống; `sb.js` gọi chữ ký mới; dọn `gan_nguoi_cho_thanh_vien()`/`la_quan_tri_cay()` nếu hết ai gọi; sửa `ds_tai_khoan_he_thong()` cột *Người được gắn* (nay MỘT mã); xoá `TEN_HO` cứng ở `sb.js`/`settings.js` | Dán `34`→`37`, chủ dự án tự khai mã người + dòng họ trên máy THẬT, QTHT khác duyệt |
+**b126d — XONG (26/09), chưa dán:** Màn hình Hồ sơ cá nhân (`khu-tai-khoan.js`,
+panel *Mã người & Dòng họ*) + tab *Đơn Hồ sơ cá nhân* ở Quản trị hệ thống
+(`khu-ho-so-don.js`, mới); `sb.js` gọi chữ ký mới, tám cửa (gắn mã + dòng họ);
+dọn `gan_nguoi_cho_thanh_vien()`/`la_quan_tri_cay()`/`chanCuaToi()` — hết ai
+gọi, xoá khỏi `sb.js` và `sb-gia.mjs`; `38` sửa `ds_tai_khoan_he_thong()` cột
+*Người được gắn* (nay MỘT mã) + thêm cột dòng họ; xoá `TEN_HO` cứng ở
+`cau-hinh.js`/`sb.js`/`settings.js`/`khoi-dong.js`. Trang cây bỏ mục *Đề xuất
+gắn người* và menu *Gắn / đổi mã người* (không còn ở đó). `kiem-thu/kiem-
+trang-quan-tri.mjs` (303 phép) và `xem-khung-quan-tri.mjs` (22 cảnh, thêm
+`gan-ma`/`gan-ma-390`/`hsd`) đã cập nhật, chạy sạch. **Điểm dừng:** dán
+`34`→`38`, chủ dự án tự khai mã người + dòng họ trên máy THẬT, QTHT khác duyệt.
 
-Sổ tay: `so-tay/phan-quyen.md` · `so-tay/luu-du-lieu.md`.
+⚠ **`tree_members.person_id` thành cột chết, chưa dọn** — `duyet_thanh_vien()`
+(đơn xin vào cây) vẫn GHI vào đó; `ds_cay_cua_tai_khoan()`/`trang-tai-khoan.js`
+vẫn ĐỌC nó, nên trang một tài khoản có thể hiện mã không khớp Hồ sơ cá nhân
+của chính người ấy. Ngoài phạm vi b126d — sửa `duyet_thanh_vien()` đổi luôn
+cách duyệt đơn xin vào, cần chủ dự án chốt trước.
+
+Sổ tay: `so-tay/phan-quyen.md` · `so-tay/trang-quan-tri.md`.
 
 ### Sau đó — chưa đặt số, chưa chốt
 

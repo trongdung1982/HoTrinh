@@ -5,8 +5,9 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.32.0 · Cập nhật: 26/09/2026 (b127d-3) — `dsDeNghiQuanHe()` ·
-//            `duyetDeNghiQuanHe()` · `tuChoiDeNghiQuanHe()`. Lịch sử: `git log -p`.
+// Phiên bản: 0.33.0 · Cập nhật: 26/09/2026 (b126d) — gắn mã người + dòng họ
+//            chuyển sang cấp TÀI KHOẢN (`34`→`38`); bỏ `TEN_HO`, `laQuanTriCay()`,
+//            `ganNguoiChoThanhVien()`. Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -24,7 +25,7 @@
 
 import {
   SUPABASE_URL, SUPABASE_KHOA_CONG_KHAI, KHO_ANH,
-  TEN_HO, NGUOI_QUAN_LY, thieuCauHinh,
+  NGUOI_QUAN_LY, thieuCauHinh,
 } from '../cau-hinh.js';
 import { fullName } from '../utils/text.js';
 
@@ -188,7 +189,8 @@ export async function nguoiDangNhap() {
  *   docDuoc:boolean, suaDuoc:boolean, treeId:string|null,
  *   laQuanTriHeThong:boolean, maNgan:string, hoTen:string,
  *   nguoiTrungTamMacDinh:string|null, hienNgayGio:boolean,
- *   tenHo:string, nguoiQuanLy:string,
+ *   maNguoiGan:string, tenNguoiGan:string, cayChinhId:string|null, tenDongHo:string,
+ *   nguoiQuanLy:string,
  *   trangThai?:string, soCay?:number,
  *   tenCay?:string, maCay?:string, moiVai?:string, emailNguoiMoi?:string,
  *   loi:string|null}>}
@@ -204,7 +206,8 @@ export async function layPhien() {
     laQuanTriHeThong: false, maNgan: '', hoTen: '',
     userId: '', duocTaoCay: false, biKhoa: false,
     nguoiTrungTamMacDinh: null, hienNgayGio: false,
-    tenHo: TEN_HO, nguoiQuanLy: NGUOI_QUAN_LY, loi: null,
+    maNguoiGan: '', tenNguoiGan: '', cayChinhId: null, tenDongHo: '',
+    nguoiQuanLy: NGUOI_QUAN_LY, loi: null,
   };
 
   const thieu = thieuCauHinh();
@@ -241,7 +244,8 @@ export async function layPhien() {
       k.from('tree_members').select('tree_id, role').eq('user_id', nguoi.id),
       k.rpc('la_quan_tri_he_thong'),
       k.rpc('ma_tai_khoan_cua_toi'),
-      k.from('tai_khoan').select('ho_ten, duoc_tao_cay, khoa_ly_do').eq('user_id', nguoi.id).maybeSingle(),
+      k.from('tai_khoan').select('ho_ten, duoc_tao_cay, khoa_ly_do, person_id, cay_chinh_id')
+        .eq('user_id', nguoi.id).maybeSingle(),
       k.rpc('bi_khoa'),
     ]);
 
@@ -255,8 +259,20 @@ export async function layPhien() {
   //   để HIỆN chữ "Có/Không" — hàng rào thật vẫn là hàm máy chủ, `taoGiaPhaMoi()`
   //   hỏi nó ngay lúc bấm.
   const duocTaoCay = laQuanTriHeThong || Boolean(hangTk && hangTk.duoc_tao_cay);
+
+  // ⚠ b126d — mã người gắn + dòng họ (`tai_khoan.person_id`/`cay_chinh_id`,
+  //   `luoc-do/34`/`37`) là chuyện của TÀI KHOẢN, đọc một lần ở đây cho MỌI
+  //   trang, đúng nếp `hoTen` ngay trên. Đa số tài khoản chưa gắn gì nên hai
+  //   câu tra tên dưới đây thường không chạy — chỉ tốn mạng khi có giá trị.
+  const maNguoiGan = (hangTk && hangTk.person_id) || '';
+  const cayChinhId = (hangTk && hangTk.cay_chinh_id) || null;
+  const [tenNguoiGan, tenDongHo] = await Promise.all([
+    maNguoiGan ? layTenNguoiGan(k, maNguoiGan) : Promise.resolve(''),
+    cayChinhId ? layTenCayChinh(k, cayChinhId) : Promise.resolve(''),
+  ]);
   const nenNguoi = { ...nen, laQuanTriHeThong, maNgan, hoTen,
-                     userId: nguoi.id, duocTaoCay, biKhoa };
+                     userId: nguoi.id, duocTaoCay, biKhoa,
+                     maNguoiGan, tenNguoiGan, cayChinhId, tenDongHo };
 
   // ⚠ ĐỨNG TRƯỚC MỌI NHÁNH KHÁC, kể cả nhánh Quản trị hệ thống ngay dưới:
   //   `la_quan_tri_he_thong()` đã tự trả `false` cho một tài khoản bị khoá
@@ -394,6 +410,18 @@ export async function layPhien() {
     treeId,
     ...(await caiDatCay(k, nguoi.id, treeId)),
   };
+}
+
+/** Tên hiển thị của người mang `maNguoi`, cho dòng "Mã người trong sơ đồ" của `layPhien()`. */
+async function layTenNguoiGan(k, maNguoi) {
+  const { data } = await k.from('persons').select('names').eq('id', maNguoi).maybeSingle();
+  return (data && fullName(data)) || '';
+}
+
+/** Tên cây mà tài khoản đã chọn làm dòng họ, cho `layPhien()`. */
+async function layTenCayChinh(k, treeId) {
+  const { data } = await k.from('trees').select('name').eq('id', treeId).maybeSingle();
+  return (data && data.name) || '';
 }
 
 /**
@@ -1364,25 +1392,6 @@ export async function coTheQuanTri(treeId) {
 }
 
 /**
- * Người đang đăng nhập có **vai trong CHÍNH cây này** không — chủ cây, hoặc
- * `quan_tri` của cây ấy (b124c, `luoc-do/29`). Dùng để mở nút Duyệt trên đơn
- * gắn mã của chính mình, theo luật nới hẹp ở `THIET-KE-NHIEU-CAY.md` 11.10.
- *
- * ⚠ KHÁC `coTheQuanTri()` ngay trên đúng một chỗ, và đó là cả điểm của hàm
- *   này: cờ Quản trị hệ thống KHÔNG tính. QTHT ở cây họ chưa có vai vẫn phải
- *   xin chữ ký thứ hai. Hỏi nhầm hàm kia là bỏ luật ấy ở mọi cây.
- */
-export async function laQuanTriCay(treeId) {
-  const k = layKhach();
-  if (!k || !treeId) return false;
-  const nguoi = await nguoiDangNhap();
-  if (!nguoi) return false;
-  const { data, error } = await k.rpc('la_quan_tri_cay',
-    { p_tree: treeId, p_user: nguoi.id });
-  return !error && data === true;
-}
-
-/**
  * Danh sách TÀI KHOẢN có tên trong một gia phả — cả người đã duyệt lẫn người
  * đang xếp hàng chờ. Không đủ quyền thì máy chủ trả mảng rỗng.
  *
@@ -1451,27 +1460,6 @@ export async function doiVaiThanhVien(treeId, userId, vai) {
     return { ok: false, loi: noiTuChoi(data, 'Không đổi được vai trò.') };
   }
   return { ok: true, loi: null, vaiCu: data.vaiCu || '', vaiMoi: data.vaiMoi || '' };
-}
-
-/**
- * Gắn mã người trong sơ đồ cho một tài khoản. `maNguoi` rỗng là **gỡ gắn**.
- *
- * ⚠ Đây là cửa leo thang không ai nghĩ tới khi nghe chữ "đổi quyền": gắn một
- *   tài khoản vào cụ tổ đời trên cùng là mở `pham_vi_sua()` ra cả cây, không
- *   đổi một chữ vai nào. `13` mục 9 chặn "tự làm cho mình" đúng vì thế.
- */
-export async function ganNguoiChoThanhVien(treeId, userId, maNguoi) {
-  const k = layKhach();
-  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
-  const ma = String(maNguoi == null ? '' : maNguoi).trim();
-  const { data, error } = await k.rpc('gan_nguoi_cho_thanh_vien', {
-    p_tree: treeId, p_user: userId, p_person: ma || null,
-  });
-  if (error) return { ok: false, loi: cauLoi(error) };
-  if (!data || data.ok !== true) {
-    return { ok: false, loi: noiTuChoi(data, 'Không gắn được mã người.') };
-  }
-  return { ok: true, loi: null, maNguoi: data.maNguoi || '' };
 }
 
 /**
@@ -1585,17 +1573,14 @@ export async function dsTaiKhoanHeThong() {
     soCho: Number(r.so_cho) || 0,
     soMoi: Number(r.so_moi) || 0,
     soCayLamChu: Number(r.so_cay_lam_chu) || 0,
-    // ⚠ Hai trường b111b (`luoc-do/20-nguoi-duoc-gan.sql`) — cột *Người được
-    //   gắn* của tấm *Toàn hệ thống*. `nguoiGan` là mảng **trần 3 phần tử**,
-    //   mỗi phần tử `{treeId, tenCay, maCay, maNguoi, ten}`; `soCayGan` là số
-    //   ĐẦY ĐỦ. Hai thứ ấy lệch nhau là chuyện bình thường và màn hình phải
-    //   nói ra phần bị cắt, đừng lấy `nguoiGan.length` làm con số.
-    //
-    // ⚠ `Array.isArray` chứ không `|| []`: máy chủ chưa dán `20` trả về
-    //   `undefined` ở đây, còn một máy chủ nửa vời có thể trả `null` — cả hai
-    //   đều phải ra mảng rỗng, vì nơi nhận đọc `.length` ngay.
-    soCayGan: Number(r.so_cay_gan) || 0,
-    nguoiGan: Array.isArray(r.nguoi_gan) ? r.nguoi_gan : [],
+    // ⚠ b126d (`luoc-do/38`) — thay mảng `nguoiGan` cũ (mỗi cây một mã, trần
+    //   3 phần tử) bằng MỘT mã duy nhất: từ `34`, gắn là chuyện của TÀI
+    //   KHOẢN, không theo cây. Trống nghĩa là chưa gắn ai.
+    maNguoiGan: r.nguoi_gan_ma || '',
+    tenNguoiGan: r.nguoi_gan_ten || '',
+    // "Dòng họ" — cây chính tài khoản này tự nhận (`37`). Trống là chưa chọn.
+    cayChinhId: r.cay_chinh_id || null,
+    tenDongHo: r.ten_dong_ho || '',
     taoLuc: r.tao_luc || null,
     dangNhapGanNhat: r.dang_nhap_gan_nhat || null,
     daXacNhanEmail: Boolean(r.da_xac_nhan_email),
@@ -1642,61 +1627,6 @@ export async function dsCayCuaTaiKhoan(userId) {
     tinCay: Boolean(r.tin_cay),
     laChuCay: Boolean(r.la_chu_cay),
     thamGia: r.added_at || null,
-  }));
-  return { ok: true, loi: null, ds };
-}
-
-/**
- * Những chân **đã duyệt** của CHÍNH người đang đăng nhập: vai · mã người được
- * gắn (kèm tên) · tin cậy — mỗi cây một dòng. Cho bảng *Các gia phả tôi đang
- * tham gia* của khu Tài khoản (b117).
- *
- * ⚠ **Vì sao không dùng `dsCayCuaTaiKhoan(toi)`:** hàm máy chủ ấy gác bằng
- *   `la_quan_tri_he_thong()` (`15` mục 5), nên thành viên thường gọi cho chính
- *   mình cũng nhận mảng rỗng. Đọc thẳng bảng thì luật RLS `doc_tree_members`
- *   (`02`, qua `la_thanh_vien()` của `18`) đã cho mỗi người đọc dòng của cây
- *   mình có chân — không hàm mới, không nới luật nào.
- *
- * ⚠ Hệ quả, và nó ĐÚNG: đơn còn chờ và lời mời chưa nhận KHÔNG ra ở đây —
- *   `la_thanh_vien()` đòi `approved`. Hai trạng thái ấy đã có ở `ds_gia_pha()`
- *   (`daNopDon` · `duocMoi`); nơi gọi ghép hai nguồn theo `treeId`.
- *
- * ⚠ Tên người đọc từ bảng `persons` qua RLS `co_the_xem_cay()`, ghép bằng
- *   `utils/text.fullName` — đúng hàm sơ đồ dùng, để một người không mang hai
- *   tên trên hai màn hình. Không dùng `timNguoiTrongCay()`: nó gác bằng
- *   `co_the_quan_tri()`, thành viên thường gọi ra rỗng.
- */
-export async function chanCuaToi() {
-  const k = layKhach();
-  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', ds: [] };
-
-  const nguoi = await nguoiDangNhap();
-  if (!nguoi) return { ok: false, loi: 'Chưa đăng nhập.', ds: [] };
-
-  const { data, error } = await k.from('tree_members')
-    .select('tree_id, role, approved, person_id, tin_cay')
-    .eq('user_id', nguoi.id).eq('approved', true);
-  if (error) return { ok: false, loi: cauLoi(error), ds: [] };
-
-  // ⚠ Tra tên theo MÃ NGƯỜI thôi, không theo cặp (cây, mã) nữa: từ `26` mã
-  //   người duy nhất toàn phần mềm và bảng `persons` không còn cột `tree_id`.
-  const coMa = (data || []).filter((r) => r.person_id);
-  const ten = new Map();
-  if (coMa.length) {
-    const { data: ng } = await k.from('persons')
-      .select('id, names')
-      .in('id', [...new Set(coMa.map((r) => r.person_id))]);
-    for (const p of ng || []) ten.set(p.id, fullName(p));
-  }
-
-  const ds = (data || []).map((r) => ({
-    treeId: r.tree_id,
-    vai: r.role || '',
-    maNguoi: r.person_id || '',
-    // Không đọc được tên (người đã xoá, lỗi mạng) thì để TRỐNG, màn hình vẽ
-    // mã trần — đừng bịa chữ thay thế, `CLAUDE.md` mục 7.
-    tenNguoi: (r.person_id && ten.get(r.person_id)) || '',
-    tinCay: Boolean(r.tin_cay),
   }));
   return { ok: true, loi: null, ds };
 }
@@ -2063,41 +1993,34 @@ export async function datHoTenTaiKhoan(userId, hoTen) {
 }
 
 // ============================================================
-// Đơn ĐỀ XUẤT gắn mã người — `luoc-do/21-de-xuat-gan-nguoi.sql`
+// Đơn ĐỀ XUẤT gắn mã người — TOÀN PHẦN MỀM, không theo cây (b126d)
+// `luoc-do/35-de-xuat-gan-tai-khoan.sql` · `36-tu-duyet-lan-dau.sql`
 // ============================================================
 //
-// ⚠⚠ SÁU CỬA NÀY KHÔNG MỞ KHOÁ VIỆC TỰ GẮN MÃ NGƯỜI CHO MÌNH.
+// ⚠⚠ Thay hẳn bản cũ theo cây (`21`) — chốt 23/09/2026, `THIET-KE-NHIEU-CAY.md`
+//   mục 6: "gắn tài khoản ↔ người" là chuyện của TÀI KHOẢN, không của cây nào.
+//   Gắn mở `pham_vi_sua()` ở MỌI cây mình đang và sẽ tham gia, nên đơn KHÔNG
+//   còn tham số cây, và Quản trị hệ thống xét là TOÀN HỆ THỐNG một lần.
 //
-// Luật *"không ai đặt quyền cho chính mình"* (`THIET-KE-NHIEU-CAY.md` mục
-// 11.3) giữ nguyên từng chữ: `gan_nguoi_cho_thanh_vien()` của `18` vẫn từ
-// chối khi người gắn là chính người được gắn. Sáu cửa dưới đây mở một đường
-// **thứ hai**, và nó đi qua đúng hai chữ ký như đường vào cây: **người nộp ký
-// một, một quản trị KHÁC ký hai.**
-//
-// `duyetDeXuatGan()` là **cửa thứ TÁM** của luật ấy. Bảy cửa trước đã trả giá
-// để có nó — `18` vá bốn cửa thủng ngày 10/09/2026 — nên đừng nghĩ "duyệt thì
-// chắc máy chủ lo rồi": máy chủ có lo, và `do-b111c.mjs` phép KC1 đo bằng
-// cách GỠ từng lớp ra để chứng minh nó lo thật (gỡ cả hai lớp thì tự duyệt
-// chạy được và `person_id` bị ghi — cảnh nguy hiểm có thật).
-//
-// ⚠ Và đây là lý do màn hình KHÔNG được tự đoán: một người vừa đủ quyền duyệt
-//   vừa là người nộp thì nút Duyệt phải mờ và chỉ sang nút **Rút đơn**, chứ
-//   không phải bấm rồi mới nghe máy chủ từ chối.
+// ⚠ **Không ngoại lệ, TRỪ MỘT KHE HẸP** (`36`): chủ một cây (bất kỳ cây nào)
+//   tự duyệt được đơn của chính mình khi và chỉ khi đây là LẦN GẮN ĐẦU TIÊN
+//   và mã ấy CHƯA ai giữ. Đổi mã đã gắn, hay giành mã đang có người, luôn cần
+//   một Quản trị hệ thống KHÁC ký. Màn hình không tự đoán khe ấy — cứ nộp
+//   đơn rồi thử `duyetDeXuatGan()`, để máy chủ trả lời đúng/sai kèm lý do.
 
 /**
  * Nộp (hoặc SỬA) đơn đề xuất gắn mã người cho **chính tài khoản đang đăng
  * nhập**. Nộp lần hai là sửa đơn cũ, không đẻ đơn thứ hai — máy chủ lo, hàm
  * này không hỏi trước.
  *
- * @param {string} treeId
  * @param {string} maNguoi mã người trong sơ đồ, ví dụ `P0012`
  * @param {string} [lyDo] câu người nộp tự viết, có thể bỏ trống
  */
-export async function nopDeXuatGan(treeId, maNguoi, lyDo = '') {
+export async function nopDeXuatGan(maNguoi, lyDo = '') {
   const k = layKhach();
   if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
   const { data, error } = await k.rpc('nop_de_xuat_gan', {
-    p_tree: treeId, p_person: String(maNguoi || ''), p_ly_do: String(lyDo || ''),
+    p_person: String(maNguoi || ''), p_ly_do: String(lyDo || ''),
   });
   if (error) return { ok: false, loi: cauLoi(error) };
   return data || { ok: false, loi: 'Máy chủ không trả lời.' };
@@ -2113,8 +2036,7 @@ export async function rutDeXuatGan(id) {
 }
 
 /**
- * Đơn ĐANG CHỜ của chính mình trong một cây, cộng **lần bị từ chối gần nhất**
- * kèm lý do.
+ * Đơn ĐANG CHỜ của chính mình, cộng **lần bị từ chối gần nhất** kèm lý do.
  *
  * ⚠ Lấy cả lần bị từ chối là việc thật chứ không phải trang trí: một người
  *   nộp đơn rồi thấy nó biến mất mà không biết vì sao sẽ nộp lại y nguyên.
@@ -2124,31 +2046,31 @@ export async function rutDeXuatGan(id) {
  *   tenNguoi?:string, lyDo?:string, taoLuc?:string,
  *   lanTuChoi?:{maNguoi:string, loiXet:string, xetLuc:string}|null}>}
  */
-export async function deXuatGanCuaToi(treeId) {
+export async function deXuatGanCuaToi() {
   const k = layKhach();
   if (!k) return { coDon: false };
-  const { data, error } = await k.rpc('de_xuat_gan_cua_toi', { p_tree: treeId });
+  const { data, error } = await k.rpc('de_xuat_gan_cua_toi');
   if (error || !data) return { coDon: false };
   return data;
 }
 
 /**
- * Danh sách đơn đang chờ của MỘT CÂY — chỉ quản trị đọc được. Thành viên
- * thường đọc ra mảng rỗng, **kể cả đơn của chính họ** (đo: Q13c) — đơn của
+ * Danh sách đơn đang chờ của TOÀN HỆ THỐNG — chỉ Quản trị hệ thống đọc được.
+ * Thành viên thường đọc ra mảng rỗng, **kể cả đơn của chính họ** — đơn của
  * mình thì xem bằng `deXuatGanCuaToi()`.
  *
  * `laCuaToi` và `maDangCo` là hai thứ màn hình cần mà không tự suy được:
- * cái đầu để làm mờ nút Duyệt cho đúng cửa thứ tám, cái sau để nói *"mã này
- * hiện đang gắn cho ai"* trước khi ai bấm.
+ * cái đầu để làm mờ nút Duyệt cho đúng cửa (trừ khe hẹp `36`), cái sau để nói
+ * *"mã này hiện đang gắn cho ai"* trước khi ai bấm.
  *
  * @returns {Promise<Array<{id:string, userId:string, email:string,
  *   maNgan:string, maNguoi:string, tenNguoi:string, lyDo:string,
  *   taoLuc:string, laCuaToi:boolean, maDangCo:string}>>}
  */
-export async function dsDeXuatGan(treeId) {
+export async function dsDeXuatGan() {
   const k = layKhach();
   if (!k) return [];
-  const { data, error } = await k.rpc('ds_de_xuat_gan', { p_tree: treeId });
+  const { data, error } = await k.rpc('ds_de_xuat_gan');
   if (error || !Array.isArray(data)) return [];
   return data.map((d) => ({
     id: d.id,
@@ -2165,13 +2087,9 @@ export async function dsDeXuatGan(treeId) {
 }
 
 /**
- * ⚠⚠ CỬA THỨ TÁM — ký chữ thứ hai lên một đơn.
- *
- * Máy chủ từ chối khi người bấm là chính người nộp, và nó từ chối **trước**
- * khi chạm vào `tree_members`. Duyệt xong thì việc gắn đi qua đúng
- * `gan_nguoi_cho_thanh_vien()` của `18`, không ghi thẳng — hai đường ghi là
- * hai chỗ để lệch nhau (đo: Q18, mã bị người khác chiếm giữa chừng thì đơn
- * KHÔNG bị đánh dấu đã duyệt).
+ * Ký chữ thứ hai lên một đơn gắn mã. Máy chủ tự cho qua nếu người bấm chính
+ * là người nộp VÀ lọt khe hẹp `36` (lần đầu, mã chưa ai giữ) — mọi ca khác
+ * đòi một Quản trị hệ thống KHÁC.
  */
 export async function duyetDeXuatGan(id) {
   const k = layKhach();
@@ -2183,7 +2101,8 @@ export async function duyetDeXuatGan(id) {
 
 /**
  * Từ chối một đơn, **bắt buộc kèm lý do** — máy chủ từ chối chính lệnh từ
- * chối nếu lý do trống (đo: Q14a). Người nộp đọc lại được câu ấy.
+ * chối nếu lý do trống. Người nộp đọc lại được câu ấy. Không có khe tự chối
+ * mình — muốn thôi thì rút đơn (`rutDeXuatGan`).
  */
 export async function tuChoiDeXuatGan(id, lyDo) {
   const k = layKhach();
@@ -2191,6 +2110,103 @@ export async function tuChoiDeXuatGan(id, lyDo) {
   const { data, error } = await k.rpc('tu_choi_de_xuat_gan', {
     p_id: id, p_ly_do: String(lyDo || ''),
   });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+// ============================================================
+// Đơn ĐỀ XUẤT "dòng họ" — cây chính tự chọn (b126d)
+// `luoc-do/37-de-xuat-dong-ho.sql`
+// ============================================================
+//
+// ⚠ KHÔNG PHẢI bản chép của khối gắn mã trên: dòng họ không duy nhất (nhiều
+//   tài khoản cùng nhận một cây là bình thường) và KHÔNG có khe tự duyệt nào
+//   — mọi đơn của người thường đều cần một Quản trị hệ thống khác ký. Quản
+//   trị hệ thống tự đặt cho MÌNH thì đi đường riêng (`datDongHoQtht`), không
+//   qua bảng đơn — dùng đường ấy chỉ khi `phien.laQuanTriHeThong === true`.
+
+/** Nộp (hoặc sửa) đơn xin nhận `treeId` làm dòng họ — phải là thành viên đã duyệt của cây ấy. */
+export async function nopDeXuatDongHo(treeId, lyDo = '') {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('nop_de_xuat_dong_ho', {
+    p_tree: treeId, p_ly_do: String(lyDo || ''),
+  });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/** Người nộp tự rút đơn dòng họ của mình. */
+export async function rutDeXuatDongHo(id) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('rut_de_xuat_dong_ho', { p_id: id });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/**
+ * Đơn dòng họ ĐANG CHỜ của chính mình, cộng lần bị từ chối gần nhất.
+ * @returns {Promise<{coDon:boolean, id?:string, treeId?:string, tenCay?:string,
+ *   lyDo?:string, taoLuc?:string,
+ *   lanTuChoi?:{tenCay:string, loiXet:string, xetLuc:string}|null}>}
+ */
+export async function deXuatDongHoCuaToi() {
+  const k = layKhach();
+  if (!k) return { coDon: false };
+  const { data, error } = await k.rpc('de_xuat_dong_ho_cua_toi');
+  if (error || !data) return { coDon: false };
+  return data;
+}
+
+/** Danh sách đơn dòng họ đang chờ của TOÀN HỆ THỐNG — chỉ Quản trị hệ thống đọc được. */
+export async function dsDeXuatDongHo() {
+  const k = layKhach();
+  if (!k) return [];
+  const { data, error } = await k.rpc('ds_de_xuat_dong_ho');
+  if (error || !Array.isArray(data)) return [];
+  return data.map((d) => ({
+    id: d.id,
+    userId: d.user_id,
+    email: d.email || '',
+    maNgan: d.ma_ngan || '',
+    treeId: d.tree_id,
+    tenCay: d.ten_cay || '',
+    dongHoHien: d.dong_ho_hien || '',
+    lyDo: d.ly_do || '',
+    taoLuc: d.tao_luc || '',
+    laCuaToi: d.la_cua_toi === true,
+  }));
+}
+
+/** Duyệt đơn dòng họ — LUÔN cần một Quản trị hệ thống KHÁC, không có khe tự duyệt. */
+export async function duyetDeXuatDongHo(id) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('duyet_de_xuat_dong_ho', { p_id: id });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/** Từ chối một đơn dòng họ, bắt buộc kèm lý do. */
+export async function tuChoiDeXuatDongHo(id, lyDo) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('tu_choi_de_xuat_dong_ho', {
+    p_id: id, p_ly_do: String(lyDo || ''),
+  });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/**
+ * ⚠ CHỈ Quản trị hệ thống — tự đặt dòng họ cho CHÍNH MÌNH, KHÔNG qua đơn.
+ * Người khác gọi hàm này bị máy chủ từ chối; họ đi bằng `nopDeXuatDongHo()`.
+ */
+export async function datDongHoQtht(treeId) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('dat_dong_ho_qtht', { p_tree: treeId });
   if (error) return { ok: false, loi: cauLoi(error) };
   return data || { ok: false, loi: 'Máy chủ không trả lời.' };
 }

@@ -1,5 +1,5 @@
 {
-  "capNhat": "24/09/2026 09:43",
+  "capNhat": "26/09/2026 19:11",
   "ghiChu": "Hạ bằng --ha-moc.",
   "no": {
     "dau-file:js/domains/so-sanh.js": 36,
@@ -9,7 +9,7 @@
     "dau-file:js/pages/form-ghep-doi.js": 85,
     "dau-file:js/pages/form-gop.js": 37,
     "dau-file:js/pages/import-export.js": 59,
-    "dau-file:js/pages/khoi-dong.js": 37,
+    "dau-file:js/pages/khoi-dong.js": 36,
     "dau-file:js/pages/person-edit.js": 212,
     "dau-file:js/pages/person-list.js": 82,
     "dau-file:js/pages/review.js": 99,
@@ -18,7 +18,6 @@
     "dau-file:js/utils/glyph.js": 58,
     "dau-file:js/utils/id.js": 31,
     "dau-file:js/utils/image.js": 37,
-    ".claude/memory/MEMORY.md:dai": 292,
     "supabase/CHI-DAN.md:dai": 695,
     "index:dong-dai": 29,
     "ten-sai": 2

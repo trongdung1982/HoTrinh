@@ -2,12 +2,13 @@
 // giapha-supabase · js/pages/quan-tri/khu-tai-khoan.js
 // Vai trò  : Khu 2 của trang Quản trị — TÀI KHOẢN CỦA TÔI: đổ dữ liệu vào
 //            section `#tai-khoan` của quantri3 (hồ sơ · quyền cấp hệ thống ·
-//            các gia phả tôi tham gia · đổi mật khẩu).
+//            mã người & dòng họ (b126d) · các gia phả tôi tham gia · đổi
+//            mật khẩu).
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/hop-thoai · trang-cay · o-bang
-// Phiên bản: 1.1.0 · Cập nhật: 16/09/2026 (b118c)
-//            1.1.0 nút Chấp nhận/Từ chối lời mời Quản trị hệ thống nối thật
-//            (`23` mục 6) — chữ ký thứ hai, đọc `loiMoiQthtCuaToi()`.
+// Phiên bản: 1.2.0 · Cập nhật: 26/09/2026 (b126d) — panel *Mã người & Dòng
+//            họ* (KHÔNG có trong quantri3): gắn mã dời từ bảng cây (mỗi cây
+//            một mã) về đây, chuyện của TÀI KHOẢN. Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -22,11 +23,13 @@
 //   (`23` mục 6), không phải tự đặt quyền cho mình.
 
 import {
-  layDanhSachGiaPha, chanCuaToi, doiMatKhau, dangXuat, nguoiDangNhap,
+  layDanhSachGiaPha, doiMatKhau, dangXuat, nguoiDangNhap,
   loiMoiQthtCuaToi, nhanQuyenQtht, tuChoiQuyenQtht,
+  deXuatGanCuaToi, nopDeXuatGan, rutDeXuatGan, duyetDeXuatGan,
+  deXuatDongHoCuaToi, nopDeXuatDongHo, rutDeXuatDongHo, datDongHoQtht,
 } from '../../services/sb.js';
 import { hoi, bao } from './hop-thoai.js';
-import { hoiDeXuatGan, moSoDo } from './trang-cay.js';
+import { goiYNguoi, moSoDo } from './trang-cay.js';
 import {
   TEN_VAI, td, span, tenVaPhu, huyHieu, datHuyHieu, nut, nutLink, lienKet, chuaCo,
   hangNut, dongTrong, chuDau, ngay, ngayGio,
@@ -46,6 +49,7 @@ let moRong = false;
  */
 export async function mountKhuTaiKhoan(sec, phien) {
   const $ = (id) => sec.querySelector('#' + id);
+  const napLai = () => mountKhuTaiKhoan(sec, phien);
   veHoSo(sec, phien, null);
   veQuyenHeThong(sec, phien, {});
   ganMatKhau(sec);
@@ -57,20 +61,24 @@ export async function mountKhuTaiKhoan(sec, phien) {
   $('tk-cay-dem').textContent = '';
   dongTrong($('tk-cay-tbody'), 7, 'Đang đọc các gia phả của bạn…');
 
-  // ⚠ Bốn câu hỏi đi CÙNG LƯỢT và không thay được cho nhau: `ds_gia_pha()` biết
-  //   đơn chờ lẫn lời mời nhưng không biết mã người; `chanCuaToi()` biết mã
-  //   người nhưng chỉ thấy chân ĐÃ DUYỆT; `nguoiDangNhap()` biết ngày đăng ký;
-  //   `loiMoiQthtCuaToi()` biết lời mời Quản trị hệ thống đang chờ (b118c).
+  // ⚠ Năm câu hỏi đi CÙNG LƯỢT và không thay được cho nhau: `ds_gia_pha()` biết
+  //   đơn chờ lẫn lời mời; `nguoiDangNhap()` biết ngày đăng ký; `loiMoiQthtCuaToi()`
+  //   biết lời mời Quản trị hệ thống đang chờ (b118c); `deXuatGanCuaToi()` và
+  //   `deXuatDongHoCuaToi()` biết đơn gắn mã/dòng họ ĐANG CHỜ của chính mình
+  //   (b126d) — mã/dòng họ ĐÃ có thì đã nằm sẵn trong `phien`, không hỏi lại.
   const hashLuc = window.location.hash;
-  const [nguoi, kqCay, kqChan, moiQtht] = await Promise.all([
-    nguoiDangNhap().catch(() => null), layDanhSachGiaPha(), chanCuaToi(),
+  const [nguoi, kqCay, moiQtht, donGan, donDongHo] = await Promise.all([
+    nguoiDangNhap().catch(() => null), layDanhSachGiaPha(),
     loiMoiQthtCuaToi().catch(() => ({})),
+    deXuatGanCuaToi().catch(() => ({ coDon: false })),
+    deXuatDongHoCuaToi().catch(() => ({ coDon: false })),
   ]);
   if (window.location.hash !== hashLuc) return;
 
   veHoSo(sec, phien, nguoi);
   veQuyenHeThong(sec, phien, moiQtht);
-  veBangCay(sec, phien, kqCay, kqChan, () => mountKhuTaiKhoan(sec, phien));
+  veHoSoDon(sec, phien, donGan, donDongHo, kqCay, napLai);
+  veBangCay(sec, phien, kqCay, () => mountKhuTaiKhoan(sec, phien));
 }
 
 // ============================================================
@@ -156,6 +164,181 @@ function ganQuyenHeThong(sec) {
 }
 
 // ============================================================
+// Mã người trong sơ đồ & Dòng họ (b126d) — KHÔNG CÓ TRONG QUANTRI3
+// ============================================================
+//
+// ⚠ Gắn mã và dòng họ nay là chuyện TOÀN PHẦN MỀM của TÀI KHOẢN, không của
+//   một cây (`THIET-KE-NHIEU-CAY.md` mục 6) — đây là chỗ DUY NHẤT tự khai cả
+//   hai, thay cho bảng *Các gia phả tôi tham gia* (mỗi cây một mã) trước b126.
+//
+// ⚠ Gắn mã: mọi ca đều cần một Quản trị hệ thống KHÁC, TRỪ khe hẹp `36` —
+//   chủ MỘT gia phả bất kỳ, lần gắn ĐẦU TIÊN, mã chưa ai giữ, tự duyệt được.
+//   Nút *Tự duyệt* chỉ HIỆN khi `kqCay` báo bạn là chủ ít nhất một cây — đó là
+//   gợi ý, KHÔNG phải hàng rào; máy chủ tự quyết đúng/sai, hộp hỏi hiện lại
+//   câu từ chối nếu đoán sai (ví dụ mã vừa bị người khác giành mất).
+//
+// ⚠ Dòng họ: KHÔNG có khe tự duyệt nào cho người thường — `37` chốt rõ.
+//   Quản trị hệ thống tự đặt cho MÌNH bằng đường riêng (`datDongHoQtht`),
+//   không qua đơn.
+
+function dsCayThanhVien(kqCay) {
+  return kqCay.ok ? kqCay.ds.filter((c) => !c.daXoaLuc && (c.vaiCuaToi || c.toiLaChu)) : [];
+}
+
+function veHoSoDon(sec, phien, donGan, donDongHo, kqCay, napLai) {
+  veHoSoGan(sec, phien, donGan, kqCay, napLai);
+  veHoSoDongHo(sec, phien, donDongHo, kqCay, napLai);
+}
+
+function veHoSoGan(sec, phien, don, kqCay, napLai) {
+  const sub = sec.querySelector('#hs-gan-sub');
+  const badge = sec.querySelector('#hs-gan-badge');
+  const actions = sec.querySelector('#hs-gan-actions');
+  actions.innerHTML = '';
+
+  const laChuMotCay = dsCayThanhVien(kqCay).some((c) => c.toiLaChu);
+  const treeGoiY = (dsCayThanhVien(kqCay)[0] || {}).fileId || null;
+
+  if (phien.maNguoiGan) {
+    datHuyHieu(badge, 'Đã gắn', 'ok');
+    sub.textContent = (phien.tenNguoiGan || phien.maNguoiGan) + ' — mã ' + phien.maNguoiGan;
+    const b = nut('Đề xuất đổi mã');
+    b.addEventListener('click', () => hoiGanMa(phien, don, treeGoiY, laChuMotCay, napLai));
+    actions.append(b);
+    return;
+  }
+
+  if (don.coDon) {
+    datHuyHieu(badge, 'Đang chờ duyệt', 'wait');
+    sub.textContent = 'Bạn đề xuất: ' + don.maNguoi +
+      (don.tenNguoi && don.tenNguoi !== don.maNguoi ? ' — ' + don.tenNguoi : '') +
+      (don.taoLuc ? ' (nộp ' + ngayGio(don.taoLuc) + ')' : '');
+    const bSua = nut('Sửa đề xuất');
+    bSua.addEventListener('click', () => hoiGanMa(phien, don, treeGoiY, laChuMotCay, napLai));
+    const bRut = nut('Rút đơn', 'danger');
+    bRut.addEventListener('click', async () => {
+      const kq = await hoi({ tua: 'Rút đơn', chu: 'Rút đơn đề xuất mã ' + don.maNguoi + ' của bạn?',
+        nutOk: 'Rút đơn', kieuOk: 'danger', lam: () => rutDeXuatGan(don.id) });
+      if (kq) napLai();
+    });
+    actions.append(bSua, bRut);
+    if (laChuMotCay) {
+      const bTu = nut('Tự duyệt (nếu đủ điều kiện)', 'warm');
+      bTu.addEventListener('click', async () => {
+        const kq = await hoi({
+          tua: 'Tự duyệt đơn gắn mã',
+          chu: 'Chỉ thành công khi đây là lần gắn ĐẦU TIÊN của bạn và mã ' + don.maNguoi +
+            ' chưa ai giữ. Ca khác thì máy chủ từ chối, nhờ một Quản trị hệ thống khác duyệt.',
+          nutOk: 'Tự duyệt', kieuOk: 'warm', lam: () => duyetDeXuatGan(don.id),
+        });
+        if (kq) napLai();
+      });
+      actions.append(bTu);
+    }
+    return;
+  }
+
+  datHuyHieu(badge, 'Chưa gắn', 'wait');
+  sub.textContent = 'Mã người quyết định bạn sửa được những ai trong sơ đồ — bản thân, tổ tiên, con cháu, vợ/chồng.';
+  const b = nut('Đề xuất mã người');
+  b.addEventListener('click', () => hoiGanMa(phien, don, treeGoiY, laChuMotCay, napLai));
+  actions.append(b);
+}
+
+async function hoiGanMa(phien, don, treeGoiY, laChuMotCay, napLai) {
+  const kq = await hoi({
+    tua: don.coDon ? 'Sửa đề xuất mã người' : 'Đề xuất mã người trong sơ đồ',
+    chu: 'Mã này quyết định bạn sửa được những ai TRONG MỌI gia phả bạn tham gia: bản thân, tổ ' +
+      'tiên đường thẳng, toàn bộ con cháu, cộng vợ/chồng. Một Quản trị hệ thống KHÁC xét đơn' +
+      (laChuMotCay ? ' — trừ khi đây là lần gắn ĐẦU TIÊN và mã ấy chưa ai giữ, bạn tự duyệt được vì đang là chủ một gia phả.' : '.'),
+    truong: [
+      { ma: 'ma', nhan: 'Mã người trong sơ đồ', goiY: 'gõ tên hoặc mã người — ví dụ P0012',
+        giaTri: don.coDon ? don.maNguoi : (phien.maNguoiGan || ''), ganVao: goiYNguoi(treeGoiY) },
+      { ma: 'lyDo', nhan: 'Vì sao bạn là người này', goiY: 'không bắt buộc',
+        giaTri: don.coDon ? (don.lyDo || '') : '' },
+    ],
+    nutOk: don.coDon ? 'Sửa đề xuất' : 'Nộp đề xuất',
+    nutThem: don.coDon ? { chu: 'Rút đơn', kieu: 'danger', lam: () => rutDeXuatGan(don.id) } : null,
+    lam: (v) => nopDeXuatGan(v.ma, v.lyDo),
+  });
+  if (kq) napLai();
+}
+
+function veHoSoDongHo(sec, phien, don, kqCay, napLai) {
+  const sub = sec.querySelector('#hs-dongho-sub');
+  const badge = sec.querySelector('#hs-dongho-badge');
+  const actions = sec.querySelector('#hs-dongho-actions');
+  actions.innerHTML = '';
+  const dsCay = dsCayThanhVien(kqCay);
+
+  if (phien.laQuanTriHeThong) {
+    datHuyHieu(badge, phien.tenDongHo ? 'Đã chọn' : 'Chưa chọn', phien.tenDongHo ? 'ok' : 'wait');
+    sub.textContent = phien.tenDongHo || 'Quản trị hệ thống tự chọn, không cần ai duyệt.';
+    if (!dsCay.length) { sub.textContent += ' Chưa là thành viên đã duyệt của gia phả nào.'; return; }
+    const b = nut(phien.tenDongHo ? 'Đổi dòng họ' : 'Chọn dòng họ');
+    b.addEventListener('click', () => hoiChonDongHo(phien, { coDon: false }, dsCay, true, napLai));
+    actions.append(b);
+    return;
+  }
+
+  if (phien.tenDongHo) {
+    datHuyHieu(badge, 'Đã chọn', 'ok');
+    sub.textContent = phien.tenDongHo;
+    if (dsCay.length) {
+      const b = nut('Đề xuất đổi dòng họ');
+      b.addEventListener('click', () => hoiChonDongHo(phien, don, dsCay, false, napLai));
+      actions.append(b);
+    }
+    return;
+  }
+
+  if (don.coDon) {
+    datHuyHieu(badge, 'Đang chờ duyệt', 'wait');
+    sub.textContent = 'Bạn đề xuất: ' + don.tenCay + (don.taoLuc ? ' (nộp ' + ngayGio(don.taoLuc) + ')' : '');
+    const bSua = nut('Sửa đề xuất');
+    bSua.addEventListener('click', () => hoiChonDongHo(phien, don, dsCay, false, napLai));
+    const bRut = nut('Rút đơn', 'danger');
+    bRut.addEventListener('click', async () => {
+      const kq = await hoi({ tua: 'Rút đơn', chu: 'Rút đơn đề xuất dòng họ ' + don.tenCay + '?',
+        nutOk: 'Rút đơn', kieuOk: 'danger', lam: () => rutDeXuatDongHo(don.id) });
+      if (kq) napLai();
+    });
+    actions.append(bSua, bRut);
+    return;
+  }
+
+  datHuyHieu(badge, 'Chưa chọn', 'wait');
+  if (!dsCay.length) {
+    sub.textContent = 'Chọn trong các gia phả bạn là thành viên đã duyệt — chưa có cây nào.';
+    return;
+  }
+  sub.textContent = 'Cây bạn tự nhận là dòng họ chính của mình. Một Quản trị hệ thống xét đơn.';
+  const b = nut('Chọn dòng họ');
+  b.addEventListener('click', () => hoiChonDongHo(phien, don, dsCay, false, napLai));
+  actions.append(b);
+}
+
+async function hoiChonDongHo(phien, don, dsCay, truc, napLai) {
+  const truong = [{ ma: 'cay', nhan: 'Gia phả', chon: dsCay.map((c) => [c.fileId, (c.ten || c.treeCode) + ' · ' + c.treeCode]),
+    giaTri: don.coDon ? don.treeId : (phien.cayChinhId || dsCay[0].fileId) }];
+  if (!truc) {
+    truong.push({ ma: 'lyDo', nhan: 'Vì sao chọn cây này', goiY: 'không bắt buộc',
+      giaTri: don.coDon ? (don.lyDo || '') : '' });
+  }
+  const kq = await hoi({
+    tua: truc ? 'Chọn dòng họ' : (don.coDon ? 'Sửa đề xuất dòng họ' : 'Đề xuất dòng họ'),
+    chu: truc
+      ? 'Quản trị hệ thống tự chọn cho mình, có hiệu lực ngay — không qua đơn.'
+      : 'Cây bạn tự nhận là dòng họ chính của mình. Một Quản trị hệ thống xét đơn — không có khe tự duyệt.',
+    truong,
+    nutOk: truc ? 'Chọn dòng họ' : (don.coDon ? 'Sửa đề xuất' : 'Nộp đề xuất'),
+    nutThem: (!truc && don.coDon) ? { chu: 'Rút đơn', kieu: 'danger', lam: () => rutDeXuatDongHo(don.id) } : null,
+    lam: (v) => (truc ? datDongHoQtht(v.cay) : nopDeXuatDongHo(v.cay, v.lyDo)),
+  });
+  if (kq) napLai();
+}
+
+// ============================================================
 // Các gia phả tôi đang tham gia
 // ============================================================
 
@@ -171,19 +354,16 @@ function trangThaiCuaToi(c) {
   return null;
 }
 
-function veBangCay(sec, phien, kqCay, kqChan, napLai) {
+function veBangCay(sec, phien, kqCay, napLai) {
   const $ = (id) => sec.querySelector('#' + id);
   const tbA = $('tk-cay-tbody');
   const tbB = $('gia-pha-extra');
 
   if (!kqCay.ok) { dongTrong(tbA, 7, kqCay.loi || 'Không đọc được danh sách gia phả.', napLai); return; }
 
-  const chan = new Map((kqChan.ok ? kqChan.ds : []).map((r) => [r.treeId, r]));
   const ds = kqCay.ds.filter((c) => !c.daXoaLuc && trangThaiCuaToi(c));
 
-  // Lỗi đọc mã người KHÔNG làm hỏng cả bảng — nhưng phải nói ra.
-  $('tk-cay-dem').textContent = ds.length + ' cây · Quyền và vị trí nhân vật của bạn trong từng sơ đồ' +
-    (kqChan.ok ? '' : ' · Không đọc được bạn gắn với ai: ' + (kqChan.loi || 'lỗi không rõ'));
+  $('tk-cay-dem').textContent = ds.length + ' cây · Quyền của bạn trong từng sơ đồ';
 
   if (!ds.length) {
     const o = dongTrong(tbA, 7, 'Bạn chưa có chân trong gia phả nào. Xin vào một gia phả, hoặc nhận lời mời, ở khu Gia phả. ');
@@ -192,8 +372,7 @@ function veBangCay(sec, phien, kqCay, kqChan, napLai) {
   }
 
   tbA.innerHTML = '';
-  ds.forEach((c, i) => (i < SO_HIEN_TRUOC ? tbA : tbB)
-    .append(dongCay(c, chan.get(c.fileId), kqChan.ok, phien, napLai)));
+  ds.forEach((c, i) => (i < SO_HIEN_TRUOC ? tbA : tbB).append(dongCay(c, phien)));
 
   const them = ds.length - SO_HIEN_TRUOC;
   if (them <= 0) return;
@@ -210,19 +389,25 @@ function veBangCay(sec, phien, kqCay, kqChan, napLai) {
   ve();
 }
 
-function dongCay(c, chan, docDuocChan, phien, napLai) {
+/**
+ * ⚠ b126d — cột "Tôi được gắn với ai" đọc `phien.maNguoiGan`/`tenNguoiGan`,
+ *   MỘT giá trị chung cho mọi dòng: gắn nay là chuyện của TÀI KHOẢN, không
+ *   theo cây (`34`). Sửa/nộp mã ở panel *Mã người & Dòng họ* phía trên, không
+ *   còn nút riêng trên từng dòng cây.
+ */
+function dongCay(c, phien) {
   const trangThai = trangThaiCuaToi(c);
   const cay = { treeId: c.fileId, ten: c.ten || '', maCay: c.treeCode };
 
   const vai = c.toiLaChu ? huyHieu('Chủ gia phả')
     : trangThai === 'duocmoi' ? huyHieu('Được mời: ' + (TEN_VAI[c.moiVai] || c.moiVai || ''), 'wait')
     : trangThai === 'donxin' ? huyHieu('Đơn xin vào', 'wait')
-    : huyHieu(TEN_VAI[(chan && chan.vai) || c.vaiCuaToi] || c.vaiCuaToi || '');
+    : huyHieu(TEN_VAI[c.vaiCuaToi] || c.vaiCuaToi || '');
 
   let gan = '';
-  if (trangThai === 'thanhvien' && docDuocChan) {
-    gan = chan && chan.maNguoi
-      ? tenVaPhu(chan.tenNguoi || chan.maNguoi, 'Mã: ' + chan.maNguoi)
+  if (trangThai === 'thanhvien') {
+    gan = phien.maNguoiGan
+      ? tenVaPhu(phien.tenNguoiGan || phien.maNguoiGan, 'Mã: ' + phien.maNguoiGan)
       : span('muted', 'Chưa gắn người');
   }
 
@@ -233,13 +418,6 @@ function dongCay(c, chan, docDuocChan, phien, napLai) {
   const viec = [];
   if (c.coTheXem) viec.push(nutLink('Xem sơ đồ →', () => moSoDo(cay, phien)));
   if (trangThai === 'duocmoi') viec.push(lienKet('Nhận lời ở khu Gia phả →', 'gia-pha'));
-  // ⚠ Nút Đề xuất CHỈ trên chân đã duyệt chưa gắn ai (9.2②) — đơn còn chờ và
-  //   lời mời chưa nhận thì `nop_de_xuat_gan()` từ chối (đo Q4, Q5).
-  if (trangThai === 'thanhvien' && docDuocChan && !(chan && chan.maNguoi)) {
-    const b = nut('Đề xuất mã người');
-    b.addEventListener('click', () => hoiDeXuatGan(cay, napLai));
-    viec.push(b);
-  }
 
   const tr = document.createElement('tr');
   tr.append(

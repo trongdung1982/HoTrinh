@@ -1,15 +1,15 @@
 // ============================================================
 // giapha-supabase · js/pages/quan-tri/trang-cay.js
 // Vai trò  : Trang MỘT gia phả `#gia-pha/cay/<mã cây>[/<mục>]` — đổ dữ liệu
-//            vào ba section quantri3: `#tree-detail` (Tổng quan · Vòng đời ·
-//            Đề xuất gắn người) · `#tree-members` · `#tree-requests`. Kèm các
-//            hộp hỏi đổi quyền dùng chung với trang một tài khoản.
+//            vào hai section quantri3: `#tree-detail` (Tổng quan · Vòng đời) ·
+//            `#tree-members` · `#tree-requests`. Kèm các hộp hỏi đổi quyền
+//            dùng chung với trang một tài khoản.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-goi-y · o-bang
-// Phiên bản: 1.2.0 · Cập nhật: 23/09/2026 (b124c) — nới nút Duyệt đơn của mình
-//            1.1.0 Vòng đời: xoá cây có hiệu lực NGAY (luật 4), *Rút đơn* đổi
-//            thành *Trả lại cho chủ* — chỉ Quản trị hệ thống. Bảng Thành viên
-//            & quyền nối duyệt/từ chối đơn xin đổi quyền (`23` mục 10).
+// Phiên bản: 1.3.0 · Cập nhật: 26/09/2026 (b126d) — bỏ mục *Đề xuất gắn
+//            người*: gắn mã nay là chuyện của TÀI KHOẢN, không của một cây —
+//            dời sang khu Tài khoản (Hồ sơ cá nhân) + tab của Quản trị hệ
+//            thống (`khu-ho-so-don.js`). Lịch sử các bản trước: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -21,19 +21,14 @@
 //   bị từ chối — và ba lý do khoá (dòng của chính mình · lời mời chưa nhận ·
 //   không đổi được quyền) phải TRÙNG lý do máy chủ từ chối, không rộng hơn.
 //
-// ⚠ Luật *"không ai đặt quyền cho chính mình"* không có ngoại lệ, kể cả Quản
-//   trị hệ thống. Dòng của chính mình còn đúng MỘT lối: *Đề xuất mã người* —
-//   nộp đơn để một quản trị KHÁC xét (cửa thứ tám, `21`).
-//
 // ⚠ Lời mời chưa nhận KHÔNG hiện ở bảng Thành viên — nó ở *Lời mời đã gửi*
 //   của trang Mời gia nhập. Nhận hộ người khác là bỏ mất chữ ký thứ hai.
 
 import {
-  layDanhSachGiaPha, dsThanhVien, coTheQuanTri, laQuanTriCay, chonGiaPha,
-  doiVaiThanhVien, ganNguoiChoThanhVien, datTinCayThanhVien, goThanhVien,
+  layDanhSachGiaPha, dsThanhVien, coTheQuanTri, chonGiaPha,
+  doiVaiThanhVien, datTinCayThanhVien, goThanhVien,
   doiChuCay, duyetThanhVien, tuChoiThanhVien, timNguoiTrongCay, timTaiKhoan,
   xinXoaCay, huyXinXoaCay, duyetXoaCay,
-  nopDeXuatGan, rutDeXuatGan, deXuatGanCuaToi, dsDeXuatGan, duyetDeXuatGan, tuChoiDeXuatGan,
   dsXinDoiVai, duyetXinDoiVai,
 } from '../../services/sb.js';
 import { duongDan } from './trang-chi-tiet.js';
@@ -62,8 +57,10 @@ export const MUC_TRANG_CAY = [
   { ma: 'don-xin-vao', chu: 'Đơn xin vào', view: 'tree-requests' },
   // Nghĩa chốt 15/09/2026 (b116): Bàn giao chủ + Xoá cây.
   { ma: 'vong-doi', chu: 'Vòng đời' },
-  // 9.2② — xét đơn đề xuất gắn mã người là việc của TỪNG CÂY.
-  { ma: 'de-xuat-gan', chu: 'Đề xuất gắn người' },
+  // ⚠ Mục `de-xuat-gan` (9.2②) BỎ ở b126d: gắn mã người nay là chuyện TOÀN
+  //   PHẦN MỀM của tài khoản, không còn là việc riêng của một cây — dời hẳn
+  //   sang Hồ sơ cá nhân (`khu-tai-khoan.js`) + tab của Quản trị hệ thống
+  //   (`khu-ho-so-don.js`). Lịch sử: `git log -p`.
 ];
 
 const LY_DO_QUYEN_DE_NGHI =
@@ -165,20 +162,6 @@ export async function hoiDoiVai(t, cay, napLai) {
   if (kq) napLai();
 }
 
-export async function hoiGanNguoi(t, cay, napLai) {
-  const kq = await hoi({
-    tua: 'Gắn mã người trong sơ đồ',
-    chu: 'Mã này quyết định ' + t.email + ' sửa được những ai TRONG ' + cumCay(cay) +
-      ': bản thân, tổ tiên đường thẳng, toàn bộ con cháu, cộng vợ/chồng. Để trống ' +
-      'là gỡ gắn — chỉ xem. Một mã chỉ gắn cho MỘT tài khoản.',
-    truong: [{ ma: 'ma', nhan: 'Mã người', goiY: 'gõ tên hoặc mã — để trống là gỡ gắn',
-      giaTri: t.maNguoi || '', ganVao: goiYNguoi(cay.treeId) }],
-    nutOk: 'Lưu mã người',
-    lam: (v) => ganNguoiChoThanhVien(cay.treeId, t.userId, v.ma),
-  });
-  if (kq) napLai();
-}
-
 export async function hoiTinCay(t, cay, napLai) {
   const bat = !t.tinCay;
   const kq = await hoi({
@@ -267,41 +250,6 @@ export async function hoiTuChoiXinDoiVai(t, cay, napLai) {
   if (kq) napLai();
 }
 
-/**
- * Nộp / sửa / rút ĐƠN đề xuất mã người cho CHÍNH MÌNH (`21`). Không gắn gì —
- * một quản trị KHÁC xét ở mục *Đề xuất gắn người* của cây ấy.
- */
-export async function hoiDeXuatGan(cay, napLai) {
-  const d = await deXuatGanCuaToi(cay.treeId);
-  const phan = ['Bạn KHÔNG tự gắn mã người cho mình được — luật này không có ngoại lệ. ' +
-    'Nộp đề xuất, rồi MỘT QUẢN TRỊ KHÁC xét. Đơn chỉ có hiệu lực trong ' + cumCay(cay) + '.'];
-  if (d.coDon) {
-    phan.push('Đang chờ xét: ' + d.maNguoi +
-      (d.tenNguoi && d.tenNguoi !== d.maNguoi ? ' — ' + d.tenNguoi : '') +
-      (d.taoLuc ? ' (nộp ' + ngayGio(d.taoLuc) + ')' : '') + '. Nộp lại là sửa đơn này.');
-  }
-  if (d.lanTuChoi) {
-    phan.push('Lần trước bị từ chối' +
-      (d.lanTuChoi.maNguoi ? ' (xin mã ' + d.lanTuChoi.maNguoi + ')' : '') +
-      (d.lanTuChoi.xetLuc ? ' lúc ' + ngayGio(d.lanTuChoi.xetLuc) : '') +
-      ': ' + (d.lanTuChoi.loiXet || '') + '.');
-  }
-  const kq = await hoi({
-    tua: 'Đề xuất mã người',
-    chu: phan.join(' '),
-    truong: [
-      { ma: 'ma', nhan: 'Mã người trong sơ đồ', goiY: 'gõ tên hoặc mã người — ví dụ P0012',
-        giaTri: d.coDon ? d.maNguoi : '', ganVao: goiYNguoi(cay.treeId) },
-      { ma: 'lyDo', nhan: 'Vì sao bạn là người này', goiY: 'không bắt buộc',
-        giaTri: d.coDon ? (d.lyDo || '') : '' },
-    ],
-    nutOk: d.coDon ? 'Sửa đề xuất' : 'Nộp đề xuất',
-    nutThem: d.coDon ? { chu: 'Rút đơn', kieu: 'danger', lam: () => rutDeXuatGan(d.id) } : null,
-    lam: (v) => nopDeXuatGan(cay.treeId, v.ma, v.lyDo),
-  });
-  if (kq) napLai();
-}
-
 // ============================================================
 // #tree-members — Thành viên và quyền
 // ============================================================
@@ -386,14 +334,12 @@ function dongThanhVien(t, cay, duocDoiQuyen, napLai, xin) {
     if (t.laChinhToi) tr.classList.add('is-disabled-row');
   } else {
     const ds = [
-      mucMenu('Gắn / đổi mã người', cuaMinh, () => hoiGanNguoi(t, cay, napLai)),
       mucMenu(t.tinCay ? 'Tắt tin cậy (ghi thẳng)' : 'Bật tin cậy (ghi thẳng)', cuaMinh,
         () => hoiTinCay(t, cay, napLai)),
       mucMenu('Bàn giao chủ sở hữu',
         cuaMinh || (t.laChuCay ? 'Người này đang là chủ gia phả.' : '') || saoLuu,
         () => hoiBanGiaoCho(t, cay, napLai)),
     ];
-    if (t.laChinhToi) ds.push(mucMenu('Đề xuất mã người cho mình', '', () => hoiDeXuatGan(cay, napLai)));
     if (xin) {
       ds.push(
         mucMenu('Duyệt đổi sang ' + (TEN_VAI[xin.xinVai] || xin.xinVai).toLowerCase(), '',
@@ -523,7 +469,6 @@ async function mountChiTiet(sec, ctx, hashLuc) {
   $('td-so-don').textContent = String(don.length);
   $('td-so-don').hidden = !don.length;
 
-  if (ctx.muc === 'de-xuat-gan') { veDeXuat(noiMuc, cay, napLai, hashLuc); return; }
   if (ctx.muc !== 'tong-quan') return;
 
   $('td-ma').textContent = cay.treeCode;
@@ -670,88 +615,4 @@ function veVongDoi(noi, cay, phien, napLai) {
   }
 
   noi.append(panel);
-}
-
-/**
- * Đề xuất gắn người — xét đơn b111c. Đơn của chính mình: Duyệt/Từ chối mờ
- * (cửa thứ TÁM, gác ở máy chủ), còn nút Rút.
- */
-async function veDeXuat(noi, cay, napLai, hashLuc) {
-  const c = cayNho(cay);
-  const panel = khungPanel('Đơn đề xuất gắn mã người', '');
-  const bang = document.createElement('table');
-  const thead = document.createElement('thead');
-  const trDau = document.createElement('tr');
-  for (const chu of ['Tài khoản', 'Tự nhận là', 'Lý do', 'Nộp lúc', 'Hành động']) {
-    const th = document.createElement('th');
-    th.textContent = chu;
-    trDau.append(th);
-  }
-  thead.append(trDau);
-  const tb = document.createElement('tbody');
-  bang.append(thead, tb);
-  panel.append(bang);
-  noi.append(panel);
-  dongTrong(tb, 5, 'Đang đọc đơn…');
-
-  // b124c — `tuDuyetDuoc` KHÔNG suy được từ `duocDoiQuyen`: cái sau bật cho cả
-  // Quản trị hệ thống, mà cờ ấy không cho tự duyệt (`luoc-do/29`, luật 11.10).
-  const [ds, duocDoiQuyen, tuDuyetDuoc] = await Promise.all([
-    dsDeXuatGan(cay.fileId), coTheQuanTri(cay.fileId), laQuanTriCay(cay.fileId)]);
-  if (window.location.hash !== hashLuc) return;
-
-  panel.querySelector('.panel-head').append(span('', ds.length + ' đơn đang chờ · mỗi đơn là một ' +
-    'người tự nhận mình là ai trong sơ đồ; duyệt là mở quyền sửa nhánh của người ấy'));
-  if (!ds.length) { dongTrong(tb, 5, 'Không có đơn đề xuất gắn mã người nào đang chờ trong ' + cumCay(c) + '.'); return; }
-
-  tb.innerHTML = '';
-  for (const d of ds) {
-    const khoa = d.laCuaToi && !tuDuyetDuoc
-      ? 'Đơn của chính bạn — người nộp không ký luôn chữ thứ hai. Nhờ một quản trị khác xét, hoặc rút đơn.'
-      : duocDoiQuyen ? '' : 'Bạn xem được đơn này nhưng không xét được — việc của chủ gia phả và Quản trị hệ thống.';
-
-    // ⚠ Tự TỪ CHỐI đơn mình thì máy chủ vẫn chặn (`21` mục 7) — đường đúng là
-    //   nút Rút đơn ngay dưới. Chỉ nút Duyệt được nới.
-    const khoaTuChoi = d.laCuaToi
-      ? 'Đơn của chính bạn — muốn thôi thì rút đơn về, không phải tự từ chối mình.'
-      : khoa;
-
-    const bDuyet = khoa ? nutMo('Duyệt', khoa, 'warm') : nut('Duyệt', 'warm');
-    bDuyet.addEventListener('click', async () => {
-      const kq = await hoi({ tua: 'Duyệt đề xuất',
-        chu: 'Gắn ' + d.maNguoi + ' cho ' + d.email + ' trong ' + cumCay(c) + ' — mở quyền sửa bản ' +
-          'thân, tổ tiên đường thẳng và toàn bộ con cháu của người ấy.',
-        nutOk: 'Duyệt', lam: () => duyetDeXuatGan(d.id) });
-      if (kq) napLai();
-    });
-    const bTuChoi = khoaTuChoi ? nutMo('Từ chối', khoaTuChoi, 'danger') : nut('Từ chối', 'danger');
-    bTuChoi.addEventListener('click', async () => {
-      const kq = await hoi({ tua: 'Từ chối đề xuất',
-        chu: 'Người nộp đọc lại được câu lý do này — bắt buộc ghi.',
-        oNhap: { nhieuDong: true, goiY: 'Lý do từ chối' },
-        nutOk: 'Từ chối', kieuOk: 'danger', lam: (lyDo) => tuChoiDeXuatGan(d.id, lyDo) });
-      if (kq) napLai();
-    });
-    const viec = [bDuyet, bTuChoi];
-    if (d.laCuaToi) {
-      const bRut = nut('Rút đơn');
-      bRut.addEventListener('click', async () => {
-        const kq = await hoi({ tua: 'Rút đơn', chu: 'Rút đơn đề xuất ' + d.maNguoi + ' của bạn?',
-          nutOk: 'Rút đơn', lam: () => rutDeXuatGan(d.id) });
-        if (kq) napLai();
-      });
-      viec.push(bRut);
-    }
-
-    const oTk = td(tenVaPhu(d.email, d.maNgan ? 'Mã tài khoản: ' + d.maNgan : ''));
-    if (d.laCuaToi) oTk.append(huyHieu('Đơn của bạn', 'wait'));
-    // ⚠ Nói TRƯỚC khi ai bấm: mã đang gắn cho người khác thì máy chủ từ chối (Q18).
-    const oLyDo = td(d.lyDo ? '“' + d.lyDo + '”' : '');
-    if (d.maDangCo) oLyDo.append(span('sub', 'Mã này đang gắn cho ' + d.maDangCo + ' — duyệt sẽ bị từ chối.'));
-
-    const tr = document.createElement('tr');
-    tr.append(oTk, td(tenVaPhu(d.tenNguoi || d.maNguoi, 'ID: ' + d.maNguoi)), oLyDo,
-      td(ngayGio(d.taoLuc)), td(hangNut(...viec)));
-    tb.append(tr);
-  }
 }

@@ -1,14 +1,15 @@
 // ============================================================
 // giapha-supabase · js/pages/quan-tri/khu-quan-tri-he-thong.js
 // Vai trò  : Khu QUẢN TRỊ HỆ THỐNG — đổ dữ liệu vào section
-//            `#quan-tri-he-thong` của prototype quantri3 (7 tab, tab thứ 8
-//            *Đề nghị sửa quan hệ* không có trong prototype) và trang
-//            `#sys-default-tree-selector`.
+//            `#quan-tri-he-thong` của prototype quantri3 (7 tab; hai tab cuối
+//            *Đề nghị sửa quan hệ* và *Đơn Hồ sơ cá nhân* không có trong
+//            prototype) và trang `#sys-default-tree-selector`.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang ·
-//            khu-sao-luu · khu-de-nghi-quan-he
-// Phiên bản: 1.5.0 · Cập nhật: 26/09/2026 (b127d-3) — tab *Đề nghị sửa quan
-//            hệ* (`khu-de-nghi-quan-he.js`). Lịch sử trước: `git log -p`.
+//            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don
+// Phiên bản: 1.6.0 · Cập nhật: 26/09/2026 (b126d) — tab *Đơn Hồ sơ cá nhân*
+//            (`khu-ho-so-don.js`): duyệt gắn mã người + dòng họ. Lịch sử
+//            trước: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -18,10 +19,11 @@
 //
 // ⚠ Gắn thật: *Tổng quan* · *Sổ tài khoản* · *Cây mặc định* · *Thùng rác* ·
 //   *Sao lưu* (bảng Đối chiếu, `khu-sao-luu.js`) · *Đề nghị sửa quan hệ*
-//   (`khu-de-nghi-quan-he.js`, b127d-3). Hai tab còn trống — *Tạo tài khoản* ·
-//   *Nhật ký* — vẽ đúng HTML quantri3 nhưng mờ kèm lý do. Tab *Sao lưu* cũng
-//   còn hai phần mờ (lịch sử · nút "Sao lưu ngay"): không phải "chưa tới
-//   lượt", mà trình duyệt không gọi được Drive/Apps Script.
+//   (`khu-de-nghi-quan-he.js`, b127d-3) · *Đơn Hồ sơ cá nhân* (`khu-ho-so-
+//   don.js`, b126d). Hai tab còn trống — *Tạo tài khoản* · *Nhật ký* — vẽ
+//   đúng HTML quantri3 nhưng mờ kèm lý do. Tab *Sao lưu* cũng còn hai phần
+//   mờ (lịch sử · nút "Sao lưu ngay"): không phải "chưa tới lượt", mà trình
+//   duyệt không gọi được Drive/Apps Script.
 //
 // ⚠ Sổ tài khoản: *Bổ nhiệm QTHT* là LỜI MỜI hai chữ ký (`23` mục 6) — bấm
 //   chỉ GỬI, người kia tự Chấp nhận ở khu Tài khoản mới có cờ thật · *Khóa
@@ -36,6 +38,7 @@ import { duongDan } from './trang-chi-tiet.js';
 import { hoi, bao } from './hop-thoai.js';
 import { veKhuSaoLuu } from './khu-sao-luu.js';
 import { veKhuDeNghiQuanHe } from './khu-de-nghi-quan-he.js';
+import { veKhuHoSoDon } from './khu-ho-so-don.js';
 import {
   td, span, tenVaPhu, huyHieu, nut, nutNho, nutMo, lienKet, hangNut, dongTrong,
   chepKieu, ngay, ngayGio,
@@ -81,6 +84,7 @@ export async function mountKhuQuanTriHeThong(sec, phien) {
   veThungRac(sec, kq, napLai);
   veKhuSaoLuu(sec, dsSong);
   veKhuDeNghiQuanHe(sec);
+  veKhuHoSoDon(sec);
 }
 
 // ============================================================

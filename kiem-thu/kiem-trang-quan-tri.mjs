@@ -115,6 +115,8 @@ const JS_KTK = doc('../js/pages/quan-tri/khu-tai-khoan.js');
 const JS_TTK = doc('../js/pages/quan-tri/trang-tai-khoan.js');
 // b118 — khu 4 (Quản trị hệ thống) · b118d — sổ tài khoản nằm ngay trong khu.
 const JS_QTHT = doc('../js/pages/quan-tri/khu-quan-tri-he-thong.js');
+// b126d — tab *Đơn Hồ sơ cá nhân*: gắn mã người + dòng họ, TOÀN PHẦN MỀM.
+const JS_HSD = doc('../js/pages/quan-tri/khu-ho-so-don.js');
 // Đọc sớm ở đây (PHẦN L đọc lại): PHẦN H cần nó trước khi tới PHẦN L.
 const JS_TC_SOM = doc('../js/pages/quan-tri/trang-cay.js');
 // b118d — mọi ô nhập đổi quyền mở trong hộp hỏi của quantri3.
@@ -472,14 +474,17 @@ kiem('bảng tài khoản một cây hỏi máy chủ ai đổi được quyền
      !/vaiTro\s*===/.test(boGhiChuJs(JS_TC_SOM)),
      'tự quyết quyền bằng JavaScript');
 
-// Bảy cửa của `13`, đối chiếu CHỮ KÝ SQL — đúng bẫy số 1: sai một chữ trong
+// Sáu cửa của `13`, đối chiếu CHỮ KÝ SQL — đúng bẫy số 1: sai một chữ trong
 // tên tham số thì Supabase trả "function not found", `sb.js` nuốt gọn thành
 // mảng rỗng, và màn hình hiện y hệt lúc không có dữ liệu.
+//
+// ⚠ `gan_nguoi_cho_thanh_vien()` BỎ khỏi danh sách này ở b126d: gắn mã người
+//   nay đi bằng cửa TOÀN PHẦN MỀM (`35`/`36`), sb.js không còn hàm bọc cửa cũ
+//   nữa. Hàm SQL cũ vẫn đứng (chưa xoá — xem `35` đầu file), chỉ hết ai gọi.
 const CUA_13 = [
   { js: 'coTheQuanTri',          sql: 'co_the_quan_tri' },
   { js: 'dsThanhVien',           sql: 'ds_thanh_vien' },
   { js: 'doiVaiThanhVien',       sql: 'doi_vai_thanh_vien' },
-  { js: 'ganNguoiChoThanhVien',  sql: 'gan_nguoi_cho_thanh_vien' },
   { js: 'datTinCayThanhVien',    sql: 'dat_tin_cay_thanh_vien' },
   { js: 'goThanhVien',           sql: 'go_thanh_vien' },
   { js: 'doiChuCay',             sql: 'doi_chu_cay' },
@@ -505,9 +510,12 @@ kiem('ds_thanh_vien() có drop function trước create (bài học 42P13)',
      /drop\s+function\s+if\s+exists\s+public\.ds_thanh_vien/i.test(SQL_13),
      'create or replace không đổi được danh sách cột trả về');
 
-// Năm việc đổi quyền + hai việc xét đơn, tất cả đều phải đi qua `sb.js`.
+// Bốn việc đổi quyền + hai việc xét đơn, tất cả đều phải đi qua `sb.js`.
 // ⚠ Đính chính b118d: gọi trong hộp hỏi dùng chung của trang cây.
-for (const ten of ['doiVaiThanhVien', 'ganNguoiChoThanhVien',
+// ⚠ Đính chính b126d: `ganNguoiChoThanhVien` bỏ khỏi danh sách — gắn mã
+//   người đã dời hẳn sang Hồ sơ cá nhân (`khu-tai-khoan.js`), không còn ở
+//   trang một cây.
+for (const ten of ['doiVaiThanhVien',
                    'datTinCayThanhVien', 'goThanhVien', 'doiChuCay',
                    'duyetThanhVien', 'tuChoiThanhVien']) {
   kiem('  trang cây gọi ' + ten + '()',
@@ -517,14 +525,18 @@ for (const ten of ['doiVaiThanhVien', 'ganNguoiChoThanhVien',
 
 // ⚠ Đính chính b117: ba tấm lọc *Đang chờ · Đã duyệt · Tất cả* đã thành ba
 //   MỤC của trang chi tiết một cây (b116) — cùng câu hỏi, cây nằm trong địa
-//   chỉ thay vì trong ô chọn. Cộng mục thứ tư, nơi khối xét đơn đề xuất về ở.
+//   chỉ thay vì trong ô chọn.
 // ⚠ Đính chính b118d: *Lời mời* thôi là một mục — nút ấy trên thanh mục của
 //   quantri3 đi thẳng sang trang Mời gia nhập, nơi bảng *Lời mời đã gửi* ở.
 //   Hai địa chỉ cho một bảng là hai chỗ để lệch nhau.
-for (const ma of ['thanh-vien', 'don-xin-vao', 'de-xuat-gan']) {
+// ⚠ Đính chính b126d: mục thứ tư *Đề xuất gắn người* BỎ — xem khối "Đơn Hồ
+//   sơ cá nhân" của PHẦN M/N dưới.
+for (const ma of ['thanh-vien', 'don-xin-vao']) {
   kiem('  trang cây có mục ' + ma, new RegExp("ma: '" + ma + "'").test(JS_TC_SOM),
        'thiếu mục này');
 }
+kiem('  trang cây KHÔNG còn mục de-xuat-gan (b126d, gắn mã dời sang Hồ sơ cá nhân)',
+     !/ma: 'de-xuat-gan'/.test(JS_TC_SOM), 'mục cũ vẫn còn — hai chỗ để lệch nhau');
 kiem('  nút Lời mời của thanh mục đi sang trang Mời gia nhập của đúng cây',
      /ma === 'loi-moi'\s*\?\s*duongDan\('gia-pha', 'moi', ctx\.thamSo\)/.test(JS_TC_SOM),
      'nút Lời mời không nối vào đâu');
@@ -535,7 +547,7 @@ kiem('  nút Lời mời của thanh mục đi sang trang Mời gia nhập của
 {
   const lenh = boGhiChuJs(JS_TC_SOM);
   const ngoai = [];
-  for (const c of ['doiVaiThanhVien', 'ganNguoiChoThanhVien', 'datTinCayThanhVien',
+  for (const c of ['doiVaiThanhVien', 'datTinCayThanhVien',
     'goThanhVien', 'doiChuCay', 'duyetThanhVien', 'tuChoiThanhVien']) {
     for (const m of lenh.matchAll(new RegExp('\\b' + c + '\\s*\\(', 'g'))) {
       if (!lenh.slice(Math.max(0, m.index - 160), m.index).includes('lam:')) ngoai.push(c);
@@ -570,7 +582,7 @@ const JS_SO = boGhiChuJs(JS_QTHT + '\n' + JS_TTK);
 // ⚠ PHÉP ĐÁNG TIỀN NHẤT CỦA PHẦN NÀY: việc đổi quyền trong cây KHÔNG được chép
 //   sang bản thứ hai — hai bản lệch dần từ lần sửa thứ hai.
 kiem('việc đổi quyền trong cây KHÔNG chép sang sổ tài khoản — dùng hộp hỏi của trang cây',
-     !['doiVaiThanhVien', 'ganNguoiChoThanhVien', 'datTinCayThanhVien', 'goThanhVien',
+     !['doiVaiThanhVien', 'datTinCayThanhVien', 'goThanhVien',
        'doiChuCay', 'duyetThanhVien', 'tuChoiThanhVien']
        .some((t) => new RegExp('\\b' + t + '\\b').test(JS_SO)),
      'sổ tài khoản tự gọi cửa đổi quyền — bản thứ hai');
@@ -900,12 +912,12 @@ kiem('chip Tạo gia phả không tự lọc theo quyền dựng cây ở trình
 //   b118d: bảng việc cũ đã xoá; hộp hỏi đổi quyền nhận ĐỐI TƯỢNG cây, và PHẦN
 //   O canh từng hộp gọi tên cây.
 kiem('hộp hỏi đổi quyền nhận ĐỐI TƯỢNG cây, không nhận treeId trần',
-     ['hoiDoiVai', 'hoiGanNguoi', 'hoiTinCay', 'hoiGo', 'hoiDuyetDon', 'hoiTuChoiDon']
+     ['hoiDoiVai', 'hoiTinCay', 'hoiGo', 'hoiDuyetDon', 'hoiTuChoiDon']
        .every((t) => new RegExp('export async function ' + t + '\\(t, cay, napLai\\)').test(JS_TC_SOM)),
      'còn nhận treeId trần — hộp mở ra không gọi được tên cây');
 
 kiem('không lời gọi nào truyền thẳng .treeId vào các hộp ấy',
-     !/hoi(DoiVai|GanNguoi|TinCay|Go|DuyetDon|TuChoiDon)\([^)]*\.treeId/
+     !/hoi(DoiVai|TinCay|Go|DuyetDon|TuChoiDon)\([^)]*\.treeId/
        .test(JS_SO + '\n' + boGhiChuJs(JS_TC_SOM)),
      'có chỗ truyền uuid trần');
 
@@ -1122,6 +1134,12 @@ kiem('quan-tri.css: thanh mục con thành một cột khi hẹp',
 // ============================================================
 console.log('\nPHẦN M — khu-tai-khoan.js · trang-tai-khoan.js (b117)');
 
+// ⚠ `khu-ho-so-don.js` (b126d) KHÔNG vào vòng lặp này, đúng tiền lệ
+//   `khu-de-nghi-quan-he.js`: cả hai là khối con của Quản trị hệ thống, cha
+//   (`mountKhuQuanTriHeThong`) đã canh `hashLuc` trước khi gọi; phép "kết quả
+//   máy chủ về muộn" của vòng lặp này đòi MỘT bộ canh RIÊNG mà khối con không
+//   có. Bốn phép mục tiêu (ghi chú đầu file · một cửa · sáu cửa gọi đủ · mờ
+//   đơn của chính mình) nằm dưới, không đi qua vòng lặp chung.
 for (const [ten, ma] of [['khu-tai-khoan.js', JS_KTK], ['trang-tai-khoan.js', JS_TTK]]) {
   kiem(ten + ' có khối ghi chú đầu file đúng khuôn',
        ghiChuDauFile(ma), 'thiếu Vai trò / Lớp / Phụ thuộc / Phiên bản');
@@ -1176,42 +1194,57 @@ kiem('bảng "các gia phả tôi tham gia" xét lời mời TRƯỚC vai',
      /if \(c\.duocMoi\) return 'duocmoi';\s*\n\s*if \(c\.vaiCuaToi/.test(JS_KTK),
      'Quản trị hệ thống lại không thấy lời mời của mình');
 
-kiem('nút Đề xuất mã người chỉ trên chân ĐÃ DUYỆT chưa gắn ai (9.2②)',
-     /trangThai === 'thanhvien' && docDuocChan && !\(chan && chan\.maNguoi\)/.test(JS_KTK),
-     'nút mọc trên đơn chờ / lời mời — máy chủ chắc chắn từ chối');
+// ⚠ b126d — gắn mã người + dòng họ dời hẳn khỏi trang một cây, sang Hồ sơ cá
+//   nhân (`khu-tai-khoan.js`, khối "Mã người & Dòng họ") + tab của Quản trị
+//   hệ thống (`khu-ho-so-don.js`). Bảy phép cũ ở đây (nút trên bảng cây, khối
+//   xét đơn trong trang cây, khe tự duyệt suy từ `laQuanTriCay(cay.fileId)`,
+//   `chanCuaToi()` đọc `tree_members`) hỏi về hình dạng ĐÃ BỎ — thay bằng các
+//   phép dưới, hỏi hình dạng MỚI. Lịch sử bản cũ: `git log -p`.
 
-// ⚠ Đính chính b118d: khối xét đơn vẽ bằng bảng quantri3 ngay trong trang cây.
-kiem('khối xét đơn đề xuất về trang cây, không còn "chuyển sang đây ở b117"',
-     /dsDeXuatGan\(/.test(boGhiChuJs(JS_TC_SOM)) && /duyetDeXuatGan\(/.test(boGhiChuJs(JS_TC_SOM)) &&
-     !/hienNay:/.test(JS_TC_SOM),
-     'mục Đề xuất gắn người vẫn là chỗ trống');
+kiem('trang cây KHÔNG còn tự gọi cửa gắn mã (dời hẳn sang Hồ sơ cá nhân)',
+     !/\b(nopDeXuatGan|dsDeXuatGan|duyetDeXuatGan|tuChoiDeXuatGan|ganNguoiChoThanhVien|laQuanTriCay)\b/
+       .test(boGhiChuJs(JS_TC_SOM)),
+     'trang cây vẫn còn gọi cửa gắn mã — hai chỗ để lệch nhau');
 
-// ⚠ ĐỔI LUẬT b124c (23/09/2026): cửa thứ TÁM nay có ngoại lệ HẸP — chủ cây và
-//   `quan_tri` của chính cây ấy tự duyệt được đơn của mình (`luoc-do/29`,
-//   `THIET-KE-NHIEU-CAY.md` 11.10). Nên phép cũ *"laCuaToi thì khoá"* nay SAI.
-//   Hai vế phải cùng đúng, và vế thứ hai là vế dễ mất:
-kiem('nút Duyệt trên đơn của mình chỉ khoá khi KHÔNG có vai trong cây',
-     /const khoa = d\.laCuaToi && !tuDuyetDuoc\s*\?/.test(JS_TC_SOM),
-     'khoá sẵn cho mọi người — mời chủ cây đi xin chữ ký mình đã có');
-kiem('…và `tuDuyetDuoc` hỏi laQuanTriCay(), KHÔNG suy từ coTheQuanTri()',
-     /laQuanTriCay\(cay\.fileId\)/.test(JS_TC_SOM),
-     'suy từ cờ Quản trị hệ thống là bỏ chữ ký thứ hai ở MỌI cây');
-kiem('nút Từ chối đơn của mình vẫn khoá (đường đúng là Rút đơn)',
-     /const khoaTuChoi = d\.laCuaToi\s*\?/.test(JS_TC_SOM),
-     'máy chủ vẫn chặn tự từ chối — nút sáng là mời bấm một thứ chắc chắn hỏng');
+kiem('khu Tài khoản (Hồ sơ cá nhân) đọc mã gắn/dòng họ từ phien, không từ bảng riêng theo cây',
+     /phien\.maNguoiGan/.test(JS_KTK) && /phien\.tenDongHo/.test(JS_KTK),
+     'không thấy — panel Mã người & Dòng họ chưa đọc đúng nguồn');
+
+kiem('Hồ sơ cá nhân gọi đủ tám cửa TOÀN PHẦN MỀM (gắn mã + dòng họ)',
+     ['deXuatGanCuaToi', 'nopDeXuatGan', 'rutDeXuatGan', 'duyetDeXuatGan',
+      'deXuatDongHoCuaToi', 'nopDeXuatDongHo', 'rutDeXuatDongHo', 'datDongHoQtht']
+       .every((t) => new RegExp('\\b' + t + '\\s*\\(').test(boGhiChuJs(JS_KTK))),
+     'thiếu ít nhất một cửa trên màn hình');
+
+kiem('nút "Tự duyệt" của gắn mã CHỈ hiện khi tài khoản là chủ ít nhất một cây (khe hẹp `36`)',
+     /laChuMotCay/.test(JS_KTK) && /dsCayThanhVien\(kqCay\)\.some\(\(c\) => c\.toiLaChu\)/.test(JS_KTK),
+     'không thấy điều kiện — nút mọc cho mọi người là mời bấm một thứ chắc chắn hỏng');
+
+kiem('dòng họ KHÔNG có nút tự duyệt nào cho người thường (khác gắn mã — `37` không có khe hẹp)',
+     !/tuGanLanDauDuoc|tuDuyetDongHo/.test(boGhiChuJs(JS_KTK)),
+     'màn hình bịa ra một khe tự duyệt mà máy chủ không có');
+
+kiem('khu-ho-so-don.js (tab Quản trị hệ thống) gọi đủ sáu cửa xét đơn',
+     ['dsDeXuatGan', 'duyetDeXuatGan', 'tuChoiDeXuatGan',
+      'dsDeXuatDongHo', 'duyetDeXuatDongHo', 'tuChoiDeXuatDongHo']
+       .every((t) => new RegExp('\\b' + t + '\\s*\\(').test(boGhiChuJs(JS_HSD))),
+     'thiếu ít nhất một cửa trên tab');
+
+kiem('khu-ho-so-don.js mờ Duyệt/Từ chối trên đơn CỦA CHÍNH người đang xem (nutMo, không suy đoán quyền)',
+     (boGhiChuJs(JS_HSD).match(/d\.laCuaToi \? nutMo\(/g) || []).length >= 4,
+     'đơn của chính QTHT đang xem không bị mờ — mời tự duyệt nhầm ở tab quản trị');
 
 // — sb.js —
-for (const ten of ['doiMatKhau', 'chanCuaToi']) {
-  kiem('sb.js xuất hàm ' + ten + '()',
-       new RegExp('export\\s+async\\s+function\\s+' + ten + '\\b').test(JS_SB), 'không thấy');
-}
+kiem('sb.js xuất hàm doiMatKhau()',
+     /export\s+async\s+function\s+doiMatKhau\b/.test(JS_SB), 'không thấy');
 
 kiem('doiMatKhau() đăng nhập lại bằng mật khẩu cũ TRƯỚC khi đổi',
      matKhauCuTruoc(JS_SB), 'ai ngồi vào máy đang mở sẵn là đổi được mật khẩu');
 
-kiem('chanCuaToi() chỉ đọc chân ĐÃ DUYỆT của chính mình',
-     /from\('tree_members'\)[\s\S]{0,200}\.eq\('user_id', nguoi\.id\)\.eq\('approved', true\)/.test(JS_SB),
-     'đọc cả dòng chưa duyệt — RLS thật không trả, bản giả sẽ nói dối');
+kiem('sb.js KHÔNG còn xuất chanCuaToi()/laQuanTriCay()/ganNguoiChoThanhVien() (b126d, hết ai gọi)',
+     !['chanCuaToi', 'laQuanTriCay', 'ganNguoiChoThanhVien']
+       .some((t) => new RegExp('export\\s+async\\s+function\\s+' + t + '\\b').test(JS_SB)),
+     'còn sót một hàm đã hết người gọi — dọn nửa vời');
 
 kiem('layPhien() mang userId · duocTaoCay, không thêm vòng mạng',
      /userId: nguoi\.id, duocTaoCay/.test(JS_SB) &&
@@ -1309,8 +1342,9 @@ kiem('trang cây hỏi máy chủ ai đổi được quyền, không suy từ va
      /coTheQuanTri\(cay\.fileId\)/.test(JS_TC_SOM) && !/vaiTro/.test(boGhiChuJs(JS_TC_SOM)),
      'suy quyền trong trình duyệt — khoá tay chủ cây');
 
+// ⚠ b126d — "Gắn / đổi mã người" BỎ khỏi cả hai bảng (dời sang Hồ sơ cá
+//   nhân); phép dưới chỉ còn canh các việc VẪN đứng trong hai trang này.
 kiem('dòng của CHÍNH MÌNH khoá sẵn mọi việc đổi quyền, kèm lý do (trang cây)',
-     /mucMenu\('Gắn \/ đổi mã người', cuaMinh/.test(JS_TC_SOM) &&
      /mucMenu\(t\.tinCay \? 'Tắt tin cậy \(ghi thẳng\)' : 'Bật tin cậy \(ghi thẳng\)', cuaMinh/.test(JS_TC_SOM) &&
      /mucMenu\('Bàn giao chủ sở hữu',\s*cuaMinh/.test(JS_TC_SOM) &&
      /mucMenu\('Xóa khỏi gia phả',\s*cuaMinh/.test(JS_TC_SOM) &&
@@ -1318,13 +1352,12 @@ kiem('dòng của CHÍNH MÌNH khoá sẵn mọi việc đổi quyền, kèm lý
      'một việc đổi quyền trên dòng của mình không khoá');
 
 kiem('dòng của CHÍNH MÌNH khoá sẵn mọi việc đổi quyền (trang một tài khoản)',
-     /mucMenu\('Gắn \/ đổi mã người', cuaMinh/.test(JS_TTK) &&
      /mucMenu\('Đổi vai trò trong cây',\s*cuaMinh/.test(JS_TTK) &&
      /mucMenu\('Gỡ khỏi gia phả',\s*cuaMinh/.test(JS_TTK),
      'một việc đổi quyền trên tài khoản của mình không khoá');
 
 {
-  const hop = ['hoiDoiVai', 'hoiGanNguoi', 'hoiTinCay', 'hoiGo', 'hoiDuyetDon', 'hoiTuChoiDon', 'hoiDeXuatGan'];
+  const hop = ['hoiDoiVai', 'hoiTinCay', 'hoiGo', 'hoiDuyetDon', 'hoiTuChoiDon'];
   const khong = hop.filter((ten) => {
     const m = JS_TC_SOM.match(new RegExp('export async function ' + ten + '\\([\\s\\S]*?\\n}\\n'));
     return !m || !/cumCay\(cay\)/.test(m[0]);
@@ -1567,10 +1600,12 @@ console.log('\nPHẦN G — kiểm chứng ngược (bẻ gãy có chủ ý)');
 {
   const GIA = resolve(DAY, '../../kiem-thu/sb-gia.mjs');
   if (existsSync(GIA)) {
+    // b126d — mục tiêu đổi từ `chanCuaToi` (đã bỏ, hết ai gọi) sang
+    // `deXuatGanCuaToi` (vẫn thật, `khu-tai-khoan.js` vẫn nhập).
     const hong22 = readFileSync(GIA, 'utf8')
-      .replace(/export\s+async\s+function\s+chanCuaToi\b/g, 'async function chanCuaToiCu');
+      .replace(/export\s+async\s+function\s+deXuatGanCuaToi\b/g, 'async function deXuatGanCuaToiCu');
     kiem('bắt được sb-gia.mjs thiếu một cửa',
-         tenThieuTrongGia(tenNhapTuSb(), hong22).includes('chanCuaToi'),
+         tenThieuTrongGia(tenNhapTuSb(), hong22).includes('deXuatGanCuaToi'),
          'không bắt được — phép ở PHẦN M vô dụng');
   }
 }

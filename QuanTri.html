@@ -108,7 +108,7 @@
 
 <section id="tree-detail" class="view" hidden>
 <div class="detailbar"><button class="backbtn" data-back="gia-pha">← Gia phả</button><span class="muted" id="td-vi-tri"></span></div><div class="head"><div><h1 id="td-ten"></h1><p class="lead" id="td-phu"></p></div><span class="badge" id="td-trang-thai"></span></div>
-<div class="layout"><div class="subnav"><button data-td-muc="tong-quan">Tổng quan</button><button data-td-muc="nguoi">Danh sách người</button><button data-td-muc="thanh-vien">Thành viên & quyền</button><button data-td-muc="loi-moi">Lời mời</button><button data-td-muc="don-xin-vao">Đơn xin vào <b id="td-so-don"></b></button><button data-td-muc="vong-doi">Vòng đời</button><button data-td-muc="de-xuat-gan">Đề xuất gắn người</button></div><div><div id="td-tong-quan"><div class="panel"><div class="panel-head"><h3>Tổng quan cây</h3><span id="td-ma"></span></div><ul class="list"><li><span>Tên cây</span><strong id="td-l-ten"></strong></li><li><span>Người lạ thấy tên</span><span class="badge" id="td-l-la"></span></li><li><span>Cây mặc định của tôi</span><span class="badge" id="td-l-mac-dinh"></span></li><li><span>Thành viên đã duyệt</span><strong id="td-l-tv"></strong></li></ul></div><div class="split" style="margin-top:14px"><div class="card"><h3>Thành viên & quyền</h3><p id="td-c-tv"></p><button class="btn" data-td-muc="thanh-vien">Mở danh sách</button></div><div class="card"><h3>Đơn xin vào</h3><p id="td-c-don"></p><button class="btn warm" data-td-muc="don-xin-vao">Xử lý đơn</button></div></div></div><div id="td-muc" hidden></div></div></div>
+<div class="layout"><div class="subnav"><button data-td-muc="tong-quan">Tổng quan</button><button data-td-muc="nguoi">Danh sách người</button><button data-td-muc="thanh-vien">Thành viên & quyền</button><button data-td-muc="loi-moi">Lời mời</button><button data-td-muc="don-xin-vao">Đơn xin vào <b id="td-so-don"></b></button><button data-td-muc="vong-doi">Vòng đời</button></div><div><div id="td-tong-quan"><div class="panel"><div class="panel-head"><h3>Tổng quan cây</h3><span id="td-ma"></span></div><ul class="list"><li><span>Tên cây</span><strong id="td-l-ten"></strong></li><li><span>Người lạ thấy tên</span><span class="badge" id="td-l-la"></span></li><li><span>Cây mặc định của tôi</span><span class="badge" id="td-l-mac-dinh"></span></li><li><span>Thành viên đã duyệt</span><strong id="td-l-tv"></strong></li></ul></div><div class="split" style="margin-top:14px"><div class="card"><h3>Thành viên & quyền</h3><p id="td-c-tv"></p><button class="btn" data-td-muc="thanh-vien">Mở danh sách</button></div><div class="card"><h3>Đơn xin vào</h3><p id="td-c-don"></p><button class="btn warm" data-td-muc="don-xin-vao">Xử lý đơn</button></div></div></div><div id="td-muc" hidden></div></div></div>
 </section>
 
 <!-- KHÔNG CÓ TRONG quantri3 — bảng người của một cây, thêm 23/09/2026 (b125a).
@@ -130,6 +130,13 @@
 
 <div class="panel"><div class="panel-head"><h3>Quyền cấp hệ thống</h3><span class="muted">Áp dụng toàn phần mềm</span></div><div style="padding:18px"><ul class="list"><li id="my-sys-qtht-li"><div><strong style="display:block;color:var(--ink)">Quản trị hệ thống</strong><span class="sub" id="my-sys-qtht-sub"></span></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><span class="badge" id="my-sys-qtht-badge"></span><div id="my-sys-qtht-actions" style="display:flex;gap:6px" hidden><button class="btn warm" id="btn-my-accept-qtht" style="font-weight:700;font-size:11px;padding:3px 10px">Chấp nhận</button><button class="btn danger" id="btn-my-decline-qtht" style="font-size:11px;padding:3px 8px">Từ chối</button></div></div></li><li><div><strong style="display:block">Được phép tạo gia phả</strong><span class="sub">Quyền tự khởi tạo các cây gia phả mới</span></div><span class="badge" id="tk-tao-cay"></span></li></ul><div style="margin-top:14px;padding:10px 12px;background:#fcfaf7;border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:var(--muted)">Quyền cấp hệ thống do QTHT quản trị độc lập.</span></div></div></div>
 </div>
+
+<!-- KHÔNG có trong quantri3 — thêm ở b126d: "gắn người" + "dòng họ" dời từ
+     bảng cây (mỗi cây một mã) về đây (chuyện của TÀI KHOẢN, không của cây). -->
+<div class="panel" style="margin-bottom:20px"><div class="panel-head"><h3>Mã người &amp; Dòng họ</h3><span class="muted">Áp dụng toàn phần mềm, không theo cây</span></div><div style="padding:18px"><ul class="list">
+<li id="hs-gan-li"><div><strong style="display:block;color:var(--ink)">Mã người trong sơ đồ</strong><span class="sub" id="hs-gan-sub"></span></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><span class="badge" id="hs-gan-badge"></span><div id="hs-gan-actions" style="display:flex;gap:6px"></div></div></li>
+<li id="hs-dongho-li"><div><strong style="display:block">Dòng họ</strong><span class="sub" id="hs-dongho-sub"></span></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><span class="badge" id="hs-dongho-badge"></span><div id="hs-dongho-actions" style="display:flex;gap:6px"></div></div></li>
+</ul></div></div>
 
 <div class="panel" style="margin-bottom:20px"><div class="panel-head"><h3>Các gia phả tôi đang tham gia</h3><span id="tk-cay-dem"></span></div><table><thead><tr><th>Tên gia phả</th><th>Mã cây</th><th>Vai trò của tôi</th><th>Tôi được gắn với ai trong sơ đồ?</th><th>Thông tin công khai</th><th>Trạng thái</th><th>Hành động</th></tr></thead><tbody id="tk-cay-tbody"></tbody><tbody id="gia-pha-extra" hidden></tbody></table><div style="padding:12px 16px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between" id="tk-xem-them" hidden><span class="muted" style="font-size:13px" id="tk-hien-thi"></span><button class="btn" id="btn-xem-them-cay"></button></div></div>
 
@@ -223,7 +230,7 @@
 
 <section id="quan-tri-he-thong" class="view" hidden data-system-view>
 <div class="head"><div><h1>Quản trị hệ thống</h1><p class="lead">Chỉ dành cho tài khoản có cờ Quản trị hệ thống. Các chức năng ở đây áp dụng toàn ứng dụng.</p></div><span class="badge">Toàn hệ thống</span></div>
-<div class="tabs"><button class="chip active" data-sys-tab="tong-quan">Tổng quan</button><button class="chip" data-sys-tab="so-tai-khoan">Sổ tài khoản</button><button class="chip" data-sys-tab="tao-tai-khoan">+ Tạo tài khoản mới</button><button class="chip" data-sys-tab="cay-mac-dinh">Cây mặc định</button><button class="chip" data-sys-tab="sao-luu">Sao lưu &amp; khôi phục</button><button class="chip" data-sys-tab="thung-rac">Thùng rác</button><button class="chip" data-sys-tab="de-nghi-quan-he">Đề nghị sửa quan hệ</button><button class="chip" data-sys-tab="nhat-ky">Nhật ký</button></div>
+<div class="tabs"><button class="chip active" data-sys-tab="tong-quan">Tổng quan</button><button class="chip" data-sys-tab="so-tai-khoan">Sổ tài khoản</button><button class="chip" data-sys-tab="tao-tai-khoan">+ Tạo tài khoản mới</button><button class="chip" data-sys-tab="cay-mac-dinh">Cây mặc định</button><button class="chip" data-sys-tab="sao-luu">Sao lưu &amp; khôi phục</button><button class="chip" data-sys-tab="thung-rac">Thùng rác</button><button class="chip" data-sys-tab="de-nghi-quan-he">Đề nghị sửa quan hệ</button><button class="chip" data-sys-tab="ho-so-don">Đơn Hồ sơ cá nhân</button><button class="chip" data-sys-tab="nhat-ky">Nhật ký</button></div>
 <div data-sys-pane="tong-quan">
 <div class="cards" style="gap:14px;margin-bottom:20px">
 <div class="card" style="margin-bottom:0;padding:16px 18px">
@@ -504,6 +511,23 @@
 <div class="panel-head"><div><h3>Đề nghị đang chờ duyệt</h3><span id="dnqh-dem"></span></div></div>
 <table><thead><tr><th>Gia phả</th><th>Loại đề nghị</th><th>Người / quan hệ liên quan</th><th>Lý do</th><th>Người gửi &amp; ngày</th><th>Hành động</th></tr></thead>
 <tbody id="dnqh-tbody"></tbody></table>
+</div>
+</div>
+
+<div data-sys-pane="ho-so-don" hidden>
+<!-- Không có trong bản thiết kế quantri3 — thêm ở b126d (luoc-do/35, 37). Gắn mã người và
+     dòng họ nay là chuyện TOÀN PHẦN MỀM của tài khoản, không theo cây — tự khai ở Hồ sơ cá
+     nhân (khu Tài khoản), xét ở đây. -->
+<div class="notice" style="margin-bottom:16px">Hai loại đơn tự khai ở *Tài khoản của tôi → Mã người &amp; Dòng họ*, có hiệu lực toàn phần mềm — không riêng một cây.</div>
+<div class="panel" style="margin-bottom:18px">
+<div class="panel-head"><div><h3>Đơn gắn mã người</h3><span id="hsd-gan-dem"></span></div></div>
+<table><thead><tr><th>Tài khoản</th><th>Tự nhận là</th><th>Lý do</th><th>Nộp lúc</th><th>Hành động</th></tr></thead>
+<tbody id="hsd-gan-tbody"></tbody></table>
+</div>
+<div class="panel">
+<div class="panel-head"><div><h3>Đơn dòng họ</h3><span id="hsd-dongho-dem"></span></div></div>
+<table><thead><tr><th>Tài khoản</th><th>Xin nhận dòng họ</th><th>Đang là</th><th>Nộp lúc</th><th>Hành động</th></tr></thead>
+<tbody id="hsd-dongho-tbody"></tbody></table>
 </div>
 </div>
 

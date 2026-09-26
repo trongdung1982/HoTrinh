@@ -5,10 +5,9 @@
 // Lớp      : pages
 // Phụ thuộc: services/repo, services/sb, utils/date, pages/dang-nhap,
 //            pages/tree-view
-// Phiên bản: 0.13.0 · Cập nhật: 16/09/2026 (b118c)
-//            0.13.0 nhánh `khoa` — tài khoản bị khoá mềm (`23` mục 4a). Đứng
-//            TRƯỚC MỌI nhánh khác, kể cả `daxoa`. Lịch sử các bản trước:
-//            `git log -p js/pages/khoi-dong.js`.
+// Phiên bản: 0.13.1 · Cập nhật: 26/09/2026 (b126d) — bỏ `phien.tenHo` (hằng
+//            cứng đã xoá); hai câu chờ duyệt không còn gọi tên một họ cụ thể.
+//            Lịch sử các bản trước: `git log -p js/pages/khoi-dong.js`.
 // ============================================================
 //
 // ⚠ **ĐỔI SO VỚI BẢN APPS SCRIPT: có thêm một kết cục thứ ba.**
@@ -180,8 +179,7 @@ function hienManHinhKhongCoQuyen(el, phien) {
   if (phien.trangThai === 'cho') {
     el.append(khung([
       tieuDe('Đơn của bạn đang chờ duyệt'),
-      doan('Bạn đã xin vào cây gia phả ' + (phien.tenHo || '') + '. ' +
-           'Quản trị viên sẽ xem và duyệt.'),
+      doan('Bạn đã xin vào một gia phả. Quản trị viên sẽ xem và duyệt.'),
       doan('Duyệt xong thì mở lại trang này là thấy sơ đồ, không phải làm gì thêm.'),
       nhoMo('Sốt ruột thì nhắn cho ' + (phien.nguoiQuanLy || '') + '.'),
       phien.email ? nhoMo('Bạn đang đăng nhập bằng: ' + phien.email) : null,
@@ -207,7 +205,7 @@ function hienManHinhKhongCoQuyen(el, phien) {
 
   el.append(khung([
     tieuDe('Bạn chưa được cấp quyền xem'),
-    doan('Bạn chưa được cấp quyền xem cây gia phả ' + (phien.tenHo || '') + '.'),
+    doan('Bạn chưa được cấp quyền xem gia phả này.'),
     doan('Bấm nút dưới đây để xin vào. Quản trị viên duyệt xong thì bạn xem được.'),
     veKhoiXinVao(el, phien),
     nhoMo('Hoặc nhắn thẳng cho ' + (phien.nguoiQuanLy || '') + '.'),

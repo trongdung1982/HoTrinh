@@ -6,7 +6,8 @@
 //            tin cậy · gỡ · duyệt đơn, cộng mời vào cây khác và đổi họ tên.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/hop-thoai · trang-cay · khu-quan-tri-he-thong · o-bang
-// Phiên bản: 1.0.0 · Cập nhật: 16/09/2026 (b118d)
+// Phiên bản: 1.0.1 · Cập nhật: 26/09/2026 (b126d) — bỏ mục *Gắn / đổi mã
+//            người* khỏi menu: gắn mã dời sang khu Tài khoản (Hồ sơ cá nhân).
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -31,7 +32,7 @@ import { duongDan } from './trang-chi-tiet.js';
 import { hoi } from './hop-thoai.js';
 import { datTabQuanTriHeThong } from './khu-quan-tri-he-thong.js';
 import {
-  hoiDoiVai, hoiGanNguoi, hoiTinCay, hoiGo, hoiDuyetDon, hoiTuChoiDon, moSoDo, cumCay,
+  hoiDoiVai, hoiTinCay, hoiGo, hoiDuyetDon, hoiTuChoiDon, moSoDo, cumCay,
 } from './trang-cay.js';
 import {
   TEN_VAI, CHON_VAI, td, span, tenVaPhu, huyHieu, nut, mucMenu, menuTuyChon, chuaCo,
@@ -188,7 +189,6 @@ function dongCay(c, tk, phien, napLai) {
       mucMenu('Đổi vai trò trong cây',
         cuaMinh || (c.laChuCay ? 'Chủ gia phả không hạ vai được — bàn giao trước.' : '') || saoLuu,
         () => hoiDoiVai(t, cay, napLai)),
-      mucMenu('Gắn / đổi mã người', cuaMinh, () => hoiGanNguoi(t, cay, napLai)),
       mucMenu(c.tinCay ? 'Tắt tin cậy (ghi thẳng)' : 'Bật tin cậy (ghi thẳng)', cuaMinh,
         () => hoiTinCay(t, cay, napLai)),
       mucMenu('Gỡ khỏi gia phả',

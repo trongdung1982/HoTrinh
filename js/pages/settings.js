@@ -4,8 +4,8 @@
 //            đường sang Chọn gia phả · Sao lưu & khôi phục · Xuất/Nhập GEDCOM
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, services/tuong-thich, services/sb, utils/text, pages/export-image
-// Phiên bản: 1.32.3 · Cập nhật: 18/09/2026
-//            1.32.3 (AGY): đổi 'Tài khoản và quyền' thành 'Tài khoản và vai trò' (b109c).
+// Phiên bản: 1.33.0 · Cập nhật: 26/09/2026 (b126d) — dòng 'Dòng họ' đọc
+//            `phien.tenDongHo` thật (tự chọn ở Hồ sơ cá nhân), bỏ hằng cứng.
 // ============================================================
 //
 // Màn hình này tồn tại vì MỘT việc: đặt và bỏ người trung tâm mặc định của
@@ -1098,7 +1098,7 @@ function veKhoiPhien(vao) {
   //   thì không phải ai cũng muốn đọc to lên. Trường trống thì KHÔNG vẽ hàng,
   //   đúng luật `CLAUDE.md` mục 7; `hang()` tự lo việc ấy.
   hang(bang, 'Mã tài khoản', phien.maNgan);
-  hang(bang, 'Dòng họ', phien.tenHo);
+  hang(bang, 'Dòng họ', phien.tenDongHo);
   hang(bang, 'Vai trò', vaiTroBangChu(phien.vaiTro));
   hang(bang, 'Quyền', quyenBangChu(phien));
   hang(bang, 'Người quản lý', phien.nguoiQuanLy);

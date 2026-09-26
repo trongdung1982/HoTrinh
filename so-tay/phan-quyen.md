@@ -41,9 +41,9 @@ Dán lại file bên trái thì phải dán tiếp các file bên phải, đúng
   chín, **không một lời báo**.
 - **Sau `26` KHÔNG dán lại `02`/`11`** — luật đọc trên bảng người của chúng hỏi
   `tree_id` đã bỏ; bản đứng cuối của bốn luật ấy ở `26` mục 5.
-- `34`→`35`→`36`→`37` (b126) — một chuỗi, **cùng lúc với JS b126d** (`35` bỏ
-  `p_tree` ở ba hàm đơn gắn mã `sb.js` còn gọi). `36` giữ bản cuối của
-  `duyet_de_xuat_gan()` + `gan_nguoi_tai_khoan()`.
+- `34`→`35`→`36`→`37`→`38` (b126) — một chuỗi (`35` bỏ `p_tree` ở ba hàm đơn
+  gắn mã `sb.js` còn gọi). `36` giữ bản cuối của `duyet_de_xuat_gan()` +
+  `gan_nguoi_tai_khoan()`. `38` sửa `ds_tai_khoan_he_thong()`, một mã.
 
 ### File phụ thuộc cột mới phải tự chặn khi dán sai thứ tự (26/09)
 
