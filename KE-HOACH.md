@@ -1,8 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 26/09/2026 · `33` ĐÃ DÁN. b127d (d-1 → d-3) XONG — cả nộp đề nghị
-lẫn khu duyệt trong Quản trị hệ thống — chưa ai bấm thử thật trên máy chủ
-thật. Nút Cũ/Mới dưới 🔍 giữ tới khi chủ dự án bảo gỡ. Kế tiếp: b126.*
+*Cập nhật 26/09/2026 · `33` ĐÃ DÁN, b127d XONG cả ba bước (điểm dừng chưa bấm
+thử ở bảng dưới). Nút Cũ/Mới dưới 🔍 giữ tới khi chủ dự án bảo gỡ. Kế tiếp:
+b126 — đọc `THIET-KE-NHIEU-CAY.md` mục 6 trước khi đụng.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
 **đừng nới trần**. Ba luật giữ nó gọn:
@@ -35,6 +35,7 @@ Quản trị hệ thống**.
 | **b111c** — đơn gắn mã | Còn ①nhận lời mời QTHT ②QTHT khác duyệt được ③**b124c**: chủ cây tự duyệt đơn mình PHẢI ăn |
 | **b117** — khu Tài khoản | ①bảng *Các gia phả tôi tham gia* đúng mã (tài khoản thường, qua RLS) ②đổi mật khẩu |
 | **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
+| **b127d** — đề nghị sửa quan hệ (`33`, xong d-1→d-3) | Form người có quan hệ ngoài cây: bấm ✉ gửi đề nghị → Quản trị hệ thống → tab *Đề nghị sửa quan hệ* → Duyệt (gỡ) hoặc Từ chối |
 ---
 
 ## SQL — đã dán gì
@@ -91,20 +92,6 @@ gắn tài khoản ↔ người là việc của b126 (Hồ sơ cá nhân), **b1
 
 ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
 
-### ⚠ b127d — ĐỀ NGHỊ CHỈNH SỬA quan hệ → QTHT duyệt (tách 24/09/2026)
-
-Chủ dự án chốt 25/09: **hai loại, đều là GỠ** — gỡ con khỏi cặp cha mẹ ·
-gỡ vợ/chồng khỏi hôn nhân. Duyệt = máy chủ TỰ gỡ (rào `32` chặn cả QTHT sửa
-tay). Đổi đẻ↔nuôi để sau. Luật: đầu file `luoc-do/33`.
-
-| Bước | Việc | Điểm dừng |
-|---|---|---|
-| ✓ **d-1** | `33`: bảng + 5 hàm, bàn thử `do-b127d.mjs` 40/40 | ✓ đã dán 25/09 |
-| ✓ **d-2** | Nút *✉ Đề nghị sửa* ở cặp đang khoá trong form người + `sb`/`repo` (`nopDeNghiQuanHe`) | ✓ 26/09 — chủ dự án CHƯA bấm thử thật |
-| ✓ **d-3** | Khu duyệt — tab mới *Đề nghị sửa quan hệ* trong `#quan-tri-he-thong` (`khu-de-nghi-quan-he.js` + ba cửa `sb.js`) | ✓ 26/09, nhìn bằng mắt qua bản giả — chủ dự án CHƯA bấm thử thật trên máy chủ thật |
-⚠ b127b chưa bấm thật: thẻ người kéo sang `T388` phải đủ vợ/con.
-⚠ **b127d chưa ai bấm thử trên máy chủ thật** (chỉ nhìn qua `sb-gia.mjs`): mở form người có quan hệ ngoài cây → gửi đề nghị → mở Quản trị hệ thống → tab *Đề nghị sửa quan hệ* → Duyệt/Từ chối.
-
 ### ⚠⚠ b126 — GẮN NGƯỜI và DÒNG HỌ về HỒ SƠ CÁ NHÂN (chốt 23/09/2026)
 
 Luật, lý lẽ, danh sách chỗ bị đụng: **`THIET-KE-NHIEU-CAY.md` mục 6**, khối
@@ -142,6 +129,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Hai hàm của `16` LỆCH NGHĨA với tên** (`xin_xoa_cay` ẩn cây NGAY; `huy_xin_xoa_cay` = trả lại cho chủ). Giữ tên cũ là cố ý; đổi tên là một bước riêng | `luoc-do/23-bon-luat-moi.sql` khối đầu |
 | ⚠ **`ds_kiem_duyet()` chưa trả người duyệt · lúc duyệt · lý do từ chối** — hai tab lịch sử của Kiểm duyệt để trống ba cột (cột có trong `change_log`, hàm chưa đọc). Sửa hàm là `drop` → chép cả `grant` | `so-tay/trang-quan-tri.md` |
 | ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa *(b126 sẽ đụng cả hai)* | `nhat-ky/b106-khu-tai-khoan.md` |
+| ⚠ **b127b chưa bấm thật**: thẻ người kéo sang `T388` phải đủ vợ/con | — |
 | ⚠ **Huy hiệu *đơn chờ duyệt* trên nút Gia phả đếm theo cây ĐANG MỞ** (`napSoDem(phien.treeId)`) — chỗ duy nhất của trang còn dính cây đang mở. Có từ b101, b117 chỉ dời nút | `khung.js` · luật 5a |
 | ⚠ **Ai gọi `don_thung_rac()`** — nút bấm tay hay trigger Apps Script đêm? Chưa hỏi chủ dự án | `THIET-KE-NHIEU-CAY.md` mục 11.6 |
 | ⚠ **b103 → b105 của Antigravity vẫn nằm NGOÀI repo**, trong `codex/`, mới dán lên Staging. Soi lướt: `12` và `13` không thêm luật ghi nào — nhưng chưa rà kỹ, chưa đo | `PHOI-HOP-AI.md` |
