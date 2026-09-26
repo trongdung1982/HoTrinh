@@ -5,8 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.31.0 · Cập nhật: 26/09/2026 (b127d-2) — `nopDeNghiQuanHe()`
-//            Lịch sử: `git log -p js/services/sb.js`.
+// Phiên bản: 0.32.0 · Cập nhật: 26/09/2026 (b127d-3) — `dsDeNghiQuanHe()` ·
+//            `duyetDeNghiQuanHe()` · `tuChoiDeNghiQuanHe()`. Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -2283,6 +2283,42 @@ export async function nopDeNghiQuanHe(treeId, loai, unionId, personId, lyDo) {
   const { data, error } = await k.rpc('nop_de_nghi_quan_he', {
     p_tree: treeId, p_loai: String(loai || ''), p_union: String(unionId || ''),
     p_person: String(personId || ''), p_ly_do: String(lyDo || ''),
+  });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/**
+ * Danh sách đề nghị gỡ quan hệ (b127d-3, khu Quản trị hệ thống). Không nhận
+ * `treeId` — hàm không hỏi cây nào: QTHT thấy mọi đề nghị ĐANG CHỜ của cả hệ
+ * thống, người khác chỉ thấy đề nghị của chính mình (mọi trạng thái).
+ * @returns {Promise<Array<{id:string, loai:string, unionId:string,
+ *   personId:string, tenNguoi:string, voChong:Array<{id:string,ten:string}>,
+ *   lyDo:string, trangThai:string, taoLuc:string, loiXet:string,
+ *   treeId:string, tenCay:string, maCay:string, nguoiGui:string, cuaToi:boolean}>>}
+ */
+export async function dsDeNghiQuanHe() {
+  const k = layKhach();
+  if (!k) return [];
+  const { data, error } = await k.rpc('ds_de_nghi_quan_he');
+  return error ? [] : (data || []);
+}
+
+/** Duyệt — máy chủ tự gỡ quan hệ đã khoá. Chỉ QTHT gọi được. */
+export async function duyetDeNghiQuanHe(id) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('duyet_de_nghi_quan_he', { p_id: id });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/** Từ chối — không đụng dữ liệu, chỉ ghi `loi_xet`. Chỉ QTHT gọi được. */
+export async function tuChoiDeNghiQuanHe(id, lyDo = '') {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('tu_choi_de_nghi_quan_he', {
+    p_id: id, p_ly_do: String(lyDo || ''),
   });
   if (error) return { ok: false, loi: cauLoi(error) };
   return data || { ok: false, loi: 'Máy chủ không trả lời.' };

@@ -223,7 +223,7 @@
 
 <section id="quan-tri-he-thong" class="view" hidden data-system-view>
 <div class="head"><div><h1>Quản trị hệ thống</h1><p class="lead">Chỉ dành cho tài khoản có cờ Quản trị hệ thống. Các chức năng ở đây áp dụng toàn ứng dụng.</p></div><span class="badge">Toàn hệ thống</span></div>
-<div class="tabs"><button class="chip active" data-sys-tab="tong-quan">Tổng quan</button><button class="chip" data-sys-tab="so-tai-khoan">Sổ tài khoản</button><button class="chip" data-sys-tab="tao-tai-khoan">+ Tạo tài khoản mới</button><button class="chip" data-sys-tab="cay-mac-dinh">Cây mặc định</button><button class="chip" data-sys-tab="sao-luu">Sao lưu &amp; khôi phục</button><button class="chip" data-sys-tab="thung-rac">Thùng rác</button><button class="chip" data-sys-tab="nhat-ky">Nhật ký</button></div>
+<div class="tabs"><button class="chip active" data-sys-tab="tong-quan">Tổng quan</button><button class="chip" data-sys-tab="so-tai-khoan">Sổ tài khoản</button><button class="chip" data-sys-tab="tao-tai-khoan">+ Tạo tài khoản mới</button><button class="chip" data-sys-tab="cay-mac-dinh">Cây mặc định</button><button class="chip" data-sys-tab="sao-luu">Sao lưu &amp; khôi phục</button><button class="chip" data-sys-tab="thung-rac">Thùng rác</button><button class="chip" data-sys-tab="de-nghi-quan-he">Đề nghị sửa quan hệ</button><button class="chip" data-sys-tab="nhat-ky">Nhật ký</button></div>
 <div data-sys-pane="tong-quan">
 <div class="cards" style="gap:14px;margin-bottom:20px">
 <div class="card" style="margin-bottom:0;padding:16px 18px">
@@ -494,6 +494,16 @@
   </thead>
   <tbody id="trash-logs-tbody"></tbody>
 </table>
+</div>
+</div>
+
+<div data-sys-pane="de-nghi-quan-he" hidden>
+<!-- Không có trong bản thiết kế quantri3 — thêm ở b127d-3 (luoc-do/33). -->
+<div class="notice" style="margin-bottom:16px">Đề nghị GỠ một quan hệ (cha/mẹ-con hoặc vợ/chồng) có người ở ngoài gia phả này. Duyệt xong máy chủ tự gỡ; không sửa tay được vì không cây nào chứa đủ cả hai người.</div>
+<div class="panel">
+<div class="panel-head"><div><h3>Đề nghị đang chờ duyệt</h3><span id="dnqh-dem"></span></div></div>
+<table><thead><tr><th>Gia phả</th><th>Loại đề nghị</th><th>Người / quan hệ liên quan</th><th>Lý do</th><th>Người gửi &amp; ngày</th><th>Hành động</th></tr></thead>
+<tbody id="dnqh-tbody"></tbody></table>
 </div>
 </div>
 
