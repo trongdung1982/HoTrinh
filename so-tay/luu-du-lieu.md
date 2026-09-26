@@ -183,6 +183,8 @@ thứ cố ý không bao giờ cắt bớt. Quét `target` và các KHOÁ của 
 quét `note`: `note` là văn xuôi, một câu bàn về mã tưởng tượng sẽ đẩy bộ đếm
 nhảy vọt vô cớ.
 
+## Lưu ngoài repo.js — luu-mot-dong-quan-tri.md
+
 ## Ảnh mồ côi = rác — so cả mã HÔN NHÂN (b122a, chốt 17/09)
 
 `don_thung_rac()` (`27`) xoá bản ghi ảnh có `subject_id` không khớp mã người

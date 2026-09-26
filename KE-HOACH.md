@@ -1,10 +1,10 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 26/09/2026 · b126 XONG — SQL `34`→`38` đã dán lên Supabase thật,
-JS (Hồ sơ cá nhân, tab *Đơn Hồ sơ cá nhân*, `sb.js` chữ ký mới) đã chạy theo.
-Nút Cũ/Mới dưới 🔍 giữ tới khi chủ dự án bảo gỡ. **b111 ĐÓNG 26/09** — đo qua
-REST thật rồi chủ dự án tự bấm khu Kiểm duyệt trên giao diện, ĐẠT. Kế tiếp cho
-AI: **b125c** — sửa tại chỗ bảng người, việc XÂY MÃ chưa viết.*
+*Cập nhật 26/09/2026 · b125c XONG — bảng *Danh sách người* sửa tại chỗ + Lưu
+theo dòng (`luu_cay()` gọi thẳng qua `services/hinh-dang.js`, không qua
+`repo.js`). Tự kiểm 303 đạt + `/kiem-tra` 10 phép; **chưa ai bấm thật trên máy
+chủ thật** — chỉ chạy trên bản giả và ba bộ kiểm tại chỗ. Kế tiếp cho AI:
+**b125d** — chọn nhiều dòng, sửa hàng loạt một trường.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
 **đừng nới trần**. Ba luật giữ nó gọn:
@@ -88,8 +88,7 @@ gắn tài khoản ↔ người là việc của b126 (Hồ sơ cá nhân), **b1
 
 | Bước | Việc | Điểm dừng |
 |---|---|---|
-| **b125c** ← KẾ TIẾP | Sửa tại chỗ các trường, Lưu theo dòng qua `luu_cay()`. Hết lý do hoãn (quyền b126 xong) | Thành viên thường sửa → vào hàng chờ; quản trị → ghi thẳng |
-| **b125d** | Chọn nhiều dòng + sửa hàng loạt một trường | Sửa 10 người một lượt, hoàn tác được |
+| **b125d** ← KẾ TIẾP | Chọn nhiều dòng + sửa hàng loạt một trường | Sửa 10 người một lượt, hoàn tác được |
 | **b125e** | Xuất Excel; nối vào đường NHẬP đã có | Xuất ra mở được bằng Excel |
 
 ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
