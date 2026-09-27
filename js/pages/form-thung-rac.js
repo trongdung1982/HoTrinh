@@ -4,8 +4,8 @@
 //            vào thùng rác CẢ LOẠT, và XOÁ THẬT (gom rác)
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: pages/person-edit.js (nền dùng chung), state,
-//            domains/{person,union,purge}, services/{repo,gas}, utils/date
-// Phiên bản: 1.0.0 · Cập nhật: 27/08/2026 19:10
+//            domains/{person,union,purge}, services/{repo,sb}, utils/date
+// Phiên bản: 1.0.1 · Cập nhật: 28/09/2026 (b138) — `xoaAnhThat` gọi thẳng sb.js
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 2 của
@@ -29,7 +29,7 @@ import { restorePerson, softDeletePerson } from '../domains/person.js';
 import { restoreUnion, softDeleteUnion } from '../domains/union.js';
 import { planPurge, applyPurge, moTaKePurge } from '../domains/purge.js';
 import { luuCay } from '../services/repo.js';
-import { xoaAnhThat } from '../services/tuong-thich.js';
+import { xoaAnhThat } from '../services/sb.js';
 import { stampNow } from '../utils/date.js';
 
 // ============================================================

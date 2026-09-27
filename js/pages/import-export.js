@@ -2,11 +2,10 @@
 // giapha · js/pages/import-export.js
 // Vai trò  : Hai màn hình — XUẤT GEDCOM, và NHẬP GEDCOM/Excel (đọc + ghi thật)
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: state, pages/form-ghep-doi, domains/{gedcom,excel}, services/{gas,repo},
+// Phụ thuộc: state, pages/form-ghep-doi, domains/{gedcom,excel}, services/{sb,repo},
 //            utils/{date,text}, config
-// Phiên bản: 1.7.1 · Cập nhật: 08/09/2026 15:01
-//            1.7.1 (b104) sửa hai câu nói SAI NƠI dữ liệu tới — đường dựng cây
-//            mới nay ghi xuống Postgres, không xuống Drive.
+// Phiên bản: 1.7.2 · Cập nhật: 28/09/2026 (b138) — `chonGiaPha` gọi thẳng
+//            `sb.js`, thôi qua giàn giáo `tuong-thich`.
 // ============================================================
 //
 // File này giữ HAI màn hình, và chúng là hai chiều của cùng một cửa:
@@ -63,7 +62,7 @@ import { exportGedcom, tenFileGedcom, tomTatXuat, parseGedcom, mergeImported }
   from '../domains/gedcom.js';
 import { parseExcel } from '../domains/excel.js';
 import { openGhepDoi, closeGhepDoi } from './form-ghep-doi.js';
-import { chonGiaPha } from '../services/tuong-thich.js';
+import { chonGiaPha } from '../services/sb.js';
 import { taoGiaPhaMoi, khoiTao, luuCay } from '../services/repo.js';
 import { formatDate, stampNow } from '../utils/date.js';
 import { fullName } from '../utils/text.js';

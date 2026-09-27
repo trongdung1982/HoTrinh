@@ -3,9 +3,9 @@
 // Vai trò  : Màn hình Cài đặt — người trung tâm mặc định, tuỳ chọn hiển thị,
 //            đường sang Chọn gia phả · Sao lưu & khôi phục · Xuất/Nhập GEDCOM
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: state, services/tuong-thich, services/sb, utils/text, pages/export-image
-// Phiên bản: 1.34.0 · Cập nhật: 27/09/2026 (b130) — dòng tiêu đề thêm
-//            "Cây đang hiển thị: tên (mã)" bên phải chữ 'Cài đặt'.
+// Phụ thuộc: state, services/sb, utils/text, pages/export-image
+// Phiên bản: 1.35.0 · Cập nhật: 28/09/2026 (b138) — thôi dùng giàn giáo
+//            `tuong-thich`, gọi thẳng `sb.js`.
 // ============================================================
 //
 // Màn hình này tồn tại vì MỘT việc: đặt và bỏ người trung tâm mặc định của
@@ -55,8 +55,9 @@
 // không xảy ra gì là thứ làm người dùng nghĩ app hỏng.
 
 import { state, notify } from '../state.js';
-import { coMayChu, datNguoiTrungTamMacDinh, xoaNguoiTrungTamMacDinh } from '../services/tuong-thich.js';
-import { dangXuat, datHienNgayGio } from '../services/sb.js';
+import {
+  dangXuat, datHienNgayGio, coKetNoi, datNguoiTrungTamMacDinh,
+} from '../services/sb.js';
 import { fullName, coGiaTri, doiSongNguoi } from '../utils/text.js';
 import { veLinkTai, inAnhRaster, dpiConDungDuoc, laManHinhMayTinh, DAI_DPI,
          KHO_GIAY, CHU_CAO_KHUYEN_NGHI_MM }
@@ -257,7 +258,12 @@ function veLaiKhoiMacDinh(loi) {
   // --- Hai nút ghi -------------------------------------------------------
   const dangXem = state.index && state.focusPersonId
     ? state.index.personById.get(state.focusPersonId) : null;
-  const coNoi = coMayChu();
+  const coNoi = coKetNoi();
+  // Người trung tâm mặc định là của TỪNG CÂY — chưa mở cây thì nói ra, đừng
+  // gửi `tree_id` trống xuống máy chủ (b138, bỏ giàn giáo `tuong-thich`).
+  const datMacDinh = (ma) => (state.treeId
+    ? datNguoiTrungTamMacDinh(state.treeId, ma)
+    : Promise.resolve({ ok: false, loi: 'Chưa mở gia phả nào nên chưa làm được việc này.' }));
 
   const hangNut = document.createElement('div');
   hangNut.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-top:12px';
@@ -265,11 +271,11 @@ function veLaiKhoiMacDinh(loi) {
   if (dangXem && state.focusPersonId !== macDinh) {
     hangNut.append(nut(
       'Đặt ' + fullName(dangXem) + ' làm mặc định', true, coNoi,
-      () => chay(() => datNguoiTrungTamMacDinh(state.focusPersonId), state.focusPersonId)));
+      () => chay(() => datMacDinh(state.focusPersonId), state.focusPersonId)));
   }
   if (coGiaTri(macDinh)) {
     hangNut.append(nut('Bỏ mặc định', false, coNoi,
-      () => chay(() => xoaNguoiTrungTamMacDinh(), '')));
+      () => chay(() => datMacDinh(null), '')));
   }
   khoi.append(hangNut);
 

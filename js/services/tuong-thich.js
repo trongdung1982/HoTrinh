@@ -5,7 +5,7 @@
 //            mà chưa phải sửa.
 // Lớp      : services — được gọi bởi: pages · gọi: services/sb, state
 // Phụ thuộc: services/sb.js, state.js, utils/image.js
-// Phiên bản: 0.1.0 · Cập nhật: 02/09/2026 22:45
+// Phiên bản: 0.2.0 · Cập nhật: 28/09/2026 (b138) — còn 4 màn hình dùng
 // ============================================================
 //
 // ═══ FILE NÀY LÀ GIÀN GIÁO, KHÔNG PHẢI KIẾN TRÚC ═══
@@ -53,16 +53,6 @@ function chuaLam(ten, vaSao) {
 
 /** Có nối được xuống máy chủ không. */
 export const coMayChu = sb.coKetNoi;
-
-/** Ghi người trung tâm mặc định của riêng người đang đăng nhập. */
-export function datNguoiTrungTamMacDinh(personId) {
-  return sb.datNguoiTrungTamMacDinh(maCay(), personId);
-}
-
-/** Xoá giá trị đã đặt, quay về gốc cây. */
-export function xoaNguoiTrungTamMacDinh() {
-  return sb.xoaNguoiTrungTamMacDinh(maCay());
-}
 
 /** Danh sách gia phả người đang đăng nhập mở được. */
 export const layDanhSachGiaPha = sb.layDanhSachGiaPha;
