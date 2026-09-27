@@ -4,7 +4,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, domains/{person,union,render}, services/{repo,sb},
 //            utils/{text,date,image,avatar,glyph,id}, config
-// Phiên bản: 1.36.0 · Cập nhật: 27/09/2026 (b125g-2) — Đời thêm ở đầu thẻ
+// Phiên bản: 1.37.0 · Cập nhật: 27/09/2026 — nhóm quan hệ bỏ hộp nền trắng,
+//            đổi thành hàng nền đồng nhất như bảng thông tin (`veNhom`)
 // Sổ tay   : so-tay/the-thong-tin.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -1175,8 +1176,14 @@ function veNhom(tieuDe, danhSach, xuLy, ...cacNutPhu) {
     'margin-top:14px;margin-bottom:6px;font-size:12px;font-weight:600;' +
     'letter-spacing:.04em;color:#8a8078';
 
+  // ⚠ Nền ĐỒNG NHẤT với các hàng nhãn–giá trị phía trên (`veHang`), KHÔNG
+  // phải hộp nền trắng có viền — chủ dự án 27/09/2026: hộp trắng đọc giống ô
+  // nhập của trang Sửa, mà thẻ này CHỈ ĐỌC (mục *Ba nhóm quan hệ* trên đầu
+  // hàm `veQuanHe`). Mỗi người một hàng, ngăn bằng đường kẻ trên, cùng kiểu
+  // `border-top:#f0ebe4` với bảng thông tin — chỉ khác `cursor:pointer` để
+  // còn biết hàng nào bấm được.
   const hop = document.createElement('div');
-  hop.style.cssText = 'display:flex;flex-direction:column;gap:6px';
+  hop.style.cssText = 'display:flex;flex-direction:column';
 
   for (const muc of danhSach) {
     const p = timNguoiThe(state.index, muc.id);
@@ -1185,10 +1192,11 @@ function veNhom(tieuDe, danhSach, xuLy, ...cacNutPhu) {
     const nut = document.createElement(muc.bien ? 'div' : 'button');
     if (!muc.bien) nut.type = 'button';
     nut.style.cssText =
-      'display:block;width:100%;box-sizing:border-box;text-align:left;padding:9px 11px;font-family:inherit;' +
-      'font-size:14px;color:#2a2622;border:1px solid #e6e0d8;border-radius:8px;' +
-      (muc.bien ? 'background:#faf8f5;cursor:default'
-                : 'background:#fff;cursor:pointer;touch-action:manipulation');
+      'display:block;width:100%;box-sizing:border-box;text-align:left;padding:7px 0;' +
+      'font-family:inherit;font-size:14px;line-height:1.4;background:none;' +
+      'border:none;border-top:1px solid #f0ebe4;' +
+      (muc.bien ? 'color:#8a8078;cursor:default'
+                : 'color:#2a2622;cursor:pointer;touch-action:manipulation');
 
     const ten = document.createElement('div');
     ten.textContent = fullName(p);
