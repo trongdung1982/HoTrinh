@@ -104,8 +104,11 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
    `#quan-tri-he-thong/tai-khoan/<mã>` đã có — xem nó thiếu gì trước khi dựng mới.
 3. Trong cả hai, **bấm tên cây → trang cây có sẵn** (`#gia-pha/cay/<mã cây>`).
 
-Chưa chốt: hai bảng là hộp nổi (popup) hay trang riêng; "vai trò trong cây"
-ở mục 1 là vai của tài khoản gắn với người ấy, hay vị trí của người trong sơ đồ.
+✓ **Chốt 27/09: TRANG CON, không hộp nổi** — trang con có địa chỉ riêng
+(`#…/nguoi/<mã>`, `#quan-tri-he-thong/tai-khoan/<mã>`) nối được sang các
+trang con đã có (trang cây…). Chưa chốt: "vai trò trong cây" ở mục 1 là
+quyền của tài khoản gắn với người ấy, hay vị trí của người trong sơ đồ —
+chưa có trả lời thì hiện quyền.
 
 ### Trang Quản trị — đọc `so-tay/trang-quan-tri.md` trước khi đụng
 
