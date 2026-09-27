@@ -1,14 +1,15 @@
 // ============================================================
 // giapha-supabase · js/pages/quan-tri/trang-ho-so-nguoi.js
-// Vai trò  : Trang con *Hồ sơ người* `#thanh-vien/nguoi/<mã>` và
-//            `#quan-tri-he-thong/nguoi/<mã>` — thông tin cá nhân · gia đình
+// Vai trò  : Trang con *Hồ sơ người* `#<khu>/nguoi/<mã>` (khu `gia-pha` ·
+//            `thanh-vien` · `quan-tri-he-thong`) — thông tin cá nhân · gia đình
 //            (cha mẹ · vợ/chồng · con) · các gia phả có mặt người ấy, kèm
 //            Đời và vai trò của tài khoản gắn với họ ở từng cây (b133).
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · services/hinh-dang · utils/{graph,text,date} ·
 //            domains/{union,person} · config · quan-tri/{trang-chi-tiet,
 //            trang-cay,khu-quan-tri-he-thong,o-bang}
-// Phiên bản: 0.1.0 · Cập nhật: 27/09/2026 (b133)
+// Phiên bản: 0.2.0 · Cập nhật: 27/09/2026 (b133b) — lối vào thứ ba từ bảng
+//            Danh sách người (`#gia-pha/nguoi/<mã>`)
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -20,7 +21,7 @@
 //   / Thành viên / Khách…), KHÔNG phải vị trí trong sơ đồ — chốt 27/09/2026.
 //   Chỉ biết được ở hai ca: người này là chính mình, hoặc mình là Quản trị
 //   hệ thống. Ca khác để trống cột và nói lý do — không đoán.
-// ⚠ Một trang, hai lối vào: `data-back` của nút "← …" đặt theo khu đang mở.
+// ⚠ Một trang, ba lối vào: `data-back` của nút "← …" đặt theo khu đang mở.
 
 import {
   docGiaDinhNguoi, layDanhSachGiaPha, dsTaiKhoanHeThong, dsCayCuaTaiKhoan,
@@ -41,6 +42,15 @@ const GIOI = { M: 'Nam', F: 'Nữ' };   // 'U' cố ý vắng — trống thì k
 const SO_COT = 5;
 
 /**
+ * Lối về bảng *Danh sách người* của một cây — `#gia-pha/nguoi/<mã>` không
+ * mang mã cây, nên bảng ấy đặt trước khi mở. Chỉ dùng ở khu `gia-pha`; tải
+ * lại trang thì mất, nút về khu Gia phả — đúng luật "gán, không `history.
+ * back()`" của `khung.js`.
+ */
+let loiVeGiaPha = null;
+export function datLoiVeGiaPha(hash, chu) { loiVeGiaPha = { hash, chu }; }
+
+/**
  * @param {HTMLElement} sec  `section#person-profile`
  * @param {object} ctx       do `khung.js` dựng — `thamSo` là mã người
  */
@@ -51,8 +61,9 @@ export async function mountHoSoNguoi(sec, ctx) {
   const tuQTHT = ctx.hashQuayVe === 'quan-tri-he-thong';
 
   const back = $('hsn-back');
-  back.dataset.back = ctx.hashQuayVe;
-  back.textContent = '← ' + (tuQTHT ? 'Sổ tài khoản' : ctx.chuQuayVe);
+  const veBang = ctx.hashQuayVe === 'gia-pha' && loiVeGiaPha;
+  back.dataset.back = veBang ? loiVeGiaPha.hash : ctx.hashQuayVe;
+  back.textContent = '← ' + (veBang ? loiVeGiaPha.chu : tuQTHT ? 'Sổ tài khoản' : ctx.chuQuayVe);
   if (tuQTHT) datTabQuanTriHeThong('so-tai-khoan');
 
   $('hsn-ten').textContent = 'Đang mở hồ sơ…';

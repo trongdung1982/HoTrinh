@@ -44,7 +44,7 @@ Quản trị hệ thống**.
 | **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
 | **b129c** — cột Tài khoản (`39` đã dán) | Danh sách người → Chỉnh sửa → gắn một người chưa có tài khoản; chọn một tài khoản đã liên kết (phải bị chặn, nói rõ gia phả); Đề xuất gỡ → người ấy vào Hồ sơ cá nhân bấm Đồng ý gỡ |
 | **b132** — cột *gắn với ai trong sơ đồ?* | `#thanh-vien` → bảng *Các gia phả tôi đang tham gia*: dòng NTB hiện P0012, dòng T388/TH957/LVT433/NPGQ8C9 hiện *"Không có trong sơ đồ này"* (trừ cây nào P0012 thật có mặt) |
-| **b133** — hai trang chi tiết | `#thanh-vien` → bấm tên ở cột *gắn với ai* → trang Hồ sơ người (cá nhân · gia đình · các cây + Đời + vai), bấm người thân, bấm tên cây. QTHT: Sổ tài khoản → bấm tên → trang tài khoản (gắn với ai · dòng họ · làm chủ N cây), bấm tên cây / tên người. *(Chốt 27/09: "vai trò" = vai của tài khoản gắn trong cây — đúng như đang hiện.)* |
+| **b133** — hai trang chi tiết | Chủ dự án đã thấy `#thanh-vien/nguoi/P0012` đúng ý. Còn: b133b — *Danh sách người* của một cây → bấm tên → Hồ sơ người, nút "← Danh sách người" về đúng bảng. `#thanh-vien` → bấm tên ở cột *gắn với ai* → trang Hồ sơ người (cá nhân · gia đình · các cây + Đời + vai), bấm người thân, bấm tên cây. QTHT: Sổ tài khoản → bấm tên → trang tài khoản (gắn với ai · dòng họ · làm chủ N cây), bấm tên cây / tên người. *(Chốt 27/09: "vai trò" = vai của tài khoản gắn trong cây — đúng như đang hiện.)* |
 | **b127d** — đề nghị sửa quan hệ (`33`, xong d-1→d-3) | Form người có quan hệ ngoài cây: bấm ✉ gửi đề nghị → Quản trị hệ thống → tab *Đề nghị sửa quan hệ* → Duyệt (gỡ) hoặc Từ chối |
 ---
 

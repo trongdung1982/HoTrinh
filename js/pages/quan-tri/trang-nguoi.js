@@ -8,8 +8,10 @@
 //            đã lưu ở Supabase (b125g).
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · services/hinh-dang · domains/person ·
-//            utils/{text,date} · quan-tri/{trang-cay,o-goi-y,o-bang,xuat-excel}
-// Phiên bản: 0.8.0 · Cập nhật: 27/09/2026 (b125g) — Đời đọc từ `tree_persons.doi`
+//            utils/{text,date} · quan-tri/{trang-cay,o-goi-y,o-bang,xuat-excel,
+//            trang-ho-so-nguoi,trang-chi-tiet}
+// Phiên bản: 0.9.0 · Cập nhật: 27/09/2026 (b133b) — tên người (lúc xem) mở
+//            trang Hồ sơ người
 // Sổ tay   : so-tay/trang-quan-tri.md · so-tay/luu-mot-dong-quan-tri.md
 // ============================================================
 //
@@ -38,6 +40,8 @@ import { ganGoiY } from './o-goi-y.js';
 import { hoi } from './hop-thoai.js';
 import { TEN_VAI, td, span, nutLink, nutNho, dongTrong, datHuyHieu } from './o-bang.js';
 import { xuatExcelNguoi } from './xuat-excel.js';
+import { datLoiVeGiaPha } from './trang-ho-so-nguoi.js';
+import { duongDan } from './trang-chi-tiet.js';
 
 /** Bao nhiêu dòng một trang. 50 vừa một màn cuộn, và 681 người ra 14 trang. */
 const MOI_TRANG = 50;
@@ -354,6 +358,14 @@ function veDau(sec, ve, capSua) {
   }
 }
 
+/** Tên bấm được → trang Hồ sơ người (b133b), nút "←" ở đó quay về đúng bảng này. */
+function lienKetHoSo(p, chu) {
+  return nutLink(chu, () => {
+    datLoiVeGiaPha(window.location.hash.slice(1), 'Danh sách người');
+    window.location.hash = duongDan('gia-pha', 'nguoi', p.id);
+  });
+}
+
 /** Một dòng — CHỈ XEM (chữ thường) hoặc SỬA TẠI CHỖ (ô nhập + nút Lưu). */
 function dongNguoi(p, capSua, quyenTk, cay, ctx) {
   const tr = document.createElement('tr');
@@ -363,9 +375,9 @@ function dongNguoi(p, capSua, quyenTk, cay, ctx) {
     if (c.ma === 'tk' && quyenTk) { tr.append(oTaiKhoan(p, cay, ctx, quyenTk)); continue; }
     if (!capSua || !c.sua) {
       const chu = c.lay(p);
-      const o = (c.ma === 'ten' && p.deleted)
-        ? td(span('name', chu), span('sub', 'đã xoá'))
-        : td(c.ma === 'ten' ? span('name', chu) : chu);
+      const o = c.ma === 'ten'
+        ? td(lienKetHoSo(p, chu), p.deleted ? span('sub', 'đã xoá') : '')
+        : td(chu);
       if (c.ma === 'ghi') o.className = 'col-ghi';
       tr.append(o);
       continue;

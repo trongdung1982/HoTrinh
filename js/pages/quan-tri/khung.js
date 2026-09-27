@@ -76,8 +76,9 @@ const TRANG = [
   // quantri3 `#sys-default-tree-selector`. Đoạn mã luôn là `chon`.
   { khu: 'quan-tri-he-thong', ma: 'cay-mac-dinh', view: 'sys-default-tree-selector',
     mount: mountChonCayMacDinh, muc: [] },
-  // KHÔNG có trong quantri3 — hồ sơ một người (b133). Cùng một trang ở hai
-  // khu: bấm từ *Tài khoản* thì quay về Tài khoản, từ Sổ tài khoản thì về đó.
+  // KHÔNG có trong quantri3 — hồ sơ một người (b133). Cùng một trang ở ba
+  // khu: quay về đúng khu (hoặc bảng Danh sách người) đã bấm vào.
+  { khu: 'gia-pha', ma: 'nguoi', view: 'person-profile', mount: mountHoSoNguoi, muc: [] },
   { khu: 'thanh-vien', ma: 'nguoi', view: 'person-profile', mount: mountHoSoNguoi, muc: [] },
   { khu: 'quan-tri-he-thong', ma: 'nguoi', view: 'person-profile', mount: mountHoSoNguoi, muc: [] },
 ];
