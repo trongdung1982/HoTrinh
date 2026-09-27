@@ -5,9 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.34.0 · Cập nhật: 27/09/2026 (b129c) — thêm `deXuatGanHo()`,
-//            quản trị nộp hộ đề xuất gắn mã từ bảng Danh sách người.
-//            Lịch sử: `git log -p`.
+// Phiên bản: 0.35.0 · Cập nhật: 27/09/2026 (b129c) — gắn/gỡ liên kết tài
+//            khoản từ bảng Danh sách người (`luoc-do/39`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -2047,6 +2046,77 @@ export async function deXuatGanHo(userId, maNguoi, lyDo = '') {
   return data || { ok: false, loi: 'Máy chủ không trả lời.' };
 }
 
+/** Đề xuất GỠ liên kết đang có của một tài khoản khác (b129c). Duyệt: QTHT hoặc chính người ấy. */
+export async function deXuatGoHo(userId, lyDo = '') {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('de_xuat_go_ho', { p_user: userId, p_ly_do: String(lyDo || '') });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/**
+ * Quản trị hệ thống gắn/gỡ THẲNG, có hiệu lực ngay (b129c). `maNguoi` trống =
+ * gỡ. Máy chủ chặn chuyển một liên kết đang có — phải gỡ trước rồi mới gắn.
+ */
+export async function ganThangTaiKhoan(userId, maNguoi) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('gan_thang_tai_khoan', {
+    p_user: userId, p_person: maNguoi ? String(maNguoi) : null,
+  });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/** Chính chủ tự gỡ liên kết của mình — ngay, không cần ai duyệt (b129c). */
+export async function goGanTaiKhoanCuaToi() {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('go_gan_tai_khoan');
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/**
+ * Tài khoản nào đang gắn với người nào của MỘT cây — đọc `tai_khoan.person_id`
+ * (b129c). ⚠ Thay cho `dsThanhVien().maNguoi`: cột ấy đọc `tree_members.
+ * person_id`, đã chết từ b126, và chỉ trả cho người kiểm duyệt được.
+ *
+ * @returns {Promise<{ok:boolean, loi:string|null, ds:Array<{maNguoi:string,
+ *   userId:string, email:string, hoTen:string, maNgan:string}>}>}
+ */
+export async function dsLienKetCay(treeId) {
+  const k = layKhach();
+  if (!k || !treeId) return { ok: false, loi: 'Chưa nối được máy chủ.', ds: [] };
+  const { data, error } = await k.rpc('ds_lien_ket_cay', { p_tree: treeId });
+  if (error) return { ok: false, loi: cauLoi(error), ds: [] };
+  const ds = (data || []).map((r) => ({
+    maNguoi: r.person_id, userId: r.user_id, email: r.email || '',
+    hoTen: r.ho_ten || '', maNgan: r.ma_ngan || '',
+  }));
+  return { ok: true, loi: null, ds };
+}
+
+/**
+ * Gợi ý tài khoản ĐÃ VÀO cây này (khách trở lên) để gắn với một người
+ * (b129c). `lienKet` = mô tả liên kết đang có, trống nếu chưa gắn ai.
+ */
+export async function timTaiKhoanTrongCay(treeId, chuoi) {
+  const k = layKhach();
+  if (!k || !treeId) return { ok: false, loi: 'Chưa nối được máy chủ.', ds: [] };
+  const { data, error } = await k.rpc('tim_tai_khoan_trong_cay', {
+    p_tree: treeId, p_chuoi: String(chuoi || ''),
+  });
+  if (error) return { ok: false, loi: cauLoi(error), ds: [] };
+  const ds = (data || []).map((r) => ({
+    userId: r.user_id, email: r.email || '', hoTen: r.ho_ten || '',
+    maNgan: r.ma_ngan || '', vai: r.vai || '', maNguoi: r.person_id || '',
+    lienKet: r.lien_ket || '',
+  }));
+  return { ok: true, loi: null, ds };
+}
+
 /** Người nộp tự rút đơn của mình. Người khác KHÔNG rút hộ được, kể cả chủ cây. */
 export async function rutDeXuatGan(id) {
   const k = layKhach();
@@ -2104,6 +2174,8 @@ export async function dsDeXuatGan() {
     taoLuc: d.tao_luc || '',
     laCuaToi: d.la_cua_toi === true,
     maDangCo: d.ma_dang_co || '',
+    loai: d.loai || 'gan',               // b129c — 'go' = đề xuất GỠ liên kết
+    emailNopBoi: d.email_nop_boi || '',  // b129c — trống = chính chủ tự nộp
   }));
 }
 

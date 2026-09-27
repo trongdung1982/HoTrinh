@@ -7,7 +7,7 @@
 // Phụ thuộc: services/sb (dsDeXuatGan · duyetDeXuatGan · tuChoiDeXuatGan ·
 //            dsDeXuatDongHo · duyetDeXuatDongHo · tuChoiDeXuatDongHo) ·
 //            hop-thoai · o-bang
-// Phiên bản: 0.1.0 · Cập nhật: 26/09/2026 (b126d)
+// Phiên bản: 0.2.0 · Cập nhật: 27/09/2026 (b129c) — đơn GỠ + người nộp hộ
 // Sổ tay   : so-tay/trang-quan-tri.md · so-tay/phan-quyen.md
 // ============================================================
 //
@@ -53,12 +53,16 @@ function veBangGan(sec, ds, napLai) {
   const LY_TU = 'Đơn của chính bạn — xét ở Hồ sơ cá nhân (khu Tài khoản), có thể có khe tự duyệt.';
   tb.innerHTML = '';
   for (const d of ds) {
+    const laGo = d.loai === 'go';   // b129c — đề xuất GỠ liên kết đang có
     const bDuyet = d.laCuaToi ? nutMo('Duyệt', LY_TU, 'warm') : nut('Duyệt', 'warm');
     bDuyet.addEventListener('click', async () => {
       const kq = await hoi({
-        tua: 'Duyệt đề xuất gắn mã',
-        chu: 'Gắn ' + d.maNguoi + ' cho ' + d.email + ' — mở quyền sửa bản thân, tổ tiên đường ' +
-          'thẳng và toàn bộ con cháu của người ấy, ở MỌI gia phả tài khoản này tham gia.',
+        tua: laGo ? 'Duyệt đề xuất GỠ liên kết' : 'Duyệt đề xuất gắn mã',
+        chu: laGo
+          ? 'Gỡ ' + d.email + ' khỏi ' + d.maNguoi + ' — tài khoản này mất quyền sửa theo trực hệ ' +
+            'của người ấy ở MỌI gia phả, có hiệu lực ngay.'
+          : 'Gắn ' + d.maNguoi + ' cho ' + d.email + ' — mở quyền sửa bản thân, tổ tiên đường ' +
+            'thẳng và toàn bộ con cháu của người ấy, ở MỌI gia phả tài khoản này tham gia.',
         nutOk: 'Duyệt', kieuOk: 'warm', lam: () => duyetDeXuatGan(d.id),
       });
       if (kq) napLai();
@@ -66,7 +70,7 @@ function veBangGan(sec, ds, napLai) {
     const bTuChoi = d.laCuaToi ? nutMo('Từ chối', LY_TU, 'danger') : nut('Từ chối', 'danger');
     bTuChoi.addEventListener('click', async () => {
       const kq = await hoi({
-        tua: 'Từ chối đề xuất gắn mã',
+        tua: laGo ? 'Từ chối đề xuất gỡ' : 'Từ chối đề xuất gắn mã',
         chu: 'Người nộp đọc lại được câu lý do này — bắt buộc ghi.',
         oNhap: { nhieuDong: true, goiY: 'Lý do từ chối' },
         nutOk: 'Từ chối', kieuOk: 'danger', lam: (lyDo) => tuChoiDeXuatGan(d.id, lyDo),
@@ -76,13 +80,19 @@ function veBangGan(sec, ds, napLai) {
 
     const oTk = td(tenVaPhu(d.email, d.maNgan ? 'Mã tài khoản: ' + d.maNgan : ''));
     if (d.laCuaToi) oTk.append(huyHieu('Đơn của bạn', 'wait'));
+    if (d.emailNopBoi) oTk.append(span('sub', 'Người đề xuất: ' + d.emailNopBoi));
     const oLyDo = td(d.lyDo ? '“' + d.lyDo + '”' : '');
-    if (d.maDangCo) oLyDo.append(span('sub', 'Mã này đang gắn cho ' + d.maDangCo + ' — duyệt sẽ bị từ chối.'));
+    // ⚠ `maDangCo` = mã ĐANG gắn của tài khoản. Với đơn gỡ thì đó chính là
+    //   mã sắp gỡ — không phải cảnh báo; chỉ đơn gắn mới cần nói trước.
+    if (d.maDangCo && !laGo) oLyDo.append(span('sub', 'Tài khoản này đang gắn ' + d.maDangCo + '.'));
+
+    const oNguoi = td(tenVaPhu(d.tenNguoi || d.maNguoi, 'ID: ' + d.maNguoi));
+    if (laGo) oNguoi.append(huyHieu('Đề xuất GỠ', 'red'));
 
     const tr = document.createElement('tr');
     tr.append(
       oTk,
-      td(tenVaPhu(d.tenNguoi || d.maNguoi, 'ID: ' + d.maNguoi)),
+      oNguoi,
       oLyDo,
       td(ngayGio(d.taoLuc)),
       td(hangNut(bDuyet, bTuChoi)),

@@ -2,12 +2,12 @@
 // giapha-supabase · js/pages/quan-tri/trang-nguoi.js
 // Vai trò  : Trang con `#gia-pha/cay/<mã>/nguoi` — BẢNG PHẲNG mọi người của
 //            một cây, như một trang tính: tìm, sắp xếp, phân trang, sửa tại
-//            chỗ từng ô rồi Lưu theo DÒNG qua `luu_cay()`. Cột *Gắn tài
-//            khoản* nộp HỘ đề xuất (b129c) — cột *Tài khoản* vẫn chỉ XEM.
+//            chỗ từng ô rồi Lưu theo DÒNG qua `luu_cay()`. Cột *Tài khoản*
+//            (đang Chỉnh sửa) gắn/gỡ liên kết tài khoản ↔ người (b129c).
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · services/hinh-dang · domains/person ·
 //            utils/{text,date} · quan-tri/{trang-cay,o-goi-y,o-bang}
-// Phiên bản: 0.4.0 · Cập nhật: 27/09/2026 (b129c) — cột *Gắn tài khoản*
+// Phiên bản: 0.5.0 · Cập nhật: 27/09/2026 (b129c) — gộp cột Tài khoản, bốn hạng
 // Sổ tay   : so-tay/trang-quan-tri.md · so-tay/luu-mot-dong-quan-tri.md
 // ============================================================
 //
@@ -23,14 +23,18 @@
 //   `capSua` còn nhân thêm `cheDoSua` (b129): cây cho sửa KHÔNG có nghĩa là
 //   bảng đang sửa — phải bấm "Chỉnh sửa" trước, mặc định luôn TẮT.
 
-import { layDong, dsThanhVien, luuCay, timTaiKhoan, deXuatGanHo } from '../../services/sb.js';
+import {
+  layDong, dsThanhVien, luuCay, dsLienKetCay, timTaiKhoanTrongCay,
+  deXuatGanHo, deXuatGoHo, ganThangTaiKhoan, goGanTaiKhoanCuaToi,
+} from '../../services/sb.js';
 import { rapCay, soSanh, coGiDeGhi, tangSoSauKhiLuu } from '../../services/hinh-dang.js';
 import { updatePerson } from '../../domains/person.js';
 import { fullName, removeDiacritics } from '../../utils/text.js';
 import { stampNow } from '../../utils/date.js';
 import { timCay, cumCay, cayNho, wireTabsTrangCay, datSoDon } from './trang-cay.js';
-import { ganGoiY, dongTaiKhoan } from './o-goi-y.js';
-import { td, span, nutLink, nutNho, dongTrong, datHuyHieu } from './o-bang.js';
+import { ganGoiY } from './o-goi-y.js';
+import { hoi } from './hop-thoai.js';
+import { TEN_VAI, td, span, nutLink, nutNho, dongTrong, datHuyHieu } from './o-bang.js';
 
 /** Bao nhiêu dòng một trang. 50 vừa một màn cuộn, và 681 người ra 14 trang. */
 const MOI_TRANG = 50;
@@ -71,8 +75,8 @@ const TRUONG_DOI = {
  * Cột của bảng. `lay` trả CHUỖI để hiện và để tìm; `so` (nếu có) trả số dùng
  * khi sắp xếp, nhờ đó "1890" không đứng sau "195" theo thứ tự chữ. `sua`
  * đánh dấu cột sửa được tại chỗ: `'ten'` · `'sex'` · `'bool'` · `'text'`.
- * Cột `id` (mã, khoá) và `tk` (tài khoản, chuyện của Hồ sơ cá nhân — b126d)
- * không có `sua`: mãi mãi chỉ xem ở bảng này.
+ * Cột `id` (mã, khoá) không bao giờ sửa. Cột `tk` không có `sua` vì nó KHÔNG
+ * đi qua Lưu dòng — đang Chỉnh sửa thì `oTaiKhoan()` vẽ riêng (b129c).
  */
 const COT = [
   { ma: 'id',    chu: 'Mã',        lay: (p) => p.id || '' },
@@ -141,10 +145,12 @@ export async function mountTrangNguoi(sec, ctx, hashLuc) {
 
   for (const x of sec.querySelectorAll('[data-tree-context]')) x.textContent = cumCay(cayNho(cay));
 
-  // Hai lời gọi song song: cây (người) và danh sách tài khoản (cột *Tài
-  // khoản*). Danh sách tài khoản hỏng thì bảng người VẪN hiện — nói ra ở ô
-  // đếm, đừng bỏ trắng cả bảng vì một cột.
-  const [kq, kqTV] = await Promise.all([layDong(cay.fileId), dsThanhVien(cay.fileId)]);
+  // Ba lời gọi song song: cây (người) · liên kết tài khoản ↔ người (cột *Tài
+  // khoản*, `luoc-do/39`) · danh sách thành viên (chỉ để đếm đơn xin vào ở
+  // tab). Hai cái sau hỏng thì bảng người VẪN hiện — nói ra ở ô đếm.
+  const [kq, kqLK, kqTV] = await Promise.all([
+    layDong(cay.fileId), dsLienKetCay(cay.fileId), dsThanhVien(cay.fileId),
+  ]);
   if (window.location.hash !== hashLuc) return;
 
   if (!kq.ok) {
@@ -156,27 +162,30 @@ export async function mountTrangNguoi(sec, ctx, hashLuc) {
   treeId = cay.fileId;
   treeRevision = (kq.dong.tree && Number(kq.dong.tree.revision)) || 0;
 
-  const emailTheoMa = new Map();
-  let duocGanHo = false;
-  if (kqTV.ok) {
-    for (const t of kqTV.ds) if (t.maNguoi) emailTheoMa.set(t.maNguoi, t.email);
-    datSoDon(sec, kqTV.ds.filter((t) => !t.daDuyet && !t.moiLuc).length);
-    // b129c — chủ cây hoặc quản trị gia phả CỦA CHÍNH CÂY ĐANG XEM mới nộp hộ
-    // được đề xuất gắn tài khoản (chốt 27/09/2026). Mọi người trong `ds` chắc
-    // chắn thuộc cây này, nên tính MỘT LẦN cho cả trang là đủ.
-    const chinhToi = kqTV.ds.find((t) => t.laChinhToi);
-    duocGanHo = Boolean(cay.toiLaChu) || Boolean(chinhToi && chinhToi.vai === 'quan_tri');
-  }
+  if (kqTV.ok) datSoDon(sec, kqTV.ds.filter((t) => !t.daDuyet && !t.moiLuc).length);
+  const lkTheoMa = new Map();
+  if (kqLK.ok) for (const l of kqLK.ds) lkTheoMa.set(l.maNguoi, l);
+
+  // b129c — ai làm được gì ở cột *Tài khoản* khi bảng đang Chỉnh sửa. Chỉ
+  // để vẽ đúng nút; hàng rào thật ở `39`. Người trong bảng chắc chắn thuộc
+  // cây đang xem, nên vai của CHÍNH cây này là đủ, tính một lần cho cả trang.
+  const quyenTk = {
+    laQTHT: Boolean(ctx.phien && ctx.phien.laQuanTriHeThong),
+    deXuat: Boolean(cay.toiLaChu) || ['quan_tri', 'sua'].includes(cay.vaiCuaToi),
+  };
 
   // `goc` = bản GỐC từng người, camelCase với `revision` đi tròn — nền so
-  // sánh của mọi lần Lưu. `ds` là bản HIỆN trên bảng, thêm cột `emailGan`;
-  // sửa `p` (phần tử của `ds`) tại chỗ sau khi Lưu xong để khỏi đọc lại mạng.
+  // sánh của mọi lần Lưu. `ds` là bản HIỆN trên bảng, thêm `lk` (liên kết)
+  // và `emailGan`; sửa `p` tại chỗ sau khi Lưu/gắn/gỡ để khỏi đọc lại mạng.
   goc = new Map();
   const dsNguoi = rapCay(kq.dong).persons;
   for (const p of dsNguoi) goc.set(p.id, p);
-  const ds = dsNguoi.map((p) => ({ ...p, emailGan: emailTheoMa.get(p.id) || '' }));
+  const ds = dsNguoi.map((p) => {
+    const lk = lkTheoMa.get(p.id) || null;
+    return { ...p, lk, emailGan: lk ? lk.email : '' };
+  });
 
-  const ve = () => veBang(sec, ds, kqTV.ok, cay, ctx, duocGanHo, () => ve());
+  const ve = () => veBang(sec, ds, kqLK.ok, cay, ctx, quyenTk, () => ve());
   ganThanhCong(sec, ve);
   ve();
 }
@@ -224,12 +233,14 @@ function veNutSua(sec, cay, ve) {
   b.onclick = () => { cheDoSua = !cheDoSua; ve(); };
 }
 
-function veBang(sec, ds, docDuocTK, cay, ctx, duocGanHo, ve) {
+function veBang(sec, ds, docDuocTK, cay, ctx, quyenTk, ve) {
   const $ = (id) => sec.querySelector('#' + id);
   const hop = locVaSap(ds);
   const capSua = Boolean(cay.suaDuoc) && cheDoSua;
-  const capGanTk = capSua && duocGanHo;
-  const soCot = COT.length + (capSua ? 1 : 0) + (capGanTk ? 1 : 0);
+  // Khách không bao giờ tới đây (cây không cho sửa → không có nút Chỉnh sửa),
+  // nhưng vẫn gác: cột Tài khoản chỉ mở cho QTHT hoặc người được đề xuất.
+  const capTk = capSua && (quyenTk.laQTHT || quyenTk.deXuat);
+  const soCot = COT.length + (capSua ? 1 : 0);
 
   const soTrang = Math.max(1, Math.ceil(hop.length / MOI_TRANG));
   if (trang > soTrang - 1) trang = soTrang - 1;
@@ -244,7 +255,7 @@ function veBang(sec, ds, docDuocTK, cay, ctx, duocGanHo, ve) {
   if (!cay.suaDuoc) datHuyHieu($('tp-trang-thai'), 'Chỉ xem', 'wait');
   else datHuyHieu($('tp-trang-thai'), cheDoSua ? 'Đang sửa' : 'Xem');
 
-  veDau(sec, ve, capSua, capGanTk);
+  veDau(sec, ve, capSua);
 
   const tb = $('tp-tbody');
   for (const go of goiYDangMo) go();
@@ -254,7 +265,7 @@ function veBang(sec, ds, docDuocTK, cay, ctx, duocGanHo, ve) {
     dongTrong(tb, soCot, loc ? 'Không ai khớp “' + loc + '”.' : 'Cây này chưa có người nào.');
   } else {
     tb.innerHTML = '';
-    for (const p of phan) tb.append(dongNguoi(p, capSua, capGanTk, cay, ctx));
+    for (const p of phan) tb.append(dongNguoi(p, capSua, capTk ? quyenTk : null, cay, ctx));
   }
 
   $('tp-vi-tri').textContent = hop.length
@@ -266,7 +277,7 @@ function veBang(sec, ds, docDuocTK, cay, ctx, duocGanHo, ve) {
 }
 
 /** Hàng tiêu đề — bấm một cột là sắp theo cột ấy, bấm lại là đảo chiều. */
-function veDau(sec, ve, capSua, capGanTk) {
+function veDau(sec, ve, capSua) {
   const hang = sec.querySelector('#tp-dau');
   hang.innerHTML = '';
   for (const c of COT) {
@@ -277,11 +288,6 @@ function veDau(sec, ve, capSua, capGanTk) {
       ve();
     }));
     hang.append(o);
-    if (c.ma === 'tk' && capGanTk) {
-      const o2 = document.createElement('th');
-      o2.textContent = 'Gắn tài khoản';
-      hang.append(o2);
-    }
   }
   if (capSua) {
     const o = document.createElement('th');
@@ -291,11 +297,12 @@ function veDau(sec, ve, capSua, capGanTk) {
 }
 
 /** Một dòng — CHỈ XEM (chữ thường) hoặc SỬA TẠI CHỖ (ô nhập + nút Lưu). */
-function dongNguoi(p, capSua, capGanTk, cay, ctx) {
+function dongNguoi(p, capSua, quyenTk, cay, ctx) {
   const tr = document.createElement('tr');
   const oControls = {};
 
   for (const c of COT) {
+    if (c.ma === 'tk' && quyenTk) { tr.append(oTaiKhoan(p, cay, ctx, quyenTk)); continue; }
     if (!capSua || !c.sua) {
       const chu = c.lay(p);
       const o = (c.ma === 'ten' && p.deleted)
@@ -303,7 +310,6 @@ function dongNguoi(p, capSua, capGanTk, cay, ctx) {
         : td(c.ma === 'ten' ? span('name', chu) : chu);
       if (c.ma === 'ghi') o.className = 'col-ghi';
       tr.append(o);
-      if (c.ma === 'tk' && capGanTk) tr.append(taoOGanTk(p, cay));
       continue;
     }
     const el = taoOSua(c, p);
@@ -317,44 +323,148 @@ function dongNguoi(p, capSua, capGanTk, cay, ctx) {
   return tr;
 }
 
-/**
- * Ô cuối *Gắn tài khoản* (b129c) — HÀNH ĐỘNG RIÊNG, không đi qua `luuHang()`:
- * gõ tên/email → chọn đúng một dòng gợi ý → Gửi là gọi thẳng
- * `sb.deXuatGanHo()`, một đề xuất CHỜ DUYỆT (chữ ký thứ hai), không ghi thẳng.
- */
-function taoOGanTk(p, cay) {
+// ============================================================
+// Cột *Tài khoản* khi đang Chỉnh sửa (b129c) — HÀNH ĐỘNG RIÊNG, không đi qua
+// `luuHang()`/`luu_cay()`. Bốn hạng (chốt 27/09/2026, `luoc-do/39`):
+//   · QTHT: gắn / gỡ THẲNG            · chủ/quản trị/thành viên: ĐỀ XUẤT
+//   · dòng của chính mình: tự gỡ      · khách: không tới được đây
+// Đã liên kết rồi thì phải GỠ trước mới gắn tài khoản khác — không "đổi".
+// ============================================================
+
+const HASH_HO_SO = '#thanh-vien';   // khu Tài khoản → panel Mã người & Dòng họ
+
+function oTaiKhoan(p, cay, ctx, quyenTk) {
+  const o = document.createElement('td');
+  o.className = 'col-tk';
+  veOTaiKhoan(o, p, cay, ctx, quyenTk, '');
+  return o;
+}
+
+function tenNguoi(p) { return (fullName(p) || '(chưa có tên)') + ' (' + p.id + ')'; }
+
+function veOTaiKhoan(o, p, cay, ctx, quyenTk, thongBao) {
+  if (o.goGoiY) { o.goGoiY(); o.goGoiY = null; }
+  o.innerHTML = '';
+  const oTB = span('sub', thongBao || '');
+  const veLai = (tb) => veOTaiKhoan(o, p, cay, ctx, quyenTk, tb);
+  const phien = ctx.phien || {};
+
+  // ── ĐÃ LIÊN KẾT ─────────────────────────────────────────
+  if (p.lk) {
+    o.append(span('name', p.lk.email));
+    if (p.lk.hoTen) o.append(span('sub', p.lk.hoTen));
+    let b;
+    if (p.lk.userId === phien.userId) {
+      b = nutNho('Gỡ liên kết của tôi', 'danger');
+      b.addEventListener('click', async () => {
+        const kq = await hoi({
+          tua: 'Gỡ liên kết của tôi',
+          chu: 'Tài khoản của bạn thôi gắn với ' + tenNguoi(p) + ' — có hiệu lực ngay. Bạn mất quyền ' +
+            'sửa theo trực hệ của người này ở MỌI gia phả. Muốn gắn lại phải đề xuất ở Hồ sơ cá nhân.',
+          nutOk: 'Gỡ', kieuOk: 'danger', lam: () => goGanTaiKhoanCuaToi(),
+        });
+        if (kq) { p.lk = null; p.emailGan = ''; veLai('Đã gỡ liên kết của bạn.'); }
+      });
+    } else if (quyenTk.laQTHT) {
+      b = nutNho('Gỡ', 'danger');
+      b.addEventListener('click', async () => {
+        const kq = await hoi({
+          tua: 'Gỡ liên kết',
+          chu: p.lk.email + ' thôi gắn với ' + tenNguoi(p) + ' — có hiệu lực NGAY, không qua duyệt. ' +
+            'Gỡ xong có thể gắn tài khoản khác cho người này.',
+          nutOk: 'Gỡ', kieuOk: 'danger', lam: () => ganThangTaiKhoan(p.lk.userId, null),
+        });
+        if (kq) { p.lk = null; p.emailGan = ''; veLai('Đã gỡ — có thể gắn tài khoản khác.'); }
+      });
+    } else {
+      b = nutNho('Đề xuất gỡ');
+      b.addEventListener('click', async () => {
+        const kq = await hoi({
+          tua: 'Đề xuất gỡ liên kết',
+          chu: 'Đề nghị gỡ ' + p.lk.email + ' khỏi ' + tenNguoi(p) + '. Quản trị hệ thống, hoặc chính ' +
+            'người dùng tài khoản ấy, sẽ duyệt.',
+          oNhap: { nhieuDong: true, goiY: 'Lý do (không bắt buộc)' },
+          nutOk: 'Gửi đề xuất', kieuOk: 'warm', lam: (lyDo) => deXuatGoHo(p.lk.userId, lyDo),
+        });
+        if (kq) veLai('Đã gửi đề xuất gỡ — chờ Quản trị hệ thống hoặc chính người ấy duyệt.');
+      });
+    }
+    o.append(b, oTB);
+    return;
+  }
+
+  // ── CHƯA LIÊN KẾT — tìm trong người ĐÃ VÀO cây (khách trở lên) ──
   let daChon = null;
   const oNhap = document.createElement('input');
   oNhap.type = 'text';
   oNhap.className = 'o-sua o-sua-ten';
-  oNhap.placeholder = p.emailGan ? 'Đổi sang tài khoản khác…' : 'Gõ tên hoặc email…';
-  goiYDangMo.push(ganGoiY(oNhap, {
-    tim: async (chuoi) => (await timTaiKhoan(cay.fileId, chuoi)).ds,
-    ve: dongTaiKhoan,
-    giaTri: (m) => m.email,
-    khiChon: (m) => { daChon = m; },
-  }));
+  oNhap.placeholder = 'Gõ tên hoặc email…';
 
-  const oTrangThai = span('sub', '');
-  const bGui = nutNho('Gửi');
+  const bGui = nutNho(quyenTk.laQTHT ? 'Gắn' : 'Gửi đề xuất', 'warm');
+  bGui.disabled = true;
+  const oCanh = document.createElement('span');
+  oCanh.className = 'sub tk-canh';
+
+  /** Tài khoản đang chọn là của chính mình → không gắn ở đây, dẫn sang Hồ sơ cá nhân. */
+  const canhChinhMinh = () => {
+    oCanh.innerHTML = '';
+    oCanh.append('Đây là tài khoản của bạn. Tự gắn mã người cho mình làm ở Hồ sơ cá nhân ' +
+      '(Tài khoản → Mã người & Dòng họ), để được xét đúng luật. ');
+    oCanh.append(nutLink('Mở Hồ sơ cá nhân →', () => { window.location.hash = HASH_HO_SO; }));
+  };
+
+  o.goGoiY = ganGoiY(oNhap, {
+    tim: async (chuoi) => (await timTaiKhoanTrongCay(cay.fileId, chuoi)).ds,
+    ve: (m) => ({
+      chinh: m.email + (m.hoTen ? ' — ' + m.hoTen : ''),
+      phu: m.userId === phien.userId ? 'Tài khoản của bạn — gắn ở Hồ sơ cá nhân'
+        : m.lienKet ? 'Đã liên kết: ' + m.lienKet
+        : (m.vai === 'chu' ? 'Chủ gia phả' : TEN_VAI[m.vai] || m.vai),
+      mo: Boolean(m.lienKet) || m.userId === phien.userId,
+    }),
+    giaTri: (m) => m.email,
+    khiChon: (m) => {
+      daChon = m;
+      oCanh.textContent = '';
+      bGui.disabled = true;
+      if (m.userId === phien.userId) { canhChinhMinh(); return; }
+      if (m.lienKet) {
+        oCanh.textContent = 'Tài khoản này đã liên kết với ' + m.lienKet + '. Hãy gỡ liên kết đó trước khi gắn.';
+        return;
+      }
+      bGui.disabled = false;
+    },
+  });
+  goiYDangMo.push(o.goGoiY);
+  oNhap.addEventListener('input', () => {
+    if (daChon && oNhap.value.trim() !== daChon.email) { daChon = null; bGui.disabled = true; oCanh.textContent = ''; }
+  });
+
   bGui.addEventListener('click', async () => {
     if (!daChon || oNhap.value.trim() !== daChon.email) {
-      oTrangThai.textContent = 'Chọn đúng một tài khoản trong danh sách gợi ý.';
+      oTB.textContent = 'Chọn đúng một tài khoản trong danh sách gợi ý.';
       return;
     }
     bGui.disabled = true;
-    oTrangThai.textContent = 'Đang gửi…';
-    const kq = await deXuatGanHo(daChon.userId, p.id);
-    bGui.disabled = false;
+    oTB.textContent = quyenTk.laQTHT ? 'Đang gắn…' : 'Đang gửi…';
+    const m = daChon;
+    const kq = quyenTk.laQTHT ? await ganThangTaiKhoan(m.userId, p.id) : await deXuatGanHo(m.userId, p.id);
     if (kq && kq.ok) {
-      oTrangThai.textContent = 'Đã gửi — chờ tài khoản đó hoặc Quản trị hệ thống duyệt.';
-      oNhap.value = ''; daChon = null;
-    } else {
-      oTrangThai.textContent = (kq && kq.loi) || 'Không gửi được — thử lại.';
+      if (quyenTk.laQTHT) {
+        p.lk = { userId: m.userId, email: m.email, hoTen: m.hoTen, maNgan: m.maNgan };
+        p.emailGan = m.email;
+        veLai('Đã gắn.');
+      } else {
+        veLai('Đã gửi đề xuất gắn ' + m.email + ' — chờ Quản trị hệ thống hoặc chính người ấy duyệt.');
+      }
+      return;
     }
+    bGui.disabled = false;
+    if (kq && kq.lyDo === 'chinhminh') { canhChinhMinh(); oTB.textContent = ''; return; }
+    oTB.textContent = (kq && kq.loi) || 'Không làm được — thử lại.';
   });
 
-  return td(oNhap, bGui, oTrangThai);
+  o.append(oNhap, bGui, oCanh, oTB);
 }
 
 /** Ô sửa của một cột — input/select/checkbox, giá trị ban đầu = giá trị hiện có. */

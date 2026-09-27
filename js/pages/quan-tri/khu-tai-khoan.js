@@ -6,9 +6,9 @@
 //            mật khẩu).
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/hop-thoai · trang-cay · o-bang
-// Phiên bản: 1.2.0 · Cập nhật: 26/09/2026 (b126d) — panel *Mã người & Dòng
-//            họ* (KHÔNG có trong quantri3): gắn mã dời từ bảng cây (mỗi cây
-//            một mã) về đây, chuyện của TÀI KHOẢN. Lịch sử: `git log -p`.
+// Phiên bản: 1.3.0 · Cập nhật: 27/09/2026 (b129c) — panel *Mã người & Dòng
+//            họ*: tự gỡ liên kết; duyệt/không đồng ý đề xuất gắn/gỡ do người
+//            khác nộp hộ từ bảng Danh sách người. Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -25,7 +25,7 @@
 import {
   layDanhSachGiaPha, doiMatKhau, dangXuat, nguoiDangNhap,
   loiMoiQthtCuaToi, nhanQuyenQtht, tuChoiQuyenQtht,
-  deXuatGanCuaToi, nopDeXuatGan, rutDeXuatGan, duyetDeXuatGan,
+  deXuatGanCuaToi, nopDeXuatGan, rutDeXuatGan, duyetDeXuatGan, goGanTaiKhoanCuaToi,
   deXuatDongHoCuaToi, nopDeXuatDongHo, rutDeXuatDongHo, datDongHoQtht,
 } from '../../services/sb.js';
 import { hoi, bao } from './hop-thoai.js';
@@ -202,9 +202,47 @@ function veHoSoGan(sec, phien, don, kqCay, napLai) {
   if (phien.maNguoiGan) {
     datHuyHieu(badge, 'Đã gắn', 'ok');
     sub.textContent = (phien.tenNguoiGan || phien.maNguoiGan) + ' — mã ' + phien.maNguoiGan;
+    // b129c — người khác đề xuất GỠ liên kết của mình: chính mình duyệt được
+    // (gỡ là rút quyền của mình), hoặc không đồng ý thì xoá đơn.
+    if (don.coDon && don.loai === 'go') {
+      datHuyHieu(badge, 'Có đề xuất gỡ', 'wait');
+      sub.textContent += ' · ' + (don.nopBoi || 'Ai đó') + ' đề xuất GỠ liên kết này' +
+        (don.lyDo ? ': “' + don.lyDo + '”' : '') + '.';
+      actions.append(nutDuyetDon(don, 'Đồng ý gỡ', 'Gỡ liên kết của bạn với ' + phien.maNguoiGan +
+        ' — có hiệu lực ngay, bạn mất quyền sửa theo trực hệ của người này ở mọi gia phả.', napLai),
+      nutKhongDongY(don, napLai));
+      return;
+    }
     const b = nut('Đề xuất đổi mã');
     b.addEventListener('click', () => hoiGanMa(phien, don, treeGoiY, laChuMotCay, napLai));
-    actions.append(b);
+    const bGo = nut('Gỡ liên kết của tôi', 'danger');
+    bGo.addEventListener('click', async () => {
+      const kq = await hoi({
+        tua: 'Gỡ liên kết của tôi',
+        chu: 'Tài khoản của bạn thôi gắn với ' + (phien.tenNguoiGan || phien.maNguoiGan) + ' (' +
+          phien.maNguoiGan + ') — có hiệu lực ngay, không cần ai duyệt. Bạn mất quyền sửa theo ' +
+          'trực hệ của người này ở MỌI gia phả; muốn gắn lại phải đề xuất.',
+        nutOk: 'Gỡ', kieuOk: 'danger', lam: () => goGanTaiKhoanCuaToi(),
+      });
+      if (kq) window.location.reload();   // `phien.maNguoiGan` nạp lại từ máy chủ
+    });
+    actions.append(b, bGo);
+    return;
+  }
+
+  // b129c — đơn gắn do NGƯỜI KHÁC nộp hộ: nói rõ ai đề xuất; mình duyệt được
+  // khi lọt khe `36`, không thì chờ Quản trị hệ thống; không đồng ý thì xoá.
+  if (don.coDon && don.nopBoi) {
+    datHuyHieu(badge, 'Có đề xuất gắn', 'wait');
+    sub.textContent = don.nopBoi + ' đề xuất gắn bạn với ' + don.maNguoi +
+      (don.tenNguoi && don.tenNguoi !== don.maNguoi ? ' — ' + don.tenNguoi : '') +
+      (don.taoLuc ? ' (' + ngayGio(don.taoLuc) + ')' : '') +
+      '. Quản trị hệ thống sẽ xét' + (laChuMotCay ? ', hoặc bạn tự duyệt nếu đây là lần gắn đầu và mã còn trống.' : '.');
+    if (laChuMotCay) {
+      actions.append(nutDuyetDon(don, 'Tự duyệt (nếu đủ điều kiện)', 'Chỉ thành công khi đây là lần gắn ' +
+        'ĐẦU TIÊN của bạn và mã ' + don.maNguoi + ' chưa ai giữ.', napLai));
+    }
+    actions.append(nutKhongDongY(don, napLai));
     return;
   }
 
@@ -243,6 +281,30 @@ function veHoSoGan(sec, phien, don, kqCay, napLai) {
   const b = nut('Đề xuất mã người');
   b.addEventListener('click', () => hoiGanMa(phien, don, treeGoiY, laChuMotCay, napLai));
   actions.append(b);
+}
+
+/** Nút duyệt một đơn về chính mình (b129c). Duyệt xong liên kết đổi → nạp lại cả trang. */
+function nutDuyetDon(don, chuNut, chuHoi, napLai) {
+  const b = nut(chuNut, 'warm');
+  b.addEventListener('click', async () => {
+    const kq = await hoi({ tua: chuNut, chu: chuHoi, nutOk: chuNut, kieuOk: 'warm',
+      lam: () => duyetDeXuatGan(don.id) });
+    if (kq) window.location.reload();   // `phien.maNguoiGan` phải đọc lại từ máy chủ
+    else napLai();
+  });
+  return b;
+}
+
+/** Không đồng ý một đơn người khác nộp hộ = xoá đơn (`rut_de_xuat_gan` — đơn đứng tên mình). */
+function nutKhongDongY(don, napLai) {
+  const b = nut('Không đồng ý', 'danger');
+  b.addEventListener('click', async () => {
+    const kq = await hoi({ tua: 'Không đồng ý đề xuất',
+      chu: 'Xoá đề xuất ' + (don.loai === 'go' ? 'gỡ' : 'gắn') + ' này? Người đề xuất có thể gửi lại.',
+      nutOk: 'Xoá đề xuất', kieuOk: 'danger', lam: () => rutDeXuatGan(don.id) });
+    if (kq) napLai();
+  });
+  return b;
 }
 
 async function hoiGanMa(phien, don, treeGoiY, laChuMotCay, napLai) {

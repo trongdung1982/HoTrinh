@@ -35,28 +35,34 @@ từ duy nhất thì coi là TÊN (biệt hiệu, tên gọi), không phải h�
 Mẫu này (`luuHang()` trong `trang-nguoi.js`) dùng lại cho b125d (sửa hàng
 loạt) — đừng dựng đường ghi thứ ba.
 
-## Cột *Gắn tài khoản* — nộp HỘ, không ghi thẳng (b129c, 27/09/2026)
+## Cột *Tài khoản* — gắn/gỡ liên kết theo bốn hạng (b129c, 27/09/2026)
 
-Quản trị chọn một tài khoản ở dòng người, bấm Gửi là gọi
-`sb.deXuatGanHo(userId, maNguoi)` → RPC mới `de_xuat_gan_ho()`
-(`luoc-do/39-de-xuat-gan-ho.sql`). Đây là hành động RIÊNG, KHÔNG đi qua
-`luuHang()`/`luu_cay()` — nó tạo/sửa một dòng `de_xuat_gan_nguoi`, y hệt
-luồng đề xuất ở Hồ sơ cá nhân, chỉ khác người NỘP không phải người ĐƯỢC gắn.
+Đang Chỉnh sửa, cột *Tài khoản* (MỘT cột, không tách cột mới) vẽ bằng
+`oTaiKhoan()` — hành động RIÊNG, KHÔNG đi qua `luuHang()`/`luu_cay()`:
 
-⚠ Hàng rào NỘP: chủ cây hoặc quản trị gia phả của MỘT CÂY ĐANG CHỨA người ấy
-(`la_quan_tri_cay()`, `29`) — chốt 27/09/2026, hẹp hơn "mọi người sửa được
-bảng". Trang tính MỘT LẦN cho cả trang (`duocGanHo` trong `mountTrangNguoi`),
-không tính lại từng dòng, vì mọi người trong bảng chắc chắn thuộc cùng một
-cây đang xem.
+| Ai | Chưa gắn | Đã gắn |
+|---|---|---|
+| QTHT | *Gắn* thẳng — `gan_thang_tai_khoan` | *Gỡ* thẳng |
+| chủ · quản trị · thành viên | *Gửi đề xuất* — `de_xuat_gan_ho` | *Đề xuất gỡ* — `de_xuat_go_ho` |
+| chính chủ dòng ấy | chọn chính mình → dẫn sang Hồ sơ cá nhân | *Gỡ liên kết của tôi* — `go_gan_tai_khoan` |
+| khách | không tới được (cây không cho sửa) | — |
 
-⚠⚠ Hàng rào DUYỆT KHÔNG ĐỔI — `de_xuat_gan_ho()` chỉ thêm cửa nộp, không đụng
-`duyet_de_xuat_gan()`/`36`. Khe tự duyệt lần đầu của `36` vẫn nguyên: người
-ĐƯỢC gắn (Y) tự duyệt được NẾU VÀ CHỈ NẾU ①Y đã là CHỦ một cây bất kỳ
-(`la_chu_cay()` — không phải "mọi tài khoản"), ②Y chưa gắn ai, ③mã còn
-trống. Sai lầm bàn thử ban đầu: giả định "nộp hộ thì Y luôn tự duyệt được" —
-KHÔNG, Y phải tự có sẵn một cây riêng mới lọt khe; đa số trường hợp thực tế
-(Y là thành viên thường) vẫn cần Quản trị hệ thống duyệt. Đo đủ ở
-`do-b129c.mjs` mục C–D.
+Duyệt đề xuất: QTHT hoặc chính người được gắn (`duyet_de_xuat_gan`, bản `39`).
+Đơn gỡ người được gắn LUÔN tự duyệt được; đơn gắn thì chỉ qua khe `36`.
+Không có "đổi": tài khoản đã liên kết thì phải GỠ trước, câu chặn nói rõ người
+ấy + thuộc gia phả nào (`mo_ta_lien_ket`).
+
+⚠ Nguồn cột là `ds_lien_ket_cay()` (đọc `tai_khoan.person_id`). Bản trước đọc
+`dsThanhVien().maNguoi` = `tree_members.person_id` — cột CHẾT từ b126, và chỉ
+trả cho người kiểm duyệt được: cột hiện SAI, thành viên thường thấy trống.
+
+⚠ Ô tìm dùng `tim_tai_khoan_trong_cay()` — chỉ người ĐÃ vào cây (khách trở
+lên), KHÔNG dùng `timTaiKhoan()` (cái ấy tìm toàn hệ thống, dành cho Mời).
+
+⚠⚠ Khe `36` đòi `la_chu_cay()` — người được gắn phải LÀ CHỦ một cây bất kỳ
+mới tự duyệt đơn GẮN; thành viên thường cần QTHT. Bàn thử đầu tiên giả định
+sai điều này. Đo: `do-b129c.mjs` (66 phép, gồm kiểm chứng ngược H: dán lại
+`36` sau `39` thì đơn gỡ "được duyệt" mà không gắn nhầm ai).
 
 ⚠ `ganGoiY()` gắn `window.scroll`/`resize` NGAY khi gọi, không chờ popup mở
 (`so-tay/o-goi-y.md`). Bảng vẽ lại cả `tbody` mỗi lần tìm/sắp/đổi trang —

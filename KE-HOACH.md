@@ -1,11 +1,11 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 27/09/2026 · b129c XONG (mã) — cột *Gắn tài khoản*, quản trị nộp HỘ
-đề xuất gắn mã người. SQL mới `luoc-do/39-de-xuat-gan-ho.sql`, đo bàn thử tại
-chỗ 28/28 ĐẠT (`do-b129c.mjs`) — **⚠ CHƯA AI DÁN `39` LÊN SUPABASE THẬT**, cột
-mới sẽ báo lỗi "không có hàm này" cho tới khi dán. Tự kiểm JS 303 đạt +
-`/kiem-tra` 10 phép. Kế tiếp cho AI: **b125d** — chọn nhiều dòng, sửa hàng
-loạt một trường.*
+*Cập nhật 27/09/2026 · b129c XONG (mã) — cột *Tài khoản* của bảng Danh sách
+người gắn/gỡ liên kết theo bốn hạng (QTHT thẳng · chủ/quản trị/thành viên đề
+xuất · chính chủ tự gỡ · khách khoá), cùng Hồ sơ cá nhân + tab Đơn của QTHT.
+Bàn thử 66/66 (`do-b129c.mjs`), JS 303 đạt, `/kiem-tra` 10 phép. **⚠ CHƯA DÁN
+`39` LÊN SUPABASE THẬT** — cột Tài khoản đọc hàm mới, trước khi dán sẽ trống.
+Kế tiếp cho AI: **b125d** — chọn nhiều dòng, sửa hàng loạt một trường.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
 **đừng nới trần**. Ba luật giữ nó gọn:
@@ -61,9 +61,10 @@ thường ở luật cũ, không hợp ở luật mới. Xử lý: **`truncate t
 nguoi;`** trước khi dán lại `35` — xoá sạch đơn cũ (theo cây), không ai mất gì
 vì đơn ấy chưa hề có nghĩa toàn phần mềm. Bài học đầy đủ: `so-tay/phan-quyen.md`.
 
-**`39` (b129c) — CHƯA DÁN.** Chỉ THÊM một hàm mới (`de_xuat_gan_ho`), không
-sửa gì có sẵn; dán sau `36`. Đo đủ trên bàn thử (`do-b129c.mjs`), chưa chạy
-trên dữ liệu thật.
+**`39` (b129c) — CHƯA DÁN.** ⚠ Thêm HAI CỘT vào `de_xuat_gan_nguoi` (`loai`,
+`nop_boi` — có mặc định, không đụng dòng cũ), bảy hàm mới, và là bản ĐỨNG CUỐI
+của `duyet_de_xuat_gan()`/`ds_de_xuat_gan()`/`de_xuat_gan_cua_toi()` — dán lại
+`35`/`36` sau nó thì phải dán lại `39`. Dán sau `38`. Đo đủ trên bàn thử.
 
 ---
 
@@ -131,7 +132,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Bộ bất biến bố cục đang gác nhầm nhánh** — xem ngay dưới bảng. Đường chạy tạm: `--import ./sang-supabase.mjs` (b128b) — ⚠ KHÔNG ăn vào bài chạy trong Chrome; `kiem-buoc-80` dùng bản `kiem-buoc-80-sb.mjs` | `/kiem-tra` phép 9 |
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |
 | Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
-| ⚠ **`tree_members.person_id` thành cột chết từ b126** — `duyet_thanh_vien()` (đơn xin vào cây) vẫn GHI vào đó; `ds_cay_cua_tai_khoan()`/`trang-tai-khoan.js` vẫn ĐỌC nó, nên trang một tài khoản có thể hiện mã không khớp Hồ sơ cá nhân của chính người ấy | `so-tay/phan-quyen.md` |
+| ⚠ **`tree_members.person_id` thành cột chết từ b126** — `duyet_thanh_vien()` (đơn xin vào cây) vẫn GHI vào đó; `ds_cay_cua_tai_khoan()`/`trang-tai-khoan.js` và cột *Tên người trong cây* của bảng **Thành viên & quyền** (`ds_thanh_vien()`) vẫn ĐỌC nó → có thể hiện sai. Bảng Danh sách người đã chuyển sang `ds_lien_ket_cay()` (b129c) — hai chỗ kia nên đi cùng đường | `so-tay/luu-mot-dong-quan-tri.md` |
 | ⚠ **Sao lưu KHÔNG chép ảnh** — chỉ liệt kê. Ảnh vẫn nằm đúng một chỗ | `KIEN-TRUC.md` mục 7 |
 | ⚠ **Chưa ai thử KHÔI PHỤC từ file sao lưu** — *có file* khác *khôi phục được* | `sao-luu/HUONG-DAN-SAO-LUU.md` |
 | Bốn màn hình chưa mở được (sao lưu · dựng gia phả mới · bỏ chọn · quyền ảnh) | `KIEN-TRUC.md` mục 6 |
