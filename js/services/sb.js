@@ -5,8 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.38.0 · Cập nhật: 27/09/2026 (b133) — `docGiaDinhNguoi()`: hồ
-//            sơ một người ngoài cây đang mở. Lịch sử: `git log -p`.
+// Phiên bản: 0.39.0 · Cập nhật: 28/09/2026 (b134) — năm cửa nhật ký hệ
+//            thống (`luoc-do/42`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -2558,6 +2558,83 @@ export async function tuChoiDeNghiQuanHe(id, lyDo = '') {
   });
   if (error) return { ok: false, loi: cauLoi(error) };
   return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+// ============================================================
+// Nhật ký hệ thống — `luoc-do/42-nhat-ky-he-thong.sql` (b134)
+// ============================================================
+//
+// ⚠ Máy chủ TỰ GHI bằng trigger — không có cửa ghi nào ở đây, cố ý. Năm cửa
+//   dưới chỉ Quản trị hệ thống dùng được; người khác đọc ra rỗng, làm ra
+//   `ok:false`. Loại: `auth` · `qtht` · `tree` · `backup`.
+
+/**
+ * Nhật ký đang hiện (không tính dòng trong thùng rác), mới nhất trước.
+ * `tu`/`den` là `Date` hoặc chuỗi ISO — nửa khoảng [tu, den).
+ */
+export async function dsNhatKyHeThong({ loai = null, tu = null, den = null, gioiHan = 1000 } = {}) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', ds: [] };
+  const iso = (d) => (d ? new Date(d).toISOString() : null);
+  const { data, error } = await k.rpc('ds_nhat_ky_he_thong', {
+    p_loai: loai || null, p_tu: iso(tu), p_den: iso(den), p_gioi_han: gioiHan,
+  });
+  if (error) return { ok: false, loi: cauLoi(error), ds: [] };
+  return {
+    ok: true, loi: null,
+    ds: (data || []).map((r) => ({
+      id: Number(r.id), luc: r.luc, loai: r.loai || '', suKien: r.su_kien || '',
+      emailNguoiLam: r.email_nguoi_lam || '', doiTuong: r.doi_tuong || '',
+      chiTiet: r.chi_tiet || {},
+    })),
+  };
+}
+
+/** Chuyển các dòng đã chọn vào thùng rác nhật ký — thành MỘT lô. */
+export async function xoaNhatKy(ids, moTa = '') {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('xoa_nhat_ky', {
+    p_ids: (ids || []).map(Number), p_mo_ta: String(moTa || ''),
+  });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  if (!data || data.ok !== true) return { ok: false, loi: noiTuChoi(data, 'Không xoá được nhật ký.') };
+  return { ok: true, loi: null, soDong: Number(data.soDong) || 0, moTa: data.moTa || '' };
+}
+
+/** Thùng rác nhật ký — mỗi dòng một lô. `conLai` = số ngày tới lúc dọn được. */
+export async function dsLoNhatKyRac() {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', ds: [] };
+  const { data, error } = await k.rpc('ds_lo_nhat_ky_rac');
+  if (error) return { ok: false, loi: cauLoi(error), ds: [] };
+  return {
+    ok: true, loi: null,
+    ds: (data || []).map((r) => ({
+      id: Number(r.id), moTa: r.mo_ta || '', soDong: Number(r.so_dong) || 0,
+      xoaLuc: r.xoa_luc, emailXoaBoi: r.email_xoa_boi || '', conLai: Number(r.con_lai) || 0,
+    })),
+  };
+}
+
+/** Đưa một lô ra khỏi thùng rác — các dòng về lại nhật ký. */
+export async function phucHoiLoNhatKy(lo) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('phuc_hoi_lo_nhat_ky', { p_lo: Number(lo) });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  if (!data || data.ok !== true) return { ok: false, loi: noiTuChoi(data, 'Không phục hồi được.') };
+  return { ok: true, loi: null, soDong: Number(data.soDong) || 0 };
+}
+
+/** XOÁ HẲN mọi lô đã nằm đủ 120 ngày. Chưa lô nào đủ thì máy chủ từ chối, nói còn bao lâu. */
+export async function donNhatKyRac() {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('don_nhat_ky_rac');
+  if (error) return { ok: false, loi: cauLoi(error) };
+  if (!data || data.ok !== true) return { ok: false, loi: noiTuChoi(data, 'Không dọn được thùng rác nhật ký.') };
+  return { ok: true, loi: null, soLo: Number(data.soLo) || 0, soDong: Number(data.soDong) || 0 };
 }
 
 // ============================================================

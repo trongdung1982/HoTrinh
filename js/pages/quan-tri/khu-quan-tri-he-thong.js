@@ -6,9 +6,9 @@
 //            prototype) và trang `#sys-default-tree-selector`.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang ·
-//            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don
-// Phiên bản: 1.7.0 · Cập nhật: 27/09/2026 (b133) — tên ở Sổ tài khoản mở
-//            trang chi tiết tài khoản. Lịch sử trước: `git log -p`.
+//            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don · khu-nhat-ky
+// Phiên bản: 1.8.0 · Cập nhật: 28/09/2026 (b134) — tab Nhật ký nối máy chủ
+//            (`khu-nhat-ky.js`). Lịch sử trước: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -19,8 +19,8 @@
 // ⚠ Gắn thật: *Tổng quan* · *Sổ tài khoản* · *Cây mặc định* · *Thùng rác* ·
 //   *Sao lưu* (bảng Đối chiếu, `khu-sao-luu.js`) · *Đề nghị sửa quan hệ*
 //   (`khu-de-nghi-quan-he.js`, b127d-3) · *Đơn Hồ sơ cá nhân* (`khu-ho-so-
-//   don.js`, b126d). Hai tab còn trống — *Tạo tài khoản* · *Nhật ký* — vẽ
-//   đúng HTML quantri3 nhưng mờ kèm lý do. Tab *Sao lưu* cũng còn hai phần
+//   don.js`, b126d) · *Nhật ký* (`khu-nhat-ky.js`, b134). Tab *Tạo tài
+//   khoản* còn trống — vẽ đúng HTML quantri3 nhưng mờ kèm lý do. Tab *Sao lưu* cũng còn hai phần
 //   mờ (lịch sử · nút "Sao lưu ngay"): không phải "chưa tới lượt", mà trình
 //   duyệt không gọi được Drive/Apps Script.
 //
@@ -38,6 +38,7 @@ import { hoi, bao } from './hop-thoai.js';
 import { veKhuSaoLuu } from './khu-sao-luu.js';
 import { veKhuDeNghiQuanHe } from './khu-de-nghi-quan-he.js';
 import { veKhuHoSoDon } from './khu-ho-so-don.js';
+import { veKhuNhatKy } from './khu-nhat-ky.js';
 import {
   td, span, huyHieu, nut, nutNho, nutMo, lienKet, hangNut, dongTrong,
   chepKieu, ngay, ngayGio,
@@ -84,6 +85,7 @@ export async function mountKhuQuanTriHeThong(sec, phien) {
   veKhuSaoLuu(sec, dsSong);
   veKhuDeNghiQuanHe(sec);
   veKhuHoSoDon(sec);
+  veKhuNhatKy(sec);
 }
 
 // ============================================================
@@ -134,11 +136,11 @@ function veChuaCo(sec) {
   mo('#btn-sao-luu-ngay', 'Nút này cần gọi Apps Script từ trình duyệt, mà dự án sao lưu không có địa ' +
     'chỉ web để gọi tới — chạy hàm saoLuuNgay tại script.google.com.');
 
-  const LY_NK = 'Chưa làm: nhật ký hệ thống cần một bảng mới ở máy chủ — việc riêng, làm sau b120. ' +
-    'Lịch sử sửa dữ liệu cây vẫn xem ở khu Kiểm duyệt.';
-  dat('nk-chua-co', LY_NK);
-  mo('#sys-log-filter-type, #sys-log-filter-time, #btn-select-old-logs, #btn-export-logs, ' +
-    '#btn-delete-selected-logs, #sys-log-check-all, #btn-don-nhat-ky-thung-rac', LY_NK);
+  // b134: nhật ký hệ thống đã có (`khu-nhat-ky.js`) — ô `notice` chỉ còn nói
+  // nó ghi gì và KHÔNG ghi gì.
+  dat('nk-chua-co', 'Máy chủ tự ghi: đăng nhập, tài khoản mới, khoá/mở khoá/xoá tài khoản, cờ Quản ' +
+    'trị hệ thống và quyền tạo cây, tạo/xoá/phục hồi/bàn giao gia phả, cây mặc định. Không ghi việc ' +
+    'sửa dữ liệu trong cây (xem ở khu Kiểm duyệt), không ghi bản sao lưu đêm.');
 
   mo('#btn-don-tai-khoan-60ngay', 'Xoá mềm 60 ngày chưa có ở máy chủ — làm ở b118b.');
   mo('#btn-save-default-tree-fields', 'Công khai theo từng trường chưa có ở máy chủ — làm sau b120.');
@@ -146,8 +148,6 @@ function veChuaCo(sec) {
   dongTrong(sec.querySelector('#sl-lich-su-tbody'), 5,
     'Không đọc được — máy chủ này không nối tới Google Drive. Xem tại script.google.com → Executions.');
   // `#sl-doi-chieu-tbody` không mờ ở đây nữa — `veKhuSaoLuu()` tự vẽ số thật.
-  dongTrong(sec.querySelector('#sys-log-tbody'), 5, 'Chưa có nhật ký hệ thống ở máy chủ.');
-  dongTrong(sec.querySelector('#trash-logs-tbody'), 6, 'Chưa có nhật ký hệ thống ở máy chủ.');
   dongTrong(sec.querySelector('#default-tree-fields-tbody'), 4,
     'Công khai theo từng trường chưa có ở máy chủ — làm sau b120.');
   dongTrong(sec.querySelector('#stk-cho-xoa-tbody'), 7,
@@ -172,8 +172,12 @@ function veTongQuan(sec, ds, cmd, tk) {
     dat('tq-tk-mo-ta', tk.loi || 'Không đọc được sổ tài khoản.');
   }
 
-  dat('tq-qtht-so', 'Chưa có');
-  dat('tq-qtht-mo-ta', 'Bổ nhiệm hai chữ ký chưa có ở máy chủ — làm ở b118b.');
+  // Lời mời QTHT hai chữ ký (`23` mục 6, đã dán): đếm lời mời chưa ai nhận.
+  const moi = tk.ok ? tk.ds.filter((t) => t.qthtMoiLuc && !t.laQuanTriHeThong) : [];
+  dat('tq-qtht-so', tk.ok ? moi.length + ' lời mời' : '');
+  dat('tq-qtht-mo-ta', !tk.ok ? '' : moi.length
+    ? 'Đang chờ ' + moi.map((t) => t.email).join(' · ') + ' tự bấm Chấp nhận.'
+    : 'Không có lời mời Quản trị hệ thống nào đang chờ nhận.');
 
   const cay = ds.find((c) => c.fileId === cmd && !c.daXoaLuc);
   dat('tq-cmd-ten', cay ? (cay.ten || cay.treeCode) : 'Chưa đặt');
@@ -191,9 +195,7 @@ function veTongQuan(sec, ds, cmd, tk) {
     rac[0] ? (rac[0].ten || '') + ' (' + rac[0].treeCode + ') · Còn ' + conLaiNgay(rac[0].daXoaLuc) + ' ngày' : '',
     xin.length ? xin.length + ' yêu cầu xin xóa chờ duyệt' : '',
   ].filter(Boolean).join(' · ') || 'Thùng rác trống, không có đơn xin xoá.');
-
-  dat('tq-nk-so', 'Chưa có');
-  dat('tq-nk-mo-ta', 'Cần bảng nhật ký mới ở máy chủ — làm sau b120.');
+  // Thẻ Nhật ký: `khu-nhat-ky.js` tự điền.
 }
 
 // ============================================================
@@ -651,9 +653,10 @@ function veThungRac(sec, kq, napLai) {
 
   sec.querySelector('#rac-dem').textContent = rac.length + ' cây · máy chủ giữ ' +
     NGAY_THUNG_RAC + ' ngày trước khi dọn được';
-  sec.querySelector('#xin-xoa-dem').textContent = xin.length + ' đơn xin xoá đang chờ · ' +
-    'cây vẫn dùng bình thường tới khi duyệt (luật hiện hành, đổi ở b118b)';
-  sec.querySelector('#rac-nk-dem').textContent = '';
+  // ⚠ Luật `23` mục 8 (đã dán): chủ bấm xoá là cây ẨN NGAY, chờ QTHT duyệt
+  //   vào thùng rác hoặc trả lại. Câu cũ "cây vẫn dùng bình thường" là luật `16`.
+  sec.querySelector('#xin-xoa-dem').textContent = xin.length + ' cây chủ đã xoá · ' +
+    'cây ẩn với mọi người từ lúc chủ xoá, chờ bạn duyệt vào thùng rác hoặc trả lại';
 
   // — Cây trong thùng rác —
   const duDon = rac.filter((c) => conLaiNgay(c.daXoaLuc) <= 0);

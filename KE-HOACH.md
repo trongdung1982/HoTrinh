@@ -1,9 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 · b129d XONG — chủ dự án bấm thử ĐẠT. Cùng phiên, bấm
-thử ĐẠT cả b111c · b117 · b118d · b127d · b129c · b132 → không còn điểm dừng
-nào chờ bấm. b129d: câu báo "đã liên kết với …" mang nút Gỡ / Đề xuất gỡ
-(`trang-nguoi.js`, không SQL mới) — `so-tay/luu-mot-dong-quan-tri.md`.*
+*Cập nhật 28/09/2026 · b134 XONG phần mã — Nhật ký hệ thống (Nhóm E):
+`luoc-do/42` + tab Nhật ký + bảng nhật ký trong Thùng rác + thẻ Tổng quan.
+Bàn thử 58/58. ⚠ `42` CHƯA DÁN — xem mục SQL, rồi bấm thử (bảng dưới).*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -24,10 +23,11 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 **App chạy thật tại `https://nguyentrongbac.io.vn`** từ 03/09/2026 *(chứng chỉ Let's Encrypt hạn 02/12/2026; địa chỉ cũ `301` về đây)*. Máy chủ thật nay có **BA cây** — NTB 59 người · Nguyễn Phúc Giáo 681 người · **LVT433** *(chủ dự án làm chủ)* — mã cây 3 chữ số. Trang `QuanTri.html` bốn khu đều đã nối. Phân quyền đã đo bằng REST, 5/5 hàng rào đạt (b94, b96).
 
-### Điểm dừng chưa bấm thử — KHÔNG CÒN (28/09/2026)
+### Điểm dừng chưa bấm thử
 
-Mọi điểm dừng đã viết đều đã được chủ dự án bấm thử trên app thật và ĐẠT.
-Việc mới có điểm dừng thì thêm lại bảng ở đây (cột *Điểm dừng* · *Bấm gì*).
+| Điểm dừng | Bấm gì |
+|---|---|
+| **b134** Nhật ký hệ thống | Dán `42` trước. Rồi: đăng xuất → đăng nhập lại → *Quản trị hệ thống → Nhật ký*: phải thấy dòng **"Bắt đầu ghi nhật ký"** và dòng **"Đăng nhập"** của chính bạn. Bấm *Cấp quyền tạo cây* rồi *Thu hồi* cho `khach@io.vn` → hai dòng mới, người làm là bạn. Tích một dòng → *Xóa các dòng đã chọn* → sang tab *Thùng rác*, bảng cuối có một lô → *Phục hồi* → dòng về lại. Thẻ *Nhật ký hệ thống* ở *Tổng quan* ra số sự kiện 7 ngày |
 
 ---
 
@@ -66,6 +66,15 @@ qua `tree_persons`, cùng thuốc với `39` mục 8 (`ds_lien_ket_cay`, đã d�
 26/09). `create or replace`, không đổi cột trả về, không cần `grant` lại.
 Bàn thử: `do-b132.mjs`. Không đụng RLS, không đổi cửa ghi.
 
+**`42` (b134) — ĐƯỢC DÁN, CHƯA DÁN.** Dán SAU `41`, một lần, cả file. Tạo hai
+bảng MỚI (`nhat_ky_he_thong` · `nhat_ky_lo_rac`), tám trigger (hai trên
+`auth.users`, hai `tai_khoan`, ba `trees`, một `cau_hinh`), năm hàm cho QTHT.
+Không định nghĩa lại hàm nào của file khác → không kéo theo chuỗi dán lại.
+Tự kiểm cuối file phải ra **7/7 ĐẠT**. Bàn thử: `do-b134.mjs` 58/58.
+⚠ Trigger trên `auth.users` là lần thứ hai dự án đụng schema `auth` (lần đầu:
+`11` mục 2) — bàn thử KHÔNG đo được quyền tạo trigger ở đó trên Supabase thật;
+`11` đã tạo được nên chắc chắn chạy, nhưng dán lỗi ở đúng dòng ấy thì báo lại.
+
 ---
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
@@ -91,8 +100,10 @@ Sổ tay: `so-tay/luu-du-lieu.md` · kéo người, b124b chưa dựng:
 
 ### Sau đó — chưa đặt số, chưa chốt
 
-**Nhóm E quantri3** *(9.5 — ⚠ tạo tài khoản cần `service_role` qua Edge
-Function, **không bao giờ** vào repo Public)* · chặn đăng nhập tài khoản bị
+**Nhóm E quantri3** *(9.5 — nhật ký hệ thống XONG ở b134; còn tạo tài khoản
+⚠ cần `service_role` qua Edge Function, **không bao giờ** vào repo Public ·
+công khai theo từng trường · ghi bản sao lưu đêm vào nhật ký: `SaoLuu.gs`
+gọi một hàm mới)* · chặn đăng nhập tài khoản bị
 khoá *(`banned_until`)* · **dòng họ + cây chính do người tự chọn** (`6`) ·
 nhập GEDCOM/Excel qua máy chủ · **khôi phục thật** *(đo cả vòng sao lưu→đổi→
 khôi phục→về đúng cũ, không chỉ "có file")* · **tối ưu tốc độ đọc** khi mọi
@@ -100,14 +111,6 @@ chức năng đã chạy *(681 người: ~0,4s)*. *(Số mục = `THIET-KE-QUAN-
 
 ⚠ **17/09, chủ dự án nêu:** huy hiệu số đếm + bấm tên mở cây ở Gia phả, an
 toàn (`9.6`). *(Câu thứ hai — QTHT tự duyệt — đã chốt 21/09, nay là b124c.)*
-
-⚠ **Xoá nhật ký hàng loạt — ĐÃ có giao diện, đang khoá mờ chờ máy chủ.**
-`QuanTri.html` (khu Quản trị hệ thống → Nhật ký hệ thống) có sẵn
-`#sys-log-check-all` (chọn tất cả) · `#btn-delete-selected-logs` (xoá đã
-chọn) · `#btn-don-nhat-ky-thung-rac` (dọn nhật ký thùng rác). Cả ba đang bị
-`khu-quan-tri-he-thong.js` khoá mờ vì "nhật ký hệ thống cần một bảng mới ở
-máy chủ" — thuộc Nhóm E ở trên, chưa tách bước số. Phát hiện 27/09/2026 khi
-tra lại b125d — đưa vào đây để không quên khi tới lượt Nhóm E.
 
 ⚠ **Duyệt hàng loạt ở Kiểm duyệt — Ý MỚI 27/09/2026, KHÔNG có trong prototype
 quantri3, chưa thiết kế.** `khu-kiem-duyet.js` hiện mỗi "lần Lưu" (một thay
@@ -128,7 +131,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 |---|---|
 | ⚠ **Nhập GEDCOM/Excel chưa nối vào kho mã** — `capMaHangLoat()` hỏi `nextId` một lần rồi tự đếm tiếp, nên từ mã thứ hai đã ra ngoài phần máy chủ đặt trước. Hỏng to tiếng (`trungma`), không lặng lẽ. Đường sửa: `pages/import-export.js` gọi `repo.xinMa(loai, so)` trước khi nhập | `so-tay/luu-du-lieu.md` |
 | ⚠ **`di-doi/sinh-sql-di-doi.mjs` lạc hậu từ `26`** — SQL nó sinh còn gắn `tree_id` vào bốn bảng dùng chung. Ba cây đã di dời xong nên chưa có việc; chạy sẽ lỗi to tiếng | đầu chính file ấy |
-| ⚠ **Bốn bảng CHƯA được sao lưu**: `cau_hinh` · `tai_khoan` · `de_xuat_gan_nguoi` · `doi_ma_toan_cuc`. Ba bảng đầu giữ cờ QTHT, khoá mềm, đơn đề xuất; `doi_ma_toan_cuc` giữ cặp mã cũ→mới vĩnh viễn. Cần xem RLS có cho vai `sao_luu` đọc không trước khi thêm | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
+| ⚠ **Tám bảng CHƯA được sao lưu**: `cau_hinh` · `tai_khoan` · `de_xuat_gan_nguoi` · `doi_ma_toan_cuc` · `de_nghi_quan_he` (`33`) · `de_xuat_dong_ho` (`37`) · `nhat_ky_he_thong` · `nhat_ky_lo_rac` (`42`). Ba bảng đầu giữ cờ QTHT, khoá mềm, đơn đề xuất; `doi_ma_toan_cuc` giữ cặp mã cũ→mới vĩnh viễn. ⚠ `33`/`37` lọt khỏi danh sách từ lúc ra đời — bộ kiểm sao lưu báo HỎNG mà không ai chạy, phát hiện b134. Cần xem RLS có cho vai `sao_luu` đọc không trước khi thêm | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
 | ⚠ **Hai hàm của `16` LỆCH NGHĨA với tên** (`xin_xoa_cay` ẩn cây NGAY; `huy_xin_xoa_cay` = trả lại cho chủ). Giữ tên cũ là cố ý; đổi tên là một bước riêng | `luoc-do/23-bon-luat-moi.sql` khối đầu |
 | ⚠ **`ds_kiem_duyet()` chưa trả người duyệt · lúc duyệt · lý do từ chối** — hai tab lịch sử của Kiểm duyệt để trống ba cột (cột có trong `change_log`, hàm chưa đọc). Sửa hàm là `drop` → chép cả `grant` | `so-tay/trang-quan-tri.md` |
 | ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa *(b126 sẽ đụng cả hai)* | `nhat-ky/b106-khu-tai-khoan.md` |

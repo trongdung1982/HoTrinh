@@ -1,6 +1,6 @@
 # Sổ tay · trang Quản trị
 
-Gồm      : `QuanTri.html` — NGUYÊN FILE prototype quantri3, dựng bằng máy · `quan-tri.css` — CSS nguyên văn quantri3 + vài dòng app · `js/pages/quan-tri/khung.js` — `#` → section · `khu-gia-pha.js` · `khu-tai-khoan.js` (b126d, panel Mã người & Dòng họ) · `khu-kiem-duyet.js` · `khu-quan-tri-he-thong.js` · `khu-sao-luu.js` (tab Sao lưu) · `khu-de-nghi-quan-he.js` · `khu-ho-so-don.js` (b126d) · `trang-cay.js` · `trang-moi.js` · `trang-tai-khoan.js` · `trang-ho-so-nguoi.js` — đổ dữ liệu vào section của mình · `hop-thoai.js` — hộp hỏi + ô nhập · `o-bang.js` — mẩu ô bảng · `o-goi-y.js` — ô gợi ý
+Gồm      : `QuanTri.html` — NGUYÊN FILE prototype quantri3, dựng bằng máy · `quan-tri.css` — CSS nguyên văn quantri3 + vài dòng app · `js/pages/quan-tri/khung.js` — `#` → section · `khu-gia-pha.js` · `khu-tai-khoan.js` (b126d, panel Mã người & Dòng họ) · `khu-kiem-duyet.js` · `khu-quan-tri-he-thong.js` · `khu-sao-luu.js` (tab Sao lưu) · `khu-nhat-ky.js` (b134) · `khu-de-nghi-quan-he.js` · `khu-ho-so-don.js` (b126d) · `trang-cay.js` · `trang-moi.js` · `trang-tai-khoan.js` · `trang-ho-so-nguoi.js` — đổ dữ liệu vào section của mình · `hop-thoai.js` — hộp hỏi + ô nhập · `o-bang.js` — mẩu ô bảng · `o-goi-y.js` — ô gợi ý
 Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài repo: `../kiem-thu/sb-gia.mjs` · `trang-quan-tri-gia.html` · `so-quantri3.mjs` · `xem-khung-quan-tri.mjs` · prototype `../codex/dua_claude.ai/quantri3.html`
 
 ## Đính chính
@@ -97,11 +97,9 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   cuộn trong bảng mới thấy mục. Nới khung ảnh không chữa được; ảnh
   `kq-menu-saoluu.png` giữ lại đúng cảnh ấy.
 
-- **Đẩy CSS xong, máy chủ vẫn trả bản cũ trong 10 phút** (21/09/2026 — chủ dự
-  án chụp ảnh báo *"vẫn lỗi chữ quyền"* 8 phút sau khi đẩy bản vá font).
-  `?v=` chống đệm cho FILE CSS, nhưng chính `QuanTri.html` — nơi chứa con số
-  `?v=` ấy — bị GitHub Pages đệm `max-age=600`. Trang cũ còn ghi `?v=1.1.2`
-  nên vẫn gọi CSS cũ. **Cách đo trước khi nghi mã**, đủ ba bước, 30 giây:
+- **Đẩy CSS xong, máy chủ vẫn trả bản cũ trong 10 phút** (21/09/2026). `?v=`
+  chống đệm cho FILE CSS, nhưng chính `QuanTri.html` — nơi chứa con số `?v=`
+  — bị GitHub Pages đệm `max-age=600`. **Đo trước khi nghi mã**, 30 giây:
   `curl -s <trang>/QuanTri.html | grep -o 'quan-tri\.css?v=[0-9.]*'` ·
   `curl -s <trang>/quan-tri.css | grep -n 'font-family: Constantia'` ·
   `curl -sI <trang>/QuanTri.html | grep -i cache-control`. Máy chủ đúng mà
@@ -135,6 +133,8 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
 
 **Hồ sơ người (b133)**: một section, hai khu (`thanh-vien` ·
 `quan-tri-he-thong`); `data-back` đặt lúc mount.
+
+**Tab Nhật ký (b134)**: sổ tay riêng — `so-tay/nhat-ky-he-thong.md`.
 
 ## Hai điều ghi ngày 23/09/2026
 
