@@ -17,7 +17,13 @@ Người NGOÀI cây có dây nối thẳng vào người trong cây (`luoc-do/3
   gia đình. Là `<div>`, **không phải nút**: họ không có thẻ, không bấm tới.
 - Các cửa SỬA (sửa con, sắp thứ tự, xoá cặp) vẫn chỉ đếm người TRONG cây —
   sửa quan hệ có một đầu ngoài cây là việc của b127c (QTHT duyệt).
-- `domains/` không bao giờ thấy họ, nên sơ đồ không đổi một nét.
+- `domains/` không bao giờ thấy họ, nên sơ đồ không đổi một nét — vành đai
+  là chuyện của THẺ, không phải sơ đồ. Đừng nhầm hai cái với nhau.
+- **Dấu hiệu để mắt phân biệt** (đổi 27/09/2026, chủ dự án hỏi lại vì hiểu
+  nhầm là code thừa): chữ mờ `#8a8078` + không viền/nền, cùng khuôn với
+  `veHang()`. Trước đó là hộp nền xám `#faf8f5` có viền — bỏ khi `veNhom()`
+  đổi sang hàng nền đồng nhất (mục dưới). Người TRONG cây thì đậm `#2a2622`
+  và là `<button>`. Đo bằng `kiem-vanh-dai.mjs`.
 
 ## HAI MÀN HÌNH, HAI CÂU HỎI (chốt 20/08/2026)
 
@@ -103,6 +109,24 @@ nhưng một trong hai file sẽ thấy hàm của file kia là `undefined` tu�
 nạp, và lỗi ấy chỉ hiện ra trên GitHub Pages chứ không hiện lúc chạy thử.
 Nên nơi gọi truyền vào `onChonNguoi`, thẻ chỉ báo ra ngoài "người dùng vừa
 chọn ai", không tự quyết định.
+
+## Đầu thẻ: bốn dòng, và dòng năm sinh–mất KHÔNG PHẢI MỚI
+
+`veDauThe()` xếp: **Tên → năm sinh–mất → mã người → Đời**. Chủ dự án từng
+hỏi *"sao tự nhiên có năm sinh cạnh ảnh"* — dòng ấy có từ commit đầu tiên
+dựng file này (`utils/text.doiSongNguoi()`, kiểu Quick Family Tree), không
+đụng gì tới b125g. Chỉ dòng **Đời** (cuối cùng, đọc `state.doi`) là mới
+(27/09/2026) — trống thì bỏ hẳn, không chừa chỗ. Cùng số với hàng *Đời*
+trong bảng bên dưới (`so-tay/xuat-excel.md`), không tính lại riêng.
+
+## Nhóm quan hệ: hàng nền đồng nhất, không hộp trắng (27/09/2026)
+
+`veNhom()` (Cha mẹ · Vợ/chồng · Con — cả thẻ người lẫn thẻ gia đình) trước
+vẽ mỗi người một hộp nền trắng có viền, đọc giống ô nhập của trang Sửa dù
+thẻ này CHỈ ĐỌC. Chủ dự án chỉ ra sự lẫn lộn đó — nay mỗi người một HÀNG,
+ngăn bằng `border-top:#f0ebe4`, cùng khuôn `veHang()` phía trên. Chỉ còn
+`cursor:pointer` (không thấy trên điện thoại) với **màu chữ** (mục *Người
+vành đai* trên) là hai dấu phân biệt "bấm được" hay không.
 
 ## Ảnh người: XONG ở bước 28
 

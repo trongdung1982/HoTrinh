@@ -1,13 +1,12 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 27/09/2026 20:02 · b125g XONG phần mã — Đời LƯU ở
-`tree_persons.doi` (`luoc-do/40`), trigger máy chủ chỉ tính lại nhánh bị đổi
-dòng cha; thẻ, bảng Danh sách người, file Excel đọc số đã lưu. Bàn thử
-44/44 (`do-b125g.mjs`). Chủ dự án bấm thử: Xuất Excel + tự động cập nhật
-Đời — ĐẠT. Góp ý: thêm dòng Đời ngay dưới mã người ở đầu thẻ người, cạnh
-ảnh đại diện (trước chỉ có ở hàng trong bảng) — đã thêm (b125g-2). ⚠ **`40`
-CHƯA DÁN** — dán xong mới thấy Đời ở app thật. Luật + phép đo:
-`so-tay/xuat-excel.md`.*
+*Cập nhật 27/09/2026 20:25 · b125g XONG — Đời LƯU ở `tree_persons.doi`
+(`luoc-do/40`, đã dán), trigger máy chủ chỉ tính lại nhánh bị đổi dòng cha;
+thẻ, bảng Danh sách người, file Excel đọc số đã lưu. Bàn thử 44/44
+(`do-b125g.mjs`). Chủ dự án bấm thử trên app thật (cây TH957) — ĐẠT cả:
+Xuất Excel, tự động cập nhật Đời, dòng Đời ở đầu thẻ người (b125g-2), nhóm
+Cha mẹ/Vợ chồng/Con đổi sang hàng nền đồng nhất thay hộp trắng. Luật + phép
+đo: `so-tay/xuat-excel.md` · `so-tay/the-thong-tin.md`.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -40,7 +39,6 @@ Quản trị hệ thống**.
 | **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
 | **b129c** — cột Tài khoản (`39` đã dán) | Danh sách người → Chỉnh sửa → gắn một người chưa có tài khoản; chọn một tài khoản đã liên kết (phải bị chặn, nói rõ gia phả); Đề xuất gỡ → người ấy vào Hồ sơ cá nhân bấm Đồng ý gỡ |
 | **b127d** — đề nghị sửa quan hệ (`33`, xong d-1→d-3) | Form người có quan hệ ngoài cây: bấm ✉ gửi đề nghị → Quản trị hệ thống → tab *Đề nghị sửa quan hệ* → Duyệt (gỡ) hoặc Từ chối |
-| **b125f+g** — Xuất Excel + Đời lưu ⚠ *dán `40` trước* | Danh sách người (cây 681) → *Xuất Excel ▾* → mỗi khuôn một lần, mở file xem cột Đời, ID con, ID chồng/vợ; cột *Đời* của bảng; mở thẻ một người ở sơ đồ xem hàng *Đời*. Rồi ở cây thử `TH957`: thêm BỐ cho người đứng đầu một dòng → Lưu → mở thẻ người ấy (Đời 2) và thẻ một người con cháu (tăng 1); xoá người bố vừa thêm → về như cũ |
 ---
 
 ## SQL — đã dán gì
@@ -65,13 +63,12 @@ vì đơn ấy chưa hề có nghĩa toàn phần mềm. Bài học đầy đủ
 của `duyet_de_xuat_gan()`/`ds_de_xuat_gan()`/`de_xuat_gan_cua_toi()` — dán lại
 `35`/`36` sau nó thì phải dán lại `39`. Dán sau `38`. Đo đủ trên bàn thử.
 
-**`40` (b125g) — ⚠ CHƯA DÁN.** Dán sau `39`. Thêm cột `tree_persons.doi`,
-hai hàm (`doi_tinh` · `tinh_lai_doi`, không ai ngoài trigger gọi được), tám
-trigger trên `union_children` · `unions` · `persons` · `tree_persons`, rồi
-điền Đời cho cả ba cây. Không định nghĩa lại hàm nào của file khác → không
-kéo theo chuỗi dán lại. Dán lại nhiều lần được. Tự kiểm 5 dòng; dòng 4 báo
-*XEM LẠI* nghĩa là có người còn trong cây mà Đời trống (chỉ vòng dữ liệu mới
-thế) — không phải lỗi dán. Bàn thử: `do-b125g.mjs` 44/44.
+**`40` (b125g) — ĐÃ DÁN lên THẬT 27/09, Đời hiện đúng ở app thật** (chủ dự
+án bấm thử trên cây TH957, Xuất Excel + Đời tự cập nhật đều đạt). Thêm cột
+`tree_persons.doi`, hai hàm (`doi_tinh` · `tinh_lai_doi`, không ai ngoài
+trigger gọi được), tám trigger trên `union_children` · `unions` · `persons`
+· `tree_persons`. Không định nghĩa lại hàm nào của file khác → không kéo
+theo chuỗi dán lại. Bàn thử: `do-b125g.mjs` 44/44.
 
 ---
 
@@ -92,15 +89,6 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 Sổ tay: `so-tay/luu-du-lieu.md` · kéo người, b124b chưa dựng:
 `so-tay/nguoi-xuyen-cay.md` · b124c: `so-tay/phan-quyen.md` *Nới hẹp tự duyệt*.
 ⚠ Ô gợi ý trên điện thoại thật chưa ai bấm lại — `so-tay/o-goi-y.md`.
-
-⚠ **b125 — BẢNG NGƯỜI trong trang Quản trị (chủ dự án chốt 23/09/2026) — XONG**
-a→c + e đã viết và tự kiểm; d (chọn nhiều dòng, sửa hàng loạt) BỎ hẳn theo
-quyết định 27/09/2026, chưa viết dòng nào nên không có gì gỡ. Điểm dừng bấm
-thử còn lại của e: bảng trên.
-
-⚠ **b125f+g — mã XONG, chờ dán `40` rồi bấm thử** (bảng trên). Luật Đời
-(dòng cha, không cha = Đời 1) và cách lưu (trigger chỉ tính lại nhánh bị
-đổi, cả sáu lối ghi, mọi cây chứa người gốc): `so-tay/xuat-excel.md`.
 
 ### Sau đó — chưa đặt số, chưa chốt
 
