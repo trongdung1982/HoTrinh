@@ -56,9 +56,10 @@ Không có "đổi": tài khoản đã liên kết thì phải GỠ trước, c�
 `dsThanhVien().maNguoi` = `tree_members.person_id` — cột CHẾT từ b126, và chỉ
 trả cho người kiểm duyệt được: cột hiện SAI, thành viên thường thấy trống.
 
-⚠⚠ **b132 (`luoc-do/41`): `ds_thanh_vien()` và `ds_cay_cua_tai_khoan()` cũng
-đọc cùng cột chết ấy** — bảng *Thành viên & quyền* (trang Cây) và trang *Tài
-khoản của tôi → Các gia phả tôi tham gia* đều có thể hiện sai người/tên. Vá
+⚠⚠ **b132 (`luoc-do/41`, đã dán 27/09): `ds_thanh_vien()` và
+`ds_cay_cua_tai_khoan()` cũng đọc cùng cột chết ấy** — bảng *Thành viên &
+quyền* (trang Cây) và trang chi tiết MỘT tài khoản của Quản trị hệ thống
+(`trang-tai-khoan.js`) đều có thể hiện sai người/tên. Vá
 bằng đúng một khuôn: thêm `left join tai_khoan tk on tk.user_id = tm.user_id`
 rồi `left join tree_persons tp on tp.person_id = tk.person_id and tp.tree_id
 = tm.tree_id`, đọc `tp.person_id` thay `tm.person_id` — join qua `tree_persons`
@@ -69,6 +70,15 @@ này mà không grant lại. Bàn thử: `do-b132.mjs` (15/15 + tự kiểm 5/5)
 kiểm chứng ngược bằng cách đọc thẳng `tree_members.person_id` sau khi vá để
 chắc nó vẫn còn giá trị CŨ — chứng minh phép thử bắt được lỗi thật, không
 phải trùng hợp.
+
+⚠⚠ **Bảng *Các gia phả tôi đang tham gia* (khu Tài khoản, `#thanh-vien`)
+KHÔNG đi qua hai hàm trên** — nó đọc `ds_gia_pha()`, và cột *"Tôi được gắn
+với ai trong sơ đồ?"* từng chép `phien.maNguoiGan` (một mã chung, b126d) cho
+MỌI dòng → P0012 hiện cả ở T388/TH957 là cây không có ông. Vá b132: hỏi
+`sb.dsCayCoNguoi(ma)` (đọc `tree_persons` qua luật `doc_tree_persons`, không
+SQL mới), chỉ hiện người ở dòng cây có mặt họ, dòng khác hiện *"Không có
+trong sơ đồ này"*. Bài học: trước khi hứa "bảng X sẽ đúng sau khi vá hàm Y",
+grep xem bảng X có THẬT gọi hàm Y không — tôi đã hứa sai một lần ở đây.
 
 ⚠ Ô tìm dùng `tim_tai_khoan_trong_cay()` — chỉ người ĐÃ vào cây (khách trở
 lên), KHÔNG dùng `timTaiKhoan()` (cái ấy tìm toàn hệ thống, dành cho Mời).

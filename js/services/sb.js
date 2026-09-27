@@ -5,8 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.36.0 · Cập nhật: 27/09/2026 (b125g) — đọc Đời đã lưu
-//            (`tree_persons.doi`, `luoc-do/40`). Lịch sử: `git log -p`.
+// Phiên bản: 0.37.0 · Cập nhật: 27/09/2026 (b132) — `dsCayCoNguoi()`: người
+//            được gắn có mặt ở những cây nào. Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -2002,6 +2002,25 @@ export async function docNguoiTheoMa(ma) {
                   'hoặc người ấy nằm trong gia phả bạn không có quyền xem.' };
   }
   return { ok: true, loi: null, dong: data };
+}
+
+/**
+ * Những cây (trong số cây mình XEM ĐƯỢC) có mặt người mang mã `ma` — đọc
+ * thẳng `tree_persons` qua luật `doc_tree_persons` (`luoc-do/26`).
+ *
+ * ⚠ Gắn tài khoản ↔ người là chuyện TOÀN PHẦN MỀM (`34`), nhưng người ấy chỉ
+ *   có mặt ở một vài cây. Bảng nào hỏi "gắn với ai TRONG SƠ ĐỒ này" phải lọc
+ *   qua đây — chép một mã cho mọi dòng là hiện người ở cây không có họ (b132).
+ *
+ * @returns {Promise<{ok:boolean, loi?:string, treeIds:Set<string>}>}
+ */
+export async function dsCayCoNguoi(ma) {
+  const k = layKhach();
+  if (!k || !ma) return { ok: false, loi: 'Chưa nối được máy chủ.', treeIds: new Set() };
+  const { data, error } = await k.from('tree_persons').select('tree_id')
+    .eq('person_id', String(ma));
+  if (error) return { ok: false, loi: cauLoi(error), treeIds: new Set() };
+  return { ok: true, loi: null, treeIds: new Set((data || []).map((r) => r.tree_id)) };
 }
 
 /**

@@ -6,9 +6,8 @@
 //            mật khẩu).
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/hop-thoai · trang-cay · o-bang
-// Phiên bản: 1.3.0 · Cập nhật: 27/09/2026 (b129c) — panel *Mã người & Dòng
-//            họ*: tự gỡ liên kết; duyệt/không đồng ý đề xuất gắn/gỡ do người
-//            khác nộp hộ từ bảng Danh sách người. Lịch sử: `git log -p`.
+// Phiên bản: 1.4.0 · Cập nhật: 27/09/2026 (b132) — cột "gắn với ai trong sơ
+//            đồ?" chỉ hiện người ở cây CÓ MẶT họ. Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -26,7 +25,7 @@ import {
   layDanhSachGiaPha, doiMatKhau, dangXuat, nguoiDangNhap,
   loiMoiQthtCuaToi, nhanQuyenQtht, tuChoiQuyenQtht,
   deXuatGanCuaToi, nopDeXuatGan, rutDeXuatGan, duyetDeXuatGan, goGanTaiKhoanCuaToi,
-  deXuatDongHoCuaToi, nopDeXuatDongHo, rutDeXuatDongHo, datDongHoQtht,
+  deXuatDongHoCuaToi, nopDeXuatDongHo, rutDeXuatDongHo, datDongHoQtht, dsCayCoNguoi,
 } from '../../services/sb.js';
 import { hoi, bao } from './hop-thoai.js';
 import { goiYNguoi, moSoDo } from './trang-cay.js';
@@ -67,18 +66,20 @@ export async function mountKhuTaiKhoan(sec, phien) {
   //   `deXuatDongHoCuaToi()` biết đơn gắn mã/dòng họ ĐANG CHỜ của chính mình
   //   (b126d) — mã/dòng họ ĐÃ có thì đã nằm sẵn trong `phien`, không hỏi lại.
   const hashLuc = window.location.hash;
-  const [nguoi, kqCay, moiQtht, donGan, donDongHo] = await Promise.all([
+  const [nguoi, kqCay, moiQtht, donGan, donDongHo, coMat] = await Promise.all([
     nguoiDangNhap().catch(() => null), layDanhSachGiaPha(),
     loiMoiQthtCuaToi().catch(() => ({})),
     deXuatGanCuaToi().catch(() => ({ coDon: false })),
     deXuatDongHoCuaToi().catch(() => ({ coDon: false })),
+    phien.maNguoiGan ? dsCayCoNguoi(phien.maNguoiGan).catch(() => ({ ok: false }))
+      : Promise.resolve({ ok: true, treeIds: new Set() }),
   ]);
   if (window.location.hash !== hashLuc) return;
 
   veHoSo(sec, phien, nguoi);
   veQuyenHeThong(sec, phien, moiQtht);
   veHoSoDon(sec, phien, donGan, donDongHo, kqCay, napLai);
-  veBangCay(sec, phien, kqCay, () => mountKhuTaiKhoan(sec, phien));
+  veBangCay(sec, phien, kqCay, coMat, () => mountKhuTaiKhoan(sec, phien));
 }
 
 // ============================================================
@@ -416,7 +417,7 @@ function trangThaiCuaToi(c) {
   return null;
 }
 
-function veBangCay(sec, phien, kqCay, napLai) {
+function veBangCay(sec, phien, kqCay, coMat, napLai) {
   const $ = (id) => sec.querySelector('#' + id);
   const tbA = $('tk-cay-tbody');
   const tbB = $('gia-pha-extra');
@@ -434,7 +435,7 @@ function veBangCay(sec, phien, kqCay, napLai) {
   }
 
   tbA.innerHTML = '';
-  ds.forEach((c, i) => (i < SO_HIEN_TRUOC ? tbA : tbB).append(dongCay(c, phien)));
+  ds.forEach((c, i) => (i < SO_HIEN_TRUOC ? tbA : tbB).append(dongCay(c, phien, coMat)));
 
   const them = ds.length - SO_HIEN_TRUOC;
   if (them <= 0) return;
@@ -452,12 +453,13 @@ function veBangCay(sec, phien, kqCay, napLai) {
 }
 
 /**
- * ⚠ b126d — cột "Tôi được gắn với ai" đọc `phien.maNguoiGan`/`tenNguoiGan`,
- *   MỘT giá trị chung cho mọi dòng: gắn nay là chuyện của TÀI KHOẢN, không
- *   theo cây (`34`). Sửa/nộp mã ở panel *Mã người & Dòng họ* phía trên, không
- *   còn nút riêng trên từng dòng cây.
+ * ⚠ Cột "Tôi được gắn với ai trong sơ đồ?": gắn là chuyện của TÀI KHOẢN
+ *   (`34`), một mã chung — nhưng chỉ hiện ở dòng cây CÓ MẶT người ấy
+ *   (`coMat`, đọc `tree_persons`). Bản b126d chép một mã cho mọi dòng, nên
+ *   hiện người ở cả cây không có họ (b132). Sửa/nộp mã ở panel *Mã người &
+ *   Dòng họ* phía trên, không có nút riêng trên từng dòng cây.
  */
-function dongCay(c, phien) {
+function dongCay(c, phien, coMat) {
   const trangThai = trangThaiCuaToi(c);
   const cay = { treeId: c.fileId, ten: c.ten || '', maCay: c.treeCode };
 
@@ -468,9 +470,10 @@ function dongCay(c, phien) {
 
   let gan = '';
   if (trangThai === 'thanhvien') {
-    gan = phien.maNguoiGan
-      ? tenVaPhu(phien.tenNguoiGan || phien.maNguoiGan, 'Mã: ' + phien.maNguoiGan)
-      : span('muted', 'Chưa gắn người');
+    gan = !phien.maNguoiGan ? span('muted', 'Chưa gắn người')
+      : !coMat.ok ? span('muted', 'Không đọc được')
+      : !coMat.treeIds.has(c.fileId) ? span('muted', 'Không có trong sơ đồ này')
+      : tenVaPhu(phien.tenNguoiGan || phien.maNguoiGan, 'Mã: ' + phien.maNguoiGan);
   }
 
   const trang = trangThai === 'thanhvien' ? huyHieu('Đã duyệt')

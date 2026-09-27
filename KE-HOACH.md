@@ -1,9 +1,10 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 27/09/2026 21:40 · b132 — sửa `ds_thanh_vien()`/`ds_cay_cua_tai_khoan()`
-đọc cột chết `tree_members.person_id`, viết xong + bàn thử ĐẠT
-(`luoc-do/41`, `do-b132.mjs`), **CHỜ chủ dự án dán lên THẬT** rồi bấm thử
-*Tài khoản của tôi → Các gia phả tôi tham gia* + bảng *Thành viên & quyền*.
+*Cập nhật 27/09/2026 23:00 · b132 — (1) `ds_thanh_vien()`/`ds_cay_cua_tai_khoan()`
+thôi đọc cột chết `tree_members.person_id` (`luoc-do/41`, ĐÃ DÁN); (2) bảng
+*Các gia phả tôi đang tham gia* (`#thanh-vien`) thôi chép một mã người cho
+mọi dòng — chỉ hiện người ở cây có mặt họ (`khu-tai-khoan.js` +
+`sb.dsCayCoNguoi()`, không SQL mới). **Chờ bấm thử** (điểm dừng ở bảng dưới).
 Trước đó, b125g XONG — Đời LƯU ở `tree_persons.doi` (`luoc-do/40`, đã dán),
 trigger máy chủ chỉ tính lại nhánh bị đổi dòng cha; thẻ, bảng Danh sách
 người, file Excel đọc số đã lưu. Bàn thử 44/44 (`do-b125g.mjs`). Chủ dự án
@@ -42,6 +43,7 @@ Quản trị hệ thống**.
 | **b117** — khu Tài khoản | ①bảng *Các gia phả tôi tham gia* đúng mã (tài khoản thường, qua RLS) ②đổi mật khẩu |
 | **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
 | **b129c** — cột Tài khoản (`39` đã dán) | Danh sách người → Chỉnh sửa → gắn một người chưa có tài khoản; chọn một tài khoản đã liên kết (phải bị chặn, nói rõ gia phả); Đề xuất gỡ → người ấy vào Hồ sơ cá nhân bấm Đồng ý gỡ |
+| **b132** — cột *gắn với ai trong sơ đồ?* | `#thanh-vien` → bảng *Các gia phả tôi đang tham gia*: dòng NTB hiện P0012, dòng T388/TH957/LVT433/NPGQ8C9 hiện *"Không có trong sơ đồ này"* (trừ cây nào P0012 thật có mặt) |
 | **b127d** — đề nghị sửa quan hệ (`33`, xong d-1→d-3) | Form người có quan hệ ngoài cây: bấm ✉ gửi đề nghị → Quản trị hệ thống → tab *Đề nghị sửa quan hệ* → Duyệt (gỡ) hoặc Từ chối |
 ---
 
@@ -74,13 +76,11 @@ trigger gọi được), tám trigger trên `union_children` · `unions` · `per
 · `tree_persons`. Không định nghĩa lại hàm nào của file khác → không kéo
 theo chuỗi dán lại. Bàn thử: `do-b125g.mjs` 44/44.
 
-**`41` (b132) — ĐÃ VIẾT, bàn thử ĐẠT (15/15 + tự kiểm 5/5), CHƯA dán lên
-THẬT.** Sửa `ds_thanh_vien()` và `ds_cay_cua_tai_khoan()` đọc cột chết
+**`41` (b132) — ĐÃ DÁN lên THẬT 27/09.** Bàn thử 15/15 + tự kiểm 5/5. Sửa `ds_thanh_vien()` và `ds_cay_cua_tai_khoan()` đọc cột chết
 `tree_members.person_id` (chết từ `26`/b126) → đổi sang `tai_khoan.person_id`
 qua `tree_persons`, cùng thuốc với `39` mục 8 (`ds_lien_ket_cay`, đã dán
 26/09). `create or replace`, không đổi cột trả về, không cần `grant` lại.
-Bàn thử: `do-b132.mjs`. ⚠ **ĐƯỢC dán ngay** — không đụng RLS, không đổi hành
-vi cửa ghi, chỉ đổi nguồn đọc của hai hàm chỉ-đọc.
+Bàn thử: `do-b132.mjs`. Không đụng RLS, không đổi cửa ghi.
 
 ---
 
@@ -89,6 +89,23 @@ vi cửa ghi, chỉ đổi nguồn đọc của hai hàm chỉ-đọc.
 Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc nào đụng
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
+
+### ▶ b133 — hai bảng thông tin chi tiết (chủ dự án yêu cầu 27/09/2026) · Opus
+
+1. **Bấm tên/mã ở cột *"Tôi được gắn với ai trong sơ đồ?"*** (`#thanh-vien`)
+   → bảng thông tin NGƯỜI: thông tin cá nhân · thông tin gia đình · người ấy
+   có mặt ở những cây nào · vai trò trong cây. ⚠ Phần gia đình hiện gắn chặt
+   với cây đang mở (`repo.js`), chưa đọc được một người ngoài ngữ cảnh ấy —
+   cần đường đọc mới; `docNguoiTheoMa()` chỉ có dòng `persons` thô.
+2. **Bấm tên/mã ở *Sổ tài khoản toàn hệ thống*** (`#quan-tri-he-thong`) →
+   bảng thông tin TÀI KHOẢN: tên · email · mã · gắn với ai · làm chủ cây nào ·
+   tham gia cây nào · quyền ở từng cây. Phần lớn dữ liệu đã có
+   (`ds_tai_khoan_he_thong()` · `ds_cay_cua_tai_khoan()`); trang chi tiết
+   `#quan-tri-he-thong/tai-khoan/<mã>` đã có — xem nó thiếu gì trước khi dựng mới.
+3. Trong cả hai, **bấm tên cây → trang cây có sẵn** (`#gia-pha/cay/<mã cây>`).
+
+Chưa chốt: hai bảng là hộp nổi (popup) hay trang riêng; "vai trò trong cây"
+ở mục 1 là vai của tài khoản gắn với người ấy, hay vị trí của người trong sơ đồ.
 
 ### Trang Quản trị — đọc `so-tay/trang-quan-tri.md` trước khi đụng
 
@@ -152,7 +169,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Bộ bất biến bố cục đang gác nhầm nhánh** — xem ngay dưới bảng. Đường chạy tạm: `--import ./sang-supabase.mjs` (b128b) — ⚠ KHÔNG ăn vào bài chạy trong Chrome; `kiem-buoc-80` dùng bản `kiem-buoc-80-sb.mjs` | `/kiem-tra` phép 9 |
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |
 | Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
-| ⚠ **`tree_members.person_id` vẫn là cột chết từ b126** — `duyet_thanh_vien()` (đơn xin vào cây) vẫn GHI vào đó, không ai đọc để dùng thật nữa. Bản vá đọc (b132, `luoc-do/41`) đã viết + đo ĐẠT, **chờ dán lên THẬT** | `so-tay/luu-mot-dong-quan-tri.md` |
+| ⚠ **`tree_members.person_id` vẫn là cột chết từ b126** — `duyet_thanh_vien()` (đơn xin vào cây) vẫn GHI vào đó; từ b132 không hàm đọc nào dùng nó nữa. Bỏ hẳn cột là một bước riêng | `so-tay/luu-mot-dong-quan-tri.md` |
 | ⚠ **Sao lưu KHÔNG chép ảnh** — chỉ liệt kê. Ảnh vẫn nằm đúng một chỗ | `KIEN-TRUC.md` mục 7 |
 | ⚠ **Chưa ai thử KHÔI PHỤC từ file sao lưu** — *có file* khác *khôi phục được* | `sao-luu/HUONG-DAN-SAO-LUU.md` |
 | Bốn màn hình chưa mở được (sao lưu · dựng gia phả mới · bỏ chọn · quyền ảnh) | `KIEN-TRUC.md` mục 6 |
