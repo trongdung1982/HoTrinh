@@ -13,6 +13,12 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   vi mới (nút, khay…) làm thẳng ở `QuanTri.html`/CSS/JS được, miễn không vẽ
   lại các mảng đã chép nguyên. Mục *Luật chung* dưới đã sửa lại theo ý này.
 
+- **Trang cây đổi `.subnav` dọc → `.tabs`/`.chip` ngang, theo lệnh thẳng của
+  chủ dự án (b129)** — TÁI DÙNG mẫu `.tabs` sẵn có trong bản chép nguyên
+  (`#gia-pha`/`#kiem-duyet`), không tự vẽ mới nên không phạm *Đính chính*
+  trên. Lặp ở BỐN section riêng (mỗi mục một section) — `trang-cay.js` xuất
+  `wireTabsTrangCay()`/`datSoDon()` cho cả `trang-nguoi.js` gọi chung.
+
 ## Luật chung
 
 - **Giao diện = NGUYÊN FILE prototype quantri3, cho phần ĐÃ CÓ trong đó.**
@@ -81,17 +87,11 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
 - **Mọi chuyện của Ô GỢI Ý nay ở `so-tay/o-goi-y.md`** — nó dùng chung cho
   cả form thêm người, không còn là việc riêng của trang này (b124a2).
 
-- **Font `Georgia` thiếu chữ `ề` · `ắ` · `ồ`** (đo b123, 21/09/2026). CSS
-  quantri3 đặt `h1{font:36px Georgia,serif}` và `.modal-title{…Georgia…}`;
-  Chrome không rơi sang font dự phòng mà **tự ghép dấu**, nên tựa hiện thành
-  *"Thành viên và quyê ̀n"*, *"Gă ́n mã người trong sơ đô ̀"* — dấu rời hẳn ra.
-  Đo bằng ba dòng cùng chuỗi chữ, ba font: Georgia vỡ, `system-ui` và
-  `Times New Roman` đúng. **Không phải hiện tượng của ảnh headless** — người
-  thật trên Chrome/Windows thấy y hệt. **ĐÃ SỬA cùng ngày, chủ dự án duyệt**:
-  một dòng ở phần app của `quan-tri.css` (1.1.3) đè `.logo, h1, .modal-title`
-  thành `Constantia, Cambria, Times New Roman, serif` — bản chép nguyên KHÔNG
-  bị đụng. ⚠ Không để Georgia sót lại trong chuỗi: macOS có Georgia mà không
-  có Constantia sẽ rơi về nó và vỡ y như cũ.
+- **Font `Georgia` thiếu chữ `ề` · `ắ` · `ồ`** (đo b123, 21/09/2026) — Chrome tự
+  ghép dấu rời thay vì rơi font dự phòng, cả headless lẫn máy thật đều vỡ. ĐÃ
+  SỬA: `quan-tri.css` phần app đè `.logo,h1,.modal-title` thành `Constantia,
+  Cambria, Times New Roman, serif` — bản chép nguyên không đụng. ⚠ Đừng để
+  Georgia sót lại trong chuỗi: macOS có Georgia mà không Constantia vỡ lại y hệt.
 - **Menu *Chọn hành động* của dòng CUỐI bảng bị cắt cụt** (đo b123) —
   `.panel{overflow:auto}` của quantri3 cắt menu ở mép bảng, người bấm phải
   cuộn trong bảng mới thấy mục. Nới khung ảnh không chữa được; ảnh

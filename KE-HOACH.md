@@ -1,10 +1,10 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 26/09/2026 · b125c XONG — bảng *Danh sách người* sửa tại chỗ + Lưu
-theo dòng (`luu_cay()` gọi thẳng qua `services/hinh-dang.js`, không qua
-`repo.js`). Tự kiểm 303 đạt + `/kiem-tra` 10 phép; **chưa ai bấm thật trên máy
-chủ thật** — chỉ chạy trên bản giả và ba bộ kiểm tại chỗ. Kế tiếp cho AI:
-**b125d** — chọn nhiều dòng, sửa hàng loạt một trường.*
+*Cập nhật 27/09/2026 · b129 (tab ngang + mặc định chỉ xem) XONG — chủ dự án
+yêu cầu giữa chừng, chen trước b125d. Tự kiểm 303 đạt + `/kiem-tra` 10 phép;
+**chưa ai bấm thật trên máy chủ thật**. Kế tiếp cho AI: **b129c** — cột *Gắn
+người vào tài khoản*, đang CHỜ CHỐT "ai được nộp đề xuất hộ" trước khi viết
+SQL (đụng phân quyền) — xem bảng dưới. Sau đó mới tới b125d.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
 **đừng nới trần**. Ba luật giữ nó gọn:
@@ -83,15 +83,23 @@ Sổ tay: `so-tay/luu-du-lieu.md` · kéo người, b124b chưa dựng:
 ### ⚠ b125 — BẢNG NGƯỜI trong trang Quản trị (chủ dự án chốt 23/09/2026)
 
 Bấm tên cây ở khu Gia phả → trang cây → mục *Danh sách người*: bảng phẳng kiểu
-trang tính, để **quản lý nhiều trường nội dung**. Cột *Tài khoản* chỉ để XEM —
-gắn tài khoản ↔ người là việc của b126 (Hồ sơ cá nhân), **b125b đã bỏ** 23/09.
+trang tính, để **quản lý nhiều trường nội dung**.
 
 | Bước | Việc | Điểm dừng |
 |---|---|---|
-| **b125d** ← KẾ TIẾP | Chọn nhiều dòng + sửa hàng loạt một trường | Sửa 10 người một lượt, hoàn tác được |
-| **b125e** | Xuất Excel; nối vào đường NHẬP đã có | Xuất ra mở được bằng Excel |
+| **b129c** ← KẾ TIẾP | Cột *Gắn người vào tài khoản* — quản trị chọn 1 tài khoản ở dòng người, GỬI ĐỀ XUẤT (chủ dự án chốt 27/09: không ghi thẳng). Cửa cũ `nop_de_xuat_gan()` chỉ tự nộp cho CHÍNH MÌNH — cần RPC MỚI cho nộp HỘ. **Chưa viết SQL** — đang hỏi: ai được nộp hộ (chủ cây + quản trị gia phả, hay rộng hơn)? | Chọn tài khoản ở dòng người → Gửi đề xuất → đơn hiện ở *Đơn Hồ sơ cá nhân* (QTHT) hoặc account đó tự duyệt |
+| b125d | Chọn nhiều dòng + sửa hàng loạt một trường | Sửa 10 người một lượt, hoàn tác được |
+| b125e | Xuất Excel; nối vào đường NHẬP đã có | Xuất ra mở được bằng Excel |
 
 ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
+
+### b129 — TAB ngang thay `.subnav` dọc + sửa tại chỗ phải BẤM mới bật (27/09)
+
+XONG cả hai phần (chủ dự án yêu cầu giữa chừng). Phần thứ ba — cột *Gắn người
+vào tài khoản* — số là **b129c**, xem bảng b125 ở trên.
+
+Sổ tay: `so-tay/trang-quan-tri.md` mục *Đính chính* (lệ ngoại lệ *"đổi bố cục
+đã chép nguyên"*) · `so-tay/luu-mot-dong-quan-tri.md` không đổi.
 
 ### Sau đó — chưa đặt số, chưa chốt
 

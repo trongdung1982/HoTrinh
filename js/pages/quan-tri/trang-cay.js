@@ -6,10 +6,10 @@
 //            dùng chung với trang một tài khoản.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-goi-y · o-bang
-// Phiên bản: 1.3.0 · Cập nhật: 26/09/2026 (b126d) — bỏ mục *Đề xuất gắn
-//            người*: gắn mã nay là chuyện của TÀI KHOẢN, không của một cây —
-//            dời sang khu Tài khoản (Hồ sơ cá nhân) + tab của Quản trị hệ
-//            thống (`khu-ho-so-don.js`). Lịch sử các bản trước: `git log -p`.
+// Phiên bản: 1.4.0 · Cập nhật: 27/09/2026 (b129) — thanh mục con thành TAB
+//            ngang (`.tabs`/`.chip`) thay `.subnav` dọc, lặp ở CẢ BỐN section
+//            (`wireTabsTrangCay`/`datSoDon`, export cho `trang-nguoi.js` dùng
+//            chung). Lịch sử các bản trước: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -130,6 +130,35 @@ export async function moSoDo(cay, phien) {
 
 function datNguCanh(sec, chu) {
   for (const x of sec.querySelectorAll('[data-tree-context]')) x.textContent = chu;
+}
+
+/**
+ * Thanh tab của trang cây (b129) — CÙNG MỘT khối `.tabs` lặp lại ở BỐN section
+ * (`#tree-detail` · `#tree-people` · `#tree-members` · `#tree-requests`), vì
+ * mỗi mục là một `<section>` riêng (`khung.js` chỉ hiện một section một lúc),
+ * không phải các pane trong cùng một section như bốn chip của `#gia-pha`.
+ *
+ * Gọi ĐẦU mount, trước khi chờ mạng: chuyển tab bấm được ngay, không phải đợi
+ * dữ liệu. Số đơn xin vào (`[data-so-don]`) thì mount tự cập nhật sau khi có
+ * `dsThanhVien()` — hàm này không gọi mạng.
+ */
+export function wireTabsTrangCay(sec, ctx) {
+  const oTabs = sec.querySelector('.tabs');
+  if (!oTabs) return;
+  for (const b of oTabs.querySelectorAll('[data-td-muc]')) {
+    const ma = b.dataset.tdMuc;
+    b.classList.toggle('active', ma === ctx.muc);
+    b.onclick = () => {
+      window.location.hash = ma === 'loi-moi'
+        ? duongDan('gia-pha', 'moi', ctx.thamSo) : ctx.hashMuc(ma);
+    };
+  }
+}
+
+/** Đặt số ở badge *Đơn xin vào* của tab, sau khi đã có `dsThanhVien()`. */
+export function datSoDon(sec, soDon) {
+  const b = sec.querySelector('[data-so-don]');
+  if (b) b.textContent = soDon ? String(soDon) : '';
 }
 
 function demVai(daVao) {
@@ -255,6 +284,7 @@ export async function hoiTuChoiXinDoiVai(t, cay, napLai) {
 // ============================================================
 
 async function mountThanhVien(sec, ctx, hashLuc) {
+  wireTabsTrangCay(sec, ctx);
   const tb = sec.querySelector('#tm-tbody');
   const dem = sec.querySelector('#tm-dem');
   const nhac = sec.querySelector('#tm-chi-xem');
@@ -277,6 +307,7 @@ async function mountThanhVien(sec, ctx, hashLuc) {
 
   const napLai = () => mountThanhVien(sec, ctx, window.location.hash);
   if (!kq.ok) { dongTrong(tb, 5, kq.loi || 'Không đọc được danh sách tài khoản.', napLai); return; }
+  datSoDon(sec, kq.ds.filter((t) => !t.daDuyet && !t.moiLuc).length);
 
   // Nợ b105: quản trị được phong XEM được bảng mà không đổi được quyền của ai.
   if (!duocDoiQuyen) {
@@ -364,6 +395,7 @@ function dongThanhVien(t, cay, duocDoiQuyen, napLai, xin) {
 // ============================================================
 
 async function mountDonXinVao(sec, ctx, hashLuc) {
+  wireTabsTrangCay(sec, ctx);
   const tb = sec.querySelector('#tr-tbody');
   const dem = sec.querySelector('#tr-dem');
   dem.textContent = '';
@@ -384,6 +416,7 @@ async function mountDonXinVao(sec, ctx, hashLuc) {
   // ⚠ Đơn = chưa duyệt VÀ không phải lời mời (`moiLuc` trống) — b110c.
   const ds = kq.ds.filter((t) => !t.daDuyet && !t.moiLuc);
   dem.textContent = ds.length + ' đơn';
+  datSoDon(sec, ds.length);
   if (!ds.length) { dongTrong(tb, 7, 'Không có đơn xin vào nào đang chờ.'); return; }
 
   const c = cayNho(cay);
@@ -417,19 +450,12 @@ async function mountDonXinVao(sec, ctx, hashLuc) {
 async function mountChiTiet(sec, ctx, hashLuc) {
   const $ = (id) => sec.querySelector('#' + id);
 
-  for (const b of sec.querySelectorAll('[data-td-muc]')) {
-    const ma = b.dataset.tdMuc;
-    if (b.parentElement.classList.contains('subnav')) b.classList.toggle('active', ma === ctx.muc);
-    b.onclick = () => {
-      window.location.hash = ma === 'loi-moi'
-        ? duongDan('gia-pha', 'moi', ctx.thamSo) : ctx.hashMuc(ma);
-    };
-  }
+  wireTabsTrangCay(sec, ctx);
+  sec.querySelector('.tabs').hidden = false;
+  datSoDon(sec, 0);
 
-  const layout = sec.querySelector('.layout');
   const tongQuan = $('td-tong-quan');
   const noiMuc = $('td-muc');
-  layout.hidden = false;
   tongQuan.hidden = ctx.muc !== 'tong-quan';
   noiMuc.hidden = ctx.muc === 'tong-quan';
   noiMuc.innerHTML = '';
@@ -437,14 +463,15 @@ async function mountChiTiet(sec, ctx, hashLuc) {
   $('td-ten').textContent = 'Đang mở gia phả…';
   $('td-phu').textContent = '';
   $('td-trang-thai').hidden = true;
-  $('td-so-don').hidden = true;
 
   const { cay, loi } = await timCay(ctx);
   if (window.location.hash !== hashLuc) return;
   if (!cay) {
     $('td-ten').textContent = 'Không mở được gia phả';
     $('td-phu').textContent = loi;
-    layout.hidden = true;
+    sec.querySelector('.tabs').hidden = true;
+    tongQuan.hidden = true;
+    noiMuc.hidden = true;
     return;
   }
 
@@ -466,8 +493,7 @@ async function mountChiTiet(sec, ctx, hashLuc) {
   const ds = kqTV.ok ? kqTV.ds : [];
   const daVao = ds.filter((t) => t.daDuyet);
   const don = ds.filter((t) => !t.daDuyet && !t.moiLuc);
-  $('td-so-don').textContent = String(don.length);
-  $('td-so-don').hidden = !don.length;
+  datSoDon(sec, don.length);
 
   if (ctx.muc !== 'tong-quan') return;
 

@@ -7,7 +7,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · services/hinh-dang · domains/person ·
 //            utils/{text,date} · quan-tri/trang-cay · quan-tri/o-bang
-// Phiên bản: 0.2.0 · Cập nhật: 26/09/2026 (b125c) — sửa tại chỗ + Lưu theo dòng
+// Phiên bản: 0.3.0 · Cập nhật: 27/09/2026 (b129) — thanh tab dùng chung
+//   (`wireTabsTrangCay`) + mặc định KHÔNG sửa, nút "Chỉnh sửa" mới bật
 // Sổ tay   : so-tay/trang-quan-tri.md · so-tay/luu-mot-dong-quan-tri.md
 // ============================================================
 //
@@ -20,13 +21,15 @@
 //
 // ⚠ Quyền sửa CẢ CÂY đọc từ `cay.suaDuoc`; trực hệ hẹp hơn do MÁY CHỦ tự chặn
 //   lúc Lưu — trang không tính trước, chỉ hiện đúng câu máy chủ trả về.
+//   `capSua` còn nhân thêm `cheDoSua` (b129): cây cho sửa KHÔNG có nghĩa là
+//   bảng đang sửa — phải bấm "Chỉnh sửa" trước, mặc định luôn TẮT.
 
 import { layDong, dsThanhVien, luuCay } from '../../services/sb.js';
 import { rapCay, soSanh, coGiDeGhi, tangSoSauKhiLuu } from '../../services/hinh-dang.js';
 import { updatePerson } from '../../domains/person.js';
 import { fullName, removeDiacritics } from '../../utils/text.js';
 import { stampNow } from '../../utils/date.js';
-import { timCay, cumCay, cayNho } from './trang-cay.js';
+import { timCay, cumCay, cayNho, wireTabsTrangCay, datSoDon } from './trang-cay.js';
 import { td, span, nutLink, nutNho, dongTrong, datHuyHieu } from './o-bang.js';
 
 /** Bao nhiêu dòng một trang. 50 vừa một màn cuộn, và 681 người ra 14 trang. */
@@ -39,6 +42,9 @@ let loc = '';
 let hienXoa = false;
 let sapTheo = 'id';
 let sapNguoc = false;
+/** Mặc định KHÔNG cho sửa — phải bấm "Chỉnh sửa" mới bật (b129), TẮT lại mỗi
+ *  lần mở trang này, kể cả cùng một cây, để khỏi sửa nhầm lúc chỉ định xem. */
+let cheDoSua = false;
 
 // --- Ba biến của đường GHI (b125c) — cùng đời sống với `cayDangXem` --------
 let treeId = '';
@@ -116,7 +122,9 @@ export async function mountTrangNguoi(sec, ctx, hashLuc) {
     goc = new Map(); treeId = ''; treeRevision = 0;
   }
   dangLuu = false; moiDong = [];
+  cheDoSua = false;   // mặc định KHÔNG cho sửa mỗi lần mở trang này (b129)
 
+  wireTabsTrangCay(sec, ctx);
   $('tp-dau').innerHTML = '';
   dongTrong(tb, COT.length, 'Đang đọc danh sách người…');
 
@@ -142,7 +150,10 @@ export async function mountTrangNguoi(sec, ctx, hashLuc) {
   treeRevision = (kq.dong.tree && Number(kq.dong.tree.revision)) || 0;
 
   const emailTheoMa = new Map();
-  if (kqTV.ok) for (const t of kqTV.ds) if (t.maNguoi) emailTheoMa.set(t.maNguoi, t.email);
+  if (kqTV.ok) {
+    for (const t of kqTV.ds) if (t.maNguoi) emailTheoMa.set(t.maNguoi, t.email);
+    datSoDon(sec, kqTV.ds.filter((t) => !t.daDuyet && !t.moiLuc).length);
+  }
 
   // `goc` = bản GỐC từng người, camelCase với `revision` đi tròn — nền so
   // sánh của mọi lần Lưu. `ds` là bản HIỆN trên bảng, thêm cột `emailGan`;
@@ -191,10 +202,19 @@ function locVaSap(ds) {
   return hop;
 }
 
+/** Nút "Chỉnh sửa"/"Xong" — mặc định TẮT, ẩn hẳn khi cây không cho sửa. */
+function veNutSua(sec, cay, ve) {
+  const b = sec.querySelector('#tp-sua-nut');
+  if (!cay.suaDuoc) { b.hidden = true; return; }
+  b.hidden = false;
+  b.textContent = cheDoSua ? 'Xong' : 'Chỉnh sửa';
+  b.onclick = () => { cheDoSua = !cheDoSua; ve(); };
+}
+
 function veBang(sec, ds, docDuocTK, cay, ctx, ve) {
   const $ = (id) => sec.querySelector('#' + id);
   const hop = locVaSap(ds);
-  const capSua = Boolean(cay.suaDuoc);
+  const capSua = Boolean(cay.suaDuoc) && cheDoSua;
   const soCot = COT.length + (capSua ? 1 : 0);
 
   const soTrang = Math.max(1, Math.ceil(hop.length / MOI_TRANG));
@@ -206,7 +226,9 @@ function veBang(sec, ds, docDuocTK, cay, ctx, ve) {
     + (docDuocTK ? '' : ' · không đọc được cột Tài khoản');
   $('tp-loc-dem').textContent = hop.length === ds.length
     ? '' : 'Lọc còn ' + hop.length + ' người';
-  datHuyHieu($('tp-trang-thai'), capSua ? 'Sửa được' : 'Chỉ xem', capSua ? '' : 'wait');
+  veNutSua(sec, cay, ve);
+  if (!cay.suaDuoc) datHuyHieu($('tp-trang-thai'), 'Chỉ xem', 'wait');
+  else datHuyHieu($('tp-trang-thai'), cheDoSua ? 'Đang sửa' : 'Xem');
 
   veDau(sec, ve, capSua);
 
