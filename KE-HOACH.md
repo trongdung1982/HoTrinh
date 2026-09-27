@@ -1,12 +1,13 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 27/09/2026 · b125e XONG (mã, bản ĐƠN GIẢN) — nút *Xuất Excel* ở bảng
-Danh sách người (`trang-nguoi.js` + `xuat-excel.js`), sheet `DuLieu` cùng
-khuôn cột `domains/excel.js`. Chủ dự án bấm thử, ĐẠT — nhưng phát hiện ngay
-**b125f, việc kế tiếp, CHỦ DỰ ÁN CHỌN LÀM BẰNG OPUS** (đủ lớn, nhiều quyết
-định thiết kế): xem đặc tả đầy đủ ở mục *b125f* dưới "Sau đó". b130 (bỏ trần
-`KE-HOACH.md`, thêm "duyệt hàng loạt Kiểm duyệt" + "xoá nhật ký hàng loạt")
-làm ngay trước b125e, xem `git log`.*
+*Cập nhật 27/09/2026 · b125f XONG (mã, bằng Opus) — nút *Xuất Excel* nay có ô
+chọn khuôn: **bảng phẳng cột động** (`dungBangPhang()`, thay hẳn bản b125e cũ
+hay bỏ sót cặp cha/mẹ thứ hai) hoặc **hai sheet tách người/gia đình**
+(`dungHaiSheet()`). Cả hai không nạp lại được qua Nhập Excel — chỉ để xem/sửa
+tay/báo cáo. Đã thử bằng Node (dữ liệu `tai-lieu/giapha-nguyen-trong-bac.json`
++ ca giả 2 cặp cha mẹ đẻ/3 hôn nhân) — không mất dữ liệu. **Điểm dừng: CHỦ DỰ
+ÁN CHƯA BẤM THỬ trên trình duyệt thật** — bấm ở *Danh sách người → chọn khuôn
+→ Xuất Excel*, mở file `.xlsx` ra xem cột/dữ liệu đúng không.
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -39,6 +40,7 @@ Quản trị hệ thống**.
 | **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
 | **b129c** — cột Tài khoản (`39` đã dán) | Danh sách người → Chỉnh sửa → gắn một người chưa có tài khoản; chọn một tài khoản đã liên kết (phải bị chặn, nói rõ gia phả); Đề xuất gỡ → người ấy vào Hồ sơ cá nhân bấm Đồng ý gỡ |
 | **b127d** — đề nghị sửa quan hệ (`33`, xong d-1→d-3) | Form người có quan hệ ngoài cây: bấm ✉ gửi đề nghị → Quản trị hệ thống → tab *Đề nghị sửa quan hệ* → Duyệt (gỡ) hoặc Từ chối |
+| **b125f** — Xuất Excel bản đầy đủ | Danh sách người → chọn khuôn (*bảng phẳng* / *hai sheet*) → Xuất Excel → mở file `.xlsx` xem cột/dữ liệu, thử trên người có ≥2 hôn nhân hoặc con nuôi nếu cây có |
 ---
 
 ## SQL — đã dán gì
@@ -88,49 +90,13 @@ a→c + e đã viết và tự kiểm; d (chọn nhiều dòng, sửa hàng lo�
 quyết định 27/09/2026, chưa viết dòng nào nên không có gì gỡ. Điểm dừng bấm
 thử còn lại của e: bảng trên.
 
-### ⚠ b125f ← KẾ TIẾP — Xuất Excel bản ĐẦY ĐỦ (chủ dự án chọn làm bằng OPUS)
-
-Phát hiện lúc bấm thử b125e (27/09/2026): bảng phẳng hiện tại (`xuat-excel.js`
-`dungHangExcel()`) chỉ lấy union cha-mẹ ĐẦU TIÊN tìm thấy cho mỗi người — ai
-có **hai cặp cha mẹ** (ruột + nuôi, hoặc nhiều cặp nuôi) thì cặp thứ hai trở
-đi bị bỏ, im lặng. Số lượng khác nhau tuỳ NGƯỜI và tuỳ CÂY: có cây không ai
-có cha mẹ nuôi, có cây một người có 2+ cặp; có người 1 cuộc hôn nhân, có
-người 3+. Bảng phẳng một-dòng-một-người không biểu diễn được số lượng đổi.
-
-**Chủ dự án chốt: làm CẢ HAI tuỳ chọn xuất, để người dùng chọn:**
-
-1. **Bảng phẳng, cột ĐỘNG theo cây** — quét cả cây trước để biết cần bao
-   nhiêu cột (VD: cây có người nhiều hôn nhân nhất là 3 → xuất "ID phối ngẫu
-   1/2/3"; ai có cha mẹ nuôi thì thêm cột "Cha nuôi 1/Mẹ nuôi 1", "Cha nuôi
-   2/Mẹ nuôi 2"…), cột nào cả cây không ai dùng thì ẨN hẳn, không xuất cột
-   rỗng. ⚠ Đây là ĐỊNH DẠNG RIÊNG, số cột đổi theo từng lần xuất — không còn
-   khớp khuôn cố định của `domains/excel.js` nữa, nên KHÔNG nạp lại được qua
-   màn Nhập GEDCOM/Excel hiện có. Chỉ để xem/sửa tay/báo cáo.
-2. **Hai sheet tách bảng** — sheet 1 **thông tin người** (thuộc tính cá nhân
-   thuần, KHÔNG có cột quan hệ nào cả — Đời, Tên, Giới tính, ngày sinh/mất,
-   nơi ở, nghề, ghi chú…); sheet 2 **thông tin các cặp gia đình** (mỗi dòng =
-   MỘT union: hai vợ chồng, loại quan hệ với từng con — ruột/nuôi/kế/thừa tự
-   — số thứ tự hôn nhân nếu có). Không giới hạn số dòng một người, không mất
-   dữ liệu. Đây cũng là định dạng riêng, không nạp lại qua đường Nhập cũ.
-
-**Bỏ hẳn khái niệm "Mã số" kiểu cũ.** Chủ dự án giải thích nguồn gốc: bản
-Excel gốc (trước khi có app) dùng "Mã số" = mã cha + chuỗi ký tự mã hoá thông
-tin người đó, để tự vẽ sơ đồ trong Excel; "ID mới" là mã đánh LẠI (độ dài
-bằng nhau) khi nhập bản đó vào một phần mềm chuẩn GEDCOM. **Phần mềm này đã
-chính thức, không nên bám khung file Excel thô nữa** — cột "Mã số" bỏ hẳn,
-không xuất; "ID mới" không phải một bước đánh số lại — dùng THẲNG `p.id` thật
-của app (`P0007`…) làm định danh, đúng như `xuat-excel.js` đang làm.
-
-⚠ Cột *Đời* (`p.vn.generation`) — chủ dự án nói đang thiếu thông tin lúc bấm
-thử. Tên trường đúng theo `domains/excel.js`/`domains/gedcom.js` là
-`vn.generation`; có thể là DỮ LIỆU thật sự trống ở nhiều người (chưa từng
-điền Đời), không phải lỗi đọc sai trường — xác minh lại bằng mắt trên một
-người ĐÃ biết chắc có điền Đời trước khi kết luận.
-
-**Vẫn đúng (giữ từ b125e):** đặt hàm dựng bảng ở `pages/quan-tri/` (không
-phải `domains/excel.js`) — mười file `domains/` phải giống hệt bit-với-bit
-hai nhánh (`/kiem-tra` phép 9); thêm bất cứ hàm nào vào `domains/excel.js` là
-kéo theo phải sửa cả bản Apps Script đã đóng băng, dù bản đó không dùng tới.
+⚠ **b125f — Xuất Excel bản ĐẦY ĐỦ — mã XONG (Opus, 27/09/2026)**, điểm dừng
+bấm thử ở bảng trên. `dungBangPhang()`/`dungHaiSheet()` thay hẳn
+`dungHangExcel()` cũ (bỏ sót cặp cha/mẹ thứ hai) — đã thử bằng Node, không mất
+dữ liệu. ⚠ Cột *Đời* (`vn.generation`) — lúc bấm thử b125e chủ dự án thấy
+thiếu; mã đọc đúng trường, CHƯA xác minh được trên dữ liệu thật vì dữ liệu
+giả cục bộ không có ai điền Đời — xem lại bằng mắt trên một người ĐÃ biết
+chắc có điền Đời khi bấm thử b125f.
 
 ### Sau đó — chưa đặt số, chưa chốt
 
