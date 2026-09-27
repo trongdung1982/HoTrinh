@@ -99,6 +99,14 @@ function dungMoiTruong(kichBan = {}) {
       if (duong === '/rest/v1/rpc/ds_tai_khoan') {
         return traLoi(200, JSON.stringify(nguoiDung));
       }
+      // Sáu bảng hệ thống (`luoc-do/44`, b137). `heThongHong` = máy chủ chưa
+      // dán `44` → 404, bản sao lưu gia phả vẫn phải ghi được.
+      if (duong === '/rest/v1/rpc/sao_luu_bang_he_thong') {
+        if (kichBan.heThongHong) return traLoi(404, '{"message":"function not found"}');
+        return traLoi(200, JSON.stringify(kichBan.heThong || { ok: true, bang: {
+          cau_hinh: [{ chi_mot_dong: true }], tai_khoan: [{ user_id: 'u1' }, { user_id: 'u2' }],
+          doi_ma_toan_cuc: [], de_xuat_gan_nguoi: [], de_nghi_quan_he: [], de_xuat_dong_ho: [] } }));
+      }
 
       if (duong.startsWith('/rest/v1/')) {
         const bang = duong.slice('/rest/v1/'.length);
@@ -222,7 +230,7 @@ function dungMoiTruong(kichBan = {}) {
   const nap = new Function(...ten, NGUON_GS + `
     return { kiemTraKetNoi, saoLuuNgay, datLichSaoLuu, goLichSaoLuu,
              gomSaoLuu_, docBang_, docKhoAnh_, donBanCu_, docCauHinh_,
-             THU_TU_DOC, KHUON_TEN_FILE };
+             THU_TU_DOC, BANG_HE_THONG, KHUON_TEN_FILE };
   `);
 
   return { api: nap(...gia), nhatKy, thuMuc: thuMucCo, kho, lich, taoThuMuc, taoFile };
@@ -273,8 +281,8 @@ console.log('KIỂM SAO LƯU — chạy thẳng sao-luu/SaoLuu.gs trong Node\n')
 // ⚠ CHUA_SAO_LUU là danh sách những bảng CỐ Ý chưa sao lưu, không phải chỗ
 //   giấu rác. Mỗi tên ở đây là một lỗ đã biết, có ghi ở `KE-HOACH.md`; thêm
 //   một tên vào đây mà không ghi ra là biến bộ kiểm thành thứ gật bừa.
-const CHUA_SAO_LUU = ['cau_hinh', 'tai_khoan', 'de_xuat_gan_nguoi', 'doi_ma_toan_cuc',
-  'de_nghi_quan_he', 'de_xuat_dong_ho', 'nhat_ky_he_thong', 'nhat_ky_lo_rac'];
+// b137: sáu bảng hệ thống đã vào (`BANG_HE_THONG` của SaoLuu.gs, qua hàm `44`).
+const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac'];
 {
   const thuMuc = dirname(FILE_SQL);
   const trongSql = [];
@@ -286,7 +294,7 @@ const CHUA_SAO_LUU = ['cau_hinh', 'tai_khoan', 'de_xuat_gan_nguoi', 'doi_ma_toan
   }
   trongSql.sort();
   const { api } = dungMoiTruong();
-  const trongGs = Object.keys(api.THU_TU_DOC).sort();
+  const trongGs = [...Object.keys(api.THU_TU_DOC), ...api.BANG_HE_THONG].sort();
   const thieu = trongSql.filter((t) => !trongGs.includes(t) && !CHUA_SAO_LUU.includes(t));
   const thua = trongGs.filter((t) => !trongSql.includes(t));
   kiem('mọi bảng của luoc-do/ đều được sao lưu, không thừa bảng nào',
@@ -309,6 +317,15 @@ const CHUA_SAO_LUU = ['cau_hinh', 'tai_khoan', 'de_xuat_gan_nguoi', 'doi_ma_toan
        `đọc ${doc.length} dòng · ${ma.size} mã khác nhau · ${soGoi} lượt gọi`);
 }
 
+// ---- 3b. Chưa dán `44`: bản sao lưu gia phả VẪN có, file nói rõ thiếu gì --
+{
+  const { api } = dungMoiTruong({ duLieu: cayGia({ soNguoi: 5, soNhatKy: 2 }), heThongHong: true });
+  const ban = api.gomSaoLuu_(api.docCauHinh_());
+  kiem('hàm hệ thống hỏng → vẫn đủ bảng gia phả, file mang loiBangHeThong',
+       ban.dem.persons === 5 && ban.loiBangHeThong !== '' && !('tai_khoan' in ban.bang),
+       'persons=' + ban.dem.persons + ' · loi=' + String(ban.loiBangHeThong).slice(0, 60));
+}
+
 // ---- 3. Bản sao lưu có đủ mọi phần -----------------------------------
 {
   const duLieu = cayGia({ soNguoi: 681, soNhatKy: 40 });
@@ -325,6 +342,11 @@ const CHUA_SAO_LUU = ['cau_hinh', 'tai_khoan', 'de_xuat_gan_nguoi', 'doi_ma_toan
        thieuBang.length === 0 && Array.isArray(ban.nguoiDung) &&
        ban.khoAnh && Array.isArray(ban.khoAnh.tep),
        thieuBang.length ? 'thiếu ' + thieuBang.join(',') : 'đủ');
+
+  const thieuHT = api.BANG_HE_THONG.filter((t) => !Array.isArray(ban.bang[t]));
+  kiem('file sao lưu chứa đủ sáu bảng hệ thống (b137), không ghi lỗi',
+       thieuHT.length === 0 && ban.dem.tai_khoan === 2 && ban.loiBangHeThong === '',
+       thieuHT.length ? 'thiếu ' + thieuHT.join(',') : 'tai_khoan=' + ban.dem.tai_khoan);
 
   kiem('số đếm khớp đúng số dòng có thật',
        ban.dem.persons === 681 && ban.dem.change_log === 40 &&

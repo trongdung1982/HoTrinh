@@ -837,11 +837,10 @@ Nói cách khác: **thùng rác đóng cửa với người, không đóng cửa
 `don_thung_rac()` *(xoá cứng cây quá 30 ngày — và đây là chỗ DUY NHẤT trong cả
 phần mềm được phép `delete from public.trees`)*.
 
-⚠ Ai gọi `don_thung_rac()` thì **chưa chốt**. Không có cron trong Supabase gói
-đang dùng; hai đường: nút trong khu Sao lưu để bấm tay, hoặc nối vào trigger
-Apps Script chạy đêm đã có (`sao-luu/SaoLuu.gs`). Hỏi chủ dự án ở b110, đừng
-tự chọn — đường thứ hai làm một việc phá dữ liệu chạy tự động lúc không ai
-ngồi xem.
+✓ Ai gọi `don_thung_rac()` — **chủ dự án chốt 09/09/2026 (b110): chỉ Quản trị
+hệ thống, BẤM TAY, chọn hàng loạt**; KHÔNG nối vào trigger Apps Script chạy đêm
+— một việc phá dữ liệu không chạy lúc không ai ngồi xem. Nút ở *Quản trị hệ
+thống → Thùng rác*. Nguồn: `16` mục 10.
 
 ### 7. ✓ CHỐT 09/09/2026 (b110b) — QUYỀN DỰNG CÂY TÁCH RIÊNG, VÀ KHÔNG ĐÂU NGẦM ĐỊNH CÂY
 

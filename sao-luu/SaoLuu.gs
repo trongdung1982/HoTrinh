@@ -10,8 +10,8 @@
 //            EMAIL_SAO_LUU · MAT_KHAU_SAO_LUU (bắt buộc),
 //            THU_MUC_DRIVE · SO_BAN_GIU (tuỳ chọn)
 //            SQL — luoc-do/05-sao-luu.sql phải chạy trước
-// Phiên bản: 0.3.0 · Cập nhật: 18/09/2026 (b122b) — khoá đọc theo lược đồ
-//            `26`: bốn bảng dùng chung bỏ `tree_id`, thêm `tree_persons`
+// Phiên bản: 0.4.0 · Cập nhật: 28/09/2026 (b137) — thêm sáu bảng cấp hệ
+//            thống qua `sao_luu_bang_he_thong()` (`luoc-do/44` phải dán trước)
 // ============================================================
 //
 // ⚠ ĐÂY KHÔNG PHẢI dự án Apps Script cũ. Dự án cũ (`giapha/gas/`) vẫn đang
@@ -53,8 +53,8 @@
 // ⚠ Phải khớp ĐÚNG danh sách bảng dựng trong `luoc-do/` — không thiếu, không
 //   thừa. `kiem-thu/kiem-sao-luu.mjs` phép 1 đọc thẳng CẢ thư mục SQL ấy và so
 //   với bảng dưới đây, nên ngày ai đó thêm một bảng mà quên sao lưu nó thì bộ
-//   kiểm đỏ ngay, chứ không phải phát hiện vào ngày cần khôi phục. Bốn bảng cố
-//   ý CHƯA sao lưu nêu đích danh ở `CHUA_SAO_LUU` trong bộ kiểm ấy.
+//   kiểm đỏ ngay, chứ không phải phát hiện vào ngày cần khôi phục. Bảng cố ý
+//   CHƯA sao lưu (hai bảng nhật ký) nêu đích danh ở `CHUA_SAO_LUU` của bộ kiểm.
 //
 // Vì sao phải nêu cột sắp thứ tự: đọc theo trang (`limit`/`offset`) mà không
 // sắp thứ tự thì Postgres không hứa hai trang liên tiếp không trùng nhau và
@@ -84,6 +84,19 @@ var THU_TU_DOC = {
   user_settings:  'user_id,tree_id'
 };
 
+// ------------------------------------------------------------
+// Sáu bảng CẤP HỆ THỐNG — đọc qua MỘT hàm, không qua REST từng bảng (b137)
+// ------------------------------------------------------------
+// ⚠ Bảng này không theo cây nên RLS của vai `sao_luu` (`05`) không với tới;
+//   mở luật đọc trên `tai_khoan` (giữ cờ QTHT) là thêm cửa vào đúng bảng từng
+//   thủng ở b102. Nên `luoc-do/44` dựng `sao_luu_bang_he_thong()`: một hàng
+//   rào, trả trọn sáu bảng một lần. Danh sách dưới đây phải khớp ĐÚNG các khoá
+//   hàm ấy trả — bộ kiểm phép 1 đếm cả hai danh sách.
+// ⚠ Hàm hỏng (chưa dán `44`, mạng chập) thì KHÔNG làm hỏng cả bản sao lưu:
+//   mười ba bảng gia phả vẫn ghi, file mang thêm `loiBangHeThong`.
+var BANG_HE_THONG = ['cau_hinh', 'tai_khoan', 'doi_ma_toan_cuc',
+                     'de_xuat_gan_nguoi', 'de_nghi_quan_he', 'de_xuat_dong_ho'];
+
 var SO_DONG_MOI_TRANG = 1000;
 var TEN_THU_MUC_MAC_DINH = 'Sao luu gia pha (Supabase)';
 var SO_BAN_GIU_MAC_DINH = 30;
@@ -107,6 +120,14 @@ function kiemTraKetNoi() {
     tong += n;
     dong.push('  ' + bang + ': ' + n + ' dòng');
   });
+  var heThong = docBangHeThong_(cauHinh);
+  if (heThong.loi) {
+    dong.push('  (sáu bảng hệ thống): LỖI — ' + heThong.loi);
+  } else {
+    BANG_HE_THONG.forEach(function (bang) {
+      dong.push('  ' + bang + ': ' + heThong.bang[bang].length + ' dòng');
+    });
+  }
   var nguoi = docNguoiDung_(cauHinh);
   dong.push('  (tài khoản đăng nhập): ' + nguoi.length + ' người');
   dong.push('');
@@ -213,6 +234,14 @@ function gomSaoLuu_(cauHinh) {
     dem[ten] = dong.length;
   });
 
+  var heThong = docBangHeThong_(cauHinh);
+  if (!heThong.loi) {
+    BANG_HE_THONG.forEach(function (ten) {
+      bang[ten] = heThong.bang[ten];
+      dem[ten] = heThong.bang[ten].length;
+    });
+  }
+
   var nguoiDung = docNguoiDung_(cauHinh);
   dem.nguoiDung = nguoiDung.length;
 
@@ -235,8 +264,29 @@ function gomSaoLuu_(cauHinh) {
     dem: dem,
     bang: bang,
     nguoiDung: nguoiDung,
-    khoAnh: khoAnh
+    khoAnh: khoAnh,
+    // Trống = sáu bảng hệ thống đã chép đủ. Có chữ = thiếu cả sáu, lý do đây.
+    loiBangHeThong: heThong.loi || ''
   };
+}
+
+/**
+ * Sáu bảng cấp hệ thống, qua `sao_luu_bang_he_thong()` (`luoc-do/44`).
+ * KHÔNG ném lỗi — trả `{loi}` để bản sao lưu gia phả vẫn ghi được.
+ */
+function docBangHeThong_(cauHinh) {
+  try {
+    var url = cauHinh.url + '/rest/v1/rpc/sao_luu_bang_he_thong';
+    var kq = goi_(cauHinh, url, 'đọc sáu bảng hệ thống', {});
+    if (!kq || kq.ok !== true || !kq.bang) {
+      return { loi: (kq && kq.loi) || 'Máy chủ không trả sáu bảng hệ thống.' };
+    }
+    var thieu = BANG_HE_THONG.filter(function (t) { return !Array.isArray(kq.bang[t]); });
+    if (thieu.length) return { loi: 'Máy chủ thiếu bảng: ' + thieu.join(', ') };
+    return { bang: kq.bang };
+  } catch (e) {
+    return { loi: String(e && e.message ? e.message : e).slice(0, 300) };
+  }
 }
 
 // ============================================================

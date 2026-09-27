@@ -27,6 +27,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b137** Sao lưu sáu bảng hệ thống | Làm đúng 4 bước ở `sao-luu/HUONG-DAN-SAO-LUU.md` mục *Khi `SaoLuu.gs` có bản mới* (dán `44` → thay mã Apps Script → chạy `kiemTraKetNoi`). Đạt khi nhật ký có sáu dòng `cau_hinh` … `de_xuat_dong_ho`, không dòng LỖI |
 | **b136** Lịch sử Kiểm duyệt | Dán `43` trước. *Quản trị → Kiểm duyệt*, tab *Đã nhận chính thức*: hai cột cuối có người duyệt + lúc duyệt; tab *Đã từ chối & hoàn tác*: người từ chối + lý do. Lần Lưu tự duyệt (người tin cậy) có thể trống người duyệt — đúng, không phải lỗi |
 | **b135** Huy hiệu (9.6) | *Quản trị → Gia phả*, chip *Tôi quản lý*: cây nào có nội dung chờ kiểm duyệt thì dưới tên có huy hiệu "n chờ kiểm duyệt", bấm sang Kiểm duyệt. Số trên nút *Kiểm duyệt* / *Gia phả* ở thanh trái nay CỘNG mọi cây bạn quản lý — đổi cây đang mở không làm số đổi |
 | **b134** Nhật ký hệ thống | Dán `42` trước. Rồi: đăng xuất → đăng nhập lại → *Quản trị hệ thống → Nhật ký*: phải thấy dòng **"Bắt đầu ghi nhật ký"** và dòng **"Đăng nhập"** của chính bạn. Bấm *Cấp quyền tạo cây* rồi *Thu hồi* cho `khach@io.vn` → hai dòng mới, người làm là bạn. Tích một dòng → *Xóa các dòng đã chọn* → sang tab *Thùng rác*, bảng cuối có một lô → *Phục hồi* → dòng về lại. Thẻ *Nhật ký hệ thống* ở *Tổng quan* ra số sự kiện 7 ngày |
@@ -83,6 +84,12 @@ chép lại `grant`. Không đụng bảng, không đụng RLS. Tự kiểm **3/
 thử `do-b136.mjs` 12/12. ⚠ Là bản ĐỨNG CUỐI của hàm ấy — dán lại `08`/`10`
 thì phải dán lại `43` (`so-tay/phan-quyen.md`).
 
+**`44` (b137) — ĐƯỢC DÁN, CHƯA DÁN.** Dán SAU `43`. Một hàm MỚI
+`sao_luu_bang_he_thong()` — không đụng bảng, không đụng RLS, không định nghĩa
+lại hàm nào. Tự kiểm **3/3 ĐẠT**. Bàn thử `do-b137.mjs` 15/15. ⚠ Dán xong
+PHẢI thay mã `SaoLuu.gs` 0.4.0 trong dự án Apps Script sao lưu —
+`sao-luu/HUONG-DAN-SAO-LUU.md` mục *Khi `SaoLuu.gs` có bản mới*.
+
 ---
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
@@ -136,11 +143,10 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 |---|---|
 | ⚠ **Nhập GEDCOM/Excel chưa nối vào kho mã** — `capMaHangLoat()` hỏi `nextId` một lần rồi tự đếm tiếp, nên từ mã thứ hai đã ra ngoài phần máy chủ đặt trước. Hỏng to tiếng (`trungma`), không lặng lẽ. ⚠⚠ **CHỜ CHỦ DỰ ÁN (28/09, b135 tra lại):** đường sửa cũ *"gọi `repo.xinMa` trước khi nhập"* KHÔNG đủ — `capMaHangLoat()` lấy MỘT mã đầu rồi tự đếm, nên chỉ đúng khi kho rỗng trước VÀ máy chủ cấp một dải liền (lô cũ 5 mã trong kho + lô mới không liền nhau nếu ai khác xin xen giữa). Đường gọn: `capMaHangLoat()` gọi `nextId()` MỖI lần (kho đã đủ mã thì mỗi lần là một `shift`, không quét cây) — **sửa `domains/gedcom.js`**, cần chủ dự án cho phép (`CHI-DAN.md` điều 1; phép 9 sẽ báo thêm `gedcom.js` khác bản đóng băng). Hỏi: *"Cho sửa một hàm trong `domains/gedcom.js` không?"* | `so-tay/luu-du-lieu.md` |
 | ⚠ **`di-doi/sinh-sql-di-doi.mjs` lạc hậu từ `26`** — SQL nó sinh còn gắn `tree_id` vào bốn bảng dùng chung. Ba cây đã di dời xong nên chưa có việc; chạy sẽ lỗi to tiếng | đầu chính file ấy |
-| ⚠ **Tám bảng CHƯA được sao lưu**: `cau_hinh` · `tai_khoan` · `de_xuat_gan_nguoi` · `doi_ma_toan_cuc` · `de_nghi_quan_he` (`33`) · `de_xuat_dong_ho` (`37`) · `nhat_ky_he_thong` · `nhat_ky_lo_rac` (`42`). Ba bảng đầu giữ cờ QTHT, khoá mềm, đơn đề xuất; `doi_ma_toan_cuc` giữ cặp mã cũ→mới vĩnh viễn. ⚠ `33`/`37` lọt khỏi danh sách từ lúc ra đời — bộ kiểm sao lưu báo HỎNG mà không ai chạy, phát hiện b134. Cần xem RLS có cho vai `sao_luu` đọc không trước khi thêm | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
+| Hai bảng nhật ký (`42`) cố ý CHƯA sao lưu — không cần để khôi phục app, tự có thùng rác 120 ngày. Sáu bảng hệ thống đã vào ở b137 (chờ dán `44` + thay mã Apps Script) | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
 | ⚠ **Hai hàm của `16` LỆCH NGHĨA với tên** (`xin_xoa_cay` ẩn cây NGAY; `huy_xin_xoa_cay` = trả lại cho chủ). Giữ tên cũ là cố ý; đổi tên là một bước riêng | `luoc-do/23-bon-luat-moi.sql` khối đầu |
 | ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa *(b126 sẽ đụng cả hai)* | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **b127b chưa bấm thật**: thẻ người kéo sang `T388` phải đủ vợ/con | — |
-| ⚠ **Ai gọi `don_thung_rac()`** — nút bấm tay hay trigger Apps Script đêm? Chưa hỏi chủ dự án | `THIET-KE-NHIEU-CAY.md` mục 11.6 |
 | ⚠ **b103 → b105 của Antigravity vẫn nằm NGOÀI repo**, trong `codex/`. Từng dán thử lên Staging nhưng Staging đã XOÁ 26/09 — nay chưa dán ở đâu cả, chưa rà kỹ, chưa đo | `PHOI-HOP-AI.md` |
 | ⚠ **Bộ bất biến bố cục đang gác nhầm nhánh** — xem ngay dưới bảng. Đường chạy tạm: `--import ./sang-supabase.mjs` (b128b) — ⚠ KHÔNG ăn vào bài chạy trong Chrome; `kiem-buoc-80` dùng bản `kiem-buoc-80-sb.mjs` | `/kiem-tra` phép 9 |
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |

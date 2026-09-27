@@ -304,6 +304,24 @@ Xong. Từ đêm nay máy tự chạy.
 
 Chạy hàm **`goLichSaoLuu`**. Lịch tự động tắt; sao lưu bấm tay vẫn chạy được.
 
+### Khi `SaoLuu.gs` có bản mới — thay mã, KHÔNG làm lại từ đầu
+
+*(Lần gần nhất: bản 0.4.0, 28/09/2026 — thêm sáu bảng cấp hệ thống: cờ Quản
+trị hệ thống, cây mặc định, bảng đổi mã, ba loại đơn.)*
+
+1. **Dán SQL trước:** Supabase → SQL Editor → dán cả file
+   `luoc-do/44-sao-luu-bang-he-thong.sql` → **Run**. Bảng cuối phải ra
+   **ĐẠT** ở ba dòng.
+2. `script.google.com` → mở dự án **Sao luu gia pha Supabase** → bấm vào ô
+   soạn thảo → **Ctrl + A** → **Delete**.
+3. Chép lại mã mới đúng như **Bước 5** (Notepad hoặc GitHub) → **Ctrl + V** →
+   bấm **đĩa mềm** (Save). Bốn giá trị cấu hình và lịch tự động **giữ
+   nguyên**, không phải làm lại.
+4. Chọn hàm **`kiemTraKetNoi`** → **Run**. Nhật ký phải có thêm sáu dòng
+   `cau_hinh: … dòng` · `tai_khoan: … dòng` … Có dòng
+   **`(sáu bảng hệ thống): LỖI`** thì bước 1 chưa chạy hoặc chạy lỗi — bản
+   sao lưu gia phả vẫn chạy bình thường, chỉ thiếu sáu bảng ấy.
+
 ---
 
 ## ⚠ Ba điều bản sao lưu này KHÔNG làm — nói thẳng để không ai tưởng nhầm
