@@ -3,7 +3,7 @@
 // Vai trò  : Kiểm cơ chế KIỂM DUYỆT NỘI DUNG — `luoc-do/08-kiem-duyet.sql`
 //            và bản `luu_cay()` 0.3.0 ở `luoc-do/03-ham-luu-cay.sql`.
 // Chạy     : cd supabase/kiem-thu && node kiem-kiem-duyet.mjs
-// Phiên bản: 0.1.0 · Cập nhật: 04/09/2026 21:35
+// Phiên bản: 0.1.1 · Cập nhật: 28/09/2026 07:15 (b141) — tha nhãn chủ cây 'chu'
 // ============================================================
 //
 // ═══ BÀI KIỂM NÀY CHỨNG MINH ĐƯỢC GÌ, VÀ KHÔNG CHỨNG MINH ĐƯỢC GÌ ═══
@@ -467,9 +467,21 @@ console.log('\nPHẦN I — tên vai hiện ra cho người đọc');
     //   tên mã cũ — `where role = 'chu'` chính là việc của nó. Đây là ngoại lệ
     //   duy nhất, và nêu đích danh chứ không bỏ qua theo mẫu, để ngày mai
     //   thêm một file khác thì phép này vẫn bắt được.
+    //   Ngoại lệ thứ hai, cũng đích danh (b141): `tim_tai_khoan_trong_cay()`
+    //   của `39` gắn nhãn `'chu'` cho CHỦ CÂY (`trees.chu_so_huu`, không phải
+    //   một vai trong `tree_members`), và `trang-nguoi.js` đọc đúng nhãn ấy.
+    //   Chỉ tha đúng hai dòng ấy — mã cũ ở chỗ khác trong hai file vẫn bị bắt.
+    const NHAN_CHU_CAY = [
+      /select t\.chu_so_huu, 'chu'/g,
+      /m\.vai === 'chu' \? 'Chủ gia phả'/g,
+    ];
     const sot = [];
-    for (const [ten, ma] of Object.entries(MOI_FILE)) {
+    for (const [ten, maGoc] of Object.entries(MOI_FILE)) {
       if (ten.endsWith('09-doi-ma-vai.sql')) continue;
+      let ma = maGoc;
+      if (ten.endsWith('39-de-xuat-gan-ho.sql') || ten.endsWith('trang-nguoi.js')) {
+        for (const r of NHAN_CHU_CAY) ma = ma.replace(r, '');
+      }
       // ⚠ So CÓ NHÁY. Chữ `admin` còn nằm trong câu tiếng Việt và tên biến ở
       //   khắp nơi; so chữ trần thì phép này luôn báo đỏ, và một phép luôn báo
       //   đỏ bị người ta bỏ qua y như một phép luôn báo xanh.
