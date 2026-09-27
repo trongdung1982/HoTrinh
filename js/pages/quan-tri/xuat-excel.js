@@ -4,9 +4,9 @@
 //            (một dòng một người, cột ĐỘNG theo cây) và hai sheet Người +
 //            Gia đình (một dòng một cuộc hôn nhân).
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: utils/{text,date,graph} · config (nhãn quan hệ, trạng thái cặp) ·
+// Phụ thuộc: utils/{text,date} · config (nhãn quan hệ, trạng thái cặp) ·
 //            vendor/xlsx.mjs (nạp bằng import() động)
-// Phiên bản: 0.3.0 · Cập nhật: 27/09/2026 (b125f)
+// Phiên bản: 0.4.0 · Cập nhật: 27/09/2026 (b125g) — Đời nhận từ ngoài vào
 // Sổ tay   : so-tay/xuat-excel.md
 // ============================================================
 //
@@ -16,8 +16,9 @@
 // ⚠ CẢ HAI khuôn KHÔNG nạp lại được qua màn Nhập GEDCOM/Excel — chỉ để xem,
 //   sửa tay, báo cáo. Khuôn nạp được là `domains/excel.js` (sheet `DuLieu`).
 //
-// ⚠ ĐỜI là số TÍNH từ cây (`utils/graph.tinhDoi`), không đọc `vn.generation`
-//   — một người dùng chung nhiều cây thì mỗi cây một đời.
+// ⚠ ĐỜI là số ĐÃ LƯU ở Supabase (`tree_persons.doi`, `luoc-do/40`), nơi gọi
+//   đọc rồi đưa vào dạng `Map` mã → số — file này không tính, không đọc
+//   `vn.generation`. Một người dùng chung nhiều cây thì mỗi cây một đời.
 //
 // ⚠ Chồng/vợ chỉ là NHÃN lúc xuất (như GEDCOM, `CLAUDE.md` mục 7): dữ liệu
 //   vẫn là mảng `partners`. Nam → chồng, nữ → vợ; cặp cùng giới hoặc chưa rõ
@@ -25,7 +26,6 @@
 
 import { fullName } from '../../utils/text.js';
 import { formatDate } from '../../utils/date.js';
-import { tinhDoi } from '../../utils/graph.js';
 import { nhanQuanHeCon, nhanTrangThaiCap } from '../../config.js';
 
 const TEN_SHEET_PHANG = 'BangPhang';
@@ -52,12 +52,11 @@ function chuTinhTrang(living) { return living === false ? 'Đã mất' : 'Còn s
 // Nền chung: đời, chồng/vợ, hôn nhân và con của từng người
 // ============================================================
 
-function dungNen(persons, unions) {
+function dungNen(persons, unions, doi) {
   const theoId = new Map((persons || []).map((p) => [p.id, p]));
   const song = (id) => theoId.has(id) && !theoId.get(id).deleted;
   const conSong = (persons || []).filter((p) => !p.deleted);
   const unionsSong = (unions || []).filter((u) => u && !u.deleted);
-  const doi = tinhDoi(persons, unionsSong);
 
   const chongVo = new Map();   // union.id -> {chong, vo}
   for (const u of unionsSong) {
@@ -107,7 +106,7 @@ function dungNen(persons, unions) {
     });
   }
 
-  return { theoId, song, conSong, unionsSong, doi, chongVo, conTheoLoai, honNhanCua };
+  return { theoId, song, conSong, unionsSong, doi: doi || new Map(), chongVo, conTheoLoai, honNhanCua };
 }
 
 /** Số cột cần cho mỗi loại = số lớn nhất một dòng dùng tới. */
@@ -158,10 +157,11 @@ function hangNguoi(p, doi) {
  *
  * @param {object[]} persons
  * @param {object[]} unions
+ * @param {Map<string,number>} doi  mã người → Đời đã lưu; vắng thì ô trống
  * @returns {Array[]}
  */
-export function dungBangPhang(persons, unions) {
-  const n = dungNen(persons, unions);
+export function dungBangPhang(persons, unions, doi) {
+  const n = dungNen(persons, unions, doi);
 
   // Mỗi người: cha mẹ theo loại · hôn nhân · con theo loại (qua mọi hôn nhân).
   const chaMeCua = new Map();
@@ -234,10 +234,11 @@ export function dungBangPhang(persons, unions) {
  *
  * @param {object[]} persons
  * @param {object[]} unions
+ * @param {Map<string,number>} doi  mã người → Đời đã lưu; vắng thì ô trống
  * @returns {{nguoi: Array[], giaDinh: Array[]}}
  */
-export function dungHaiSheet(persons, unions) {
-  const n = dungNen(persons, unions);
+export function dungHaiSheet(persons, unions, doi) {
+  const n = dungNen(persons, unions, doi);
   const nguoi = [COT_NGUOI, ...n.conSong.map((p) => hangNguoi(p, n.doi))];
 
   const conMoiCap = new Map(n.unionsSong.map((u) => [u.id, n.conTheoLoai(u)]));
@@ -272,9 +273,10 @@ export function dungHaiSheet(persons, unions) {
  * @param {object[]} unions
  * @param {string} tenFile  không kèm đuôi `.xlsx`
  * @param {'phang'|'hai-sheet'} kieu  mặc định `'phang'`
+ * @param {Map<string,number>} doi  mã người → Đời đã lưu; vắng thì ô trống
  * @returns {Promise<{ok:boolean, loi?:string}>}
  */
-export async function xuatExcelNguoi(persons, unions, tenFile, kieu) {
+export async function xuatExcelNguoi(persons, unions, tenFile, kieu, doi) {
   let XLSX;
   try {
     // Cùng thư viện `domains/excel.js` dùng để ĐỌC — nạp riêng vì domains/
@@ -289,11 +291,11 @@ export async function xuatExcelNguoi(persons, unions, tenFile, kieu) {
   try {
     wb = XLSX.utils.book_new();
     if (kieu === 'hai-sheet') {
-      const { nguoi, giaDinh } = dungHaiSheet(persons, unions);
+      const { nguoi, giaDinh } = dungHaiSheet(persons, unions, doi);
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(nguoi), TEN_SHEET_NGUOI);
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(giaDinh), TEN_SHEET_GIADINH);
     } else {
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(dungBangPhang(persons, unions)),
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(dungBangPhang(persons, unions, doi)),
         TEN_SHEET_PHANG);
     }
   } catch (e) {

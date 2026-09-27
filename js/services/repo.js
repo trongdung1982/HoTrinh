@@ -4,7 +4,7 @@
 // Lớp      : services — được gọi bởi: pages · gọi: services/sb,
 //            services/hinh-dang, utils, state
 // Phụ thuộc: services/sb.js, services/hinh-dang.js, utils/graph.js, state.js
-// Phiên bản: 0.7.0 · Cập nhật: 26/09/2026 (b127d-2) — `nopDeNghiQuanHe()`
+// Phiên bản: 0.8.0 · Cập nhật: 27/09/2026 (b125g) — `state.doi`, đọc lại sau Lưu
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -27,7 +27,7 @@
 // dịch với lần ghi, nên không có khe hở giữa lúc kiểm và lúc ghi.
 
 import * as sb from './sb.js';
-import { rapCay, rapMotNguoi, soSanh, coGiDeGhi, tangSoSauKhiLuu } from './hinh-dang.js';
+import { rapCay, rapMotNguoi, rapDoi, soSanh, coGiDeGhi, tangSoSauKhiLuu } from './hinh-dang.js';
 import { state, notify } from '../state.js';
 import { buildIndex } from '../utils/graph.js';
 import { sinhMaCay, napKho, soMaTrongKho } from '../utils/id.js';
@@ -83,6 +83,7 @@ export async function napCay() {
   state.tree     = cay;
   state.index    = buildIndex(cay);
   state.revision = cay.tree.revision;
+  state.doi      = rapDoi(kq.dong.doi);
 
   // Bản Apps Script còn một cờ `daLocNguoiConSong` — máy chủ cắt chi tiết
   // người còn sống trước khi trả cây cho người chỉ có quyền xem. Trên nền này
@@ -304,8 +305,29 @@ export async function luuCay(apDung, moTa) {
   // trả tiền sai lúc.
   dayKhoMa().catch(() => {});
 
+  // Đời: trigger máy chủ đã tính lại nhánh bị đổi trong cùng giao dịch
+  // (`luoc-do/40`) — đọc lại số mới, cũng KHÔNG chờ. Vẽ lại chỉ khi có số đổi:
+  // lần Lưu sửa tên (phần lớn) không tốn thêm lượt vẽ nào.
+  lamTuoiDoi(state.treeId).catch(() => {});
+
   console.log('[repo] đã lưu: revision ' + kq.revision + ' · ' + tomTat(ops));
   return kq;
+}
+
+/**
+ * Đọc lại Đời của cây đang mở; có số đổi thì thay `state.doi` và vẽ lại.
+ * Người dùng đã đổi sang cây khác trong lúc chờ thì bỏ kết quả.
+ */
+async function lamTuoiDoi(treeId) {
+  const kq = await sb.docDoi(treeId);
+  if (!kq.ok || state.treeId !== treeId) return;
+  const moi = rapDoi(kq.dong);
+  const cu = state.doi || new Map();
+  let khac = moi.size !== cu.size;
+  if (!khac) for (const [id, n] of moi) if (cu.get(id) !== n) { khac = true; break; }
+  if (!khac) return;
+  state.doi = moi;
+  notify();
 }
 
 /** Một câu ngắn kể lần ghi vừa rồi đụng vào bao nhiêu dòng. */

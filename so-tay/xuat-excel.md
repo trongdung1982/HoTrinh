@@ -1,8 +1,9 @@
 # Sổ tay · Xuất Excel và Đời tính từ cây
 
-Gồm      : `js/pages/quan-tri/xuat-excel.js` — hai khuôn xuất · `js/utils/graph.js`
-`tinhDoi()` — Đời của mọi người trong một cây · nút *Xuất Excel ▾* và cột *Đời*
-ở `js/pages/quan-tri/trang-nguoi.js` · hàng *Đời* của thẻ người `js/pages/person-detail.js`
+Gồm      : `js/pages/quan-tri/xuat-excel.js` — hai khuôn xuất · `luoc-do/40-luu-doi.sql`
+— Đời LƯU ở `tree_persons.doi`, trigger tính lại · `js/utils/graph.js` `tinhDoi()` —
+đáp án đối chiếu · nút *Xuất Excel ▾* và cột *Đời* ở `js/pages/quan-tri/trang-nguoi.js`
+· hàng *Đời* của thẻ người `js/pages/person-detail.js` (đọc `state.doi`)
 Liên quan: đường NHẬP Excel là `domains/excel.js` (sheet `DuLieu`) — khuôn khác hẳn
 
 ## Luật — chủ dự án chốt 27/09/2026 (b125f)
@@ -30,13 +31,36 @@ Liên quan: đường NHẬP Excel là `domains/excel.js` (sheet `DuLieu`) — k
   chồng, nữ → vợ; cùng giới hoặc chưa rõ giới thì xếp theo thứ tự `partners`.
   Dữ liệu vẫn là mảng `partners` — đừng thêm trường chồng/vợ vào đâu cả.
 
-## Đời — TÍNH, không đọc
+## Đời — LƯU theo cây, máy chủ tự tính lại (b125g)
 
 - Từ b121 một người dùng chung nhiều cây, mỗi cây một đời → Đời không cất
-  được trên người. **Máy chủ KHÔNG có cột đời theo cây** (`tree_persons` chỉ
-  có `tree_id`, `person_id`); `vn.generation` là số ghi tay trên NGƯỜI, đa số
-  trống — nên thẻ cũ ẩn hàng Đời. Nay thẻ, bảng Danh sách người và file Excel
-  đều hiện số TÍNH bằng `tinhDoi()`.
+  được trên người, mà ở **`tree_persons.doi`** (cặp cây–người, `luoc-do/40`).
+  `vn.generation` là số ghi tay trên NGƯỜI, đa số trống, không còn dùng.
+  Thẻ, bảng Danh sách người và file Excel đều đọc số ĐÃ LƯU.
+- **Chỉ tính lại nhánh bị đổi** (chủ dự án chốt 27/09): trigger câu lệnh trên
+  `union_children` · `unions` · `persons` (giới tính, xoá mềm) · `tree_persons`
+  (vào/ra cây) đưa NGƯỜI GỐC bị đổi dòng cha vào `tinh_lai_doi()`; hàm ấy tính
+  gốc + con cháu theo dòng cha **ở mọi cây chứa gốc**, và chỉ `update` dòng có
+  số khác. Bắt được cả sáu lối: thêm người · gắn cha · gỡ cha · xoá (mềm/rút
+  khỏi cây) · kéo người từ cây khác · Từ chối (hoàn tác) — và đổi giới tính cha.
+  Không sửa `luu_cay()`, không kéo theo chuỗi dán lại nào.
+- **Trình duyệt không bao giờ gửi `doi` lên**: nó nằm ngoài cây JSON
+  (`state.doi`, `hinh-dang.rapDoi()`), `authenticated` chỉ có luật ĐỌC trên
+  `tree_persons`. Luật "cột mới: BỐN chỗ" của `luu-du-lieu.md` không áp — cột
+  không thuộc `persons`.
+- Sau mỗi lần Lưu, `repo.lamTuoiDoi()` đọc lại (không chờ), có số đổi mới vẽ
+  lại. Xuất Excel đọc lại Đời lúc bấm (`sb.docDoi`). ⚠ Bảng Danh sách người
+  KHÔNG đọc lại sau Lưu một dòng (vẽ lại xoá ô đang gõ) — đổi giới tính cha ở
+  bảng thì cột Đời đúng lại khi tải trang; file Excel thì đúng ngay.
+- `layDong()` đọc Đời hỏng (chưa dán `40`) thì cây VẪN mở, hàng Đời trống.
+- **`tinhDoi()` JS là đáp án**, app không gọi nữa. `doi_tinh()` SQL là bản
+  dịch của nó — đổi luật thì đổi CẢ HAI, chạy lại `do-b125g.mjs`.
+- **Đo 27/09/2026** (`../kiem-thu/ban-thu-sql/do-b125g.mjs`, 44/44): điền một
+  lần khớp JS ở cả hai cây (59 + 681 người); thêm bố cho cụ tổ cây 681 → 548
+  người +1, đúng 549 dòng bị ghi (đếm `xmin`), 95–128 ms cả lần lưu; kiểm
+  chứng ngược tắt trigger thì phép so báo lệch. ⚠ Đếm dòng bị ghi phải so
+  `xmin` trước/sau — `luu_cay()` có khối `exception` nên dòng mang mã giao
+  dịch CON, so với `pg_current_xact_id()` ra 0.
 - **Tính theo DÒNG CHA của chính người ấy** (chủ dự án chốt lần cuối,
   27/09/2026, vòng 4): lần ngược cha → ông nội → cụ nội… tới người không còn
   cha trong cây = Đời 1. **Vợ và chồng mỗi người một dòng cha, nên một cặp có
@@ -55,15 +79,15 @@ Liên quan: đường NHẬP Excel là `domains/excel.js` (sheet `DuLieu`) — k
   lỗi. **Chủ dự án chốt 27/09/2026: người không có cha trong cây = Đời 1**
   (không để trống) — đừng "sửa" cho bà vợ lấy đời chồng.
 - Số ghi tay `vn.generation` không còn tác dụng gì với Đời hiển thị.
-- ⚠ **Lưu Đời vào Supabase** (chủ dự án muốn) — `KE-HOACH.md` mục b125g.
 
 ## Bẫy đã gặp
 
 - **SheetJS bản `.mjs` chạy trong Node không ghi/đọc được file** cho tới khi gọi
   `XLSX.set_fs(fs)` — lỗi *"Cannot access file"*. Chỉ bài thử Node cần; trình
   duyệt tải file bằng đường khác.
-- **Bản giả `sb-gia.mjs` trả `unions: []`** → ảnh `kq-nguoi*` cho mọi người Đời 1.
-  Đó là dữ liệu giả, không phải lỗi; đo Đời bằng cây 681 ở trên.
+- **Bản giả `sb-gia.mjs`** không có quan hệ; từ b125g nó trả Đời BỊA theo mã
+  (1…6) qua `layDong().dong.doi` + `docDoi()`. Số ấy không nói gì về luật —
+  đo Đời bằng bàn thử ở trên.
 - **Menu `.action-options` gốc neo mép PHẢI** — nút *Xuất Excel* đứng sát mép
   trái trên điện thoại thì menu tràn ra ngoài. Vá bằng `#tp-xuat-menu{left:0}`
   trong `quan-tri.css`; ảnh `kq-nguoi-xuat-390`.

@@ -4,7 +4,7 @@
 //            Ráp dòng thành cây, và so hai cây ra danh sách phép ghi.
 // Lớp      : services — được gọi bởi: services/repo · gọi: utils/date
 // Phụ thuộc: utils/date.js
-// Phiên bản: 0.6.0 · Cập nhật: 23/09/2026 (b127b) — `rapCay()` ráp `vanhDai`
+// Phiên bản: 0.7.0 · Cập nhật: 27/09/2026 (b125g) — `rapDoi()`
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -262,6 +262,22 @@ export function rapCay(dong) {
  */
 export function rapMotNguoi(dong) {
   return dong ? veCay(TEN_PERSON, dong) : null;
+}
+
+/**
+ * Dòng `tree_persons` `{person_id, doi}` → `Map` mã người → Đời (b125g).
+ *
+ * Đời là số MÁY CHỦ tính theo dòng cha trong một cây (`luoc-do/40`), nên nó
+ * KHÔNG nằm trong cây JSON: `soSanh()` không được thấy nó, và nó không bao
+ * giờ đi lên trong lần Lưu. `null` (vòng dữ liệu, người đã xoá) → vắng mặt.
+ */
+export function rapDoi(dong) {
+  const m = new Map();
+  for (const r of Array.isArray(dong) ? dong : []) {
+    const n = Number(r && r.doi);
+    if (r && r.person_id && Number.isInteger(n) && n > 0) m.set(r.person_id, n);
+  }
+  return m;
 }
 
 /** ISO của Postgres → `dd/mm/yyyy HH:mm`, khuôn duy nhất của cả dự án. */

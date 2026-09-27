@@ -3,7 +3,7 @@
 // Vai trò  : Duyệt đồ thị dùng chung. MỌI hàm ở đây bắt buộc có tập visited.
 // Lớp      : utils
 // Phụ thuộc: (không)
-// Phiên bản: 0.8.0 · Cập nhật: 27/09/2026 (b125f) — tinhDoi()
+// Phiên bản: 0.8.1 · Cập nhật: 27/09/2026 (b125g) — tinhDoi() thành đáp án đối chiếu
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (dâu/rể)
 //            · so-tay/xuat-excel.md (Đời tính từ cây)
 // ============================================================
@@ -236,6 +236,11 @@ export function chiMucVe(tree) {
  *
  * Gắn với CÂY, không với người: từ b121 một người dùng chung nhiều cây, cha
  * có trong cây này mà vắng ở cây kia thì hai cây ra hai đời.
+ *
+ * ⚠ Từ b125g app KHÔNG gọi hàm này: Đời lưu ở `tree_persons.doi`, máy chủ tự
+ *   tính lại (`luoc-do/40`, hàm `doi_tinh()` là bản SQL của hàm này). Hàm ở
+ *   lại làm ĐÁP ÁN: `../kiem-thu/ban-thu-sql/do-b125g.mjs` so hai bản trên cả
+ *   hai cây. Đổi luật Đời thì đổi CẢ HAI, rồi chạy lại bài đo ấy.
  *
  * "Cha" = người NAM trong cặp sinh ra người ấy. Có nhiều cặp cha mẹ thì lấy
  * theo thứ tự `LOAI_DONG_CHA` (đẻ trước, rồi thừa tự, nuôi, nuôi dưỡng);

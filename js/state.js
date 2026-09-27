@@ -3,7 +3,7 @@
 // Vai trò  : Trạng thái dùng chung toàn app. CHỈ lớp pages được ghi.
 // Lớp      : (đặc biệt) — chỉ đọc/ghi dữ liệu, không chứa logic
 // Phụ thuộc: config
-// Phiên bản: 0.6.0 · Cập nhật: 02/09/2026 22:45
+// Phiên bản: 0.7.0 · Cập nhật: 27/09/2026 (b125g) — `doi`
 // ============================================================
 import { DEFAULT_SCOPE } from './config.js';
 
@@ -11,6 +11,10 @@ const MAC_DINH = {
   tree:           null,   // cây ở hình JSON cũ, do hinh-dang.rapCay() ráp lại
   index:          null,   // chỉ mục tra cứu, dựng bởi utils/graph.buildIndex
   treeId:         null,   // mã cây (uuid) đang mở
+  // Đời của từng người TRONG cây đang mở: Map mã người → số, do máy chủ tính
+  // (`tree_persons.doi`, `luoc-do/40`). Nằm ngoài `tree` — không bao giờ đi
+  // lên trong lần Lưu. Ghi bởi `services/repo.js`; luôn THAY Map, đừng sửa nó.
+  doi:            null,
 
   // Số bản ghi của cây, đọc từ cột `trees.revision`.
   //

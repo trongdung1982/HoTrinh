@@ -5,8 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.35.0 · Cập nhật: 27/09/2026 (b129c) — gắn/gỡ liên kết tài
-//            khoản từ bảng Danh sách người (`luoc-do/39`). Lịch sử: `git log -p`.
+// Phiên bản: 0.36.0 · Cập nhật: 27/09/2026 (b125g) — đọc Đời đã lưu
+//            (`tree_persons.doi`, `luoc-do/40`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -575,7 +575,7 @@ export async function layDong(treeId) {
   if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', dong: null };
 
   try {
-    const [cay, chung, sources, imports, maNhatKy] = await Promise.all([
+    const [cay, chung, sources, imports, maNhatKy, doi] = await Promise.all([
       k.from('trees').select('*').eq('id', treeId).maybeSingle(),
       k.rpc('doc_cay', { p_tree: treeId }),
       k.from('sources').select('*').eq('tree_id', treeId).range(0, GIOI_HAN),
@@ -585,8 +585,13 @@ export async function layDong(treeId) {
       // biết vì sao thứ này phải nạp ở mọi lần mở app, và vì sao nó lại
       // được rút gọn tới mức chỉ còn một cột.
       k.from('v_ma_nhat_ky').select('ma').eq('tree_id', treeId).range(0, GIOI_HAN),
+      cauDoi(k, treeId),
     ]);
 
+    // ⚠ Đời hỏng thì cây VẪN mở, chỉ hàng Đời trống — không đưa `doi` vào
+    //   vòng dưới. Mã đẩy lên trước khi dán `40` (cột chưa có) mà chặn cả việc
+    //   mở gia phả thì là đổi một cột phụ lấy cả app.
+    if (doi.error) console.warn('[sb] chưa đọc được Đời: ' + cauLoi(doi.error));
     for (const kq of [cay, chung, sources, imports, maNhatKy]) {
       if (kq.error) return { ok: false, loi: cauLoi(kq.error), dong: null };
     }
@@ -614,10 +619,38 @@ export async function layDong(treeId) {
         sources:  sources.data  || [],
         imports:  imports.data  || [],
         maNhatKy: (maNhatKy.data || []).map((r) => r.ma),
+        doi:      (!doi.error && doi.data) || [],   // `luoc-do/40` — Đời theo cây, máy chủ tính
       },
     };
   } catch (e) {
     return { ok: false, loi: cauLoi(e), dong: null };
+  }
+}
+
+/** Câu đọc Đời của một cây — dùng chung cho `layDong()` và `docDoi()`. Luật
+ *  đọc của `tree_persons` (`26` mục 5) là cổng; không có luật ghi nào. */
+function cauDoi(k, treeId) {
+  return k.from('tree_persons').select('person_id, doi')
+    .eq('tree_id', treeId).range(0, GIOI_HAN);
+}
+
+/**
+ * Đọc lại RIÊNG Đời của một cây (b125g) — sau một lần Lưu, và lúc Xuất Excel.
+ *
+ * Đời do trigger máy chủ tính lại trong cùng giao dịch với lần Lưu, nên đọc
+ * ngay sau khi `luu_cay()` gật là đã có số mới. Một câu, vài nghìn byte.
+ *
+ * @returns {Promise<{ok:boolean, loi:string|null, dong:Array<{person_id:string, doi:number|null}>}>}
+ */
+export async function docDoi(treeId) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', dong: [] };
+  try {
+    const { data, error } = await cauDoi(k, treeId);
+    if (error) return { ok: false, loi: cauLoi(error), dong: [] };
+    return { ok: true, loi: null, dong: data || [] };
+  } catch (e) {
+    return { ok: false, loi: cauLoi(e), dong: [] };
   }
 }
 

@@ -3,8 +3,8 @@
 // Vai trò  : MENU vòng tròn (mở từ nút ⓘ · chuột phải) + THẺ người + THẺ GIA ĐÌNH
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, domains/{person,union,render}, services/{repo,sb},
-//            utils/{text,date,image,avatar,glyph,graph,id}, config
-// Phiên bản: 1.34.0 · Cập nhật: 27/09/2026 (b125f) — hàng Đời tính từ cây
+//            utils/{text,date,image,avatar,glyph,id}, config
+// Phiên bản: 1.35.0 · Cập nhật: 27/09/2026 (b125g) — hàng Đời đọc số đã lưu
 // Sổ tay   : so-tay/the-thong-tin.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -26,7 +26,6 @@ import { formatDate, calcAge } from '../utils/date.js';
 import { driveThumbUrl } from '../utils/image.js';
 import { anhMacDinhUri } from '../utils/avatar.js';
 import { veBieuTuongTron } from '../utils/glyph.js';
-import { tinhDoi } from '../utils/graph.js';
 import { nhanLoaiTenPhu, chuThichQuanHe,
          rongHop, caoHop, leLopPhu } from '../config.js';
 
@@ -924,18 +923,16 @@ function doDayBang(bang, p) {
 
 /** "12/03/1927 · Hà Nội" — phần nào trống thì bỏ hẳn, không để dấu chấm lơ lửng. */
 /**
- * Đời, kể ra thành chữ — TÍNH theo dòng cha của người ấy trong cây đang mở
- * (`utils/graph.tinhDoi`, b125f), không đọc `vn.generation`: một người dùng
- * chung nhiều cây thì mỗi cây một đời. Người vành đai (ngoài cây) → trống,
+ * Đời, kể ra thành chữ — số ĐÃ LƯU của cây đang mở (`state.doi`, máy chủ tính
+ * theo dòng cha, `luoc-do/40`, b125g), không đọc `vn.generation`: một người
+ * dùng chung nhiều cây thì mỗi cây một đời. Người vành đai (ngoài cây) → trống,
  * `veHang()` ẩn hàng.
  *
  * ⚠ Trả về *"thứ 5"* chứ không phải *"Đời thứ 5"*: nhãn của hàng đã là chữ
- * *Đời* rồi. Tính lại mỗi lần mở thẻ — cây 681 người mất vài mili giây, rẻ
- * hơn giữ một bản đệm phải nhớ xoá mỗi lần sửa quan hệ.
+ * *Đời* rồi.
  */
 function doiCua(p) {
-  if (!p || !state.tree) return '';
-  const n = tinhDoi(state.tree.persons, state.tree.unions).get(p.id);
+  const n = p && state.doi ? state.doi.get(p.id) : null;
   return n ? ('thứ ' + n) : '';
 }
 
