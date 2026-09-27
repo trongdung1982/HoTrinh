@@ -39,7 +39,6 @@ Quản trị hệ thống**.
 | **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
 | **b129c** — cột Tài khoản (`39` đã dán) | Danh sách người → Chỉnh sửa → gắn một người chưa có tài khoản; chọn một tài khoản đã liên kết (phải bị chặn, nói rõ gia phả); Đề xuất gỡ → người ấy vào Hồ sơ cá nhân bấm Đồng ý gỡ |
 | **b127d** — đề nghị sửa quan hệ (`33`, xong d-1→d-3) | Form người có quan hệ ngoài cây: bấm ✉ gửi đề nghị → Quản trị hệ thống → tab *Đề nghị sửa quan hệ* → Duyệt (gỡ) hoặc Từ chối |
-| **b125e** — nút Xuất Excel | Danh sách người → *Xuất Excel* → mở file `.xlsx` tải về bằng Excel thật, xem có đọc được không |
 ---
 
 ## SQL — đã dán gì
