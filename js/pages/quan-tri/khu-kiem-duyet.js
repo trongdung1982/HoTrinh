@@ -6,8 +6,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, domains/so-sanh, quan-tri/trang-chi-tiet ·
 //            hop-thoai · o-bang
-// Phiên bản: 1.2.0 · Cập nhật: 28/09/2026 (b136) — hai tab lịch sử điền người
-//            duyệt · lúc duyệt · lý do từ chối (`luoc-do/43`)
+// Phiên bản: 1.3.0 · Cập nhật: 28/09/2026 06:30 (b140) — duyệt / từ chối
+//            hàng loạt ở tab Chờ duyệt
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -24,6 +24,10 @@
 //
 // ⚠ Người duyệt · lúc duyệt · lý do từ chối: `ds_kiem_duyet()` trả từ `43`
 //   (b136). Máy chủ từ chối hoàn tác thì in NGUYÊN VĂN câu của nó trong hộp.
+//
+// ⚠ Hàng loạt (b140, không có trong quantri3): lặp từng dòng, KHÔNG "tất cả
+//   hoặc không". Từ chối chạy MỚI → CŨ — `dung_do_sau()` (`08`) bỏ qua lần
+//   đã từ chối, nên chuỗi lần Lưu chồng nhau hoàn tác được.
 
 import {
   layDanhSachGiaPha, coTheKiemDuyet, dsKiemDuyet, duyetThayDoi, tuChoiThayDoi,
@@ -31,7 +35,7 @@ import {
 } from '../../services/sb.js';
 import { bangPhang } from '../../domains/so-sanh.js';
 import { duongDan } from './trang-chi-tiet.js';
-import { hoi } from './hop-thoai.js';
+import { hoi, bao } from './hop-thoai.js';
 import {
   td, span, tenVaPhu, huyHieu, datHuyHieu, nut, nutLink, hangNut, dongTrong, ngayGio, chepKieu,
 } from './o-bang.js';
@@ -39,8 +43,10 @@ import {
 const TRANG_THAI = ['cho', 'duyet', 'tu_choi'];
 const TBODY = { cho: 'kd-table-cho', duyet: 'kd-table-duyet', tu_choi: 'kd-table-tuchoi' };
 const DEM = { cho: 'kd-count-cho', duyet: 'kd-count-duyet', tu_choi: 'kd-count-tuchoi' };
+const SO_COT = { cho: 7, duyet: 6, tu_choi: 6 };   // tab Chờ duyệt thêm cột ô tích (b140)
 
 let tabDangMo = 'cho';
+const daChon = new Map();   // `<fileId>:<id>` → dòng chờ — chỉ dòng ĐANG HIỆN
 
 // ============================================================
 // Khu
@@ -50,7 +56,9 @@ let tabDangMo = 'cho';
 export async function mountKhuKiemDuyet(sec) {
   const $ = (id) => sec.querySelector('#' + id);
   ganTab(sec);
-  for (const tt of TRANG_THAI) { dongTrong($(TBODY[tt]), 6, 'Đang đọc hàng chờ…'); $(DEM[tt]).textContent = ''; }
+  for (const tt of TRANG_THAI) { dongTrong($(TBODY[tt]), SO_COT[tt], 'Đang đọc hàng chờ…'); $(DEM[tt]).textContent = ''; }
+  daChon.clear();
+  $('kd-hang-loat').hidden = true;
   for (const id of ['stat-tree-count', 'stat-tree-desc', 'stat-author-count', 'stat-author-desc',
     'stat-pending-count', 'kd-filter-summary', 'kd-pane-cho-sub']) $(id).textContent = '';
 
@@ -59,10 +67,10 @@ export async function mountKhuKiemDuyet(sec) {
   if (window.location.hash !== hashLuc) return;
 
   const napLai = () => mountKhuKiemDuyet(sec);
-  if (kq.loi) { for (const tt of TRANG_THAI) dongTrong($(TBODY[tt]), 6, kq.loi, napLai); return; }
+  if (kq.loi) { for (const tt of TRANG_THAI) dongTrong($(TBODY[tt]), SO_COT[tt], kq.loi, napLai); return; }
   if (!kq.dsCay.length) {
     for (const tt of TRANG_THAI) {
-      dongTrong($(TBODY[tt]), 6, 'Bạn không kiểm duyệt gia phả nào — chủ gia phả, Quản trị gia ' +
+      dongTrong($(TBODY[tt]), SO_COT[tt], 'Bạn không kiểm duyệt gia phả nào — chủ gia phả, Quản trị gia ' +
         'phả và Quản trị hệ thống mới duyệt được nội dung.');
     }
     veThongKe(sec, []);
@@ -153,14 +161,15 @@ function veBang(sec, kq, napLai) {
   $('kd-pane-cho-sub').textContent = choLoc.length + ' lần Lưu cần xử lý';
 
   const tbCho = $(TBODY.cho);
-  if (!theo.cho.length) dongTrong(tbCho, 6, 'Không có gì đang chờ duyệt.');
+  if (!theo.cho.length) dongTrong(tbCho, SO_COT.cho, 'Không có gì đang chờ duyệt.');
   else if (!choLoc.length) {
-    const o = dongTrong(tbCho, 6, 'Không có thay đổi nào khớp với bộ lọc đã chọn. ');
+    const o = dongTrong(tbCho, SO_COT.cho, 'Không có thay đổi nào khớp với bộ lọc đã chọn. ');
     o.append(nutLink('Đặt lại bộ lọc', () => $('kd-filter-reset').click()));
   } else {
     tbCho.innerHTML = '';
     for (const d of choLoc) tbCho.append(dongCho(d, napLai));
   }
+  ganHangLoat(sec, choLoc, napLai);
 
   for (const tt of ['duyet', 'tu_choi']) {
     const tb = $(TBODY[tt]);
@@ -187,9 +196,15 @@ function dongCho(d, napLai) {
   const bTuChoi = nut('Từ chối', 'danger');
   bTuChoi.addEventListener('click', () => hoiTuChoi(d, napLai));
 
+  const tich = document.createElement('input');
+  tich.type = 'checkbox';
+  tich.setAttribute('aria-label', 'Chọn lần Lưu #' + d.id);
+  const oTich = td(tich);
+  oTich.className = 'kd-chon';
+
   const dung = dungVao(d);
   const tr = document.createElement('tr');
-  tr.append(oCay(d), td(span('sub', ngayGio(d.ts))), td(span('name', d.by_email || '')),
+  tr.append(oTich, oCay(d), td(span('sub', ngayGio(d.ts))), td(span('name', d.by_email || '')),
     td(span('name', viecGi(d))), td(dung ? huyHieu(dung) : ''), td(hangNut(bXem, bDuyet, bTuChoi)));
   return tr;
 }
@@ -231,6 +246,124 @@ async function hoiTuChoi(d, sauKhiXong) {
     lam: (lyDo) => tuChoiThayDoi(d.cay.fileId, d.id, lyDo),
   });
   if (kq) sauKhiXong();
+}
+
+// ============================================================
+// Hàng loạt (b140) — chủ dự án chốt 28/09/2026
+// ============================================================
+
+const khoaDong = (d) => d.cay.fileId + ':' + d.id;
+
+/**
+ * Nối ô tích của các dòng vừa vẽ với thanh hai nút. Gọi lại mỗi lần bảng vẽ
+ * lại (đổi bộ lọc) — và mỗi lần ấy BỎ CHỌN HẾT: dòng đã chọn mà bị lọc khuất
+ * thì người bấm không còn thấy mình sắp duyệt gì.
+ */
+function ganHangLoat(sec, choLoc, napLai) {
+  const $ = (id) => sec.querySelector('#' + id);
+  daChon.clear();
+  $('kd-hang-loat').hidden = !choLoc.length;
+  const het = $('kd-chon-het');
+  het.checked = false;
+  het.indeterminate = false;
+  het.disabled = !choLoc.length;
+  const oTich = [...$(TBODY.cho).querySelectorAll('td.kd-chon input')];
+
+  const capNhat = () => {
+    const n = daChon.size;
+    het.checked = n > 0 && n === choLoc.length;
+    het.indeterminate = n > 0 && n < choLoc.length;
+    $('kd-da-chon').textContent = n
+      ? 'Đã chọn ' + n + ' / ' + choLoc.length + ' lần Lưu'
+      : 'Tích ô đầu dòng để duyệt hoặc từ chối nhiều lần Lưu cùng lúc';
+    $('kd-duyet-chon').disabled = !n;
+    $('kd-tuchoi-chon').disabled = !n;
+  };
+  oTich.forEach((o, i) => {
+    const d = choLoc[i];
+    o.onchange = () => {
+      if (o.checked) daChon.set(khoaDong(d), d); else daChon.delete(khoaDong(d));
+      capNhat();
+    };
+  });
+  het.onchange = () => {
+    oTich.forEach((o, i) => {
+      o.checked = het.checked;
+      if (het.checked) daChon.set(khoaDong(choLoc[i]), choLoc[i]);
+    });
+    if (!het.checked) daChon.clear();
+    capNhat();
+  };
+  $('kd-duyet-chon').onclick = () => hoiNhieu('duyet', [...daChon.values()], napLai);
+  $('kd-tuchoi-chon').onclick = () => hoiNhieu('tu_choi', [...daChon.values()], napLai);
+  capNhat();
+}
+
+/** "NTB (3) · LVT433 (2)" — cây nào, mấy lần Lưu. */
+function theoCay(ds) {
+  const dem = new Map();
+  for (const d of ds) {
+    const ten = d.cay.ten || d.cay.treeCode;
+    dem.set(ten, (dem.get(ten) || 0) + 1);
+  }
+  return [...dem].map(([ten, n]) => ten + ' (' + n + ')').join(' · ');
+}
+
+async function hoiNhieu(viec, ds, sauKhiXong) {
+  if (!ds.length) return;
+  const duyet = viec === 'duyet';
+  const kq = await hoi(duyet ? {
+    tua: 'Duyệt ' + ds.length + ' lần Lưu',
+    chu: 'Xác nhận phê duyệt ' + ds.length + ' lần Lưu đã chọn và đưa vào gia phả chính thức?\n' +
+      'Gia phả: ' + theoCay(ds),
+    nutOk: 'Duyệt chính thức', nutHuy: 'Hủy',
+    lam: () => chayNhieu(viec, ds, ''),
+  } : {
+    tua: 'Từ chối và hoàn tác ' + ds.length + ' lần Lưu',
+    chu: 'Bạn đang từ chối ' + ds.length + ' lần Lưu đã chọn. Hệ thống hoàn tác từng lần, mới ' +
+      'trước cũ sau. Lần nào đã có người sửa tiếp lên cùng dữ liệu thì máy chủ từ chối và ' +
+      'nói rõ — các lần khác vẫn được xử lý.\nGia phả: ' + theoCay(ds),
+    oNhap: { nhieuDong: true, goiY: 'Lý do từ chối — ghi chung cho mọi lần Lưu đã chọn (tùy chọn nhưng khuyến nghị)...' },
+    nutOk: 'Xác nhận từ chối & hoàn tác', nutHuy: 'Hủy', kieuOk: 'danger',
+    lam: (lyDo) => chayNhieu(viec, ds, lyDo),
+  });
+  if (!kq) return;
+  const { xong, hong } = kq.kq;
+  await bao(duyet ? 'Kết quả duyệt' : 'Kết quả từ chối',
+    (duyet ? 'Đã duyệt ' : 'Đã từ chối và hoàn tác ') + xong + ' / ' + ds.length + ' lần Lưu.' +
+    (hong.length ? '\nMáy chủ không nhận ' + hong.length + ' lần:' + theoLyDo(hong) : ''));
+  sauKhiXong();
+}
+
+/** Gộp dòng hỏng theo câu máy chủ — cùng một lý do thì in MỘT lần. */
+function theoLyDo(hong) {
+  const nhom = new Map();
+  for (const h of hong) {
+    if (!nhom.has(h.loi)) nhom.set(h.loi, []);
+    nhom.get(h.loi).push('#' + h.d.id + ' (' + (h.d.cay.ten || h.d.cay.treeCode) + ')');
+  }
+  return [...nhom].map(([loi, ma]) => '\n\n· ' + ma.join(' · ') + '\n' + loi).join('');
+}
+
+/**
+ * Lặp từng dòng. Luôn trả `ok:true` để hộp hỏi đóng lại — kể cả khi mọi dòng
+ * hỏng — vì câu trả lời là MỘT BẢNG KẾT QUẢ, không phải một câu từ chối.
+ */
+async function chayNhieu(viec, ds, lyDo) {
+  const thuTu = [...ds].sort((a, b) => (viec === 'tu_choi' ? Number(b.id) - Number(a.id)
+    : Number(a.id) - Number(b.id)));
+  let xong = 0;
+  const hong = [];
+  for (const d of thuTu) {
+    let r;
+    try {
+      r = viec === 'duyet' ? await duyetThayDoi(d.cay.fileId, d.id)
+        : await tuChoiThayDoi(d.cay.fileId, d.id, lyDo);
+    } catch (e) { r = { ok: false, loi: (e && e.message) || 'Lỗi không rõ.' }; }
+    if (r && r.ok) xong++;
+    else hong.push({ d, loi: (r && (r.loi || r.lyDo)) || 'Máy chủ từ chối.' });
+  }
+  return { ok: true, xong, hong };
 }
 
 // ============================================================

@@ -1,9 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
 *Cập nhật 28/09/2026 sáng · chủ dự án đã dán `42`·`43`·`44` + thay mã
-`SaoLuu.gs`. b139 (nhập GEDCOM xin đủ mã, chủ dự án cho sửa `gedcom.js`)
-XONG. b140 Duyệt hàng loạt — thiết kế ĐÃ CHỐT, xem Việc kế tiếp. Năm điểm
-dừng dưới chưa bấm thử.*
+`SaoLuu.gs`. b139 (nhập GEDCOM xin đủ mã) và b140 (duyệt hàng loạt) XONG
+phần mã — không SQL mới. Sáu điểm dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -28,6 +27,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b140** Duyệt hàng loạt | *Quản trị → Kiểm duyệt*, tab *Đang chờ duyệt* (Ctrl+F5 trước). Cây thử `TH957`: sửa 2–3 lần bằng tài khoản thử để có dòng chờ. Tích hai dòng → thanh trên bảng ghi "Đã chọn 2 / n" → *Duyệt các dòng đã chọn* → *Duyệt chính thức* → hộp "Đã duyệt 2 / 2", hai dòng sang tab *Đã nhận chính thức*. Lặp với *Từ chối các dòng đã chọn* + một lý do → dữ liệu về như cũ, tab *Đã từ chối* hiện lý do ấy ở cả hai dòng. Đổi bộ lọc cây → các ô tích tự bỏ hết |
 | **b139** Nhập GEDCOM bổ sung | Mở cây thử `TH957` → *Nhập GEDCOM/Excel* → chọn một file `.ged` có vài người CHƯA có trong cây → ghép đôi → *Ghi*. Đạt khi ghi xong không báo "Mã mới vừa cấp đã có bản ghi khác giữ", và người mới hiện trên sơ đồ |
 | **b137** Sao lưu sáu bảng hệ thống | `44` + `SaoLuu.gs` đã xong — còn chạy `kiemTraKetNoi` trong Apps Script (`sao-luu/HUONG-DAN-SAO-LUU.md` mục *Khi `SaoLuu.gs` có bản mới*, bước cuối). Đạt khi nhật ký có sáu dòng `cau_hinh` … `de_xuat_dong_ho`, không dòng LỖI |
 | **b136** Lịch sử Kiểm duyệt | *Quản trị → Kiểm duyệt*, tab *Đã nhận chính thức*: hai cột cuối có người duyệt + lúc duyệt; tab *Đã từ chối & hoàn tác*: người từ chối + lý do. Lần Lưu tự duyệt (người tin cậy) có thể trống người duyệt — đúng, không phải lỗi |
@@ -111,15 +111,9 @@ nhập GEDCOM/Excel qua máy chủ · **khôi phục thật** *(đo cả vòng s
 khôi phục→về đúng cũ, không chỉ "có file")* · **tối ưu tốc độ đọc** khi mọi
 chức năng đã chạy *(681 người: ~0,4s)*. *(Số mục = `THIET-KE-QUAN-TRI.md`.)*
 
-⚠ **b140 Duyệt hàng loạt ở Kiểm duyệt — ĐANG LÀM, thiết kế CHỐT 28/09/2026**
-(ý mới 27/09, KHÔNG có trong prototype quantri3). Chủ dự án chọn cả ba đề
-xuất: **(1)** ô tích mỗi dòng tab *Chờ duyệt*, ô tích đầu bảng = mọi dòng ĐANG
-HIỆN theo bộ lọc — xuyên cây được; **(2)** Từ chối hàng loạt = MỘT lý do
-chung; lý do riêng thì vẫn từ chối từng dòng; **(3)** KHÔNG SQL mới — lặp từng
-dòng gọi `duyet_thay_doi` / `tu_choi_thay_doi` có sẵn, không "tất cả hoặc
-không": dòng nào máy chủ từ chối thì hộp kết quả in đúng dòng ấy + câu nguyên
-văn. ⚠ Từ chối chạy MỚI → CŨ trong từng cây (máy chủ không hoàn tác lần Lưu
-cũ khi lần sau sửa tiếp lên cùng bản ghi).
+⚠ **Cột *Nội dung thao tác* ở Kiểm duyệt co về một chữ mỗi dòng** (có từ
+prototype; b140 thêm cột ô tích lấy thêm ~30px). Nới = đè `style=width` của
+quantri3 cho cột *Hành động* / *Người thực hiện* — chờ chủ dự án bảo.
 
 ---
 

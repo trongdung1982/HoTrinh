@@ -140,3 +140,18 @@ td .link { text-align:left; }
 /* b125f — menu Xuất Excel neo mép TRÁI: trên điện thoại nút đứng sát mép trái,
    neo phải như `.action-options` gốc thì menu tràn ra ngoài màn hình. */
 #tp-xuat-menu{ right:auto; left:0; }
+
+/* ── Duyệt hàng loạt ở Kiểm duyệt (b140) — KHÔNG có trong quantri3 ─────────
+   Ô tích đầu mỗi dòng tab Chờ duyệt + một thanh hai nút ngay dưới tiêu đề
+   bảng. Hộp kết quả kể từng dòng máy chủ từ chối, mỗi dòng một hàng — nên
+   phần mô tả của hộp giữ dấu xuống dòng (chuỗi cũ không chuỗi nào có `\n`). */
+.kd-hang-loat{ display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  padding:10px 18px; border-bottom:1px solid var(--line); background:#faf8f5; }
+.kd-hang-loat .sub{ margin-right:auto; }
+/* Cột ô tích hẹp hết mức: cột Nội dung thao tác vốn đã chật (độ rộng các
+   cột kia nằm trong `style=` của quantri3), mỗi px ở đây là lấy của nó. */
+th.kd-chon, td.kd-chon{ width:30px; padding:0 0 0 14px; }
+.kd-chon input{ width:16px; height:16px; margin:0; cursor:pointer; }
+.modal-desc{ white-space:pre-line; }
+/* Hộp kết quả dài (nhiều lý do khác nhau) không được tràn mép trên màn hình. */
+.modal-box{ max-height:calc(100vh - 32px); overflow-y:auto; }

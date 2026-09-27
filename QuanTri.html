@@ -41,7 +41,7 @@
   <!-- `?v=` = khớp Phiên bản đầu quan-tri.css — đổi CSS thì đổi cả số này,
        không thì trình duyệt/CDN có thể phục vụ bản cũ đã cache (b122d,
        chủ dự án báo "chưa thấy đổi gì" dù đã đẩy lên GitHub). -->
-  <link rel="stylesheet" href="quan-tri.css?v=1.1.7">
+  <link rel="stylesheet" href="quan-tri.css?v=1.1.8">
 
   <style>
     #loi { padding:24px; color:#c62828; line-height:1.6; font-size:15px; }
@@ -203,7 +203,9 @@
 
 <div class="panel" data-kd-pane="cho">
 <div class="panel-head"><h3>Thay đổi đang chờ duyệt</h3><span id="kd-pane-cho-sub"></span></div>
-<table><thead><tr><th style="width:140px">Gia phả</th><th style="width:125px">Thời điểm</th><th style="width:185px">Người thực hiện</th><th>Nội dung thao tác</th><th style="width:115px">Đụng chạm</th><th style="width:225px">Hành động</th></tr></thead>
+<!-- b140 Duyệt hàng loạt — KHÔNG có trong quantri3 (chủ dự án chốt 28/09/2026) -->
+<div class="kd-hang-loat" id="kd-hang-loat" hidden><span class="sub" id="kd-da-chon"></span><button class="btn primary" type="button" id="kd-duyet-chon">Duyệt các dòng đã chọn</button><button class="btn danger" type="button" id="kd-tuchoi-chon">Từ chối các dòng đã chọn</button></div>
+<table><thead><tr><th class="kd-chon"><input type="checkbox" id="kd-chon-het" title="Chọn mọi dòng đang hiện" aria-label="Chọn mọi dòng đang hiện"></th><th style="width:140px">Gia phả</th><th style="width:125px">Thời điểm</th><th style="width:185px">Người thực hiện</th><th>Nội dung thao tác</th><th style="width:115px">Đụng chạm</th><th style="width:225px">Hành động</th></tr></thead>
 <tbody id="kd-table-cho"></tbody></table>
 </div>
 

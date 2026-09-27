@@ -142,24 +142,17 @@ là bắt buộc chứ không phải cho chắc.
 | sau mỗi lần Lưu | `repo.luuCay()` → `dayKhoMa()`, không chờ |
 | thêm hàng loạt | nơi gọi tự `await repo.xinMa(loai, so)` |
 
-⚠ **Lô nhỏ là cố ý** (`KHO_MOI_LO`, hiện P5 · U3 · M3). Sổ đếm Postgres chỉ
-tiến: mã xin mà không dùng là mất luôn, nên xin thừa mỗi lần mở app sẽ đẩy mã
-lên `P30000` trong khi cây có bảy trăm người.
+⚠ **Lô nhỏ là cố ý** (`KHO_MOI_LO`: P5 · U3 · M3). Sổ đếm Postgres chỉ tiến:
+mã xin mà không dùng là mất luôn.
 
 ⚠ **Kho rỗng thì `nextId()` rơi về đếm trong cây** — cố ý không ném lỗi: ném
 giữa form là mất những gì người ta vừa gõ, còn đếm nhầm thì trigger từ chối
 bằng `trungma` và tải lại trang (kho đầy lại) là làm được.
 
-⚠ **Nhập GEDCOM/Excel — trộn bổ sung đã nối kho (b139).** Bản cũ của
-`domains/gedcom.js capMaHangLoat()` hỏi `nextId` MỘT lần rồi tự đếm tiếp —
-chỉ đúng khi kho là một dải liền, mà kho thật hay là hai lô không liền (lô cũ
-còn sót + lô mới, ai đó xin xen giữa). Nay: còn mã trong kho thì MỖI lần là
-một `nextId` (một `shift`); kho cạn mới tự đếm. Trang gọi
-`xinMaChoLanNhap()` trước `mergeImported` — đếm bằng chính `detectDuplicates`
-cùng bộ tuỳ chọn, xin đúng phần thiếu. Đo: `../kiem-thu/kiem-cap-ma-nhap.mjs`.
-⚠ Chế độ `moi` (`tronMoi`) VẪN giữ nguyên mã của file (`P0001`…) → sẽ
-`trungma` ngay. Màn *dựng gia phả mới* chưa mở nên chưa có ai đi vào; mở màn
-ấy thì phải cấp mã mới cho mọi bản ghi như `tronBoSung` (sửa `domains/`).
+⚠ **Nhập bổ sung (b139):** kho hay là hai lô KHÔNG liền, nên
+`capMaHangLoat()` rút MỖI mã khỏi kho, cạn mới tự đếm; trang xin phần thiếu
+trước (`xinMaChoLanNhap`). Đo: `../kiem-thu/kiem-cap-ma-nhap.mjs`. ⚠ Chế độ
+`moi` (`tronMoi`) VẪN giữ mã của file → `trungma`; màn ấy chưa mở.
 
 ## Đọc cây đi qua `doc_cay()`, không đọc thẳng bốn bảng (b122b)
 

@@ -97,6 +97,14 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   cuộn trong bảng mới thấy mục. Nới khung ảnh không chữa được; ảnh
   `kq-menu-saoluu.png` giữ lại đúng cảnh ấy.
 
+- **Duyệt hàng loạt (b140) — hộp kết quả dài tràn mép TRÊN màn hình**, tựa
+  hộp bị cắt; và cùng một câu từ chối lặp N lần. Vá: `.modal-box{max-height;
+  overflow-y:auto}` + gộp dòng hỏng theo câu máy chủ (`theoLyDo`). Bấm ô tích
+  trong ảnh chụp: `?bam=@<bộ chọn CSS>#n` (`trang-quan-tri-gia.html`, b140)
+  — `?bam=` thường chỉ bấm `<button>`. Cột *Nội dung thao tác* ở tab Chờ
+  duyệt vẫn co về một chữ mỗi dòng (năm cột kia `style=width` + padding đã
+  vượt bề ngang) — có từ prototype, cột ô tích chỉ lấy thêm ~30px.
+
 - **Đẩy CSS xong, máy chủ vẫn trả bản cũ trong 10 phút** (21/09/2026). `?v=`
   chống đệm cho FILE CSS, nhưng chính `QuanTri.html` — nơi chứa con số `?v=`
   — bị GitHub Pages đệm `max-age=600`. **Đo trước khi nghi mã**, 30 giây:
