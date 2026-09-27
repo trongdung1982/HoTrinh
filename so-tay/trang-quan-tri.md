@@ -114,8 +114,8 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   cây thì cần một hàm máy chủ gộp — chưa có.
 - **Nút *Lời mời* của trang cây không là một mục** — đi sang `#gia-pha/moi/<mã>`,
   nơi bảng *Lời mời đã gửi* ở. Một bảng, một địa chỉ.
-- **`ds_kiem_duyet()` không trả người duyệt · lúc duyệt · lý do từ chối** (cột có
-  trong `change_log`, hàm chưa đọc) — hai tab lịch sử để trống ba cột, không bịa.
+- **Người duyệt · lúc duyệt · lý do từ chối** đến từ `43` (b136) — bản đứng
+  cuối của `ds_kiem_duyet()`. Máy chủ chưa dán `43` thì ba ô trống, không bịa.
 - **`#account-detail` · `#public-info-detail` có trong HTML mà không có lối vào** —
   prototype không nối cái đầu; cái sau cần công khai theo từng trường, máy chủ
   chưa có (sau b120). Chép cho đủ file.

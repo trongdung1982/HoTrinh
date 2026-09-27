@@ -27,6 +27,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b136** Lịch sử Kiểm duyệt | Dán `43` trước. *Quản trị → Kiểm duyệt*, tab *Đã nhận chính thức*: hai cột cuối có người duyệt + lúc duyệt; tab *Đã từ chối & hoàn tác*: người từ chối + lý do. Lần Lưu tự duyệt (người tin cậy) có thể trống người duyệt — đúng, không phải lỗi |
 | **b135** Huy hiệu (9.6) | *Quản trị → Gia phả*, chip *Tôi quản lý*: cây nào có nội dung chờ kiểm duyệt thì dưới tên có huy hiệu "n chờ kiểm duyệt", bấm sang Kiểm duyệt. Số trên nút *Kiểm duyệt* / *Gia phả* ở thanh trái nay CỘNG mọi cây bạn quản lý — đổi cây đang mở không làm số đổi |
 | **b134** Nhật ký hệ thống | Dán `42` trước. Rồi: đăng xuất → đăng nhập lại → *Quản trị hệ thống → Nhật ký*: phải thấy dòng **"Bắt đầu ghi nhật ký"** và dòng **"Đăng nhập"** của chính bạn. Bấm *Cấp quyền tạo cây* rồi *Thu hồi* cho `khach@io.vn` → hai dòng mới, người làm là bạn. Tích một dòng → *Xóa các dòng đã chọn* → sang tab *Thùng rác*, bảng cuối có một lô → *Phục hồi* → dòng về lại. Thẻ *Nhật ký hệ thống* ở *Tổng quan* ra số sự kiện 7 ngày |
 
@@ -75,6 +76,12 @@ Tự kiểm cuối file phải ra **7/7 ĐẠT**. Bàn thử: `do-b134.mjs` 58/5
 ⚠ Trigger trên `auth.users` là lần thứ hai dự án đụng schema `auth` (lần đầu:
 `11` mục 2) — bàn thử KHÔNG đo được quyền tạo trigger ở đó trên Supabase thật;
 `11` đã tạo được nên chắc chắn chạy, nhưng dán lỗi ở đúng dòng ấy thì báo lại.
+
+**`43` (b136) — ĐƯỢC DÁN, CHƯA DÁN.** Dán SAU `42`. Dựng lại MỘT hàm
+`ds_kiem_duyet()` (thêm ba cột: người duyệt · lúc duyệt · lý do từ chối),
+chép lại `grant`. Không đụng bảng, không đụng RLS. Tự kiểm **3/3 ĐẠT**. Bàn
+thử `do-b136.mjs` 12/12. ⚠ Là bản ĐỨNG CUỐI của hàm ấy — dán lại `08`/`10`
+thì phải dán lại `43` (`so-tay/phan-quyen.md`).
 
 ---
 
@@ -127,11 +134,10 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 
 | Việc | Ghi ở đâu |
 |---|---|
-| ⚠ **Nhập GEDCOM/Excel chưa nối vào kho mã** — `capMaHangLoat()` hỏi `nextId` một lần rồi tự đếm tiếp, nên từ mã thứ hai đã ra ngoài phần máy chủ đặt trước. Hỏng to tiếng (`trungma`), không lặng lẽ. Đường sửa: `pages/import-export.js` gọi `repo.xinMa(loai, so)` trước khi nhập | `so-tay/luu-du-lieu.md` |
+| ⚠ **Nhập GEDCOM/Excel chưa nối vào kho mã** — `capMaHangLoat()` hỏi `nextId` một lần rồi tự đếm tiếp, nên từ mã thứ hai đã ra ngoài phần máy chủ đặt trước. Hỏng to tiếng (`trungma`), không lặng lẽ. ⚠⚠ **CHỜ CHỦ DỰ ÁN (28/09, b135 tra lại):** đường sửa cũ *"gọi `repo.xinMa` trước khi nhập"* KHÔNG đủ — `capMaHangLoat()` lấy MỘT mã đầu rồi tự đếm, nên chỉ đúng khi kho rỗng trước VÀ máy chủ cấp một dải liền (lô cũ 5 mã trong kho + lô mới không liền nhau nếu ai khác xin xen giữa). Đường gọn: `capMaHangLoat()` gọi `nextId()` MỖI lần (kho đã đủ mã thì mỗi lần là một `shift`, không quét cây) — **sửa `domains/gedcom.js`**, cần chủ dự án cho phép (`CHI-DAN.md` điều 1; phép 9 sẽ báo thêm `gedcom.js` khác bản đóng băng). Hỏi: *"Cho sửa một hàm trong `domains/gedcom.js` không?"* | `so-tay/luu-du-lieu.md` |
 | ⚠ **`di-doi/sinh-sql-di-doi.mjs` lạc hậu từ `26`** — SQL nó sinh còn gắn `tree_id` vào bốn bảng dùng chung. Ba cây đã di dời xong nên chưa có việc; chạy sẽ lỗi to tiếng | đầu chính file ấy |
 | ⚠ **Tám bảng CHƯA được sao lưu**: `cau_hinh` · `tai_khoan` · `de_xuat_gan_nguoi` · `doi_ma_toan_cuc` · `de_nghi_quan_he` (`33`) · `de_xuat_dong_ho` (`37`) · `nhat_ky_he_thong` · `nhat_ky_lo_rac` (`42`). Ba bảng đầu giữ cờ QTHT, khoá mềm, đơn đề xuất; `doi_ma_toan_cuc` giữ cặp mã cũ→mới vĩnh viễn. ⚠ `33`/`37` lọt khỏi danh sách từ lúc ra đời — bộ kiểm sao lưu báo HỎNG mà không ai chạy, phát hiện b134. Cần xem RLS có cho vai `sao_luu` đọc không trước khi thêm | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
 | ⚠ **Hai hàm của `16` LỆCH NGHĨA với tên** (`xin_xoa_cay` ẩn cây NGAY; `huy_xin_xoa_cay` = trả lại cho chủ). Giữ tên cũ là cố ý; đổi tên là một bước riêng | `luoc-do/23-bon-luat-moi.sql` khối đầu |
-| ⚠ **`ds_kiem_duyet()` chưa trả người duyệt · lúc duyệt · lý do từ chối** — hai tab lịch sử của Kiểm duyệt để trống ba cột (cột có trong `change_log`, hàm chưa đọc). Sửa hàm là `drop` → chép cả `grant` | `so-tay/trang-quan-tri.md` |
 | ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa *(b126 sẽ đụng cả hai)* | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **b127b chưa bấm thật**: thẻ người kéo sang `T388` phải đủ vợ/con | — |
 | ⚠ **Ai gọi `don_thung_rac()`** — nút bấm tay hay trigger Apps Script đêm? Chưa hỏi chủ dự án | `THIET-KE-NHIEU-CAY.md` mục 11.6 |

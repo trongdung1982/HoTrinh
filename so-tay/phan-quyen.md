@@ -34,6 +34,7 @@ Liên quan: `THIET-KE-NHIEU-CAY.md` mục 11 · `DU-LIEU.md` mục 2 · `HUONG-D
 Dán lại file bên trái thì phải dán tiếp các file bên phải, đúng thứ tự:
 
 - `11`/`10`→`14`→`16`→`18`→**`23`** · `13`/`14`→`15`→`20`→**`23`** · `08`→`18`
+  · `08`/`10`→**`43`** (bản cuối `ds_kiem_duyet()`)
 - `21`/`13`/`18`/`27`→**`29`** — `29` giữ bản cuối của `duyet_de_xuat_gan()` và
   `gan_nguoi_cho_thanh_vien()`.
 - `03`/`06`/`08`/`13`→`25`→`27`→**`28`** — `28` giữ bản cuối của `luu_cay()` và
@@ -130,10 +131,9 @@ trỏ vào chính mình), giữ nó là đai an toàn cho sau này, chưa phải
 
 ### Bảng tự kiểm cuối file SQL cũng hỏng được, và nó hỏng theo hướng tệ
 
-`information_schema.columns` **không liệt kê cột trả về của hàm trả bảng** — nó
-trả 0 dòng. Phép 13 của `23` viết theo bảng ấy báo **HỎNG trong khi hàm hoàn
-toàn đúng**: một phép kiểm sai đẩy người đọc đi sửa thứ không hỏng, tệ hơn là
-không có phép kiểm. Đếm cột hàm trả bảng bằng `pg_proc.proallargtypes`.
+`information_schema.columns` **không liệt kê cột trả về của hàm trả bảng** (0
+dòng). Phép 13 của `23` vì thế báo **HỎNG khi hàm đúng** — phép kiểm sai đẩy
+người đọc đi sửa thứ không hỏng. Đếm cột hàm trả bảng bằng `pg_proc.proallargtypes`.
 
 Cùng họ với bài học `14` mục 7 *(bảng tự kiểm 5/5 ĐẠT che một hàm hỏng hẳn vì
 nó chỉ hỏi "hàm có tồn tại không")*: **bảng tự kiểm hỏi hình dạng, bàn thử hỏi

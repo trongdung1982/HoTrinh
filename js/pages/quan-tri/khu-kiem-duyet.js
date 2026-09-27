@@ -6,8 +6,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, domains/so-sanh, quan-tri/trang-chi-tiet ·
 //            hop-thoai · o-bang
-// Phiên bản: 1.1.0 · Cập nhật: 18/09/2026 (b122b) — khoá nút Từ chối theo
-//            `lechSo` · `truocDoiMa` của `luoc-do/27`
+// Phiên bản: 1.2.0 · Cập nhật: 28/09/2026 (b136) — hai tab lịch sử điền người
+//            duyệt · lúc duyệt · lý do từ chối (`luoc-do/43`)
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -22,9 +22,8 @@
 // ⚠ Duyệt theo LẦN LƯU, xem theo Ô. Bảng TRƯỚC/SAU (`chiTietKiemDuyet` +
 //   `domains/so-sanh.js`) không có nút nhận riêng từng ô.
 //
-// ⚠ `ds_kiem_duyet()` KHÔNG trả người duyệt · lúc duyệt · lý do từ chối (cột
-//   có trong `change_log`, hàm chưa đọc) — hai tab lịch sử để trống ba cột ấy,
-//   không bịa. Máy chủ từ chối hoàn tác thì in NGUYÊN VĂN câu của nó trong hộp.
+// ⚠ Người duyệt · lúc duyệt · lý do từ chối: `ds_kiem_duyet()` trả từ `43`
+//   (b136). Máy chủ từ chối hoàn tác thì in NGUYÊN VĂN câu của nó trong hộp.
 
 import {
   layDanhSachGiaPha, coTheKiemDuyet, dsKiemDuyet, duyetThayDoi, tuChoiThayDoi,
@@ -195,10 +194,18 @@ function dongCho(d, napLai) {
   return tr;
 }
 
+/**
+ * Hai cột cuối theo tab: *Đã duyệt* → người duyệt · lúc duyệt; *Đã từ chối*
+ * → người từ chối · lý do. Trống thì để trống (lần Lưu tự duyệt, hoặc máy chủ
+ * chưa dán `43`) — không bịa.
+ */
 function dongLichSu(d) {
   const tr = document.createElement('tr');
+  const oCuoi = d.trang_thai === 'tu_choi'
+    ? td(d.ly_do_tu_choi || '')
+    : td(d.duyet_luc ? span('sub', ngayGio(d.duyet_luc)) : '');
   tr.append(oCay(d), td(span('sub', ngayGio(d.ts))), td(span('name', d.by_email || '')),
-    td(viecGi(d)), td(''), td(''));
+    td(viecGi(d)), td(d.duyet_boi ? span('name', d.duyet_boi) : ''), oCuoi);
   return tr;
 }
 
