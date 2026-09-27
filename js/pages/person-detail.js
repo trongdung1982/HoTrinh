@@ -924,10 +924,10 @@ function doDayBang(bang, p) {
 
 /** "12/03/1927 · Hà Nội" — phần nào trống thì bỏ hẳn, không để dấu chấm lơ lửng. */
 /**
- * Đời, kể ra thành chữ — TÍNH từ cụ tổ của cây đang mở (`utils/graph.tinhDoi`,
- * b125f), không đọc `vn.generation`: một người dùng chung nhiều cây thì mỗi
- * cây một đời. Người không đi xuống từ cụ tổ (tổ tiên bên ngoại của dâu/rể,
- * người vành đai) → trống, `veHang()` ẩn hàng.
+ * Đời, kể ra thành chữ — TÍNH theo dòng cha của người ấy trong cây đang mở
+ * (`utils/graph.tinhDoi`, b125f), không đọc `vn.generation`: một người dùng
+ * chung nhiều cây thì mỗi cây một đời. Người vành đai (ngoài cây) → trống,
+ * `veHang()` ẩn hàng.
  *
  * ⚠ Trả về *"thứ 5"* chứ không phải *"Đời thứ 5"*: nhãn của hàng đã là chữ
  * *Đời* rồi. Tính lại mỗi lần mở thẻ — cây 681 người mất vài mili giây, rẻ

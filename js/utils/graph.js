@@ -228,114 +228,69 @@ export function chiMucVe(tree) {
 }
 
 /**
- * ĐỜI của mọi người TRONG MỘT CÂY, tính TỪ CỤ TỔ ĐI XUỐNG (chủ dự án
- * 27/09/2026) — Đời gắn với cây, không với người: từ b121 một người dùng
- * chung nhiều cây, mỗi cây một đời.
+ * ĐỜI của mọi người TRONG MỘT CÂY, tính theo DÒNG CHA của chính người ấy
+ * (chủ dự án chốt 27/09/2026): lần ngược lên cha → ông nội → cụ nội… tới
+ * người trên cùng (không còn cha trong cây) là Đời 1; người ấy đứng ở đời
+ * bằng số bậc từ đó xuống. Hệ quả cố ý: vợ và chồng mỗi người một dòng cha,
+ * nên MỘT CẶP có thể KHÁC ĐỜI; nàng dâu không có cha trong cây là Đời 1.
  *
- *   • Cụ tổ = Đời 1 (hoặc số ghi tay `vn.generation` của CHÍNH cụ tổ, cho
- *     cây bắt đầu giữa dòng). Cụ tổ tìm bằng `timCuTo()`.
- *   • Con (mọi loại: đẻ, nuôi, riêng, thừa tự) = đời cha/mẹ + 1.
- *   • Dâu/rể = đời người mình lấy.
- *   • CHỈ đi XUỐNG và sang ngang, không bao giờ đi LÊN: cha mẹ, ông bà của
- *     một nàng dâu không thuộc dòng đi xuống từ cụ tổ → KHÔNG có đời (trống).
- *     Đi lên là cách sai: nàng dâu có ba đời bên ngoại sẽ bị tính thành đời 3.
+ * Gắn với CÂY, không với người: từ b121 một người dùng chung nhiều cây, cha
+ * có trong cây này mà vắng ở cây kia thì hai cây ra hai đời.
  *
- * Nhiều đường tới cùng một người (lấy người trong họ): đường MÁU trước, theo
- * từng tầng — ai tới sớm (đời nhỏ hơn) giữ chỗ; đường vợ/chồng chỉ gán đời
- * cho người chưa có đường máu nào. Phép đo: `so-tay/xuat-excel.md`.
+ * "Cha" = người NAM trong cặp sinh ra người ấy. Có nhiều cặp cha mẹ thì lấy
+ * theo thứ tự `LOAI_DONG_CHA` (đẻ trước, rồi thừa tự, nuôi, nuôi dưỡng);
+ * cha dượng (`step`) KHÔNG nối dòng. Dữ liệu vòng (tự làm tổ tiên mình) thì
+ * người trong vòng để trống — có tập `dangTinh`, không treo.
  *
  * @param {object[]} persons
  * @param {object[]} unions
- * @returns {Map<string, number>}  mã người -> đời; người không thuộc dòng thì vắng
+ * @returns {Map<string, number>}  mã người -> đời
  */
 export function tinhDoi(persons, unions) {
-  const d = dungDoThiDoi(persons, unions);
-  const cuTo = chonCuTo(d);
-  const doi = new Map();          // VỪA là kết quả VỪA là tập visited
-  if (!cuTo) return doi;
+  const trong = new Map();
+  for (const p of persons || []) if (p && p.id && !p.deleted) trong.set(p.id, p);
 
-  const p0 = d.trong.get(cuTo);
-  const ghi = Number(p0 && p0.vn && p0.vn.generation);
-  doi.set(cuTo, Number.isInteger(ghi) && ghi > 0 ? ghi : 1);
-
-  // Hàng đợi MÁU theo từng tầng; người mới tới qua vợ/chồng được xếp vào
-  // đúng tầng của họ để không chen trước người cùng tầng đến bằng đường máu.
-  let tang = [cuTo];
-  while (tang.length) {
-    const sau = [];
-    for (let i = 0; i < tang.length; i++) {
-      const id = tang[i];
-      for (const c of d.con.get(id)) {
-        if (doi.has(c)) continue;
-        doi.set(c, doi.get(id) + 1);
-        sau.push(c);
-      }
+  // Con -> cha, chọn theo thứ hạng loại quan hệ.
+  const cha = new Map();       // id con -> { id cha, hạng }
+  for (const u of unions || []) {
+    if (!u || u.deleted) continue;
+    const ong = (u.partners || []).find((id) => trong.has(id) && trong.get(id).sex === 'M');
+    if (!ong) continue;
+    for (const c of u.children || []) {
+      if (!c || !trong.has(c.personId) || c.personId === ong) continue;
+      const hang = LOAI_DONG_CHA.indexOf(c.relation || 'birth');
+      if (hang < 0) continue;
+      const cu = cha.get(c.personId);
+      if (!cu || hang < cu.hang) cha.set(c.personId, { id: ong, hang });
     }
-    // Dâu/rể của tầng này — sau khi mọi đường máu tới tầng này đã đi hết.
-    for (let i = 0; i < tang.length; i++) {
-      for (const s of d.vc.get(tang[i])) {
-        if (doi.has(s)) continue;
-        doi.set(s, doi.get(tang[i]));
-        tang.push(s);   // con riêng của dâu/rể cũng đi xuống từ họ
-        for (const c of d.con.get(s)) {
-          if (doi.has(c)) continue;
-          doi.set(c, doi.get(s) + 1);
-          sau.push(c);
-        }
-      }
-    }
-    tang = sau;
   }
+
+  const doi = new Map();
+  const dangTinh = new Set();     // tập visited của lần leo đang chạy
+  const tinh = (id) => {
+    const chuoi = [];
+    let x = id;
+    while (!doi.has(x) && cha.has(x) && !dangTinh.has(x)) {
+      dangTinh.add(x);
+      chuoi.push(x);
+      x = cha.get(x).id;
+    }
+    let d;
+    if (doi.has(x)) d = doi.get(x);
+    else if (dangTinh.has(x)) { for (const y of chuoi) dangTinh.delete(y); return; }   // vòng
+    else { d = 1; doi.set(x, 1); }  // đầu dòng: không còn cha trong cây
+    for (let i = chuoi.length - 1; i >= 0; i--) {
+      d += 1;
+      doi.set(chuoi[i], d);
+      dangTinh.delete(chuoi[i]);
+    }
+  };
+  for (const id of trong.keys()) if (!doi.has(id)) tinh(id);
   return doi;
 }
 
-/**
- * Cụ tổ của một cây: trong những người KHÔNG có cha mẹ trong cây, người có
- * nhiều HẬU DUỆ nhất. Tổ tiên bên ngoại của dâu/rể cũng không có cha mẹ,
- * nhưng hậu duệ của họ chỉ là một nhánh nhỏ, nên không bao giờ thắng. Ngang
- * nhau (cụ ông · cụ bà) thì nam trước, rồi mã nhỏ.
- *
- * @returns {string} mã người, hoặc '' khi cây trống
- */
-export function timCuTo(persons, unions) {
-  return chonCuTo(dungDoThiDoi(persons, unions));
-}
-
-function dungDoThiDoi(persons, unions) {
-  const trong = new Map();
-  for (const p of persons || []) if (p && p.id && !p.deleted) trong.set(p.id, p);
-  const con = new Map();       // cha/mẹ -> [con]
-  const vc  = new Map();       // người -> [vợ/chồng]
-  const coChaMe = new Set();
-  for (const id of trong.keys()) { con.set(id, []); vc.set(id, []); }
-  for (const u of unions || []) {
-    if (!u || u.deleted) continue;
-    const cap = (u.partners || []).filter((id) => trong.has(id));
-    const cacCon = (u.children || []).map((c) => c && c.personId).filter((id) => trong.has(id));
-    for (let i = 0; i < cap.length; i++) {
-      for (let j = i + 1; j < cap.length; j++) { vc.get(cap[i]).push(cap[j]); vc.get(cap[j]).push(cap[i]); }
-      for (const c of cacCon) {
-        if (c === cap[i]) continue;
-        con.get(cap[i]).push(c);
-        coChaMe.add(c);
-      }
-    }
-  }
-  return { trong, con, vc, coChaMe };
-}
-
-function chonCuTo(d) {
-  let tot = '', soTot = -1;
-  for (const [id, p] of d.trong) {
-    if (d.coChaMe.has(id)) continue;
-    const so = bfs(id, (x) => d.con.get(x)).size;
-    const hon = so > soTot ||
-      (so === soTot && ((p.sex === 'M') > (d.trong.get(tot).sex === 'M') ||
-        ((p.sex === 'M') === (d.trong.get(tot).sex === 'M') && id < tot)));
-    if (hon) { tot = id; soTot = so; }
-  }
-  return tot;
-}
+/** Loại quan hệ NỐI dòng cha, theo thứ tự ưu tiên. `step` (cha dượng) không có. */
+const LOAI_DONG_CHA = ['birth', 'thua_tu', 'adopted', 'foster'];
 
 /**
  * Ghi `unionId` vào danh sách của `personId`, bỏ qua nếu người đó không có

@@ -37,24 +37,24 @@ Liên quan: đường NHẬP Excel là `domains/excel.js` (sheet `DuLieu`) — k
   có `tree_id`, `person_id`); `vn.generation` là số ghi tay trên NGƯỜI, đa số
   trống — nên thẻ cũ ẩn hàng Đời. Nay thẻ, bảng Danh sách người và file Excel
   đều hiện số TÍNH bằng `tinhDoi()`.
-- **Tính TỪ CỤ TỔ ĐI XUỐNG** (chủ dự án chốt, vòng 3): cụ tổ = Đời 1; con
-  (mọi loại) = đời cha/mẹ + 1; dâu/rể = đời người mình lấy. **Không bao giờ
-  đi LÊN**: cha mẹ, ông bà của nàng dâu không có đời (trống). ⚠ Bản vòng 2
-  sai ở đây — nó tính cả chiều lên rồi "neo" cả khối, nên nàng dâu có ba đời
-  bên ngoại có thể ra đời 3 (ví dụ của chủ dự án: bà B lấy ông C đời 7 thì
-  bà B phải là đời 7).
-- **Cụ tổ tự chọn**: trong những người không có cha mẹ trong cây, người nhiều
-  hậu duệ nhất (ngang nhau thì nam, rồi mã nhỏ) — `timCuTo()`. Tổ tiên bên
-  ngoại chỉ có một nhánh hậu duệ nhỏ nên không thắng. Số ghi tay
-  `vn.generation` của CHÍNH cụ tổ (nếu có) thay cho số 1 — cho cây bắt đầu
-  giữa dòng; số ghi tay của người khác không còn tác dụng gì.
-- **Đã đo 27/09/2026**: cây 681 (`kiem-thu/cay-nguyen-phuc.json`, Đời gốc từ
-  Excel cũ, đã xoá Đời ghi sẵn trước khi tính) → cụ tổ P0001 Nguyễn Phúc Giáo,
-  **681/681 khớp**, 5,7 ms. Cây giả 59 người (`tai-lieu/…nguyen-trong-bac`) là
-  "bản hợp nhất" nhiều họ không nối nhau → cụ tổ P0001 Lê Văn Trác, **34 người
-  trống** — đúng luật, và là lý do câu *"ai là cụ tổ"* phải do người chọn được.
-- ⚠ **Chưa chốt — chờ chủ dự án**: cụ tổ để máy tự chọn hay chủ cây chỉ định;
-  lưu Đời vào Supabase (chủ dự án muốn) — xem `KE-HOACH.md` mục b125g.
+- **Tính theo DÒNG CHA của chính người ấy** (chủ dự án chốt lần cuối,
+  27/09/2026, vòng 4): lần ngược cha → ông nội → cụ nội… tới người không còn
+  cha trong cây = Đời 1. **Vợ và chồng mỗi người một dòng cha, nên một cặp có
+  thể khác đời** (ví dụ chủ dự án: ông C đời 7 lấy bà B có cha + ông nội
+  trong cây → bà B đời 3). Không có "cụ tổ" chung của cây.
+- Lịch sử để khỏi đi lại: vòng 2 tính cả khối rồi neo; vòng 3 tính từ cụ tổ đi
+  xuống, dâu lấy đời chồng — cả hai **bị bỏ**, chủ dự án: *"tôi sai bạn đúng"*
+  rồi chốt dòng cha.
+- "Cha" = người NAM trong cặp sinh ra người ấy; nhiều cặp thì đẻ → thừa tự →
+  nuôi → nuôi dưỡng; **cha dượng (`step`) không nối dòng**. Vòng dữ liệu hỏng
+  (tự làm tổ tiên mình) → trống, không treo.
+- **Đã đo 27/09/2026** trên cây 681 (`kiem-thu/cay-nguyen-phuc.json`, Đời gốc
+  từ Excel cũ): **548/548 người CÓ cha trong cây khớp**, 1,3 ms. **133 lệch —
+  cả 133 là người KHÔNG có cha trong cây** (vợ lấy vào họ): Excel gốc ghi họ
+  theo đời chồng, luật dòng cha cho Đời 1. Đó là hệ quả của luật, không phải
+  lỗi — ⚠ chờ chủ dự án xem: để Đời 1 hay để TRỐNG cho người không có dòng cha.
+- Số ghi tay `vn.generation` không còn tác dụng gì với Đời hiển thị.
+- ⚠ **Lưu Đời vào Supabase** (chủ dự án muốn) — `KE-HOACH.md` mục b125g.
 
 ## Bẫy đã gặp
 
