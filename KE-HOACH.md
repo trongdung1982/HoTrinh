@@ -1,17 +1,12 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 27/09/2026 22:55 · b133 — trang Hồ sơ người `#…/nguoi/<mã>` (mới,
-`trang-ho-so-nguoi.js` + `sb.docGiaDinhNguoi()`, không SQL mới) và trang tài
-khoản `#quan-tri-he-thong/tai-khoan/<mã>` bổ sung "gắn với ai" · dòng họ ·
-số cây làm chủ; tên cây/tên người bấm được. Đã nhìn ảnh bản giả, **chưa bấm
-trên app thật** (điểm dừng ở bảng dưới). Trước đó b132 — `luoc-do/41` ĐÃ
-DÁN, cột *gắn với ai* chỉ hiện ở cây có mặt người ấy. Trước nữa, b125g XONG — Đời LƯU ở `tree_persons.doi` (`luoc-do/40`, đã dán),
-trigger máy chủ chỉ tính lại nhánh bị đổi dòng cha; thẻ, bảng Danh sách
-người, file Excel đọc số đã lưu. Bàn thử 44/44 (`do-b125g.mjs`). Chủ dự án
-bấm thử trên app thật (cây TH957) — ĐẠT cả: Xuất Excel, tự động cập nhật
-Đời, dòng Đời ở đầu thẻ người (b125g-2), nhóm Cha mẹ/Vợ chồng/Con đổi sang
-hàng nền đồng nhất thay hộp trắng. Luật + phép đo: `so-tay/xuat-excel.md` ·
-`so-tay/the-thong-tin.md`.*
+*Cập nhật 27/09/2026 23:19 · b133 + b133b XONG — chủ dự án bấm thử trên
+app thật ĐẠT. Trang Hồ sơ người `#<khu>/nguoi/<mã>` (cá nhân · gia đình ·
+các cây + Đời + vai của tài khoản gắn), ba lối vào: cột *gắn với ai* ở
+`#thanh-vien`, Sổ tài khoản → trang tài khoản, bảng *Danh sách người* của
+một cây. Không SQL mới. Luật: đầu `trang-ho-so-nguoi.js` ·
+`so-tay/trang-quan-tri.md`. Trước đó b132 (`luoc-do/41` đã dán) còn một
+điểm dừng ở bảng dưới; b125g (Đời lưu ở `tree_persons.doi`) ĐẠT trên app thật.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -44,7 +39,6 @@ Quản trị hệ thống**.
 | **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
 | **b129c** — cột Tài khoản (`39` đã dán) | Danh sách người → Chỉnh sửa → gắn một người chưa có tài khoản; chọn một tài khoản đã liên kết (phải bị chặn, nói rõ gia phả); Đề xuất gỡ → người ấy vào Hồ sơ cá nhân bấm Đồng ý gỡ |
 | **b132** — cột *gắn với ai trong sơ đồ?* | `#thanh-vien` → bảng *Các gia phả tôi đang tham gia*: dòng NTB hiện P0012, dòng T388/TH957/LVT433/NPGQ8C9 hiện *"Không có trong sơ đồ này"* (trừ cây nào P0012 thật có mặt) |
-| **b133** — hai trang chi tiết | Chủ dự án đã thấy `#thanh-vien/nguoi/P0012` đúng ý. Còn: b133b — *Danh sách người* của một cây → bấm tên → Hồ sơ người, nút "← Danh sách người" về đúng bảng. `#thanh-vien` → bấm tên ở cột *gắn với ai* → trang Hồ sơ người (cá nhân · gia đình · các cây + Đời + vai), bấm người thân, bấm tên cây. QTHT: Sổ tài khoản → bấm tên → trang tài khoản (gắn với ai · dòng họ · làm chủ N cây), bấm tên cây / tên người. *(Chốt 27/09: "vai trò" = vai của tài khoản gắn trong cây — đúng như đang hiện.)* |
 | **b127d** — đề nghị sửa quan hệ (`33`, xong d-1→d-3) | Form người có quan hệ ngoài cây: bấm ✉ gửi đề nghị → Quản trị hệ thống → tab *Đề nghị sửa quan hệ* → Duyệt (gỡ) hoặc Từ chối |
 ---
 
