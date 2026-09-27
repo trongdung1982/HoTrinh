@@ -1,11 +1,10 @@
 # CHỈ DẪN — đọc file này đầu mỗi phiên
 
-*Nhánh Supabase · cập nhật 22/09/2026 (b124a2)*
+*Nhánh Supabase · cập nhật 27/09/2026 (b131)*
 
 ⚠ **TRẦN CỨNG 80 DÒNG · 8 KB · mỗi dòng ≤ 400 ký tự** — đo: `kiem-thu/do-gon.mjs`.
-Vượt trần (file này hay `KE-HOACH.md`) thì **CẮT việc đã xong** — không dời
-kế hoạch đang dùng sang file khác, **đừng nới trần**.
-mọi file vượt trần cứng 50% thì bắt đầu tách file.
+Vượt trần thì **CẮT**, đừng nới. Mọi file vượt trần cứng 50% thì bắt đầu tách
+file. ⚠ `KE-HOACH.md` **hết trần** (b131) — gọn bằng kỷ luật "xong thì xoá".
 
 ## Việc hôm nay → đọc file nào
 

@@ -6,7 +6,8 @@
 //            node supabase/kiem-thu/do-gon.mjs --tat-ca    (in hết nợ cũ)
 //            node supabase/kiem-thu/do-gon.mjs --ha-moc    (nợ đã giảm → khoá mức mới)
 //            node supabase/kiem-thu/do-gon.mjs --lap-moc   (chỉ chạy được khi chưa có sổ)
-// Phiên bản: 0.2.1 · Cập nhật: 26/09/2026 22:42 — nới trần CLAUDE.md 17500→18500
+// Phiên bản: 0.3.0 · Cập nhật: 27/09/2026 (b131) — bỏ trần cứng của
+//            `KE-HOACH.md` (chuyển sang XEM_PHIEN, chỉ đo không chặn)
 // ============================================================
 //
 // LỖI    — vượt trần mà không có trong sổ nợ, hoặc nợ cũ TĂNG. Thoát mã 1.
@@ -35,12 +36,20 @@ const TRAN = {
 };
 
 // File nạp ở đầu MỌI phiên: [đường dẫn từ Claude_Code, trần dòng, trần byte, trần ký tự/dòng]
+//
+// ⚠ `KE-HOACH.md` KHÔNG còn ở đây từ 27/09/2026 (b131) — chủ dự án chỉ ra
+//   trần cứng buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà
+//   hiểu sai. Vẫn ĐO (mục "XEM đầu phiên" dưới), chỉ không còn chặn báo hoàn
+//   thành. Gọn bằng kỷ luật ba luật ở đầu chính file, không bằng con số —
+//   `QUY-TAC-GON.md` mục 4.
 const DAU_PHIEN = [
   ['CLAUDE.md', 300, 18500, 250],
   ['.claude/memory/MEMORY.md', 100, 8000, 250],
   ['supabase/CHI-DAN.md', 80, 8000, 400],
-  ['supabase/KE-HOACH.md', 250, 15000, 500],
 ];
+
+// File vẫn ĐO để biết xu hướng nhưng KHÔNG có trần — xem ghi chú trên.
+const XEM_PHIEN = ['supabase/KE-HOACH.md'];
 
 // 10 file domains chép nguyên từ bản Apps Script — phép 9 bắt giống hệt từng
 // byte, nên ghi chú đầu file của chúng cũng không được cắt.
@@ -105,6 +114,16 @@ for (const [rel, tDong, tByte, tDai] of DAU_PHIEN) {
   doDuoc.push({ khoa: `${rel}:dong`, nhan: `${rel} — số dòng`, gt: dong.length, tran: tDong, dv: 'dòng' });
   doDuoc.push({ khoa: `${rel}:byte`, nhan: `${rel} — cỡ file`, gt: soByte(chu), tran: tByte, dv: 'byte' });
   doDuoc.push({ khoa: `${rel}:dai`, nhan: `${rel} — dòng dài nhất`, gt: dai, tran: tDai, dv: 'ký tự' });
+}
+
+// 2b. File vẫn đo nhưng KHÔNG có trần (b131) — chỉ in ở mục XEM
+for (const rel of XEM_PHIEN) {
+  const p = path.join(GOC, rel);
+  if (!fs.existsSync(p)) { xem.push(`không thấy ${rel} — bỏ qua`); continue; }
+  const chu = docChu(p);
+  const dong = cacDong(chu);
+  const dai = Math.max(...dong.map((d) => d.length));
+  xem.push(`${rel} — ${dong.length} dòng · ${soByte(chu)} byte · dòng dài nhất ${dai} ký tự (không có trần)`);
 }
 
 // 3. Nhật ký theo phiên — đã đóng: không thêm file; INDEX không thêm dòng dài

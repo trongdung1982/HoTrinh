@@ -1,6 +1,7 @@
 # QUY TẮC GỌN — dọn rác, tiết kiệm token, ghi theo chức năng
 
-*Nhánh Supabase · lập 15/09/2026 (b118e) · sửa 15/09/2026: mục 5 sổ tay · đo bằng `kiem-thu/do-gon.mjs`*
+*Nhánh Supabase · lập 15/09/2026 (b118e) · sửa 15/09/2026: mục 5 sổ tay ·
+sửa 27/09/2026 (b131): bỏ trần `KE-HOACH.md` · đo bằng `kiem-thu/do-gon.mjs`*
 
 ⚠ **Không đọc file này mỗi phiên.** Đọc khi: gặp lỗi hoặc điều đáng chú ý cần
 ghi lại, sắp viết ghi chú đầu file, `/kiem-tra` phép 10 báo LỖI, hoặc sắp đọc
@@ -71,6 +72,15 @@ chưa có chỗ trú khác.
 
 **Trần** nằm ở đầu `kiem-thu/do-gon.mjs` — một chỗ. **Sổ nợ**
 `kiem-thu/moc-gon.json` = mọi chỗ đã vượt trần lúc lập sổ.
+
+⚠ **`KE-HOACH.md` KHÔNG còn trần dòng/byte, bỏ 27/09/2026 (b131).** Chủ dự án
+chỉ ra: trần cứng buộc nén nội dung mỗi bước cho vừa số dòng, và bản nén đó
+làm **phiên sau đọc thiếu chi tiết mà hiểu sai việc đã làm** (b130 → b131 là
+ví dụ thật). `do-gon.mjs` vẫn ĐO file này (mục XEM, không chặn) để biết xu
+hướng, nhưng gọn hay không nay dựa hoàn toàn vào **V2 + V4** dưới đây, không
+dựa vào con số. File đọc mỗi phiên còn lại (`CLAUDE.md` · `MEMORY.md` ·
+`CHI-DAN.md`) vẫn giữ trần — chúng không mang "nội dung một bước" cần đủ chi
+tiết như `KE-HOACH.md`, mà là luật/định tuyến, nén được mà không mất ý.
 
 | Kết quả | Nghĩa |
 |---|---|

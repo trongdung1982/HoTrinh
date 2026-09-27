@@ -8,8 +8,11 @@ tên thành *Chuyển quyền sở hữu / xóa* (mã địa chỉ `vong-doi` gi
 Cài đặt (`index.html`) thêm "Cây đang hiển thị: tên (mã)" bên phải chữ *Cài
 đặt*. Kế tiếp cho AI: **b125e** — xuất Excel, nối vào đường NHẬP đã có.*
 
-⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
-**đừng nới trần**. Ba luật giữ nó gọn:
+⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
+trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
+việc đã làm). `do-gon.mjs` vẫn ĐO file này (mục XEM, không chặn báo hoàn
+thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới đây
+(`QUY-TAC-GON.md` mục 4):
 
 1. **Xong rồi thì xoá khỏi đây.** Việc đã làm nằm ở lời commit (`git log`).
    Muốn đọc bản cũ: `git log -p KE-HOACH.md`.
@@ -105,6 +108,22 @@ chức năng đã chạy *(681 người: ~0,4s)*. *(Số mục = `THIET-KE-QUAN-
 
 ⚠ **17/09, chủ dự án nêu:** huy hiệu số đếm + bấm tên mở cây ở Gia phả, an
 toàn (`9.6`). *(Câu thứ hai — QTHT tự duyệt — đã chốt 21/09, nay là b124c.)*
+
+⚠ **Xoá nhật ký hàng loạt — ĐÃ có giao diện, đang khoá mờ chờ máy chủ.**
+`QuanTri.html` (khu Quản trị hệ thống → Nhật ký hệ thống) có sẵn
+`#sys-log-check-all` (chọn tất cả) · `#btn-delete-selected-logs` (xoá đã
+chọn) · `#btn-don-nhat-ky-thung-rac` (dọn nhật ký thùng rác). Cả ba đang bị
+`khu-quan-tri-he-thong.js` khoá mờ vì "nhật ký hệ thống cần một bảng mới ở
+máy chủ" — thuộc Nhóm E ở trên, chưa tách bước số. Phát hiện 27/09/2026 khi
+tra lại b125d — đưa vào đây để không quên khi tới lượt Nhóm E.
+
+⚠ **Duyệt hàng loạt ở Kiểm duyệt — Ý MỚI 27/09/2026, KHÔNG có trong prototype
+quantri3, chưa thiết kế.** `khu-kiem-duyet.js` hiện mỗi "lần Lưu" (một thay
+đổi chờ duyệt) chỉ có một nút Duyệt + một nút Từ chối riêng — không có cách
+chọn nhiều lần Lưu rồi xử lý cùng lúc, kể cả dạng khoá mờ. Trước khi viết mã
+cần chủ dự án chốt: phạm vi chọn (trong một cây, hay xuyên cây?), Từ chối
+hàng loạt có chung một lý do hay từng dòng riêng, và có RPC nào an toàn để
+duyệt/từ chối nhiều `change_log` trong một lời gọi hay phải lặp từng dòng.
 
 ---
 
