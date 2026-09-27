@@ -1,10 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 · phiên đêm b134→b138 XONG phần mã: nhật ký hệ thống ·
-huy hiệu 9.6 · lịch sử Kiểm duyệt · sao lưu sáu bảng hệ thống · giàn giáo
-7→4. ⚠ BA file SQL CHƯA DÁN (`42` → `43` → `44`, đúng thứ tự) + thay mã
-`SaoLuu.gs` — rồi bấm thử bốn điểm dừng dưới. Một việc CHỜ CHỦ DỰ ÁN: nhập
-GEDCOM/Excel (sửa `domains/gedcom.js`?) — xem Còn treo.*
+*Cập nhật 28/09/2026 sáng · chủ dự án đã dán `42`·`43`·`44` + thay mã
+`SaoLuu.gs`. b139 (nhập GEDCOM xin đủ mã, chủ dự án cho sửa `gedcom.js`)
+XONG. b140 Duyệt hàng loạt — thiết kế ĐÃ CHỐT, xem Việc kế tiếp. Năm điểm
+dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -29,10 +28,11 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b137** Sao lưu sáu bảng hệ thống | Làm đúng 4 bước ở `sao-luu/HUONG-DAN-SAO-LUU.md` mục *Khi `SaoLuu.gs` có bản mới* (dán `44` → thay mã Apps Script → chạy `kiemTraKetNoi`). Đạt khi nhật ký có sáu dòng `cau_hinh` … `de_xuat_dong_ho`, không dòng LỖI |
-| **b136** Lịch sử Kiểm duyệt | Dán `43` trước. *Quản trị → Kiểm duyệt*, tab *Đã nhận chính thức*: hai cột cuối có người duyệt + lúc duyệt; tab *Đã từ chối & hoàn tác*: người từ chối + lý do. Lần Lưu tự duyệt (người tin cậy) có thể trống người duyệt — đúng, không phải lỗi |
+| **b139** Nhập GEDCOM bổ sung | Mở cây thử `TH957` → *Nhập GEDCOM/Excel* → chọn một file `.ged` có vài người CHƯA có trong cây → ghép đôi → *Ghi*. Đạt khi ghi xong không báo "Mã mới vừa cấp đã có bản ghi khác giữ", và người mới hiện trên sơ đồ |
+| **b137** Sao lưu sáu bảng hệ thống | `44` + `SaoLuu.gs` đã xong — còn chạy `kiemTraKetNoi` trong Apps Script (`sao-luu/HUONG-DAN-SAO-LUU.md` mục *Khi `SaoLuu.gs` có bản mới*, bước cuối). Đạt khi nhật ký có sáu dòng `cau_hinh` … `de_xuat_dong_ho`, không dòng LỖI |
+| **b136** Lịch sử Kiểm duyệt | *Quản trị → Kiểm duyệt*, tab *Đã nhận chính thức*: hai cột cuối có người duyệt + lúc duyệt; tab *Đã từ chối & hoàn tác*: người từ chối + lý do. Lần Lưu tự duyệt (người tin cậy) có thể trống người duyệt — đúng, không phải lỗi |
 | **b135** Huy hiệu (9.6) | *Quản trị → Gia phả*, chip *Tôi quản lý*: cây nào có nội dung chờ kiểm duyệt thì dưới tên có huy hiệu "n chờ kiểm duyệt", bấm sang Kiểm duyệt. Số trên nút *Kiểm duyệt* / *Gia phả* ở thanh trái nay CỘNG mọi cây bạn quản lý — đổi cây đang mở không làm số đổi |
-| **b134** Nhật ký hệ thống | Dán `42` trước. Rồi: đăng xuất → đăng nhập lại → *Quản trị hệ thống → Nhật ký*: phải thấy dòng **"Bắt đầu ghi nhật ký"** và dòng **"Đăng nhập"** của chính bạn. Bấm *Cấp quyền tạo cây* rồi *Thu hồi* cho `khach@io.vn` → hai dòng mới, người làm là bạn. Tích một dòng → *Xóa các dòng đã chọn* → sang tab *Thùng rác*, bảng cuối có một lô → *Phục hồi* → dòng về lại. Thẻ *Nhật ký hệ thống* ở *Tổng quan* ra số sự kiện 7 ngày |
+| **b134** Nhật ký hệ thống | Đăng xuất → đăng nhập lại → *Quản trị hệ thống → Nhật ký*: phải thấy dòng **"Bắt đầu ghi nhật ký"** và dòng **"Đăng nhập"** của chính bạn. Bấm *Cấp quyền tạo cây* rồi *Thu hồi* cho `khach@io.vn` → hai dòng mới, người làm là bạn. Tích một dòng → *Xóa các dòng đã chọn* → sang tab *Thùng rác*, bảng cuối có một lô → *Phục hồi* → dòng về lại. Thẻ *Nhật ký hệ thống* ở *Tổng quan* ra số sự kiện 7 ngày |
 
 ---
 
@@ -71,26 +71,11 @@ qua `tree_persons`, cùng thuốc với `39` mục 8 (`ds_lien_ket_cay`, đã d�
 26/09). `create or replace`, không đổi cột trả về, không cần `grant` lại.
 Bàn thử: `do-b132.mjs`. Không đụng RLS, không đổi cửa ghi.
 
-**`42` (b134) — ĐƯỢC DÁN, CHƯA DÁN.** Dán SAU `41`, một lần, cả file. Tạo hai
-bảng MỚI (`nhat_ky_he_thong` · `nhat_ky_lo_rac`), tám trigger (hai trên
-`auth.users`, hai `tai_khoan`, ba `trees`, một `cau_hinh`), năm hàm cho QTHT.
-Không định nghĩa lại hàm nào của file khác → không kéo theo chuỗi dán lại.
-Tự kiểm cuối file phải ra **7/7 ĐẠT**. Bàn thử: `do-b134.mjs` 58/58.
-⚠ Trigger trên `auth.users` là lần thứ hai dự án đụng schema `auth` (lần đầu:
-`11` mục 2) — bàn thử KHÔNG đo được quyền tạo trigger ở đó trên Supabase thật;
-`11` đã tạo được nên chắc chắn chạy, nhưng dán lỗi ở đúng dòng ấy thì báo lại.
-
-**`43` (b136) — ĐƯỢC DÁN, CHƯA DÁN.** Dán SAU `42`. Dựng lại MỘT hàm
-`ds_kiem_duyet()` (thêm ba cột: người duyệt · lúc duyệt · lý do từ chối),
-chép lại `grant`. Không đụng bảng, không đụng RLS. Tự kiểm **3/3 ĐẠT**. Bàn
-thử `do-b136.mjs` 12/12. ⚠ Là bản ĐỨNG CUỐI của hàm ấy — dán lại `08`/`10`
-thì phải dán lại `43` (`so-tay/phan-quyen.md`).
-
-**`44` (b137) — ĐƯỢC DÁN, CHƯA DÁN.** Dán SAU `43`. Một hàm MỚI
-`sao_luu_bang_he_thong()` — không đụng bảng, không đụng RLS, không định nghĩa
-lại hàm nào. Tự kiểm **3/3 ĐẠT**. Bàn thử `do-b137.mjs` 15/15. ⚠ Dán xong
-PHẢI thay mã `SaoLuu.gs` 0.4.0 trong dự án Apps Script sao lưu —
-`sao-luu/HUONG-DAN-SAO-LUU.md` mục *Khi `SaoLuu.gs` có bản mới*.
+**`42` · `43` · `44` (b134 · b136 · b137) — ĐÃ DÁN lên THẬT 28/09** (chủ dự
+án báo; `SaoLuu.gs` 0.4.0 đã thay cùng buổi). `42` tạo hai bảng nhật ký + tám
+trigger (hai trên `auth.users`) + năm hàm QTHT — không kéo chuỗi dán lại. ⚠
+`43` là bản ĐỨNG CUỐI của `ds_kiem_duyet()` — dán lại `08`/`10` thì phải dán
+lại `43` (`so-tay/phan-quyen.md`). `44` = một hàm mới `sao_luu_bang_he_thong()`.
 
 ---
 
@@ -126,13 +111,15 @@ nhập GEDCOM/Excel qua máy chủ · **khôi phục thật** *(đo cả vòng s
 khôi phục→về đúng cũ, không chỉ "có file")* · **tối ưu tốc độ đọc** khi mọi
 chức năng đã chạy *(681 người: ~0,4s)*. *(Số mục = `THIET-KE-QUAN-TRI.md`.)*
 
-⚠ **Duyệt hàng loạt ở Kiểm duyệt — Ý MỚI 27/09/2026, KHÔNG có trong prototype
-quantri3, chưa thiết kế.** `khu-kiem-duyet.js` hiện mỗi "lần Lưu" (một thay
-đổi chờ duyệt) chỉ có một nút Duyệt + một nút Từ chối riêng — không có cách
-chọn nhiều lần Lưu rồi xử lý cùng lúc, kể cả dạng khoá mờ. Trước khi viết mã
-cần chủ dự án chốt: phạm vi chọn (trong một cây, hay xuyên cây?), Từ chối
-hàng loạt có chung một lý do hay từng dòng riêng, và có RPC nào an toàn để
-duyệt/từ chối nhiều `change_log` trong một lời gọi hay phải lặp từng dòng.
+⚠ **b140 Duyệt hàng loạt ở Kiểm duyệt — ĐANG LÀM, thiết kế CHỐT 28/09/2026**
+(ý mới 27/09, KHÔNG có trong prototype quantri3). Chủ dự án chọn cả ba đề
+xuất: **(1)** ô tích mỗi dòng tab *Chờ duyệt*, ô tích đầu bảng = mọi dòng ĐANG
+HIỆN theo bộ lọc — xuyên cây được; **(2)** Từ chối hàng loạt = MỘT lý do
+chung; lý do riêng thì vẫn từ chối từng dòng; **(3)** KHÔNG SQL mới — lặp từng
+dòng gọi `duyet_thay_doi` / `tu_choi_thay_doi` có sẵn, không "tất cả hoặc
+không": dòng nào máy chủ từ chối thì hộp kết quả in đúng dòng ấy + câu nguyên
+văn. ⚠ Từ chối chạy MỚI → CŨ trong từng cây (máy chủ không hoàn tác lần Lưu
+cũ khi lần sau sửa tiếp lên cùng bản ghi).
 
 ---
 
@@ -143,7 +130,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 
 | Việc | Ghi ở đâu |
 |---|---|
-| ⚠ **Nhập GEDCOM/Excel chưa nối vào kho mã** — `capMaHangLoat()` hỏi `nextId` một lần rồi tự đếm tiếp, nên từ mã thứ hai đã ra ngoài phần máy chủ đặt trước. Hỏng to tiếng (`trungma`), không lặng lẽ. ⚠⚠ **CHỜ CHỦ DỰ ÁN (28/09, b135 tra lại):** đường sửa cũ *"gọi `repo.xinMa` trước khi nhập"* KHÔNG đủ — `capMaHangLoat()` lấy MỘT mã đầu rồi tự đếm, nên chỉ đúng khi kho rỗng trước VÀ máy chủ cấp một dải liền (lô cũ 5 mã trong kho + lô mới không liền nhau nếu ai khác xin xen giữa). Đường gọn: `capMaHangLoat()` gọi `nextId()` MỖI lần (kho đã đủ mã thì mỗi lần là một `shift`, không quét cây) — **sửa `domains/gedcom.js`**, cần chủ dự án cho phép (`CHI-DAN.md` điều 1; phép 9 sẽ báo thêm `gedcom.js` khác bản đóng băng). Hỏi: *"Cho sửa một hàm trong `domains/gedcom.js` không?"* | `so-tay/luu-du-lieu.md` |
+| ⚠ **Nhập chế độ `moi` (dựng gia phả mới) vẫn giữ mã của file** → `trungma` ngay. Màn ấy chưa mở nên chưa ai vào; mở thì phải cấp mã mới cho mọi bản ghi (sửa `domains/gedcom.js` `tronMoi`, hỏi chủ dự án) | `so-tay/luu-du-lieu.md` *Kho mã* |
 | ⚠ **`di-doi/sinh-sql-di-doi.mjs` lạc hậu từ `26`** — SQL nó sinh còn gắn `tree_id` vào bốn bảng dùng chung. Ba cây đã di dời xong nên chưa có việc; chạy sẽ lỗi to tiếng | đầu chính file ấy |
 | Hai bảng nhật ký (`42`) cố ý CHƯA sao lưu — không cần để khôi phục app, tự có thùng rác 120 ngày. Sáu bảng hệ thống đã vào ở b137 (chờ dán `44` + thay mã Apps Script) | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
 | ⚠ **Hai hàm của `16` LỆCH NGHĨA với tên** (`xin_xoa_cay` ẩn cây NGAY; `huy_xin_xoa_cay` = trả lại cho chủ). Giữ tên cũ là cố ý; đổi tên là một bước riêng | `luoc-do/23-bon-luat-moi.sql` khối đầu |
@@ -169,8 +156,9 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 Bộ kiểm bảo vệ `domains/layout.js` `import` từ `../giapha/js/` — bản ĐÃ ĐÓNG
 BĂNG — nên sửa `supabase/js/domains/` thì nó vẫn xanh vì đang đo file khác.
 Lý lẽ đầy đủ và ba đường chưa chọn: **`/kiem-tra` phép 9**. Đã thành sự thật ở
-`person.js` (b120, b122b — chủ dự án cho phép cả hai lần) và **`layout.js`**
-(b128 — khác hẳn từ 25/09). ⚠ Đo `layout.js` phải qua `--import ./sang-supabase.mjs`
+`person.js` (b120, b122b — chủ dự án cho phép cả hai lần), **`layout.js`**
+(b128 — khác hẳn từ 25/09) và `gedcom.js` (b139, cho phép 28/09 —
+`capMaHangLoat()`; đo bằng `kiem-cap-ma-nhap.mjs`, nạp thẳng `supabase/js`). ⚠ Đo `layout.js` phải qua `--import ./sang-supabase.mjs`
 hoặc `kiem-buoc-80-sb.mjs`; nhóm 9b (bắt khuỷu) ở đó đã lỗi thời — chủ dự án
 bác luật khuỷu 25/09. Đường chạy bằng đúng pipeline app (thêm/ẩn dâu/rể) chưa
 có trong bộ kiểm — `so-tay/ve-so-do.md`.

@@ -150,9 +150,16 @@ lên `P30000` trong khi cây có bảy trăm người.
 giữa form là mất những gì người ta vừa gõ, còn đếm nhầm thì trigger từ chối
 bằng `trungma` và tải lại trang (kho đầy lại) là làm được.
 
-⚠ **Nhập GEDCOM/Excel CHƯA nối vào kho.** `domains/gedcom.js capMaHangLoat()`
-hỏi `nextId` đúng một lần rồi tự đếm tiếp, nên từ mã thứ hai trở đi nó ra ngoài
-phần đã đặt trước. Hỏng to tiếng (`trungma`), không lặng lẽ. Ghi ở `KE-HOACH.md`.
+⚠ **Nhập GEDCOM/Excel — trộn bổ sung đã nối kho (b139).** Bản cũ của
+`domains/gedcom.js capMaHangLoat()` hỏi `nextId` MỘT lần rồi tự đếm tiếp —
+chỉ đúng khi kho là một dải liền, mà kho thật hay là hai lô không liền (lô cũ
+còn sót + lô mới, ai đó xin xen giữa). Nay: còn mã trong kho thì MỖI lần là
+một `nextId` (một `shift`); kho cạn mới tự đếm. Trang gọi
+`xinMaChoLanNhap()` trước `mergeImported` — đếm bằng chính `detectDuplicates`
+cùng bộ tuỳ chọn, xin đúng phần thiếu. Đo: `../kiem-thu/kiem-cap-ma-nhap.mjs`.
+⚠ Chế độ `moi` (`tronMoi`) VẪN giữ nguyên mã của file (`P0001`…) → sẽ
+`trungma` ngay. Màn *dựng gia phả mới* chưa mở nên chưa có ai đi vào; mở màn
+ấy thì phải cấp mã mới cho mọi bản ghi như `tronBoSung` (sửa `domains/`).
 
 ## Đọc cây đi qua `doc_cay()`, không đọc thẳng bốn bảng (b122b)
 

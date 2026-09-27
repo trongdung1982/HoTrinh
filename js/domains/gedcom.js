@@ -3,7 +3,7 @@
 // Vai trò  : Xuất gia phả ra GEDCOM 5.5.1, và ĐỌC file .ged thành bản xem trước
 // Lớp      : domains — HÀM THUẦN, không chạm DOM, không gọi services
 // Phụ thuộc: utils/date, utils/text, utils/id, utils/graph, config, domains/union
-// Phiên bản: 1.13.1 · Cập nhật: 31/08/2026 16:30
+// Phiên bản: 1.14.0 · Cập nhật: 28/09/2026 05:57
 // ============================================================
 //
 // XUẤT: GEDCOM 5.5.1. Cũ hơn 7.0 nhưng gần như mọi phần mềm gia phả đọc được.
@@ -85,7 +85,7 @@
 import { parseLooseDate, formatDate } from '../utils/date.js';
 import { coGiaTri, fullName, removeDiacritics } from '../utils/text.js';
 import { isValidId, loaiCua, maCayCua, maCayCuaCay, chuanUid, nextId, tachMa,
-         sinhUid } from '../utils/id.js';
+         sinhUid, soMaTrongKho } from '../utils/id.js';
 import { QUAN_HE_CON_NHAN, nhanQuanHeCon, nhanTrangThaiCap } from '../config.js';
 import { ranksRoRang } from './union.js';
 import { bfs, buildIndex } from '../utils/graph.js';
@@ -2262,19 +2262,25 @@ function tronBoSung(tree, imported, t, thua) {
 /**
  * Cấp mã mới hàng loạt cho một cây.
  *
- * ⚠ `nextId` đọc CÂY, nên gọi hai lần trên cùng một cây ra CÙNG một mã —
- * ghi chú của `utils/id.js` nói thẳng điều đó. Chèn từng bản ghi vào cây rồi
- * gọi lại thì đúng, nhưng mỗi lần gọi lại quét cả `changeLog`, và một lần
- * nhập 78 người là 78 lần quét. Nên hỏi `nextId` ĐÚNG MỘT LẦN cho mỗi loại,
- * rồi tự đếm tiếp từ đó.
+ * P/U/M: còn mã trong kho (máy chủ cấp, duy nhất toàn phần mềm) thì MỖI lần
+ * gọi là một `nextId` — một lần `shift`, không quét cây. Kho không cần là một
+ * dải liền: lô cũ còn sót và lô nơi gọi vừa xin (`repo.xinMa`) nối nhau cũng
+ * được, ai xin xen giữa cũng không sao.
  *
- * Cách này chỉ đúng khi không có ai chèn bản ghi vào cây xen giữa hai lần
- * cấp — và trong `tronBoSung` thì mọi mã được cấp xong hết trước khi bản ghi
- * đầu tiên được chèn.
+ * Kho cạn, và `S` (không có kho — nguồn vẫn khoá theo cây): tự đếm từ số lớn
+ * nhất đã thấy. ⚠ `nextId` đọc CÂY, gọi lại trên cùng cây ra CÙNG một mã, nên
+ * đường này không gọi lại nó. P/U/M rơi vào đây là có thể trùng mã cây khác —
+ * máy chủ từ chối bằng `trungma` lúc Lưu, to tiếng, không lặng lẽ.
  */
 function capMaHangLoat(cay) {
   const dem = {};
   return (loai) => {
+    if (soMaTrongKho(loai) > 0) {
+      const ma = nextId(loai, cay);
+      const p = tachMa(ma);
+      if (!dem[loai] || p.so > dem[loai].so) dem[loai] = { maCay: p.maCay, so: p.so };
+      return ma;
+    }
     if (!dem[loai]) {
       const p = tachMa(nextId(loai, cay));
       dem[loai] = { maCay: p.maCay, so: p.so };

@@ -114,8 +114,8 @@ export async function napCay() {
 //   đổ đầy lại sau mỗi lần Lưu.
 //
 // ⚠ Nhập GEDCOM/Excel thêm hàng trăm người một lúc thì lô này KHÔNG đủ —
-//   đường ấy phải tự gọi `xinMa()` với đúng số bản ghi sắp thêm trước khi bắt
-//   đầu. Chưa nối; xem `KE-HOACH.md` mục "Còn treo".
+//   đường ấy tự gọi `xinMa()` phần còn thiếu trước khi dựng
+//   (`pages/import-export.js` `xinMaChoLanNhap`, b139).
 const KHO_MOI_LO = { P: 5, U: 3, M: 3 };
 
 /**

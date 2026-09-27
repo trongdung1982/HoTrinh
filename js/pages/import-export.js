@@ -4,66 +4,32 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, pages/form-ghep-doi, domains/{gedcom,excel}, services/{sb,repo},
 //            utils/{date,text}, config
-// Phiên bản: 1.7.2 · Cập nhật: 28/09/2026 (b138) — `chonGiaPha` gọi thẳng
-//            `sb.js`, thôi qua giàn giáo `tuong-thich`.
+// Phiên bản: 1.8.0 · Cập nhật: 28/09/2026 06:10 (b139) — trộn bổ sung xin đủ
+//            mã máy chủ trước khi dựng (`xinMaChoLanNhap`)
 // ============================================================
 //
-// File này giữ HAI màn hình, và chúng là hai chiều của cùng một cửa:
+// Hai màn hình, hai chiều của cùng một cửa:
+// - `openXuatGedcom` — CHỈ ĐỌC `state.tree`, không gọi máy chủ lần nào.
+// - `openNhapGedcom` — đọc `.ged` hoặc Excel một bảng (`domains/excel.js`),
+//   kể ra đọc được gì, rồi GHI (khối *Đường GHI THẬT* cuối file). Phép dựng/
+//   đọc chữ là hàm của `domains/gedcom.js`; file này chỉ điều phối.
 //
-// - `openXuatGedcom` — biến gia phả đang mở thành một file `.ged` nằm trong
-//   máy người dùng. Xong từ b55, chủ dự án đã bấm thử trên app thật.
-// - `openNhapGedcom` — đọc một file `.ged` HOẶC một file Excel một bảng
-//   (`.xlsx`/`.xlsb`, `domains/excel.js` từ 31/08/2026), kể ra đọc được gì,
-//   rồi GHI vào một gia phả MỚI dựng trên Drive.
+// ⚠ Xuất có HAI đường lấy file: nút tải về + ô chữ chép tay nép sau dòng
+//   *"Không tải được file?"*. ĐỪNG gỡ đường 2 — trình duyệt trong Zalo/
+//   Messenger chặn tải file IM LẶNG, không lỗi, không hộp thoại.
 //
-// ⚠ **Hai màn hình này nay KHÔNG còn cân nhau.** Màn Xuất chỉ đọc: nó không
-// gọi máy chủ một lần nào, cây đã nằm sẵn trong `state.tree`. Màn Nhập thì
-// dựng thư mục trên Drive, đổi gia phả đang chọn và ghi dữ liệu — xem khối
-// *Đường GHI THẬT* ở cuối file. Phép dựng chữ và đọc chữ vẫn là hàm thuần ở
-// `domains/gedcom.js`; chỉ phần điều phối là đụng máy chủ.
-//
-// --- HAI ĐƯỜNG LẤY FILE, và vì sao phải có cả hai -----------------------
-//
-// App chạy bên trong một `<iframe>` do Apps Script dựng ra, và cái iframe ấy
-// mang thuộc tính `sandbox`. Từ Chrome 83, một iframe sandbox KHÔNG được phép
-// tải file về trừ khi có `allow-downloads` — mà thuộc tính ấy do Google đặt,
-// không phải ta đặt, và **ta không kiểm tra được từ bên trong**. Bấm nút mà
-// trình duyệt chặn thì nó chặn IM LẶNG: không lỗi, không hộp thoại, không gì
-// cả. Người dùng ngồi nhìn một cái nút vừa bấm xong mà không có chuyện gì
-// xảy ra — đúng thứ làm người ta nghĩ app hỏng.
-//
-// Nên màn hình này KHÔNG đặt cược vào một đường:
-//
-// 1. **Nút tải về** — đường chính, chạy được thì xong trong một cú bấm.
-// 2. **Ô chữ chép tay** — nép sau một dòng *"Không tải được file?"*, kèm
-//    năm bước mở Notepad.
-//
-// ✓ **28/08/2026 — chủ dự án đã bấm trên app thật và TẢI VỀ ĐƯỢC**, mở bằng
-// Notepad ra đúng cấu trúc. Tức iframe của Apps Script CÓ `allow-downloads`.
-// Bản đầu bày cả khối chép tay ra giữa màn hình vì chưa biết điều đó; nay nó
-// thu lại sau một dòng chữ.
-//
-// ⚠ **Nhưng ĐỪNG gỡ hẳn đường 2.** Thuộc tính `sandbox` do Google đặt, đổi
-// lúc nào không ai báo trước, và ngày nó đổi thì lỗi vẫn im lặng y như cũ.
-// Trình duyệt trong ứng dụng — mở app từ link trong Zalo, Messenger — còn
-// chặn tải file thường xuyên hơn Chrome nhiều.
-//
-// --- Vì sao KHÔNG đi qua máy chủ ----------------------------------------
-//
-// Đường chắc ăn nhất về mặt kỹ thuật là: gửi chuỗi lên Apps Script, ghi thành
-// file trên Drive, trả về một đường link. Đã cân nhắc và KHÔNG chọn, vì ba lẽ:
-// nó bắt sửa `gas/Code.gs` rồi chủ dự án phải triển khai lại bằng tay; nó đẩy
-// cả gia phả lên mạng thêm một vòng nữa cho một việc chỉ đọc; và nó bỏ file
-// `.ged` lại trên Drive — thêm một bản gia phả nằm ngoài tầm quản, đúng thứ
-// mà mục *Sao lưu* đã cất công gom về một chỗ.
+// ⚠ Trộn bổ sung: mã P/U duy nhất toàn phần mềm — phải `xinMa` đủ số bản ghi
+//   mới TRƯỚC `mergeImported` (b139, `so-tay/luu-du-lieu.md` *Kho mã*). Chế
+//   độ `moi` (dựng gia phả mới) vẫn giữ mã của file — màn ấy chưa mở được.
 
 import { state } from '../state.js';
-import { exportGedcom, tenFileGedcom, tomTatXuat, parseGedcom, mergeImported }
-  from '../domains/gedcom.js';
+import { exportGedcom, tenFileGedcom, tomTatXuat, parseGedcom, mergeImported,
+         detectDuplicates } from '../domains/gedcom.js';
 import { parseExcel } from '../domains/excel.js';
 import { openGhepDoi, closeGhepDoi } from './form-ghep-doi.js';
 import { chonGiaPha } from '../services/sb.js';
-import { taoGiaPhaMoi, khoiTao, luuCay } from '../services/repo.js';
+import { taoGiaPhaMoi, khoiTao, luuCay, xinMa } from '../services/repo.js';
+import { soMaTrongKho } from '../utils/id.js';
 import { formatDate, stampNow } from '../utils/date.js';
 import { fullName } from '../utils/text.js';
 import { rongHop, caoHop, leLopPhu, RONG_NUT_TOI_DA } from '../config.js';
@@ -962,6 +928,33 @@ async function chayGhiVaoCayMoi(kq, o, nutGhi, tin) {
 }
 
 /**
+ * Xin đủ mã P/U cho lần trộn bổ sung sắp chạy. Đếm bằng CHÍNH phép dò trùng
+ * mà `mergeImported` sẽ chạy lại (cùng bộ tuỳ chọn), nên số xin khớp số dùng.
+ * Dò trùng hỏng thì không xin gì — `mergeImported` sẽ tự nói lý do.
+ *
+ * @returns {Promise<{ok:boolean, loi:string}>}
+ */
+async function xinMaChoLanNhap(kq, tuyChon) {
+  const d = detectDuplicates(state.tree, kq, {
+    diemNeoTay: (tuyChon && tuyChon.diemNeoTay) || [],
+    khaiMoi: (tuyChon && tuyChon.khaiMoi) || [],
+  });
+  if (!d.ok || !d.duocTron) return { ok: true, loi: '' };
+  const can = { P: d.nguoiMoi.length, U: d.capMoi.length };
+  for (const loai of Object.keys(can)) {
+    const thieu = can[loai] - soMaTrongKho(loai);
+    if (thieu <= 0) continue;
+    const x = await xinMa(loai, thieu);
+    if (!x.ok) {
+      return { ok: false, loi: 'Chưa xin được mã mới của máy chủ (' + loai + ', ' +
+                               thieu + ' mã): ' + (x.loi || 'không rõ lý do') +
+                               '. Chưa ghi gì — cây vẫn nguyên.' };
+    }
+  }
+  return { ok: true, loi: '' };
+}
+
+/**
  * TRỘN BỔ SUNG vào gia phả đang mở — lần ghi thật của đường nhập thứ hai.
  *
  * Nhẹ hơn `chayGhiVaoCayMoi` đúng ba bước: không dựng cây, không chuyển cây,
@@ -979,9 +972,16 @@ async function chayTronBoSung(kq, tenNguon, tuyChon, thongKe) {
   dangGhi = true;
 
   try {
-    // 1. Dựng dữ liệu. Hàm thuần, chưa đụng vào đâu — và nó tự chạy lại phép
-    //    dò trùng bằng đúng bộ tuỳ chọn bảng vừa trao, nên bản ghi xuống
-    //    đúng bằng bản đã bày.
+    // 0. Xin mã của máy chủ cho ĐỦ số bản ghi mới, trước khi dựng. Mã P/U
+    //    duy nhất toàn phần mềm: kho chỉ có một lô nhỏ cho sửa tay, thiếu là
+    //    `capMaHangLoat()` rơi về tự đếm trong cây và máy chủ từ chối bằng
+    //    `trungma`. Chỉ xin phần THIẾU — mã xin thừa là mất luôn.
+    const du = await xinMaChoLanNhap(kq, tuyChon);
+    if (!du.ok) return { ok: false, loi: du.loi };
+
+    // 1. Dựng dữ liệu. Chưa ghi vào đâu — và nó tự chạy lại phép dò trùng
+    //    bằng đúng bộ tuỳ chọn bảng vừa trao, nên bản ghi xuống đúng bằng bản
+    //    đã bày. (Không còn thuần hẳn: mỗi mã mới là một mã rút khỏi kho.)
     const dung = mergeImported(state.tree, kq, {
       che: 'bosung',
       diemNeoTay: (tuyChon && tuyChon.diemNeoTay) || [],
