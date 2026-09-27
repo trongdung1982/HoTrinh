@@ -3,11 +3,12 @@
 // Vai trò  : Trang con `#gia-pha/cay/<mã>/nguoi` — BẢNG PHẲNG mọi người của
 //            một cây, như một trang tính: tìm, sắp xếp, phân trang, sửa tại
 //            chỗ từng ô rồi Lưu theo DÒNG qua `luu_cay()`. Cột *Tài khoản*
-//            (đang Chỉnh sửa) gắn/gỡ liên kết tài khoản ↔ người (b129c).
+//            (đang Chỉnh sửa) gắn/gỡ liên kết tài khoản ↔ người (b129c). Nút
+//            *Xuất Excel* dựng file cùng khuôn với đường Nhập (b125e).
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · services/hinh-dang · domains/person ·
-//            utils/{text,date} · quan-tri/{trang-cay,o-goi-y,o-bang}
-// Phiên bản: 0.5.0 · Cập nhật: 27/09/2026 (b129c) — gộp cột Tài khoản, bốn hạng
+//            utils/{text,date} · quan-tri/{trang-cay,o-goi-y,o-bang,xuat-excel}
+// Phiên bản: 0.6.0 · Cập nhật: 27/09/2026 (b125e) — nút Xuất Excel
 // Sổ tay   : so-tay/trang-quan-tri.md · so-tay/luu-mot-dong-quan-tri.md
 // ============================================================
 //
@@ -35,6 +36,7 @@ import { timCay, cumCay, cayNho, wireTabsTrangCay, datSoDon } from './trang-cay.
 import { ganGoiY } from './o-goi-y.js';
 import { hoi } from './hop-thoai.js';
 import { TEN_VAI, td, span, nutLink, nutNho, dongTrong, datHuyHieu } from './o-bang.js';
+import { xuatExcelNguoi } from './xuat-excel.js';
 
 /** Bao nhiêu dòng một trang. 50 vừa một màn cuộn, và 681 người ra 14 trang. */
 const MOI_TRANG = 50;
@@ -53,6 +55,9 @@ let cheDoSua = false;
 // --- Ba biến của đường GHI (b125c) — cùng đời sống với `cayDangXem` --------
 let treeId = '';
 let treeRevision = 0;
+/** Union hiện hành của cây — chỉ để Xuất Excel dựng quan hệ cha/mẹ/vợ chồng
+ *  (b125e). Không dùng cho đường Lưu (đường ấy chỉ đụng một người một lúc). */
+let unionsDangXem = [];
 /** Mã người → bản ghi GỐC (camelCase, có `revision`) — nền để so khi Lưu. */
 let goc = new Map();
 /** Đang có một lần Lưu chạy dở — chặn mọi nút Lưu khác trong lúc đó. */
@@ -178,7 +183,9 @@ export async function mountTrangNguoi(sec, ctx, hashLuc) {
   // sánh của mọi lần Lưu. `ds` là bản HIỆN trên bảng, thêm `lk` (liên kết)
   // và `emailGan`; sửa `p` tại chỗ sau khi Lưu/gắn/gỡ để khỏi đọc lại mạng.
   goc = new Map();
-  const dsNguoi = rapCay(kq.dong).persons;
+  const rap = rapCay(kq.dong);
+  const dsNguoi = rap.persons;
+  unionsDangXem = rap.unions;
   for (const p of dsNguoi) goc.set(p.id, p);
   const ds = dsNguoi.map((p) => {
     const lk = lkTheoMa.get(p.id) || null;
@@ -187,7 +194,30 @@ export async function mountTrangNguoi(sec, ctx, hashLuc) {
 
   const ve = () => veBang(sec, ds, kqLK.ok, cay, ctx, quyenTk, () => ve());
   ganThanhCong(sec, ve);
+  ganNutXuatExcel(sec, cay, () => ds);
   ve();
+}
+
+/** Nút *Xuất Excel* — gắn một lần mỗi lần mount, đọc `ds`/`unionsDangXem` LÚC
+ *  BẤM (không phải lúc gắn) qua closure `layDs`, nên luôn xuất bản mới nhất. */
+function ganNutXuatExcel(sec, cay, layDs) {
+  const b = sec.querySelector('#tp-xuat-excel');
+  const tt = sec.querySelector('#tp-xuat-trang-thai');
+  b.onclick = async () => {
+    b.disabled = true;
+    tt.textContent = 'Đang tạo file…';
+    const ten = 'DanhSachNguoi_' + (cay.treeCode || cayDangXem) + '_' + ngayTenFile();
+    const kq = await xuatExcelNguoi(layDs(), unionsDangXem, ten);
+    b.disabled = false;
+    tt.textContent = kq.ok ? '' : (kq.loi || 'Không tạo được file.');
+  };
+}
+
+/** `27-09-2026` — chỉ dùng cho tên file, không phải hiển thị cho người đọc. */
+function ngayTenFile() {
+  const d = new Date();
+  const p2 = (n) => String(n).padStart(2, '0');
+  return p2(d.getDate()) + '-' + p2(d.getMonth() + 1) + '-' + d.getFullYear();
 }
 
 /** Ô tìm · ô "hiện cả người đã xoá" · hai nút trang — gắn một lần mỗi lần mount. */

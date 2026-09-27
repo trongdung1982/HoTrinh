@@ -1,12 +1,20 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 27/09/2026 · b130 XONG (mã) — chủ dự án bỏ hẳn ý định "chọn nhiều
-dòng, sửa hàng loạt một trường" (b125d cũ, chưa viết dòng nào nên không có gì
-gỡ). Thay vào đó: vá thanh tab bị THIẾU ở section `#tree-invite` (Mời gia
-nhập) — `trang-moi.js` chưa từng gọi `wireTabsTrangCay`; tab *Vòng đời* đổi
-tên thành *Chuyển quyền sở hữu / xóa* (mã địa chỉ `vong-doi` giữ nguyên); màn
-Cài đặt (`index.html`) thêm "Cây đang hiển thị: tên (mã)" bên phải chữ *Cài
-đặt*. Kế tiếp cho AI: **b125e** — xuất Excel, nối vào đường NHẬP đã có.*
+*Cập nhật 27/09/2026 · b125e XONG (mã) — nút *Xuất Excel* ở bảng Danh sách
+người (`trang-nguoi.js`), file mới `xuat-excel.js` dựng sheet `DuLieu` CÙNG
+KHUÔN CỘT với đường Nhập đã có (`domains/excel.js`). Cố ý KHÔNG đặt hàm dựng
+bảng trong `domains/excel.js` — file ấy nằm trong mười file phải giống hệt
+bit-với-bit hai nhánh (phép 9), thêm hàm xuất vào đó là kéo theo sửa cả bản
+Apps Script đã đóng băng; giữ khuôn cột trùng bằng tay ở `xuat-excel.js` là
+đủ. Đã thử: dựng bảng từ dữ liệu giả, ghi/đọc lại bằng đúng `vendor/xlsx.mjs`
+và `parseExcel()` — 4 người, 2 gia đình, không cảnh báo, ID khớp lại đúng.
+**Chưa ai bấm nút trên máy chủ thật.** Giới hạn đã biết: định dạng chỉ chứa
+tối đa hai vợ/chồng một người một dòng (hôn nhân thứ ba trở lên bị bỏ, im
+lặng) — chấp nhận được vì đây là khuôn của đường Nhập có sẵn, không phải bản
+sao lưu đầy đủ. b130 (bỏ trần KE-HOACH.md, thêm việc "duyệt hàng loạt Kiểm
+duyệt" + "xoá nhật ký hàng loạt" vào mục *Sau đó*) làm ngay trước, xem `git
+log`. Kế tiếp cho AI: đọc lại bảng *Sau đó — chưa đặt số* để chọn việc, hoặc
+hỏi chủ dự án.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -39,6 +47,7 @@ Quản trị hệ thống**.
 | **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
 | **b129c** — cột Tài khoản (`39` đã dán) | Danh sách người → Chỉnh sửa → gắn một người chưa có tài khoản; chọn một tài khoản đã liên kết (phải bị chặn, nói rõ gia phả); Đề xuất gỡ → người ấy vào Hồ sơ cá nhân bấm Đồng ý gỡ |
 | **b127d** — đề nghị sửa quan hệ (`33`, xong d-1→d-3) | Form người có quan hệ ngoài cây: bấm ✉ gửi đề nghị → Quản trị hệ thống → tab *Đề nghị sửa quan hệ* → Duyệt (gỡ) hoặc Từ chối |
+| **b125e** — nút Xuất Excel | Danh sách người → *Xuất Excel* → mở file `.xlsx` tải về bằng Excel thật, xem có đọc được không |
 ---
 
 ## SQL — đã dán gì
@@ -83,19 +92,10 @@ Sổ tay: `so-tay/luu-du-lieu.md` · kéo người, b124b chưa dựng:
 `so-tay/nguoi-xuyen-cay.md` · b124c: `so-tay/phan-quyen.md` *Nới hẹp tự duyệt*.
 ⚠ Ô gợi ý trên điện thoại thật chưa ai bấm lại — `so-tay/o-goi-y.md`.
 
-### ⚠ b125 — BẢNG NGƯỜI trong trang Quản trị (chủ dự án chốt 23/09/2026)
-
-Bấm tên cây ở khu Gia phả → trang cây → mục *Danh sách người*: bảng phẳng kiểu
-trang tính, để **quản lý nhiều trường nội dung**.
-
-| Bước | Việc | Điểm dừng |
-|---|---|---|
-| **b125e** ← KẾ TIẾP | Xuất Excel; nối vào đường NHẬP đã có | Xuất ra mở được bằng Excel |
-
-⚠ **b125d (chọn nhiều dòng, sửa hàng loạt một trường) — BỎ hẳn**, chủ dự án
-quyết 27/09/2026. Chưa viết dòng mã nào nên không có gì để gỡ.
-
-⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
+⚠ **b125 — BẢNG NGƯỜI trong trang Quản trị (chủ dự án chốt 23/09/2026) — XONG**
+a→c + e đã viết và tự kiểm; d (chọn nhiều dòng, sửa hàng loạt) BỎ hẳn theo
+quyết định 27/09/2026, chưa viết dòng nào nên không có gì gỡ. Điểm dừng bấm
+thử còn lại của e: bảng trên.
 
 ### Sau đó — chưa đặt số, chưa chốt
 
