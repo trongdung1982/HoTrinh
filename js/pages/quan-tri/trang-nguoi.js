@@ -10,8 +10,8 @@
 // Phụ thuộc: services/sb · services/hinh-dang · domains/person ·
 //            utils/{text,date} · quan-tri/{trang-cay,o-goi-y,o-bang,xuat-excel,
 //            trang-ho-so-nguoi,trang-chi-tiet}
-// Phiên bản: 0.9.0 · Cập nhật: 27/09/2026 (b133b) — tên người (lúc xem) mở
-//            trang Hồ sơ người
+// Phiên bản: 0.9.1 · Cập nhật: 28/09/2026 (b129d) — câu báo "đã liên kết"
+//            kèm nút Gỡ / Đề xuất gỡ ngay tại chỗ
 // Sổ tay   : so-tay/trang-quan-tri.md · so-tay/luu-mot-dong-quan-tri.md
 // ============================================================
 //
@@ -498,13 +498,47 @@ function veOTaiKhoan(o, p, cay, ctx, quyenTk, thongBao) {
       oCanh.textContent = '';
       bGui.disabled = true;
       if (m.userId === phien.userId) { canhChinhMinh(); return; }
-      if (m.lienKet) {
-        oCanh.textContent = 'Tài khoản này đã liên kết với ' + m.lienKet + '. Hãy gỡ liên kết đó trước khi gắn.';
-        return;
-      }
+      if (m.lienKet) { canhDaLienKet(m); return; }
       bGui.disabled = false;
     },
   });
+
+  /**
+   * Tài khoản đã gắn người khác — nút gỡ đặt NGAY trong câu báo, vì người ấy
+   * có thể ở cây khác (P0027 ở NTB khi đang mở T388) nên bảng này không có
+   * dòng của họ để bấm. QTHT gỡ thẳng rồi gắn tiếp tại chỗ; hạng khác chỉ
+   * ĐỀ XUẤT — máy chủ vẫn đòi là thành viên một cây CÓ người ấy (`39`).
+   */
+  const canhDaLienKet = (m) => {
+    oCanh.innerHTML = '';
+    oCanh.append('Tài khoản này đã liên kết với ' + m.lienKet + '. Hãy gỡ liên kết đó trước khi gắn. ');
+    const bGo = quyenTk.laQTHT ? nutNho('Gỡ liên kết đó', 'danger') : nutNho('Đề xuất gỡ');
+    bGo.addEventListener('click', async () => {
+      const kq = quyenTk.laQTHT
+        ? await hoi({
+          tua: 'Gỡ liên kết',
+          chu: m.email + ' thôi gắn với ' + m.lienKet + ' — có hiệu lực NGAY, không qua duyệt. ' +
+            'Gỡ xong có thể gắn tài khoản này cho ' + tenNguoi(p) + '.',
+          nutOk: 'Gỡ', kieuOk: 'danger', lam: () => ganThangTaiKhoan(m.userId, null),
+        })
+        : await hoi({
+          tua: 'Đề xuất gỡ liên kết',
+          chu: 'Đề nghị gỡ ' + m.email + ' khỏi ' + m.lienKet + '. Quản trị hệ thống, hoặc chính ' +
+            'người dùng tài khoản ấy, sẽ duyệt. Gỡ xong mới gắn được cho ' + tenNguoi(p) + '.',
+          oNhap: { nhieuDong: true, goiY: 'Lý do (không bắt buộc)' },
+          nutOk: 'Gửi đề xuất', kieuOk: 'warm', lam: (lyDo) => deXuatGoHo(m.userId, lyDo),
+        });
+      if (!kq) return;
+      if (quyenTk.laQTHT) {
+        m.lienKet = '';
+        oCanh.textContent = 'Đã gỡ — bấm "Gắn" để gắn ' + m.email + ' cho người này.';
+        bGui.disabled = false;
+      } else {
+        oCanh.textContent = 'Đã gửi đề xuất gỡ — chờ Quản trị hệ thống hoặc chính người ấy duyệt.';
+      }
+    });
+    oCanh.append(bGo);
+  };
   goiYDangMo.push(o.goGoiY);
   oNhap.addEventListener('input', () => {
     if (daChon && oNhap.value.trim() !== daChon.email) { daChon = null; bGui.disabled = true; oCanh.textContent = ''; }

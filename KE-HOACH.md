@@ -1,12 +1,10 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 27/09/2026 23:19 · b133 + b133b XONG — chủ dự án bấm thử trên
-app thật ĐẠT. Trang Hồ sơ người `#<khu>/nguoi/<mã>` (cá nhân · gia đình ·
-các cây + Đời + vai của tài khoản gắn), ba lối vào: cột *gắn với ai* ở
-`#thanh-vien`, Sổ tài khoản → trang tài khoản, bảng *Danh sách người* của
-một cây. Không SQL mới. Luật: đầu `trang-ho-so-nguoi.js` ·
-`so-tay/trang-quan-tri.md`. Trước đó b132 (`luoc-do/41` đã dán) còn một
-điểm dừng ở bảng dưới; b125g (Đời lưu ở `tree_persons.doi`) ĐẠT trên app thật.*
+*Cập nhật 28/09/2026 00:10 · Chủ dự án bấm thử ĐẠT: b111c · b117 · b118d ·
+b127d · b129c · b132 (xoá khỏi bảng dưới). Bấm thử b129c lộ một chỗ hụt:
+chọn tài khoản đã gắn người ở cây KHÁC thì chỉ bị chặn, không có chỗ gỡ →
+b129d thêm nút Gỡ / Đề xuất gỡ ngay trong câu báo (`trang-nguoi.js`, không
+SQL mới), chờ bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -34,12 +32,7 @@ Quản trị hệ thống**.
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b111c** — đơn gắn mã | ✅ Dán xong 26/09 — bấm ở *Tài khoản của tôi → Mã người & Dòng họ* (nộp) và tab *Đơn Hồ sơ cá nhân* của Quản trị hệ thống (xét) |
-| **b117** — khu Tài khoản | ①bảng *Các gia phả tôi tham gia* đúng mã (tài khoản thường, qua RLS) ②đổi mật khẩu |
-| **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
-| **b129c** — cột Tài khoản (`39` đã dán) | Danh sách người → Chỉnh sửa → gắn một người chưa có tài khoản; chọn một tài khoản đã liên kết (phải bị chặn, nói rõ gia phả); Đề xuất gỡ → người ấy vào Hồ sơ cá nhân bấm Đồng ý gỡ |
-| **b132** — cột *gắn với ai trong sơ đồ?* | `#thanh-vien` → bảng *Các gia phả tôi đang tham gia*: dòng NTB hiện P0012, dòng T388/TH957/LVT433/NPGQ8C9 hiện *"Không có trong sơ đồ này"* (trừ cây nào P0012 thật có mặt) |
-| **b127d** — đề nghị sửa quan hệ (`33`, xong d-1→d-3) | Form người có quan hệ ngoài cây: bấm ✉ gửi đề nghị → Quản trị hệ thống → tab *Đề nghị sửa quan hệ* → Duyệt (gỡ) hoặc Từ chối |
+| **b129d** — nút gỡ trong câu báo *"đã liên kết với …"* | Mở `#gia-pha/cay/T388/nguoi` → Chỉnh sửa → cột Tài khoản của một người chưa gắn → chọn một tài khoản đã gắn người ở CÂY KHÁC. ① bằng QTHT: nút **Gỡ liên kết đó** → gỡ xong bấm **Gắn** được ngay. ② bằng tài khoản thường chỉ ở T388: nút **Đề xuất gỡ** → máy chủ từ chối, nói rõ phải thuộc gia phả có người ấy |
 ---
 
 ## SQL — đã dán gì
