@@ -8,7 +8,7 @@
 //            xoa,anh}.js, pages/quan-tri/o-goi-y.js, state,
 //            domains/{person,union,validate,media,purge,render},
 //            services/repo, utils/{graph,text,date,image,avatar}, config
-// Phiên bản: 1.52.0 · Cập nhật: 26/09/2026 — khối Quan hệ: cặp ngoài cây khoá + nút ✉ Đề nghị sửa (b127d-2)
+// Phiên bản: 1.52.1 · Cập nhật: 28/09/2026 (b141) — bỏ import chết từ giàn giáo `tuong-thich`
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/o-goi-y.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
