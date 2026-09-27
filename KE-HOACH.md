@@ -89,9 +89,8 @@ quyết định 27/09/2026, chưa viết dòng nào nên không có gì gỡ. Đ
 thử còn lại của e: bảng trên.
 
 ⚠ **b125f — mã XONG, chờ bấm thử** (bảng trên). Đời vòng 4 (chốt): theo
-DÒNG CHA của từng người, vợ chồng có thể khác đời — `so-tay/xuat-excel.md`.
-Còn một câu: người không có cha trong cây (133 bà vợ ở cây 681) — Đời 1 hay
-trống? Hôm nay là Đời 1.
+DÒNG CHA của từng người, vợ chồng có thể khác đời; người không có cha trong
+cây = Đời 1 (chốt) — `so-tay/xuat-excel.md`.
 
 ### ⚠ b125g ← KẾ TIẾP — LƯU Đời vào Supabase (chủ dự án muốn, 27/09/2026)
 

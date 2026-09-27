@@ -52,7 +52,8 @@ Liên quan: đường NHẬP Excel là `domains/excel.js` (sheet `DuLieu`) — k
   từ Excel cũ): **548/548 người CÓ cha trong cây khớp**, 1,3 ms. **133 lệch —
   cả 133 là người KHÔNG có cha trong cây** (vợ lấy vào họ): Excel gốc ghi họ
   theo đời chồng, luật dòng cha cho Đời 1. Đó là hệ quả của luật, không phải
-  lỗi — ⚠ chờ chủ dự án xem: để Đời 1 hay để TRỐNG cho người không có dòng cha.
+  lỗi. **Chủ dự án chốt 27/09/2026: người không có cha trong cây = Đời 1**
+  (không để trống) — đừng "sửa" cho bà vợ lấy đời chồng.
 - Số ghi tay `vn.generation` không còn tác dụng gì với Đời hiển thị.
 - ⚠ **Lưu Đời vào Supabase** (chủ dự án muốn) — `KE-HOACH.md` mục b125g.
 
