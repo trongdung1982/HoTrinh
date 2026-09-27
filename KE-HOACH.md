@@ -1,8 +1,10 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 · b134 XONG phần mã — Nhật ký hệ thống (Nhóm E):
-`luoc-do/42` + tab Nhật ký + bảng nhật ký trong Thùng rác + thẻ Tổng quan.
-Bàn thử 58/58. ⚠ `42` CHƯA DÁN — xem mục SQL, rồi bấm thử (bảng dưới).*
+*Cập nhật 28/09/2026 · phiên đêm b134→b138 XONG phần mã: nhật ký hệ thống ·
+huy hiệu 9.6 · lịch sử Kiểm duyệt · sao lưu sáu bảng hệ thống · giàn giáo
+7→4. ⚠ BA file SQL CHƯA DÁN (`42` → `43` → `44`, đúng thứ tự) + thay mã
+`SaoLuu.gs` — rồi bấm thử bốn điểm dừng dưới. Một việc CHỜ CHỦ DỰ ÁN: nhập
+GEDCOM/Excel (sửa `domains/gedcom.js`?) — xem Còn treo.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
