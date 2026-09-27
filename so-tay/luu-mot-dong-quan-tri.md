@@ -52,6 +52,14 @@ Duyệt đề xuất: QTHT hoặc chính người được gắn (`duyet_de_xuat
 Không có "đổi": tài khoản đã liên kết thì phải GỠ trước, câu chặn nói rõ người
 ấy + thuộc gia phả nào (`mo_ta_lien_ket`).
 
+⚠ **Câu chặn phải MANG NÚT gỡ** (b129d, chủ dự án bấm thử ĐẠT 28/09): người
+đang giữ tài khoản thường ở CÂY KHÁC (khach@io.vn gắn P0027 ở NTB, đang mở
+T388) → bảng này không có dòng của họ, nút ở cột *Đã gắn* không với tới.
+b129c chỉ chặn → người bấm bị bỏ giữa đường. `canhDaLienKet()` đặt nút ngay
+trong câu: QTHT *Gỡ liên kết đó* rồi *Gắn* tiếp tại chỗ; hạng khác *Đề xuất
+gỡ*, máy chủ vẫn đòi thuộc một cây CÓ người ấy (`duoc_nop_ho`) — không nới.
+Bài học: kịch bản bấm thử viết cả hai bước trong CÙNG một cây nên không lộ.
+
 ⚠ Nguồn cột là `ds_lien_ket_cay()` (đọc `tai_khoan.person_id`). Bản trước đọc
 `dsThanhVien().maNguoi` = `tree_members.person_id` — cột CHẾT từ b126, và chỉ
 trả cho người kiểm duyệt được: cột hiện SAI, thành viên thường thấy trống.

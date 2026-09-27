@@ -1,10 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 00:10 · Chủ dự án bấm thử ĐẠT: b111c · b117 · b118d ·
-b127d · b129c · b132 (xoá khỏi bảng dưới). Bấm thử b129c lộ một chỗ hụt:
-chọn tài khoản đã gắn người ở cây KHÁC thì chỉ bị chặn, không có chỗ gỡ →
-b129d thêm nút Gỡ / Đề xuất gỡ ngay trong câu báo (`trang-nguoi.js`, không
-SQL mới), chờ bấm thử.*
+*Cập nhật 28/09/2026 · b129d XONG — chủ dự án bấm thử ĐẠT. Cùng phiên, bấm
+thử ĐẠT cả b111c · b117 · b118d · b127d · b129c · b132 → không còn điểm dừng
+nào chờ bấm. b129d: câu báo "đã liên kết với …" mang nút Gỡ / Đề xuất gỡ
+(`trang-nguoi.js`, không SQL mới) — `so-tay/luu-mot-dong-quan-tri.md`.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -25,14 +24,11 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 **App chạy thật tại `https://nguyentrongbac.io.vn`** từ 03/09/2026 *(chứng chỉ Let's Encrypt hạn 02/12/2026; địa chỉ cũ `301` về đây)*. Máy chủ thật nay có **BA cây** — NTB 59 người · Nguyễn Phúc Giáo 681 người · **LVT433** *(chủ dự án làm chủ)* — mã cây 3 chữ số. Trang `QuanTri.html` bốn khu đều đã nối. Phân quyền đã đo bằng REST, 5/5 hàng rào đạt (b94, b96).
 
-### Điểm dừng chưa bấm thử — trang Quản trị đã xong (b118d), nay bấm được
+### Điểm dừng chưa bấm thử — KHÔNG CÒN (28/09/2026)
 
-Tất cả là "chưa ai bấm", không phải "chưa viết". Đã có sẵn **hai tài khoản
-Quản trị hệ thống**.
+Mọi điểm dừng đã viết đều đã được chủ dự án bấm thử trên app thật và ĐẠT.
+Việc mới có điểm dừng thì thêm lại bảng ở đây (cột *Điểm dừng* · *Bấm gì*).
 
-| Điểm dừng | Bấm gì |
-|---|---|
-| **b129d** — nút gỡ trong câu báo *"đã liên kết với …"* | Mở `#gia-pha/cay/T388/nguoi` → Chỉnh sửa → cột Tài khoản của một người chưa gắn → chọn một tài khoản đã gắn người ở CÂY KHÁC. ① bằng QTHT: nút **Gỡ liên kết đó** → gỡ xong bấm **Gắn** được ngay. ② bằng tài khoản thường chỉ ở T388: nút **Đề xuất gỡ** → máy chủ từ chối, nói rõ phải thuộc gia phả có người ấy |
 ---
 
 ## SQL — đã dán gì
