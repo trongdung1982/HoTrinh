@@ -1,10 +1,11 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 27/09/2026 · b129 (tab ngang + mặc định chỉ xem) XONG — chủ dự án
-yêu cầu giữa chừng, chen trước b125d. Tự kiểm 303 đạt + `/kiem-tra` 10 phép;
-**chưa ai bấm thật trên máy chủ thật**. Kế tiếp cho AI: **b129c** — cột *Gắn
-người vào tài khoản*, đang CHỜ CHỐT "ai được nộp đề xuất hộ" trước khi viết
-SQL (đụng phân quyền) — xem bảng dưới. Sau đó mới tới b125d.*
+*Cập nhật 27/09/2026 · b129c XONG (mã) — cột *Gắn tài khoản*, quản trị nộp HỘ
+đề xuất gắn mã người. SQL mới `luoc-do/39-de-xuat-gan-ho.sql`, đo bàn thử tại
+chỗ 28/28 ĐẠT (`do-b129c.mjs`) — **⚠ CHƯA AI DÁN `39` LÊN SUPABASE THẬT**, cột
+mới sẽ báo lỗi "không có hàm này" cho tới khi dán. Tự kiểm JS 303 đạt +
+`/kiem-tra` 10 phép. Kế tiếp cho AI: **b125d** — chọn nhiều dòng, sửa hàng
+loạt một trường.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
 **đừng nới trần**. Ba luật giữ nó gọn:
@@ -60,6 +61,10 @@ thường ở luật cũ, không hợp ở luật mới. Xử lý: **`truncate t
 nguoi;`** trước khi dán lại `35` — xoá sạch đơn cũ (theo cây), không ai mất gì
 vì đơn ấy chưa hề có nghĩa toàn phần mềm. Bài học đầy đủ: `so-tay/phan-quyen.md`.
 
+**`39` (b129c) — CHƯA DÁN.** Chỉ THÊM một hàm mới (`de_xuat_gan_ho`), không
+sửa gì có sẵn; dán sau `36`. Đo đủ trên bàn thử (`do-b129c.mjs`), chưa chạy
+trên dữ liệu thật.
+
 ---
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
@@ -87,19 +92,10 @@ trang tính, để **quản lý nhiều trường nội dung**.
 
 | Bước | Việc | Điểm dừng |
 |---|---|---|
-| **b129c** ← KẾ TIẾP | Cột *Gắn người vào tài khoản* — quản trị chọn 1 tài khoản ở dòng người, GỬI ĐỀ XUẤT (chủ dự án chốt 27/09: không ghi thẳng). Cửa cũ `nop_de_xuat_gan()` chỉ tự nộp cho CHÍNH MÌNH — cần RPC MỚI cho nộp HỘ. **Chưa viết SQL** — đang hỏi: ai được nộp hộ (chủ cây + quản trị gia phả, hay rộng hơn)? | Chọn tài khoản ở dòng người → Gửi đề xuất → đơn hiện ở *Đơn Hồ sơ cá nhân* (QTHT) hoặc account đó tự duyệt |
-| b125d | Chọn nhiều dòng + sửa hàng loạt một trường | Sửa 10 người một lượt, hoàn tác được |
+| **b125d** ← KẾ TIẾP | Chọn nhiều dòng + sửa hàng loạt một trường | Sửa 10 người một lượt, hoàn tác được |
 | b125e | Xuất Excel; nối vào đường NHẬP đã có | Xuất ra mở được bằng Excel |
 
 ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
-
-### b129 — TAB ngang thay `.subnav` dọc + sửa tại chỗ phải BẤM mới bật (27/09)
-
-XONG cả hai phần (chủ dự án yêu cầu giữa chừng). Phần thứ ba — cột *Gắn người
-vào tài khoản* — số là **b129c**, xem bảng b125 ở trên.
-
-Sổ tay: `so-tay/trang-quan-tri.md` mục *Đính chính* (lệ ngoại lệ *"đổi bố cục
-đã chép nguyên"*) · `so-tay/luu-mot-dong-quan-tri.md` không đổi.
 
 ### Sau đó — chưa đặt số, chưa chốt
 

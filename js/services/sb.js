@@ -5,9 +5,9 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.33.0 · Cập nhật: 26/09/2026 (b126d) — gắn mã người + dòng họ
-//            chuyển sang cấp TÀI KHOẢN (`34`→`38`); bỏ `TEN_HO`, `laQuanTriCay()`,
-//            `ganNguoiChoThanhVien()`. Lịch sử: `git log -p`.
+// Phiên bản: 0.34.0 · Cập nhật: 27/09/2026 (b129c) — thêm `deXuatGanHo()`,
+//            quản trị nộp hộ đề xuất gắn mã từ bảng Danh sách người.
+//            Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -2021,6 +2021,27 @@ export async function nopDeXuatGan(maNguoi, lyDo = '') {
   if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
   const { data, error } = await k.rpc('nop_de_xuat_gan', {
     p_person: String(maNguoi || ''), p_ly_do: String(lyDo || ''),
+  });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/**
+ * Quản trị NỘP HỘ đơn đề xuất gắn mã người, cho MỘT TÀI KHOẢN KHÁC (b129c,
+ * `luoc-do/39-de-xuat-gan-ho.sql`) — dùng ở bảng *Danh sách người*, cột *Gắn
+ * tài khoản*. Vẫn đi qua đúng chữ ký thứ hai của `duyetDeXuatGan()`, KHÔNG
+ * ghi thẳng: máy chủ chỉ nhận từ chủ cây/quản trị gia phả của MỘT cây đang
+ * chứa người ấy, và không nhận nộp hộ cho chính mình (đi Hồ sơ cá nhân).
+ *
+ * @param {string} userId  tài khoản NHẬN mã (không phải người đang gọi)
+ * @param {string} maNguoi mã người trong sơ đồ, ví dụ `P0012`
+ * @param {string} [lyDo]
+ */
+export async function deXuatGanHo(userId, maNguoi, lyDo = '') {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('de_xuat_gan_ho', {
+    p_user: userId, p_person: String(maNguoi || ''), p_ly_do: String(lyDo || ''),
   });
   if (error) return { ok: false, loi: cauLoi(error) };
   return data || { ok: false, loi: 'Máy chủ không trả lời.' };

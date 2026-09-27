@@ -2,13 +2,12 @@
 // giapha-supabase · js/pages/quan-tri/trang-nguoi.js
 // Vai trò  : Trang con `#gia-pha/cay/<mã>/nguoi` — BẢNG PHẲNG mọi người của
 //            một cây, như một trang tính: tìm, sắp xếp, phân trang, sửa tại
-//            chỗ từng ô rồi Lưu theo DÒNG qua `luu_cay()`. Cột *Tài khoản*
-//            chỉ để XEM ai đang gắn với người này (b126d).
+//            chỗ từng ô rồi Lưu theo DÒNG qua `luu_cay()`. Cột *Gắn tài
+//            khoản* nộp HỘ đề xuất (b129c) — cột *Tài khoản* vẫn chỉ XEM.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · services/hinh-dang · domains/person ·
-//            utils/{text,date} · quan-tri/trang-cay · quan-tri/o-bang
-// Phiên bản: 0.3.0 · Cập nhật: 27/09/2026 (b129) — thanh tab dùng chung
-//   (`wireTabsTrangCay`) + mặc định KHÔNG sửa, nút "Chỉnh sửa" mới bật
+//            utils/{text,date} · quan-tri/{trang-cay,o-goi-y,o-bang}
+// Phiên bản: 0.4.0 · Cập nhật: 27/09/2026 (b129c) — cột *Gắn tài khoản*
 // Sổ tay   : so-tay/trang-quan-tri.md · so-tay/luu-mot-dong-quan-tri.md
 // ============================================================
 //
@@ -24,12 +23,13 @@
 //   `capSua` còn nhân thêm `cheDoSua` (b129): cây cho sửa KHÔNG có nghĩa là
 //   bảng đang sửa — phải bấm "Chỉnh sửa" trước, mặc định luôn TẮT.
 
-import { layDong, dsThanhVien, luuCay } from '../../services/sb.js';
+import { layDong, dsThanhVien, luuCay, timTaiKhoan, deXuatGanHo } from '../../services/sb.js';
 import { rapCay, soSanh, coGiDeGhi, tangSoSauKhiLuu } from '../../services/hinh-dang.js';
 import { updatePerson } from '../../domains/person.js';
 import { fullName, removeDiacritics } from '../../utils/text.js';
 import { stampNow } from '../../utils/date.js';
 import { timCay, cumCay, cayNho, wireTabsTrangCay, datSoDon } from './trang-cay.js';
+import { ganGoiY, dongTaiKhoan } from './o-goi-y.js';
 import { td, span, nutLink, nutNho, dongTrong, datHuyHieu } from './o-bang.js';
 
 /** Bao nhiêu dòng một trang. 50 vừa một màn cuộn, và 681 người ra 14 trang. */
@@ -55,6 +55,11 @@ let goc = new Map();
 let dangLuu = false;
 /** `{bLuu, kiemDoi}` của mọi dòng đang vẽ — khoá/mở lại đồng loạt lúc Lưu. */
 let moiDong = [];
+/** Hàm GỠ của mọi ô gợi ý *Gắn tài khoản* đang vẽ (b129c) — `ganGoiY()` gắn
+ *  bộ nghe `window.scroll`/`resize` NGAY khi gọi, không chờ popup mở. Bảng
+ *  vẽ lại cả tbody mỗi lần tìm/sắp/đổi trang; quên gọi hết mảng này trước khi
+ *  xoá `tbody` là mỗi lượt vẽ lại cộng dồn thêm một bộ nghe treo mãi. */
+let goiYDangMo = [];
 
 /** Trường tự do đổi tên thẳng: cột bảng → khoá của `changes` (`domains/person.js`). */
 const TRUONG_DOI = {
@@ -122,6 +127,8 @@ export async function mountTrangNguoi(sec, ctx, hashLuc) {
     goc = new Map(); treeId = ''; treeRevision = 0;
   }
   dangLuu = false; moiDong = [];
+  for (const go of goiYDangMo) go();
+  goiYDangMo = [];
   cheDoSua = false;   // mặc định KHÔNG cho sửa mỗi lần mở trang này (b129)
 
   wireTabsTrangCay(sec, ctx);
@@ -150,9 +157,15 @@ export async function mountTrangNguoi(sec, ctx, hashLuc) {
   treeRevision = (kq.dong.tree && Number(kq.dong.tree.revision)) || 0;
 
   const emailTheoMa = new Map();
+  let duocGanHo = false;
   if (kqTV.ok) {
     for (const t of kqTV.ds) if (t.maNguoi) emailTheoMa.set(t.maNguoi, t.email);
     datSoDon(sec, kqTV.ds.filter((t) => !t.daDuyet && !t.moiLuc).length);
+    // b129c — chủ cây hoặc quản trị gia phả CỦA CHÍNH CÂY ĐANG XEM mới nộp hộ
+    // được đề xuất gắn tài khoản (chốt 27/09/2026). Mọi người trong `ds` chắc
+    // chắn thuộc cây này, nên tính MỘT LẦN cho cả trang là đủ.
+    const chinhToi = kqTV.ds.find((t) => t.laChinhToi);
+    duocGanHo = Boolean(cay.toiLaChu) || Boolean(chinhToi && chinhToi.vai === 'quan_tri');
   }
 
   // `goc` = bản GỐC từng người, camelCase với `revision` đi tròn — nền so
@@ -163,7 +176,7 @@ export async function mountTrangNguoi(sec, ctx, hashLuc) {
   for (const p of dsNguoi) goc.set(p.id, p);
   const ds = dsNguoi.map((p) => ({ ...p, emailGan: emailTheoMa.get(p.id) || '' }));
 
-  const ve = () => veBang(sec, ds, kqTV.ok, cay, ctx, () => ve());
+  const ve = () => veBang(sec, ds, kqTV.ok, cay, ctx, duocGanHo, () => ve());
   ganThanhCong(sec, ve);
   ve();
 }
@@ -211,11 +224,12 @@ function veNutSua(sec, cay, ve) {
   b.onclick = () => { cheDoSua = !cheDoSua; ve(); };
 }
 
-function veBang(sec, ds, docDuocTK, cay, ctx, ve) {
+function veBang(sec, ds, docDuocTK, cay, ctx, duocGanHo, ve) {
   const $ = (id) => sec.querySelector('#' + id);
   const hop = locVaSap(ds);
   const capSua = Boolean(cay.suaDuoc) && cheDoSua;
-  const soCot = COT.length + (capSua ? 1 : 0);
+  const capGanTk = capSua && duocGanHo;
+  const soCot = COT.length + (capSua ? 1 : 0) + (capGanTk ? 1 : 0);
 
   const soTrang = Math.max(1, Math.ceil(hop.length / MOI_TRANG));
   if (trang > soTrang - 1) trang = soTrang - 1;
@@ -230,15 +244,17 @@ function veBang(sec, ds, docDuocTK, cay, ctx, ve) {
   if (!cay.suaDuoc) datHuyHieu($('tp-trang-thai'), 'Chỉ xem', 'wait');
   else datHuyHieu($('tp-trang-thai'), cheDoSua ? 'Đang sửa' : 'Xem');
 
-  veDau(sec, ve, capSua);
+  veDau(sec, ve, capSua, capGanTk);
 
   const tb = $('tp-tbody');
+  for (const go of goiYDangMo) go();
+  goiYDangMo = [];
   moiDong = [];
   if (!phan.length) {
     dongTrong(tb, soCot, loc ? 'Không ai khớp “' + loc + '”.' : 'Cây này chưa có người nào.');
   } else {
     tb.innerHTML = '';
-    for (const p of phan) tb.append(dongNguoi(p, capSua, ctx));
+    for (const p of phan) tb.append(dongNguoi(p, capSua, capGanTk, cay, ctx));
   }
 
   $('tp-vi-tri').textContent = hop.length
@@ -250,7 +266,7 @@ function veBang(sec, ds, docDuocTK, cay, ctx, ve) {
 }
 
 /** Hàng tiêu đề — bấm một cột là sắp theo cột ấy, bấm lại là đảo chiều. */
-function veDau(sec, ve, capSua) {
+function veDau(sec, ve, capSua, capGanTk) {
   const hang = sec.querySelector('#tp-dau');
   hang.innerHTML = '';
   for (const c of COT) {
@@ -261,6 +277,11 @@ function veDau(sec, ve, capSua) {
       ve();
     }));
     hang.append(o);
+    if (c.ma === 'tk' && capGanTk) {
+      const o2 = document.createElement('th');
+      o2.textContent = 'Gắn tài khoản';
+      hang.append(o2);
+    }
   }
   if (capSua) {
     const o = document.createElement('th');
@@ -270,7 +291,7 @@ function veDau(sec, ve, capSua) {
 }
 
 /** Một dòng — CHỈ XEM (chữ thường) hoặc SỬA TẠI CHỖ (ô nhập + nút Lưu). */
-function dongNguoi(p, capSua, ctx) {
+function dongNguoi(p, capSua, capGanTk, cay, ctx) {
   const tr = document.createElement('tr');
   const oControls = {};
 
@@ -282,6 +303,7 @@ function dongNguoi(p, capSua, ctx) {
         : td(c.ma === 'ten' ? span('name', chu) : chu);
       if (c.ma === 'ghi') o.className = 'col-ghi';
       tr.append(o);
+      if (c.ma === 'tk' && capGanTk) tr.append(taoOGanTk(p, cay));
       continue;
     }
     const el = taoOSua(c, p);
@@ -293,6 +315,46 @@ function dongNguoi(p, capSua, ctx) {
 
   if (capSua) tr.append(taoOLuu(p, oControls, ctx));
   return tr;
+}
+
+/**
+ * Ô cuối *Gắn tài khoản* (b129c) — HÀNH ĐỘNG RIÊNG, không đi qua `luuHang()`:
+ * gõ tên/email → chọn đúng một dòng gợi ý → Gửi là gọi thẳng
+ * `sb.deXuatGanHo()`, một đề xuất CHỜ DUYỆT (chữ ký thứ hai), không ghi thẳng.
+ */
+function taoOGanTk(p, cay) {
+  let daChon = null;
+  const oNhap = document.createElement('input');
+  oNhap.type = 'text';
+  oNhap.className = 'o-sua o-sua-ten';
+  oNhap.placeholder = p.emailGan ? 'Đổi sang tài khoản khác…' : 'Gõ tên hoặc email…';
+  goiYDangMo.push(ganGoiY(oNhap, {
+    tim: async (chuoi) => (await timTaiKhoan(cay.fileId, chuoi)).ds,
+    ve: dongTaiKhoan,
+    giaTri: (m) => m.email,
+    khiChon: (m) => { daChon = m; },
+  }));
+
+  const oTrangThai = span('sub', '');
+  const bGui = nutNho('Gửi');
+  bGui.addEventListener('click', async () => {
+    if (!daChon || oNhap.value.trim() !== daChon.email) {
+      oTrangThai.textContent = 'Chọn đúng một tài khoản trong danh sách gợi ý.';
+      return;
+    }
+    bGui.disabled = true;
+    oTrangThai.textContent = 'Đang gửi…';
+    const kq = await deXuatGanHo(daChon.userId, p.id);
+    bGui.disabled = false;
+    if (kq && kq.ok) {
+      oTrangThai.textContent = 'Đã gửi — chờ tài khoản đó hoặc Quản trị hệ thống duyệt.';
+      oNhap.value = ''; daChon = null;
+    } else {
+      oTrangThai.textContent = (kq && kq.loi) || 'Không gửi được — thử lại.';
+    }
+  });
+
+  return td(oNhap, bGui, oTrangThai);
 }
 
 /** Ô sửa của một cột — input/select/checkbox, giá trị ban đầu = giá trị hiện có. */
