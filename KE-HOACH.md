@@ -3,8 +3,8 @@
 *Cập nhật 27/09/2026 · b129c XONG (mã) — cột *Tài khoản* của bảng Danh sách
 người gắn/gỡ liên kết theo bốn hạng (QTHT thẳng · chủ/quản trị/thành viên đề
 xuất · chính chủ tự gỡ · khách khoá), cùng Hồ sơ cá nhân + tab Đơn của QTHT.
-Bàn thử 66/66 (`do-b129c.mjs`), JS 303 đạt, `/kiem-tra` 10 phép. **⚠ CHƯA DÁN
-`39` LÊN SUPABASE THẬT** — cột Tài khoản đọc hàm mới, trước khi dán sẽ trống.
+Bàn thử 66/66 (`do-b129c.mjs`), JS 303 đạt, `/kiem-tra` 10 phép. `39` ĐÃ DÁN
+lên thật 27/09, tự kiểm 7/7 ĐẠT; **chưa ai bấm thử trên giao diện**.
 Kế tiếp cho AI: **b125d** — chọn nhiều dòng, sửa hàng loạt một trường.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
@@ -37,6 +37,7 @@ Quản trị hệ thống**.
 | **b111c** — đơn gắn mã | ✅ Dán xong 26/09 — bấm ở *Tài khoản của tôi → Mã người & Dòng họ* (nộp) và tab *Đơn Hồ sơ cá nhân* của Quản trị hệ thống (xét) |
 | **b117** — khu Tài khoản | ①bảng *Các gia phả tôi tham gia* đúng mã (tài khoản thường, qua RLS) ②đổi mật khẩu |
 | **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
+| **b129c** — cột Tài khoản (`39` đã dán) | Danh sách người → Chỉnh sửa → gắn một người chưa có tài khoản; chọn một tài khoản đã liên kết (phải bị chặn, nói rõ gia phả); Đề xuất gỡ → người ấy vào Hồ sơ cá nhân bấm Đồng ý gỡ |
 | **b127d** — đề nghị sửa quan hệ (`33`, xong d-1→d-3) | Form người có quan hệ ngoài cây: bấm ✉ gửi đề nghị → Quản trị hệ thống → tab *Đề nghị sửa quan hệ* → Duyệt (gỡ) hoặc Từ chối |
 ---
 
@@ -61,7 +62,7 @@ thường ở luật cũ, không hợp ở luật mới. Xử lý: **`truncate t
 nguoi;`** trước khi dán lại `35` — xoá sạch đơn cũ (theo cây), không ai mất gì
 vì đơn ấy chưa hề có nghĩa toàn phần mềm. Bài học đầy đủ: `so-tay/phan-quyen.md`.
 
-**`39` (b129c) — CHƯA DÁN.** ⚠ Thêm HAI CỘT vào `de_xuat_gan_nguoi` (`loai`,
+**`39` (b129c) — ĐÃ DÁN lên THẬT 27/09, tự kiểm 7/7 ĐẠT.** ⚠ Thêm HAI CỘT vào `de_xuat_gan_nguoi` (`loai`,
 `nop_boi` — có mặc định, không đụng dòng cũ), bảy hàm mới, và là bản ĐỨNG CUỐI
 của `duyet_de_xuat_gan()`/`ds_de_xuat_gan()`/`de_xuat_gan_cua_toi()` — dán lại
 `35`/`36` sau nó thì phải dán lại `39`. Dán sau `38`. Đo đủ trên bàn thử.
