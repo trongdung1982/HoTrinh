@@ -1,11 +1,12 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 27/09/2026 · b125f XONG vòng 2 (sửa theo góp ý chủ dự án) — nút
-*Xuất Excel ▾* mở menu hai khuôn, bấm là tải; bảng phẳng có cột ID con/con nuôi,
-bỏ cột số thứ tự; sheet Gia đình có ID chồng/ID vợ; **Đời TÍNH từ cây**
-(`utils/graph.tinhDoi`, đo 681/681 khớp Excel gốc) — hiện ở file Excel, cột mới
-của bảng Danh sách người và thẻ người ở sơ đồ. Luật + phép đo:
-`so-tay/xuat-excel.md`. **Điểm dừng: chủ dự án bấm thử** (bảng dưới).*
+*Cập nhật 27/09/2026 19:09 · b125f XONG phần mã (bốn vòng góp ý) — nút
+*Xuất Excel ▾* mở menu hai khuôn, bấm là tải; bảng phẳng có cột ID con/con
+nuôi, bỏ cột số thứ tự; sheet Gia đình có ID chồng/ID vợ; **Đời TÍNH theo
+dòng cha** (`utils/graph.tinhDoi`, cây 681: 548/548 người có cha khớp Excel
+gốc) — hiện ở file Excel, cột mới của bảng Danh sách người, thẻ người ở sơ
+đồ. Luật + phép đo: `so-tay/xuat-excel.md`. **KẾ TIẾP: b125g — LƯU Đời vào
+Supabase, phiên MỚI, Opus.** Bấm thử b125f gộp vào sau b125g (chủ dự án chốt).*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -38,7 +39,7 @@ Quản trị hệ thống**.
 | **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
 | **b129c** — cột Tài khoản (`39` đã dán) | Danh sách người → Chỉnh sửa → gắn một người chưa có tài khoản; chọn một tài khoản đã liên kết (phải bị chặn, nói rõ gia phả); Đề xuất gỡ → người ấy vào Hồ sơ cá nhân bấm Đồng ý gỡ |
 | **b127d** — đề nghị sửa quan hệ (`33`, xong d-1→d-3) | Form người có quan hệ ngoài cây: bấm ✉ gửi đề nghị → Quản trị hệ thống → tab *Đề nghị sửa quan hệ* → Duyệt (gỡ) hoặc Từ chối |
-| **b125f** — Xuất Excel + Đời | Danh sách người (cây 681) → *Xuất Excel ▾* → mỗi khuôn một lần, mở file xem cột Đời, ID con, ID chồng/vợ; cột *Đời* của bảng; mở thẻ một người ở sơ đồ xem hàng *Đời* |
+| **b125f** — Xuất Excel + Đời ⚠ *chỉ bấm khi xong b125g* | Danh sách người (cây 681) → *Xuất Excel ▾* → mỗi khuôn một lần, mở file xem cột Đời, ID con, ID chồng/vợ; cột *Đời* của bảng; mở thẻ một người ở sơ đồ xem hàng *Đời* |
 ---
 
 ## SQL — đã dán gì
@@ -92,16 +93,29 @@ thử còn lại của e: bảng trên.
 DÒNG CHA của từng người, vợ chồng có thể khác đời; người không có cha trong
 cây = Đời 1 (chốt) — `so-tay/xuat-excel.md`.
 
-### ⚠ b125g ← KẾ TIẾP — LƯU Đời vào Supabase (chủ dự án muốn, 27/09/2026)
+### ⚠ b125g ← KẾ TIẾP — LƯU Đời vào Supabase (Opus, phiên MỚI)
 
-Chủ dự án: *"Đời gắn chặt với cây, tính tự động và nên lưu vào Supabase"*.
-Đề xuất: ① cột `doi` trên **`tree_persons`** (cặp cây–người — cha có ở cây
-này mà vắng ở cây kia thì hai cây hai đời); ② **máy chủ** tính lại sau mỗi
-lần lưu có đụng người HOẶC quan hệ — không chỉ khi thêm người: gắn/gỡ cha
-cũng đổi đời cả nhánh con cháu, không tính lại là số lưu sai im lặng; ③ app
-ĐỌC số đã lưu, `tinhDoi()` JS còn làm đáp án đối chiếu trên bàn thử (cây
-681). Cột mới: đọc `so-tay/luu-du-lieu.md` (BỐN chỗ) trước; SQL chạy bàn thử
-trước khi đưa dán.
+**Chủ dự án chốt 27/09/2026 (nguyên ý):**
+- Đời **lưu vào Supabase**, gắn liền với CÂY. **Xuất Excel lấy Đời từ
+  Supabase** (và thẻ, bảng Danh sách người cũng đọc số đã lưu).
+- **Chỉ tính lại khi thêm người mới, và chỉ cập nhật HẬU DUỆ của người đó** —
+  không tính lại cả cây. Ví dụ của chủ dự án: thêm bố của cụ tổ → cụ tổ thành
+  con của người mới → cụ tổ và toàn bộ con cháu theo dòng cha đều **tụt một
+  đời** (Đời +1).
+- **Bấm thử chỉ làm khi xong b125g** (gộp cả điểm dừng b125f).
+
+**Hướng làm (Claude đề xuất, phiên sau tự chốt chi tiết):** cột `doi` trên
+`tree_persons` (cặp cây–người). Tính lại cục bộ = người bị đổi dòng cha + con
+cháu theo dòng cha (con có cha nằm trong tập ấy; con gái vẫn theo cha mình,
+con của con gái theo cha chúng nên không đổi). Luật đời: `so-tay/xuat-excel.md`
+(dòng cha, không cha = Đời 1, cha dượng không nối dòng). ⚠ Ngoài "thêm người
+mới", ba lối khác cũng đổi dòng cha — **gắn cha cho người có sẵn** (kéo người,
+form gia đình), **gỡ cha**, **xoá người** — cùng một phép "tính lại nhánh"
+áp được cho cả bốn; nói rõ với chủ dự án nếu định bỏ lối nào. Việc một lần:
+điền `doi` cho cả ba cây đang có (dùng `tinhDoi()` làm đáp án, cây 681 phải
+khớp 548 người có cha). `tinhDoi()` JS giữ làm đáp án đối chiếu trên bàn thử.
+Trước khi viết: `so-tay/luu-du-lieu.md` (cột mới: BỐN chỗ) · `so-tay/phan-quyen.md`
+(luu_cay đứng cuối ở `32`) · bàn thử SQL `../kiem-thu/ban-thu-sql/`.
 
 ### Sau đó — chưa đặt số, chưa chốt
 
