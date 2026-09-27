@@ -88,9 +88,20 @@ a→c + e đã viết và tự kiểm; d (chọn nhiều dòng, sửa hàng lo�
 quyết định 27/09/2026, chưa viết dòng nào nên không có gì gỡ. Điểm dừng bấm
 thử còn lại của e: bảng trên.
 
-⚠ **b125f — mã XONG, chờ bấm thử** (bảng trên). Còn một câu chưa chốt: ô
-*Đời* trong form sửa người vẫn ghi `vn.generation`, nay chỉ còn làm NEO cho
-phép tính — giữ, đổi thành chỉ đọc, hay bỏ? `so-tay/xuat-excel.md`.
+⚠ **b125f — mã XONG, chờ bấm thử** (bảng trên). Đời vòng 3: tính TỪ CỤ TỔ
+đi xuống, không đi lên — `so-tay/xuat-excel.md`.
+
+### ⚠ b125g ← KẾ TIẾP — LƯU Đời vào Supabase (chủ dự án muốn, 27/09/2026)
+
+Chủ dự án: *"Đời gắn chặt với cây, tính tự động và nên lưu vào Supabase"*.
+Đề xuất (chờ chốt câu 1): ① **cụ tổ** — máy tự chọn (người gốc nhiều hậu duệ
+nhất, như `timCuTo()` hôm nay) hay chủ cây chỉ định, lưu `trees.cu_to`? ②
+cột `doi` trên **`tree_persons`** (cặp cây–người — đúng nghĩa "mỗi cây một
+đời"); ③ **máy chủ** tính lại sau mỗi lần lưu có đụng người HOẶC quan hệ —
+không chỉ khi thêm người: gắn/gỡ cha mẹ, đổi cụ tổ cũng đổi đời, không tính
+lại là số lưu sai im lặng; ④ app ĐỌC số đã lưu, `tinhDoi()` JS còn làm đáp
+án đối chiếu trên bàn thử (cây 681). Cột mới: đọc `so-tay/luu-du-lieu.md`
+(BỐN chỗ) trước; SQL chạy bàn thử trước khi đưa dán.
 
 ### Sau đó — chưa đặt số, chưa chốt
 

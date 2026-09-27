@@ -228,112 +228,113 @@ export function chiMucVe(tree) {
 }
 
 /**
- * ĐỜI của mọi người TRONG MỘT CÂY, tính từ quan hệ — không đọc một con số
- * cất sẵn, vì từ b121 một người dùng chung nhiều cây, mà cùng một người ở
- * cây này là đời 5, ở cây kia là đời 2 (chủ dự án 27/09/2026).
+ * ĐỜI của mọi người TRONG MỘT CÂY, tính TỪ CỤ TỔ ĐI XUỐNG (chủ dự án
+ * 27/09/2026) — Đời gắn với cây, không với người: từ b121 một người dùng
+ * chung nhiều cây, mỗi cây một đời.
  *
- * Cách tính: cha mẹ → con là +1, vợ ↔ chồng là 0 (dâu/rể mang đời của người
- * mình lấy). Duyệt từng khối nối liền, ra đời TƯƠNG ĐỐI; rồi neo khối ấy:
- *   • có người đã ghi tay `vn.generation` → lấy độ lệch mà ĐA SỐ họ đồng ý
- *     (cây nhập từ Excel/GEDCOM mang sẵn Đời gốc, nên đời tính ra khớp nó);
- *   • không ai ghi → người cao nhất khối là đời 1.
- * Ai tính ra < 1 (tổ tiên của dâu/rể, cao hơn cả thuỷ tổ) thì bỏ trống.
+ *   • Cụ tổ = Đời 1 (hoặc số ghi tay `vn.generation` của CHÍNH cụ tổ, cho
+ *     cây bắt đầu giữa dòng). Cụ tổ tìm bằng `timCuTo()`.
+ *   • Con (mọi loại: đẻ, nuôi, riêng, thừa tự) = đời cha/mẹ + 1.
+ *   • Dâu/rể = đời người mình lấy.
+ *   • CHỈ đi XUỐNG và sang ngang, không bao giờ đi LÊN: cha mẹ, ông bà của
+ *     một nàng dâu không thuộc dòng đi xuống từ cụ tổ → KHÔNG có đời (trống).
+ *     Đi lên là cách sai: nàng dâu có ba đời bên ngoại sẽ bị tính thành đời 3.
  *
- * Đường nối trái nhau (lấy người khác vai vế) — cha mẹ/con đi TRƯỚC vợ
- * chồng: huyết thống quyết đời, hôn nhân chỉ gán đời cho người không có
- * đường máu nào khác. Đo trên cây 681 người: xem so-tay/xuat-excel.md.
+ * Nhiều đường tới cùng một người (lấy người trong họ): đường MÁU trước, theo
+ * từng tầng — ai tới sớm (đời nhỏ hơn) giữ chỗ; đường vợ/chồng chỉ gán đời
+ * cho người chưa có đường máu nào. Phép đo: `so-tay/xuat-excel.md`.
  *
  * @param {object[]} persons
  * @param {object[]} unions
- * @returns {Map<string, number>}  mã người -> đời (chỉ người có đời ≥ 1)
+ * @returns {Map<string, number>}  mã người -> đời; người không thuộc dòng thì vắng
  */
 export function tinhDoi(persons, unions) {
-  const trong = new Map();
-  for (const p of persons || []) if (p && p.id && !p.deleted) trong.set(p.id, p);
+  const d = dungDoThiDoi(persons, unions);
+  const cuTo = chonCuTo(d);
+  const doi = new Map();          // VỪA là kết quả VỪA là tập visited
+  if (!cuTo) return doi;
 
-  const mau = new Map();    // id -> [{id, lech}]  cha mẹ ↔ con
-  const vc  = new Map();    // id -> [id]          vợ ↔ chồng
-  for (const id of trong.keys()) { mau.set(id, []); vc.set(id, []); }
-  for (const u of unions || []) {
-    if (!u || u.deleted) continue;
-    const cap = (u.partners || []).filter((id) => trong.has(id));
-    const con = (u.children || []).map((c) => c && c.personId).filter((id) => trong.has(id));
-    for (let i = 0; i < cap.length; i++) {
-      for (let j = i + 1; j < cap.length; j++) { vc.get(cap[i]).push(cap[j]); vc.get(cap[j]).push(cap[i]); }
-      for (const c of con) {
-        if (c === cap[i]) continue;
-        mau.get(cap[i]).push({ id: c, lech: 1 });
-        mau.get(c).push({ id: cap[i], lech: -1 });
+  const p0 = d.trong.get(cuTo);
+  const ghi = Number(p0 && p0.vn && p0.vn.generation);
+  doi.set(cuTo, Number.isInteger(ghi) && ghi > 0 ? ghi : 1);
+
+  // Hàng đợi MÁU theo từng tầng; người mới tới qua vợ/chồng được xếp vào
+  // đúng tầng của họ để không chen trước người cùng tầng đến bằng đường máu.
+  let tang = [cuTo];
+  while (tang.length) {
+    const sau = [];
+    for (let i = 0; i < tang.length; i++) {
+      const id = tang[i];
+      for (const c of d.con.get(id)) {
+        if (doi.has(c)) continue;
+        doi.set(c, doi.get(id) + 1);
+        sau.push(c);
       }
     }
+    // Dâu/rể của tầng này — sau khi mọi đường máu tới tầng này đã đi hết.
+    for (let i = 0; i < tang.length; i++) {
+      for (const s of d.vc.get(tang[i])) {
+        if (doi.has(s)) continue;
+        doi.set(s, doi.get(tang[i]));
+        tang.push(s);   // con riêng của dâu/rể cũng đi xuống từ họ
+        for (const c of d.con.get(s)) {
+          if (doi.has(c)) continue;
+          doi.set(c, doi.get(s) + 1);
+          sau.push(c);
+        }
+      }
+    }
+    tang = sau;
   }
-
-  const daGhi = (id) => {
-    const p = trong.get(id);
-    const n = Number(p && p.vn && p.vn.generation);
-    return Number.isInteger(n) && n > 0 ? n : 0;
-  };
-  // Mở khối từ người đã ghi đời NHỎ nhất (thường là thuỷ tổ), rồi theo mã.
-  const thuTu = [...trong.keys()].sort((a, b) =>
-    ((daGhi(a) || Infinity) - (daGhi(b) || Infinity)) || (a < b ? -1 : a > b ? 1 : 0));
-
-  const tuongDoi = new Map();   // VỪA là kết quả tương đối VỪA là tập visited
-  const ketQua = new Map();
-  for (const goc of thuTu) {
-    if (tuongDoi.has(goc)) continue;
-    const khoi = lanKhoi(goc, tuongDoi, mau, vc);
-
-    const phieu = new Map();
-    let thapNhat = Infinity;
-    for (const id of khoi) {
-      const r = tuongDoi.get(id);
-      if (r < thapNhat) thapNhat = r;
-      const g = daGhi(id);
-      if (g) phieu.set(g - r, (phieu.get(g - r) || 0) + 1);
-    }
-    let lech = 1 - thapNhat;
-    let soPhieu = 0;
-    for (const [l, n] of phieu) {
-      if (n > soPhieu || (n === soPhieu && l < lech)) { lech = l; soPhieu = n; }
-    }
-    for (const id of khoi) {
-      const d = tuongDoi.get(id) + lech;
-      if (d >= 1) ketQua.set(id, d);
-    }
-  }
-  return ketQua;
+  return doi;
 }
 
 /**
- * Lan một khối từ `goc`: hết đường MÁU trước (BFS), rồi mới bước qua một
- * đường vợ/chồng, và từ người vừa tới lại lan hết đường máu của họ.
- * `tuongDoi` là tập visited dùng chung cho mọi khối.
+ * Cụ tổ của một cây: trong những người KHÔNG có cha mẹ trong cây, người có
+ * nhiều HẬU DUỆ nhất. Tổ tiên bên ngoại của dâu/rể cũng không có cha mẹ,
+ * nhưng hậu duệ của họ chỉ là một nhánh nhỏ, nên không bao giờ thắng. Ngang
+ * nhau (cụ ông · cụ bà) thì nam trước, rồi mã nhỏ.
+ *
+ * @returns {string} mã người, hoặc '' khi cây trống
  */
-function lanKhoi(goc, tuongDoi, mau, vc) {
-  const khoi = [];
-  const choVc = [];     // người đã tới, còn chờ bước qua vợ/chồng
-  const lanMau = (dau) => {
-    for (let i = khoi.push(dau) - 1; i < khoi.length; i++) {
-      const id = khoi[i];
-      choVc.push(id);
-      for (const k of mau.get(id)) {
-        if (tuongDoi.has(k.id)) continue;
-        tuongDoi.set(k.id, tuongDoi.get(id) + k.lech);
-        khoi.push(k.id);
+export function timCuTo(persons, unions) {
+  return chonCuTo(dungDoThiDoi(persons, unions));
+}
+
+function dungDoThiDoi(persons, unions) {
+  const trong = new Map();
+  for (const p of persons || []) if (p && p.id && !p.deleted) trong.set(p.id, p);
+  const con = new Map();       // cha/mẹ -> [con]
+  const vc  = new Map();       // người -> [vợ/chồng]
+  const coChaMe = new Set();
+  for (const id of trong.keys()) { con.set(id, []); vc.set(id, []); }
+  for (const u of unions || []) {
+    if (!u || u.deleted) continue;
+    const cap = (u.partners || []).filter((id) => trong.has(id));
+    const cacCon = (u.children || []).map((c) => c && c.personId).filter((id) => trong.has(id));
+    for (let i = 0; i < cap.length; i++) {
+      for (let j = i + 1; j < cap.length; j++) { vc.get(cap[i]).push(cap[j]); vc.get(cap[j]).push(cap[i]); }
+      for (const c of cacCon) {
+        if (c === cap[i]) continue;
+        con.get(cap[i]).push(c);
+        coChaMe.add(c);
       }
     }
-  };
-  tuongDoi.set(goc, 0);
-  lanMau(goc);
-  for (let i = 0; i < choVc.length; i++) {
-    const id = choVc[i];
-    for (const k of vc.get(id)) {
-      if (tuongDoi.has(k)) continue;
-      tuongDoi.set(k, tuongDoi.get(id));
-      lanMau(k);
-    }
   }
-  return khoi;
+  return { trong, con, vc, coChaMe };
+}
+
+function chonCuTo(d) {
+  let tot = '', soTot = -1;
+  for (const [id, p] of d.trong) {
+    if (d.coChaMe.has(id)) continue;
+    const so = bfs(id, (x) => d.con.get(x)).size;
+    const hon = so > soTot ||
+      (so === soTot && ((p.sex === 'M') > (d.trong.get(tot).sex === 'M') ||
+        ((p.sex === 'M') === (d.trong.get(tot).sex === 'M') && id < tot)));
+    if (hon) { tot = id; soTot = so; }
+  }
+  return tot;
 }
 
 /**

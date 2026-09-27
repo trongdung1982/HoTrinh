@@ -37,15 +37,24 @@ Liên quan: đường NHẬP Excel là `domains/excel.js` (sheet `DuLieu`) — k
   có `tree_id`, `person_id`); `vn.generation` là số ghi tay trên NGƯỜI, đa số
   trống — nên thẻ cũ ẩn hàng Đời. Nay thẻ, bảng Danh sách người và file Excel
   đều hiện số TÍNH bằng `tinhDoi()`.
-- Cách tính: cha mẹ → con +1, vợ ↔ chồng 0. Lan hết đường MÁU trước rồi mới
-  qua vợ/chồng (dâu/rể lấy đời người mình lấy). Neo mỗi khối: có ai ghi tay
-  `vn.generation` thì theo độ lệch đa số đồng ý; không ai ghi → người cao nhất
-  là đời 1. Ra < 1 (tổ tiên của dâu/rể) thì trống.
-- **Đã đo 27/09/2026** trên `kiem-thu/cay-nguyen-phuc.json` (681 người, Đời gốc
-  từ file Excel cũ): **681/681 khớp**, kể cả khi xoá hết Đời ghi sẵn — tức phần
-  tính từ quan hệ tự đúng, không nhờ neo.
-- Ô *Đời* trong form sửa người vẫn ghi `vn.generation`; nay nó chỉ còn là NEO.
-  Một người ghi lệch với đa số thì bị đa số đè — chưa có chỗ báo ra.
+- **Tính TỪ CỤ TỔ ĐI XUỐNG** (chủ dự án chốt, vòng 3): cụ tổ = Đời 1; con
+  (mọi loại) = đời cha/mẹ + 1; dâu/rể = đời người mình lấy. **Không bao giờ
+  đi LÊN**: cha mẹ, ông bà của nàng dâu không có đời (trống). ⚠ Bản vòng 2
+  sai ở đây — nó tính cả chiều lên rồi "neo" cả khối, nên nàng dâu có ba đời
+  bên ngoại có thể ra đời 3 (ví dụ của chủ dự án: bà B lấy ông C đời 7 thì
+  bà B phải là đời 7).
+- **Cụ tổ tự chọn**: trong những người không có cha mẹ trong cây, người nhiều
+  hậu duệ nhất (ngang nhau thì nam, rồi mã nhỏ) — `timCuTo()`. Tổ tiên bên
+  ngoại chỉ có một nhánh hậu duệ nhỏ nên không thắng. Số ghi tay
+  `vn.generation` của CHÍNH cụ tổ (nếu có) thay cho số 1 — cho cây bắt đầu
+  giữa dòng; số ghi tay của người khác không còn tác dụng gì.
+- **Đã đo 27/09/2026**: cây 681 (`kiem-thu/cay-nguyen-phuc.json`, Đời gốc từ
+  Excel cũ, đã xoá Đời ghi sẵn trước khi tính) → cụ tổ P0001 Nguyễn Phúc Giáo,
+  **681/681 khớp**, 5,7 ms. Cây giả 59 người (`tai-lieu/…nguyen-trong-bac`) là
+  "bản hợp nhất" nhiều họ không nối nhau → cụ tổ P0001 Lê Văn Trác, **34 người
+  trống** — đúng luật, và là lý do câu *"ai là cụ tổ"* phải do người chọn được.
+- ⚠ **Chưa chốt — chờ chủ dự án**: cụ tổ để máy tự chọn hay chủ cây chỉ định;
+  lưu Đời vào Supabase (chủ dự án muốn) — xem `KE-HOACH.md` mục b125g.
 
 ## Bẫy đã gặp
 
