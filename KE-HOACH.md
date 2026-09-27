@@ -1,11 +1,12 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 27/09/2026 · b129c XONG (mã) — cột *Tài khoản* của bảng Danh sách
-người gắn/gỡ liên kết theo bốn hạng (QTHT thẳng · chủ/quản trị/thành viên đề
-xuất · chính chủ tự gỡ · khách khoá), cùng Hồ sơ cá nhân + tab Đơn của QTHT.
-Bàn thử 66/66 (`do-b129c.mjs`), JS 303 đạt, `/kiem-tra` 10 phép. `39` ĐÃ DÁN
-lên thật 27/09, tự kiểm 7/7 ĐẠT; **chưa ai bấm thử trên giao diện**.
-Kế tiếp cho AI: **b125d** — chọn nhiều dòng, sửa hàng loạt một trường.*
+*Cập nhật 27/09/2026 · b130 XONG (mã) — chủ dự án bỏ hẳn ý định "chọn nhiều
+dòng, sửa hàng loạt một trường" (b125d cũ, chưa viết dòng nào nên không có gì
+gỡ). Thay vào đó: vá thanh tab bị THIẾU ở section `#tree-invite` (Mời gia
+nhập) — `trang-moi.js` chưa từng gọi `wireTabsTrangCay`; tab *Vòng đời* đổi
+tên thành *Chuyển quyền sở hữu / xóa* (mã địa chỉ `vong-doi` giữ nguyên); màn
+Cài đặt (`index.html`) thêm "Cây đang hiển thị: tên (mã)" bên phải chữ *Cài
+đặt*. Kế tiếp cho AI: **b125e** — xuất Excel, nối vào đường NHẬP đã có.*
 
 ⚠ **TRẦN CỨNG 250 DÒNG · 15 KB** *(đo: `kiem-thu/do-gon.mjs` · luật: `QUY-TAC-GON.md`)*. Vượt trần là có thứ đứng nhầm chỗ,
 **đừng nới trần**. Ba luật giữ nó gọn:
@@ -21,11 +22,7 @@ Kế tiếp cho AI: **b125d** — chọn nhiều dòng, sửa hàng loạt một
 
 ## Đang ở đâu
 
-**App chạy thật tại `https://nguyentrongbac.io.vn`** từ 03/09/2026 *(chứng chỉ
-Let's Encrypt hạn 02/12/2026; địa chỉ cũ `301` về đây)*. Máy chủ thật nay có
-**BA cây** — NTB 59 người · Nguyễn Phúc Giáo 681 người · **LVT433** *(chủ dự
-án làm chủ)* — mã cây 3 chữ số. Trang `QuanTri.html` bốn khu đều đã nối. Phân
-quyền đã đo bằng REST, 5/5 hàng rào đạt (b94, b96).
+**App chạy thật tại `https://nguyentrongbac.io.vn`** từ 03/09/2026 *(chứng chỉ Let's Encrypt hạn 02/12/2026; địa chỉ cũ `301` về đây)*. Máy chủ thật nay có **BA cây** — NTB 59 người · Nguyễn Phúc Giáo 681 người · **LVT433** *(chủ dự án làm chủ)* — mã cây 3 chữ số. Trang `QuanTri.html` bốn khu đều đã nối. Phân quyền đã đo bằng REST, 5/5 hàng rào đạt (b94, b96).
 
 ### Điểm dừng chưa bấm thử — trang Quản trị đã xong (b118d), nay bấm được
 
@@ -46,10 +43,6 @@ Quản trị hệ thống**.
 **Đây là chỗ DUY NHẤT ghi trạng thái dán** — hai chỗ ghi là hai chỗ để lệch nhau.
 Luật dán lại (file nào kéo theo file nào): **`so-tay/phan-quyen.md`** mục
 *Chuỗi dán lại*.
-
-**`01`→`21` từng dán lên cả thật và Staging; Staging đã XOÁ HOÀN TOÀN 26/09
-— chỉ còn MỘT Supabase (thật) từ nay.** `04-view-ma-da-dung.sql` là view phụ
-trợ, không thuộc chuỗi.
 
 **`22`→`33` — ĐÃ DÁN lên THẬT, tự kiểm ĐẠT cả** (ngày dán từng file: `git log`).
 ⚠ `32` là bản đứng cuối của `luu_cay()` — dán lại `27`/`28` sau nó là mở lại
@@ -94,8 +87,10 @@ trang tính, để **quản lý nhiều trường nội dung**.
 
 | Bước | Việc | Điểm dừng |
 |---|---|---|
-| **b125d** ← KẾ TIẾP | Chọn nhiều dòng + sửa hàng loạt một trường | Sửa 10 người một lượt, hoàn tác được |
-| b125e | Xuất Excel; nối vào đường NHẬP đã có | Xuất ra mở được bằng Excel |
+| **b125e** ← KẾ TIẾP | Xuất Excel; nối vào đường NHẬP đã có | Xuất ra mở được bằng Excel |
+
+⚠ **b125d (chọn nhiều dòng, sửa hàng loạt một trường) — BỎ hẳn**, chủ dự án
+quyết 27/09/2026. Chưa viết dòng mã nào nên không có gì để gỡ.
 
 ⚠ b125e đụng nợ nhập GEDCOM/Excel (*Còn treo*).
 

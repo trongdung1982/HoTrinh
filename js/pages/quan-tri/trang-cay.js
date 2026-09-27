@@ -1,15 +1,15 @@
 // ============================================================
 // giapha-supabase · js/pages/quan-tri/trang-cay.js
 // Vai trò  : Trang MỘT gia phả `#gia-pha/cay/<mã cây>[/<mục>]` — đổ dữ liệu
-//            vào hai section quantri3: `#tree-detail` (Tổng quan · Vòng đời) ·
-//            `#tree-members` · `#tree-requests`. Kèm các hộp hỏi đổi quyền
-//            dùng chung với trang một tài khoản.
+//            vào hai section quantri3: `#tree-detail` (Tổng quan · Chuyển
+//            quyền sở hữu/xóa) · `#tree-members` · `#tree-requests`. Kèm các
+//            hộp hỏi đổi quyền dùng chung với trang một tài khoản.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-goi-y · o-bang
-// Phiên bản: 1.4.0 · Cập nhật: 27/09/2026 (b129) — thanh mục con thành TAB
-//            ngang (`.tabs`/`.chip`) thay `.subnav` dọc, lặp ở CẢ BỐN section
-//            (`wireTabsTrangCay`/`datSoDon`, export cho `trang-nguoi.js` dùng
-//            chung). Lịch sử các bản trước: `git log -p`.
+// Phiên bản: 1.5.0 · Cập nhật: 27/09/2026 (b130) — tab *Vòng đời* đổi tên
+//            *Chuyển quyền sở hữu / xóa*; `wireTabsTrangCay` tự tính đường
+//            dẫn thay vì gọi `ctx.hashMuc` (trang Mời gia nhập dùng chung tab
+//            nhưng `muc: []` không có `hashMuc` hợp lệ). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -55,8 +55,9 @@ export const MUC_TRANG_CAY = [
   { ma: 'nguoi', chu: 'Danh sách người', view: 'tree-people' },
   { ma: 'thanh-vien', chu: 'Thành viên & quyền', view: 'tree-members' },
   { ma: 'don-xin-vao', chu: 'Đơn xin vào', view: 'tree-requests' },
-  // Nghĩa chốt 15/09/2026 (b116): Bàn giao chủ + Xoá cây.
-  { ma: 'vong-doi', chu: 'Vòng đời' },
+  // Nghĩa chốt 15/09/2026 (b116): Bàn giao chủ + Xoá cây. Tên tab đổi 27/09/2026
+  // (b130, chủ dự án yêu cầu) — mã `vong-doi` giữ nguyên (đã ghim trong địa chỉ).
+  { ma: 'vong-doi', chu: 'Chuyển quyền sở hữu / xóa' },
   // ⚠ Mục `de-xuat-gan` (9.2②) BỎ ở b126d: gắn mã người nay là chuyện TOÀN
   //   PHẦN MỀM của tài khoản, không còn là việc riêng của một cây — dời hẳn
   //   sang Hồ sơ cá nhân (`khu-tai-khoan.js`) + tab của Quản trị hệ thống
@@ -133,24 +134,35 @@ function datNguCanh(sec, chu) {
 }
 
 /**
- * Thanh tab của trang cây (b129) — CÙNG MỘT khối `.tabs` lặp lại ở BỐN section
- * (`#tree-detail` · `#tree-people` · `#tree-members` · `#tree-requests`), vì
- * mỗi mục là một `<section>` riêng (`khung.js` chỉ hiện một section một lúc),
- * không phải các pane trong cùng một section như bốn chip của `#gia-pha`.
+ * Thanh tab của trang cây (b129) — CÙNG MỘT khối `.tabs` lặp lại ở NĂM section
+ * (`#tree-detail` · `#tree-people` · `#tree-members` · `#tree-requests` ·
+ * `#tree-invite`, thêm ở b130), vì mỗi mục là một `<section>` riêng
+ * (`khung.js` chỉ hiện một section một lúc), không phải các pane trong cùng
+ * một section như bốn chip của `#gia-pha`.
  *
  * Gọi ĐẦU mount, trước khi chờ mạng: chuyển tab bấm được ngay, không phải đợi
  * dữ liệu. Số đơn xin vào (`[data-so-don]`) thì mount tự cập nhật sau khi có
  * `dsThanhVien()` — hàm này không gọi mạng.
+ *
+ * ⚠ b130: tự tính đường dẫn bằng `duongDan('gia-pha','cay',…)` thay vì gọi
+ *   `ctx.hashMuc(ma)` — trang Mời gia nhập (`trang-moi.js`) dùng CHUNG khối
+ *   tab này nhưng khai `muc: []` ở `khung.js`, nên `ctx.hashMuc` của nó không
+ *   có mục nào để tính (`trang.muc[0]` là `undefined`, gọi vào là vỡ). Tính
+ *   thẳng ở đây không phụ thuộc trang đang mở là gì.
+ *
+ * @param {string} [maDangMo] tab nào tô đậm — mặc định `ctx.muc`; trang Mời
+ *   gia nhập truyền `'loi-moi'` vì `ctx.muc` của nó luôn rỗng (`muc: []`).
  */
-export function wireTabsTrangCay(sec, ctx) {
+export function wireTabsTrangCay(sec, ctx, maDangMo = ctx.muc) {
   const oTabs = sec.querySelector('.tabs');
   if (!oTabs) return;
   for (const b of oTabs.querySelectorAll('[data-td-muc]')) {
     const ma = b.dataset.tdMuc;
-    b.classList.toggle('active', ma === ctx.muc);
+    b.classList.toggle('active', ma === maDangMo);
     b.onclick = () => {
       window.location.hash = ma === 'loi-moi'
-        ? duongDan('gia-pha', 'moi', ctx.thamSo) : ctx.hashMuc(ma);
+        ? duongDan('gia-pha', 'moi', ctx.thamSo)
+        : duongDan('gia-pha', 'cay', ctx.thamSo, ma === MUC_TRANG_CAY[0].ma ? '' : ma);
     };
   }
 }
@@ -444,7 +456,7 @@ async function mountDonXinVao(sec, ctx, hashLuc) {
 }
 
 // ============================================================
-// #tree-detail — Tổng quan · Vòng đời · Đề xuất gắn người
+// #tree-detail — Tổng quan · Chuyển quyền sở hữu/xóa · Đề xuất gắn người
 // ============================================================
 
 async function mountChiTiet(sec, ctx, hashLuc) {
@@ -551,7 +563,8 @@ function dongList(ul, nhan, phu, ...nutPhai) {
 }
 
 /**
- * Vòng đời — Bàn giao chủ + Xoá cây (b116, luật 4 của `23` từ b118c).
+ * Tab "Chuyển quyền sở hữu / xóa" (tên cũ: Vòng đời) — Bàn giao chủ + Xoá cây
+ * (b116, luật 4 của `23` từ b118c; đổi tên tab ở b130).
  *
  * ⚠⚠ ĐỔI SO VỚI TRƯỚC b118c: *Xóa cây* nay có hiệu lực NGAY — gia phả ẩn với
  *   mọi người (trừ Quản trị hệ thống) từ giây bấm, không còn "vẫn dùng được
@@ -563,7 +576,7 @@ function veVongDoi(noi, cay, phien, napLai) {
   const laQT = Boolean(phien.laQuanTriHeThong);
   const duocLam = cay.toiLaChu || laQT;
   const c = cayNho(cay);
-  const panel = khungPanel('Vòng đời gia phả', 'Bàn giao chủ sở hữu · xoá gia phả');
+  const panel = khungPanel('Chuyển quyền sở hữu & xóa gia phả', 'Bàn giao chủ sở hữu · xoá gia phả');
   const ul = document.createElement('ul');
   ul.className = 'list';
   panel.append(ul);

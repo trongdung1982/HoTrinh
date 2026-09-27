@@ -4,8 +4,8 @@
 //            đường sang Chọn gia phả · Sao lưu & khôi phục · Xuất/Nhập GEDCOM
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, services/tuong-thich, services/sb, utils/text, pages/export-image
-// Phiên bản: 1.33.0 · Cập nhật: 26/09/2026 (b126d) — dòng 'Dòng họ' đọc
-//            `phien.tenDongHo` thật (tự chọn ở Hồ sơ cá nhân), bỏ hằng cứng.
+// Phiên bản: 1.34.0 · Cập nhật: 27/09/2026 (b130) — dòng tiêu đề thêm
+//            "Cây đang hiển thị: tên (mã)" bên phải chữ 'Cài đặt'.
 // ============================================================
 //
 // Màn hình này tồn tại vì MỘT việc: đặt và bỏ người trung tâm mặc định của
@@ -139,8 +139,22 @@ export function openSettings(xuLy = {}) {
     '-webkit-overflow-scrolling:touch';
 
   const tieuDe = document.createElement('div');
-  tieuDe.textContent = 'Cài đặt';
-  tieuDe.style.cssText = 'font-size:19px;font-weight:600';
+  tieuDe.style.cssText =
+    'display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap';
+  const chuTieuDe = document.createElement('span');
+  chuTieuDe.textContent = 'Cài đặt';
+  chuTieuDe.style.cssText = 'font-size:19px;font-weight:600';
+  tieuDe.append(chuTieuDe);
+
+  const tenCayDangMo = state.phien && (state.phien.tenCay || state.phien.tenHo || state.phien.tenFileDuLieu);
+  const maCayDangMo = state.phien && state.phien.maCay;
+  if (tenCayDangMo || maCayDangMo) {
+    const nhanCay = document.createElement('span');
+    nhanCay.textContent = 'Cây đang hiển thị: ' + tenCayDangMo +
+      (maCayDangMo ? ' (' + maCayDangMo + ')' : '');
+    nhanCay.style.cssText = 'font-size:13px;color:#8a8078';
+    tieuDe.append(nhanCay);
+  }
   hop.append(tieuDe);
 
   // ⚠ HAI KHỐI ĐÃ DỜI HẲN SANG TRANG QUẢN TRỊ, và thứ tự dời KHÔNG theo thứ

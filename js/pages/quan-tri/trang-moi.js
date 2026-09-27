@@ -3,8 +3,9 @@
 // Vai trò  : Trang *Mời gia nhập* một gia phả — đổ dữ liệu vào section
 //            `#tree-invite` của prototype quantri3. Địa chỉ `#gia-pha/moi/<mã cây>`.
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: services/sb, quan-tri/o-goi-y · hop-thoai · o-bang
-// Phiên bản: 0.1.0 · Cập nhật: 15/09/2026 (b118c)
+// Phụ thuộc: services/sb, quan-tri/{o-goi-y,hop-thoai,o-bang,trang-cay}
+// Phiên bản: 0.2.0 · Cập nhật: 27/09/2026 (b130) — thanh tab ngang (bị thiếu
+//            từ b129, sửa theo báo cáo chủ dự án), dùng chung `wireTabsTrangCay`.
 // ============================================================
 //
 // ⚠ **Cây lấy theo MÃ trong địa chỉ, không bao giờ theo `phien.treeId`** —
@@ -23,6 +24,7 @@ import {
 import { ganGoiY, dongTaiKhoan } from './o-goi-y.js';
 import { hoi } from './hop-thoai.js';
 import { TEN_VAI, td, nut, dongTrong } from './o-bang.js';
+import { wireTabsTrangCay, datSoDon } from './trang-cay.js';
 
 /** Hàm gỡ ô gợi ý của lần mở trước — `ganGoiY` treo bộ nghe lên `window`. */
 let goGoiY = [];
@@ -32,6 +34,8 @@ let goGoiY = [];
  * @param {object} ctx       do `khung.js` dựng — `thamSo` là mã cây
  */
 export async function mountTrangMoi(sec, ctx) {
+  wireTabsTrangCay(sec, ctx, 'loi-moi');
+  datSoDon(sec, 0);
   goGoiY.forEach((go) => go());
   goGoiY = [];
 
@@ -64,6 +68,14 @@ export async function mountTrangMoi(sec, ctx) {
   }
 
   nguCanh.forEach((x) => { x.textContent = (cay.ten || '') + ' · ' + cay.treeCode; });
+
+  // Badge *Đơn xin vào* của tab — cùng phép đếm với các section khác
+  // (`trang-nguoi.js`), fetch riêng vì mỗi section tự gọi `dsThanhVien` của nó.
+  dsThanhVien(cay.fileId).then((kqTV) => {
+    if (window.location.hash === hashLuc && kqTV.ok) {
+      datSoDon(sec, kqTV.ds.filter((t) => !t.daDuyet && !t.moiLuc).length);
+    }
+  });
 
   // Ẩn/mờ KHÔNG phải hàng rào — `moi_vao_cay()` hỏi `co_the_quan_tri()`.
   const duocMoi = cay.toiLaChu || ctx.phien.laQuanTriHeThong;
