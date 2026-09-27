@@ -6,11 +6,9 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, utils/id, quan-tri/trang-chi-tiet ·
 //            quan-tri/hop-thoai · quan-tri/o-bang
-// Phiên bản: 1.2.0 · Cập nhật: 23/09/2026 — bấm TÊN CÂY mở trang cây
-//            1.1.0 *Xin đổi quyền* nối thật (`xinDoiVai()`, `23` mục 10) ·
-//            *Xóa cây* có hiệu lực NGAY (luật 4) · *Rút đơn xoá* đổi thành
-//            *Trả lại cho chủ*, chỉ Quản trị hệ thống bấm được. Lịch sử các
-//            bản trước: `git log -p`.
+// Phiên bản: 1.3.0 · Cập nhật: 28/09/2026 (b135) — huy hiệu "n chờ kiểm
+//            duyệt" dưới tên cây (9.6). Lịch sử: `git log -p`.
+// Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
 // ⚠ KHU NÀY LÀ CHỖ DUY NHẤT NGƯỜI LẠ CÓ VIỆC — người chưa có chân ở đâu cả
@@ -25,7 +23,7 @@
 import {
   layDanhSachGiaPha, datChoNguoiLaThayTen, chonGiaPha, xinVaoCay, taoGiaPhaMoi,
   nhanLoiMoi, tuChoiLoiMoi, rutDonXinVao, roiCay, dsThanhVien,
-  xinXoaCay, huyXinXoaCay, xinDoiVai,
+  xinXoaCay, huyXinXoaCay, xinDoiVai, demChoKiemDuyet,
 } from '../../services/sb.js';
 import { sinhMaCay } from '../../utils/id.js';
 import { duongDan } from './trang-chi-tiet.js';
@@ -166,7 +164,24 @@ function dongQuanLy(c, phien, napLai) {
 
   tr.append(oTen, oQuyen, oTV, oCongKhai, oLa, oHienThi, oMoi, oDon, oXoa);
   demThanhVien(c, lkTV, phuTV, lkDon);
+  demKiemDuyet(c, oTen);
   return tr;
+}
+
+/**
+ * Huy hiệu *"n chờ kiểm duyệt"* dưới tên cây (9.6, b135) — bấm sang khu Kiểm
+ * duyệt, nơi đọc MỌI cây quản lý được. Không có gì chờ thì không vẽ gì
+ * (`CLAUDE.md` mục 7). Người không kiểm duyệt được cây này: máy chủ trả 0.
+ *
+ * ⚠ Đề xuất gắn mã người KHÔNG đếm ở đây nữa: từ b126 nó là đơn của TÀI
+ *   KHOẢN, toàn phần mềm, xét ở *Quản trị hệ thống → Đơn Hồ sơ cá nhân*.
+ */
+async function demKiemDuyet(c, oTen) {
+  const so = await demChoKiemDuyet(c.fileId);
+  if (!so) return;
+  const lk = lienKet('', '#kiem-duyet');
+  lk.append(huyHieu(String(so), 'wait'), ' chờ kiểm duyệt');
+  oTen.append(lk);
 }
 
 /**

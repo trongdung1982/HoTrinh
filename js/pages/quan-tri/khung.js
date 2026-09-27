@@ -7,7 +7,8 @@
 // Phụ thuộc: services/sb, pages/dang-nhap, quan-tri/khu-kiem-duyet ·
 //            khu-gia-pha · khu-tai-khoan · khu-quan-tri-he-thong · trang-cay ·
 //            trang-tai-khoan · trang-moi · trang-ho-so-nguoi · trang-chi-tiet · o-bang
-// Phiên bản: 1.3.0 · Cập nhật: 27/09/2026 (b133 — trang Hồ sơ người)
+// Phiên bản: 1.4.0 · Cập nhật: 28/09/2026 (b135 — huy hiệu thanh trái cộng
+//            mọi cây quản lý được, thôi đếm theo cây đang mở)
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -29,7 +30,7 @@
 // ⚠ **Không có kết cục "không đủ quyền".** Postgres là hàng rào, không phải
 //   trang này — gõ thẳng `#quan-tri-he-thong` vẫn mở, máy chủ trả về rỗng.
 
-import { layPhien, dsChoDuyet, demChoKiemDuyet } from '../../services/sb.js';
+import { layPhien, layDanhSachGiaPha, dsChoDuyet, demChoKiemDuyet } from '../../services/sb.js';
 import { mountDangNhap } from '../dang-nhap.js';
 import { mountKhuKiemDuyet, mountChiTietKiemDuyet } from './khu-kiem-duyet.js';
 import { mountKhuGiaPha } from './khu-gia-pha.js';
@@ -131,7 +132,7 @@ export async function mountKhung(appEl) {
   window.addEventListener('hashchange', veKhuDangMo);
   veKhuDangMo();
 
-  napSoDem(phien.treeId, nutTheoMa);
+  napSoDem(phien, nutTheoMa);
 }
 
 // ============================================================
@@ -248,19 +249,27 @@ function docHash() {
  *
  * ⚠ **Số 0 thì không vẽ gì cả** (`CLAUDE.md` mục 7).
  *
- * ⚠ Nợ còn treo: hai con số đếm theo cây ĐANG MỞ (`KE-HOACH.md` › Còn treo).
+ * ⚠ **Cộng MỌI cây người xem quản lý được, không riêng cây đang mở** (b135,
+ *   luật 5a — trước đó đây là chỗ duy nhất còn dính cây đang mở). Cùng tập cây
+ *   khu Kiểm duyệt đọc (*"Tất cả gia phả bạn quản lý"*), nên con số trên nút
+ *   khớp số dòng khu ấy vẽ. Giá: 1 + 2N lời gọi — N là số cây quản lý, vài cây.
  */
-async function napSoDem(treeId, nutTheoMa) {
-  if (!treeId) return;
+async function napSoDem(phien, nutTheoMa) {
   try {
-    const [dsDon, soKiemDuyet] = await Promise.all([
-      dsChoDuyet(treeId),
-      demChoKiemDuyet(treeId),
-    ]);
-    themSo(nutTheoMa.get('gia-pha'), Array.isArray(dsDon) ? dsDon.length : 0,
-           'đơn chờ duyệt');
-    themSo(nutTheoMa.get('kiem-duyet'), Number(soKiemDuyet) || 0,
-           'thay đổi chờ kiểm duyệt');
+    const kq = await layDanhSachGiaPha();
+    const ds = (kq.ok ? kq.ds || [] : []).filter((c) => !c.daXoaLuc && c.coTheXem
+      && (phien.laQuanTriHeThong || c.toiLaChu || c.vaiCuaToi === 'quan_tri'));
+    const ket = await Promise.all(ds.map((c) => Promise.all([
+      dsChoDuyet(c.fileId),
+      demChoKiemDuyet(c.fileId),
+    ])));
+    let soDon = 0, soKiemDuyet = 0;
+    for (const [dsDon, so] of ket) {
+      soDon += Array.isArray(dsDon) ? dsDon.length : 0;
+      soKiemDuyet += Number(so) || 0;
+    }
+    themSo(nutTheoMa.get('gia-pha'), soDon, 'đơn chờ duyệt');
+    themSo(nutTheoMa.get('kiem-duyet'), soKiemDuyet, 'thay đổi chờ kiểm duyệt');
   } catch (_) {
     // Xem khối ghi chú ngay trên.
   }

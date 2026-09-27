@@ -781,7 +781,12 @@ có (không phải chỗ thiếu hàm mà là chọn lại luật), và ba mục
 tách thành bước riêng sau b120 vì mỗi mục là một lược đồ bảng mới, không
 phải một hàm lẻ.
 
-### 9.6 CHƯA VIẾT (17/09/2026, chủ dự án nêu) — huy hiệu số đếm + bấm tên mở cây
+### 9.6 ✓ XONG (b135, 28/09/2026) — huy hiệu số đếm + bấm tên mở cây
+
+> **Đã làm:** bấm tên mở TRANG CÂY (23/09); huy hiệu "n chờ kiểm duyệt" dưới
+> tên cây (`demKiemDuyet`); số đơn xin vào đã có từ trước ở cột Đơn. Đề xuất
+> gắn mã KHÔNG đếm ở đây — từ b126 là đơn của tài khoản. Thanh trái cộng mọi
+> cây. Phần dưới là đề xuất gốc, giữ làm chứng.
 
 **Bài toán:** khu 1 (Gia phả), chip *Tôi quản lý*, mỗi dòng cây đã có "Xem
 đơn →" kèm huy hiệu số đơn xin vào (`demThanhVien()`, `khu-gia-pha.js` dòng
