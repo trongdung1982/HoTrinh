@@ -3,7 +3,8 @@
 Gồm      : `js/pages/quan-tri/xuat-excel.js` — hai khuôn xuất · `luoc-do/40-luu-doi.sql`
 — Đời LƯU ở `tree_persons.doi`, trigger tính lại · `js/utils/graph.js` `tinhDoi()` —
 đáp án đối chiếu · nút *Xuất Excel ▾* và cột *Đời* ở `js/pages/quan-tri/trang-nguoi.js`
-· hàng *Đời* của thẻ người `js/pages/person-detail.js` (đọc `state.doi`)
+· thẻ người `js/pages/person-detail.js` (đọc `state.doi`) — hàng *Đời* trong bảng
+VÀ dòng ngay dưới mã người ở đầu thẻ (b125g-2, chủ dự án 27/09)
 Liên quan: đường NHẬP Excel là `domains/excel.js` (sheet `DuLieu`) — khuôn khác hẳn
 
 ## Luật — chủ dự án chốt 27/09/2026 (b125f)

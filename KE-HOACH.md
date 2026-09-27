@@ -1,10 +1,13 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 27/09/2026 19:30 · b125g XONG phần mã — Đời LƯU ở
+*Cập nhật 27/09/2026 20:02 · b125g XONG phần mã — Đời LƯU ở
 `tree_persons.doi` (`luoc-do/40`), trigger máy chủ chỉ tính lại nhánh bị đổi
 dòng cha; thẻ, bảng Danh sách người, file Excel đọc số đã lưu. Bàn thử
-44/44 (`do-b125g.mjs`). ⚠ **`40` CHƯA DÁN** — dán xong mới bấm thử b125f+g
-(bảng dưới). Luật + phép đo: `so-tay/xuat-excel.md`.*
+44/44 (`do-b125g.mjs`). Chủ dự án bấm thử: Xuất Excel + tự động cập nhật
+Đời — ĐẠT. Góp ý: thêm dòng Đời ngay dưới mã người ở đầu thẻ người, cạnh
+ảnh đại diện (trước chỉ có ở hàng trong bảng) — đã thêm (b125g-2). ⚠ **`40`
+CHƯA DÁN** — dán xong mới thấy Đời ở app thật. Luật + phép đo:
+`so-tay/xuat-excel.md`.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai

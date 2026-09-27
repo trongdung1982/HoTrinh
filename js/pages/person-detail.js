@@ -4,7 +4,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, domains/{person,union,render}, services/{repo,sb},
 //            utils/{text,date,image,avatar,glyph,id}, config
-// Phiên bản: 1.35.0 · Cập nhật: 27/09/2026 (b125g) — hàng Đời đọc số đã lưu
+// Phiên bản: 1.36.0 · Cập nhật: 27/09/2026 (b125g-2) — Đời thêm ở đầu thẻ
 // Sổ tay   : so-tay/the-thong-tin.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -739,7 +739,7 @@ function nutXoaCap(u, xuLy) {
 // ============================================================
 
 /**
- * Đầu thẻ: ảnh, họ tên, đời sống, mã người.
+ * Đầu thẻ: ảnh, họ tên, đời sống, mã người, Đời.
  *
  * @param {object} p
  * @param {boolean} [coAnh]  MENU truyền `false` — tâm vòng tròn của nó đã là
@@ -778,6 +778,17 @@ function veDauThe(p, coAnh = true) {
   ma.textContent = p.id;
   ma.style.cssText = 'font-size:11px;color:#b3aaa0;margin-top:4px;letter-spacing:.05em';
   cot.append(ma);
+
+  // Đời — ngay dưới mã người, cạnh ảnh đại diện (chủ dự án 27/09/2026). Cùng
+  // số đã lưu với hàng "Đời" trong bảng dưới (`doiCua`); người vành đai (ngoài
+  // cây) hoặc chưa đọc được Đời thì bỏ hẳn dòng này, không để chỗ trống.
+  const doiChu = doiCua(p);
+  if (doiChu) {
+    const doi = document.createElement('div');
+    doi.textContent = 'Đời ' + doiChu;
+    doi.style.cssText = 'font-size:11px;color:#b3aaa0;margin-top:2px;letter-spacing:.05em';
+    cot.append(doi);
+  }
 
   dau.append(cot);
   ra.push(dau);
