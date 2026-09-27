@@ -56,6 +56,20 @@ Không có "đổi": tài khoản đã liên kết thì phải GỠ trước, c�
 `dsThanhVien().maNguoi` = `tree_members.person_id` — cột CHẾT từ b126, và chỉ
 trả cho người kiểm duyệt được: cột hiện SAI, thành viên thường thấy trống.
 
+⚠⚠ **b132 (`luoc-do/41`): `ds_thanh_vien()` và `ds_cay_cua_tai_khoan()` cũng
+đọc cùng cột chết ấy** — bảng *Thành viên & quyền* (trang Cây) và trang *Tài
+khoản của tôi → Các gia phả tôi tham gia* đều có thể hiện sai người/tên. Vá
+bằng đúng một khuôn: thêm `left join tai_khoan tk on tk.user_id = tm.user_id`
+rồi `left join tree_persons tp on tp.person_id = tk.person_id and tp.tree_id
+= tm.tree_id`, đọc `tp.person_id` thay `tm.person_id` — join qua `tree_persons`
+để LOẠI người tài khoản có gắn nhưng KHÔNG thuộc cây đang hỏi (gắn là chuyện
+toàn phần mềm, không theo cây). `create or replace` không đổi cột trả về nên
+không cần `drop`, không cần `grant` lại — đúng cách `27` đã tự sửa hai hàm
+này mà không grant lại. Bàn thử: `do-b132.mjs` (15/15 + tự kiểm 5/5), gồm
+kiểm chứng ngược bằng cách đọc thẳng `tree_members.person_id` sau khi vá để
+chắc nó vẫn còn giá trị CŨ — chứng minh phép thử bắt được lỗi thật, không
+phải trùng hợp.
+
 ⚠ Ô tìm dùng `tim_tai_khoan_trong_cay()` — chỉ người ĐÃ vào cây (khách trở
 lên), KHÔNG dùng `timTaiKhoan()` (cái ấy tìm toàn hệ thống, dành cho Mời).
 

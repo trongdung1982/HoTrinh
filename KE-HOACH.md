@@ -1,12 +1,16 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 27/09/2026 20:25 · b125g XONG — Đời LƯU ở `tree_persons.doi`
-(`luoc-do/40`, đã dán), trigger máy chủ chỉ tính lại nhánh bị đổi dòng cha;
-thẻ, bảng Danh sách người, file Excel đọc số đã lưu. Bàn thử 44/44
-(`do-b125g.mjs`). Chủ dự án bấm thử trên app thật (cây TH957) — ĐẠT cả:
-Xuất Excel, tự động cập nhật Đời, dòng Đời ở đầu thẻ người (b125g-2), nhóm
-Cha mẹ/Vợ chồng/Con đổi sang hàng nền đồng nhất thay hộp trắng. Luật + phép
-đo: `so-tay/xuat-excel.md` · `so-tay/the-thong-tin.md`.*
+*Cập nhật 27/09/2026 21:40 · b132 — sửa `ds_thanh_vien()`/`ds_cay_cua_tai_khoan()`
+đọc cột chết `tree_members.person_id`, viết xong + bàn thử ĐẠT
+(`luoc-do/41`, `do-b132.mjs`), **CHỜ chủ dự án dán lên THẬT** rồi bấm thử
+*Tài khoản của tôi → Các gia phả tôi tham gia* + bảng *Thành viên & quyền*.
+Trước đó, b125g XONG — Đời LƯU ở `tree_persons.doi` (`luoc-do/40`, đã dán),
+trigger máy chủ chỉ tính lại nhánh bị đổi dòng cha; thẻ, bảng Danh sách
+người, file Excel đọc số đã lưu. Bàn thử 44/44 (`do-b125g.mjs`). Chủ dự án
+bấm thử trên app thật (cây TH957) — ĐẠT cả: Xuất Excel, tự động cập nhật
+Đời, dòng Đời ở đầu thẻ người (b125g-2), nhóm Cha mẹ/Vợ chồng/Con đổi sang
+hàng nền đồng nhất thay hộp trắng. Luật + phép đo: `so-tay/xuat-excel.md` ·
+`so-tay/the-thong-tin.md`.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -69,6 +73,14 @@ của `duyet_de_xuat_gan()`/`ds_de_xuat_gan()`/`de_xuat_gan_cua_toi()` — dán 
 trigger gọi được), tám trigger trên `union_children` · `unions` · `persons`
 · `tree_persons`. Không định nghĩa lại hàm nào của file khác → không kéo
 theo chuỗi dán lại. Bàn thử: `do-b125g.mjs` 44/44.
+
+**`41` (b132) — ĐÃ VIẾT, bàn thử ĐẠT (15/15 + tự kiểm 5/5), CHƯA dán lên
+THẬT.** Sửa `ds_thanh_vien()` và `ds_cay_cua_tai_khoan()` đọc cột chết
+`tree_members.person_id` (chết từ `26`/b126) → đổi sang `tai_khoan.person_id`
+qua `tree_persons`, cùng thuốc với `39` mục 8 (`ds_lien_ket_cay`, đã dán
+26/09). `create or replace`, không đổi cột trả về, không cần `grant` lại.
+Bàn thử: `do-b132.mjs`. ⚠ **ĐƯỢC dán ngay** — không đụng RLS, không đổi hành
+vi cửa ghi, chỉ đổi nguồn đọc của hai hàm chỉ-đọc.
 
 ---
 
@@ -140,7 +152,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Bộ bất biến bố cục đang gác nhầm nhánh** — xem ngay dưới bảng. Đường chạy tạm: `--import ./sang-supabase.mjs` (b128b) — ⚠ KHÔNG ăn vào bài chạy trong Chrome; `kiem-buoc-80` dùng bản `kiem-buoc-80-sb.mjs` | `/kiem-tra` phép 9 |
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |
 | Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
-| ⚠ **`tree_members.person_id` thành cột chết từ b126** — `duyet_thanh_vien()` (đơn xin vào cây) vẫn GHI vào đó; `ds_cay_cua_tai_khoan()`/`trang-tai-khoan.js` và cột *Tên người trong cây* của bảng **Thành viên & quyền** (`ds_thanh_vien()`) vẫn ĐỌC nó → có thể hiện sai. Bảng Danh sách người đã chuyển sang `ds_lien_ket_cay()` (b129c) — hai chỗ kia nên đi cùng đường | `so-tay/luu-mot-dong-quan-tri.md` |
+| ⚠ **`tree_members.person_id` vẫn là cột chết từ b126** — `duyet_thanh_vien()` (đơn xin vào cây) vẫn GHI vào đó, không ai đọc để dùng thật nữa. Bản vá đọc (b132, `luoc-do/41`) đã viết + đo ĐẠT, **chờ dán lên THẬT** | `so-tay/luu-mot-dong-quan-tri.md` |
 | ⚠ **Sao lưu KHÔNG chép ảnh** — chỉ liệt kê. Ảnh vẫn nằm đúng một chỗ | `KIEN-TRUC.md` mục 7 |
 | ⚠ **Chưa ai thử KHÔI PHỤC từ file sao lưu** — *có file* khác *khôi phục được* | `sao-luu/HUONG-DAN-SAO-LUU.md` |
 | Bốn màn hình chưa mở được (sao lưu · dựng gia phả mới · bỏ chọn · quyền ảnh) | `KIEN-TRUC.md` mục 6 |
