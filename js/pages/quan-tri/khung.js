@@ -7,8 +7,7 @@
 // Phụ thuộc: services/sb, pages/dang-nhap, quan-tri/khu-kiem-duyet ·
 //            khu-gia-pha · khu-tai-khoan · khu-quan-tri-he-thong · trang-cay ·
 //            trang-tai-khoan · trang-moi · trang-ho-so-nguoi · trang-chi-tiet · o-bang
-// Phiên bản: 1.4.0 · Cập nhật: 28/09/2026 (b135 — huy hiệu thanh trái cộng
-//            mọi cây quản lý được, thôi đếm theo cây đang mở)
+// Phiên bản: 1.4.0 · Cập nhật: 28/09/2026 (b135 — số thanh trái cộng mọi cây)
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
