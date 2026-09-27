@@ -4,11 +4,11 @@
 //            một cây, như một trang tính: tìm, sắp xếp, phân trang, sửa tại
 //            chỗ từng ô rồi Lưu theo DÒNG qua `luu_cay()`. Cột *Tài khoản*
 //            (đang Chỉnh sửa) gắn/gỡ liên kết tài khoản ↔ người (b129c). Nút
-//            *Xuất Excel* dựng file cùng khuôn với đường Nhập (b125e).
+//            *Xuất Excel* chọn khuôn (bảng phẳng cột động / hai sheet, b125f).
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · services/hinh-dang · domains/person ·
 //            utils/{text,date} · quan-tri/{trang-cay,o-goi-y,o-bang,xuat-excel}
-// Phiên bản: 0.6.0 · Cập nhật: 27/09/2026 (b125e) — nút Xuất Excel
+// Phiên bản: 0.7.0 · Cập nhật: 27/09/2026 (b125f) — chọn khuôn xuất Excel
 // Sổ tay   : so-tay/trang-quan-tri.md · so-tay/luu-mot-dong-quan-tri.md
 // ============================================================
 //
@@ -199,15 +199,19 @@ export async function mountTrangNguoi(sec, ctx, hashLuc) {
 }
 
 /** Nút *Xuất Excel* — gắn một lần mỗi lần mount, đọc `ds`/`unionsDangXem` LÚC
- *  BẤM (không phải lúc gắn) qua closure `layDs`, nên luôn xuất bản mới nhất. */
+ *  BẤM (không phải lúc gắn) qua closure `layDs`, nên luôn xuất bản mới nhất.
+ *  Khuôn file (bảng phẳng / hai sheet) đọc từ `#tp-xuat-kieu` (b125f). */
 function ganNutXuatExcel(sec, cay, layDs) {
   const b = sec.querySelector('#tp-xuat-excel');
+  const oKieu = sec.querySelector('#tp-xuat-kieu');
   const tt = sec.querySelector('#tp-xuat-trang-thai');
   b.onclick = async () => {
     b.disabled = true;
     tt.textContent = 'Đang tạo file…';
-    const ten = 'DanhSachNguoi_' + (cay.treeCode || cayDangXem) + '_' + ngayTenFile();
-    const kq = await xuatExcelNguoi(layDs(), unionsDangXem, ten);
+    const kieu = oKieu.value === 'hai-sheet' ? 'hai-sheet' : 'phang';
+    const hauTo = kieu === 'hai-sheet' ? '_HaiSheet' : '_BangPhang';
+    const ten = 'DanhSachNguoi_' + (cay.treeCode || cayDangXem) + hauTo + '_' + ngayTenFile();
+    const kq = await xuatExcelNguoi(layDs(), unionsDangXem, ten, kieu);
     b.disabled = false;
     tt.textContent = kq.ok ? '' : (kq.loi || 'Không tạo được file.');
   };
