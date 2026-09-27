@@ -3,38 +3,18 @@
 // Vai trò  : Nén ảnh phía trình duyệt, đường dẫn kho ảnh, bóng người mặc định
 // Lớp      : utils — được gọi bởi: domains, pages · được phép gọi: config
 // Phụ thuộc: config (PHOTO), cau-hinh (SUPABASE_URL, KHO_ANH)
-// Phiên bản: 2.0.0 · Cập nhật: 02/09/2026 22:45
+// Phiên bản: 2.1.0 · Cập nhật: 28/09/2026 07:00 (b141) — `compressImage`
+//            trả thêm `blob` để gửi thẳng lên kho
 // ============================================================
 //
-// BA LUẬT CỦA FILE NÀY
-//
-// 1. NÉN Ở TRÌNH DUYỆT, KHÔNG NÉN Ở MÁY CHỦ. Ảnh điện thoại ngày nay là
-//    3–8 MB. Gửi nguyên qua `google.script.run` là gửi một chuỗi base64 dài
-//    gấp rưỡi số đó. Ô trên sơ đồ rộng 120px, vòng tròn thông tin rộng chừng
-//    76px — không có lý do gì để một tấm 4000px đi qua đường dây.
-//
-// 2. LUÔN RA JPEG, kể cả khi vào là PNG hay HEIC. Ảnh chân dung không cần nền
-//    trong suốt, còn PNG của cùng một khuôn mặt thường nặng gấp ba bốn lần.
-//    ⚠ Hệ quả phải nói ra: PNG có nền trong suốt sẽ thành nền ĐEN, không phải
-//    nền trắng — canvas khởi tạo bằng pixel trong suốt và JPEG không có kênh
-//    alpha. Vì thế hàm này TỰ TÔ NỀN TRẮNG trước khi vẽ ảnh lên.
-//
-// 3. KHÔNG TỰ ĐỌC, KHÔNG TỰ GỬI. File này chỉ biến một `File` thành một chuỗi
-//    base64 và dựng mấy đường dẫn. Việc gửi lên là của `services/sb.js`,
-//    việc gắn ảnh vào người là của `domains/media.js`. Đây là lớp `utils`.
-//
-//    ⚠ Luật 1 (nén ở trình duyệt) nay còn ĐÚNG HƠN xưa, dù lý do gốc đã mất:
-//    `google.script.run` và chuỗi base64 phình 33% không còn nữa. Nhưng ảnh
-//    điện thoại vẫn 3–8 MB, ô trên sơ đồ vẫn rộng 120px, và một sơ đồ 661 ô
-//    vẫn là 661 tấm phải tải. Đừng vì đường truyền rộng ra mà bỏ bước nén.
-//
-// --- Vì sao xoay ảnh lại là chuyện phải lo ------------------------------
-//
-// Ảnh chụp bằng điện thoại thường nằm ngang trong file, kèm một thẻ EXIF bảo
-// trình xem "xoay 90° đi". Vẽ thẳng lên canvas là mất thẻ đó, và ảnh chân
-// dung nằm ngửa ra. `createImageBitmap(file, { imageOrientation: 'from-image' })`
-// đọc hộ thẻ ấy. Trình duyệt cũ không có thì rơi về đường `<img>` — ảnh vẫn
-// lên, chỉ là có thể nằm ngang. Thà nghiêng còn hơn không có.
+// 1. NÉN Ở TRÌNH DUYỆT. Ảnh điện thoại 3–8 MB, ô sơ đồ rộng 120px, một sơ đồ
+//    661 ô là 661 tấm phải tải — đừng vì đường truyền rộng mà bỏ bước nén.
+// 2. LUÔN RA JPEG. ⚠ PNG nền trong suốt sẽ thành nền ĐEN (JPEG không có kênh
+//    alpha) — nên hàm TỰ TÔ NỀN TRẮNG trước khi vẽ.
+// 3. KHÔNG TỰ GỬI. Gửi là của `services/` (`repo.taiAnh` → `sb.taiAnh`),
+//    gắn ảnh vào người là của `domains/media.js`.
+// ⚠ Xoay ảnh: `createImageBitmap(file, {imageOrientation:'from-image'})` đọc
+//   thẻ EXIF; trình duyệt cũ rơi về `<img>` — ảnh có thể nằm ngang.
 
 import { PHOTO } from '../config.js';
 import { SUPABASE_URL, KHO_ANH } from '../cau-hinh.js';
@@ -50,7 +30,8 @@ import { SUPABASE_URL, KHO_ANH } from '../cau-hinh.js';
  * @param {File|Blob} file
  * @param {{maxWidth?:number, jpegQuality?:number}} [tuyChon]
  * @returns {Promise<{
- *   base64: string,   // KHÔNG kèm tiền tố "data:image/jpeg;base64,"
+ *   blob: Blob,       // gửi thẳng lên kho (`repo.taiAnh`)
+ *   base64: string,   // KHÔNG kèm tiền tố "data:image/jpeg;base64," — xem trước
  *   mime: string,
  *   rong: number,
  *   cao: number,
@@ -83,8 +64,11 @@ export async function compressImage(file, tuyChon = {}) {
 
   const base64 = khung.toDataURL('image/jpeg', chatLuong);
   const phan = boTienTo(base64);
+  const blob = await new Promise((xong) => khung.toBlob(xong, 'image/jpeg', chatLuong));
+  if (!blob) throw new Error('Trình duyệt không nén được tấm ảnh này.');
 
   return {
+    blob,
     base64: phan,
     mime: 'image/jpeg',
     rong,

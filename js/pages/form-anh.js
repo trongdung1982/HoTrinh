@@ -4,8 +4,9 @@
 //            và bỏ ảnh đại diện, và phép áp mọi thay đổi ấy lên cây lúc lưu
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: pages/person-edit.js (nền dùng chung), state, domains/{media,render},
-//            services/{repo,gas}, utils/{date,image,avatar,id}, config
-// Phiên bản: 1.1.0 · Cập nhật: 01/09/2026 11:40
+//            services/repo, utils/{date,image,avatar,id}, config
+// Phiên bản: 1.2.0 · Cập nhật: 28/09/2026 07:00 (b141) — tải ảnh qua
+//            `repo.taiAnh(blob)`, thôi qua giàn giáo `tuong-thich`
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 5 của
@@ -22,8 +23,7 @@ import { attachMedia, detachMedia, setPortrait, clearPortrait,
          getMediaFor, getPortrait } from '../domains/media.js';
 import { mauVien } from '../domains/render.js';
 import { loaiCua } from '../utils/id.js';
-import { suaDuoc } from '../services/repo.js';
-import { taiAnh } from '../services/tuong-thich.js';
+import { suaDuoc, taiAnh } from '../services/repo.js';
 import { stampNow } from '../utils/date.js';
 import { compressImage, driveThumbUrl, dataUri } from '../utils/image.js';
 import { anhMacDinhUri } from '../utils/avatar.js';
@@ -489,7 +489,7 @@ async function chonVaTaiAnh(file, nguoi) {
     const goc = stampNow().replace(/[^0-9]/g, '');
     const nen = await compressImage(file);
     const ten = 'anh_' + anhCuaAi + '_' + goc + '.jpg';
-    const kq  = await taiAnh(nen.base64, ten);
+    const kq  = await taiAnh(nen.blob, ten);
 
     if (!kq || !kq.ok) {
       throw new Error((kq && kq.loi) ||
@@ -508,7 +508,7 @@ async function chonVaTaiAnh(file, nguoi) {
       const nenLon = await compressImage(file, {
         maxWidth: PHOTO.maxWidthLon, jpegQuality: PHOTO.jpegQualityLon,
       });
-      const kqLon = await taiAnh(nenLon.base64, 'anh_' + anhCuaAi + '_' + goc + '_lon.jpg');
+      const kqLon = await taiAnh(nenLon.blob, 'anh_' + anhCuaAi + '_' + goc + '_lon.jpg');
       if (kqLon && kqLon.ok) fileIdLon = kqLon.fileId;
       else loiLon = (kqLon && kqLon.loi) || 'máy chủ không nhận';
     } catch (e) {

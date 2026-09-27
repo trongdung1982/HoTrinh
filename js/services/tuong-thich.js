@@ -3,9 +3,9 @@
 // Vai trò  : Giàn giáo tạm. Giữ nguyên hình những lệnh mà bảy màn hình đang
 //            gọi từ `services/gas.js`, để chúng chạy được trên nền Supabase
 //            mà chưa phải sửa.
-// Lớp      : services — được gọi bởi: pages · gọi: services/sb, state
-// Phụ thuộc: services/sb.js, state.js, utils/image.js
-// Phiên bản: 0.2.0 · Cập nhật: 28/09/2026 (b138) — còn 4 màn hình dùng
+// Lớp      : services — được gọi bởi: pages · gọi: services/sb
+// Phụ thuộc: services/sb.js
+// Phiên bản: 0.3.0 · Cập nhật: 28/09/2026 07:05 (b141) — còn 2 màn hình, gỡ nhóm ảnh
 // ============================================================
 //
 // ═══ FILE NÀY LÀ GIÀN GIÁO, KHÔNG PHẢI KIẾN TRÚC ═══
@@ -30,15 +30,6 @@
 //   trong file này là còn một màn hình chưa được rà.
 
 import * as sb from './sb.js';
-import { state } from '../state.js';
-
-/** Cây đang mở. Ném lỗi thay vì gửi `undefined` xuống máy chủ. */
-function maCay() {
-  if (!state.treeId) {
-    throw new Error('Chưa mở gia phả nào nên chưa làm được việc này.');
-  }
-  return state.treeId;
-}
 
 function chuaLam(ten, vaSao) {
   return () => {
@@ -61,52 +52,6 @@ export const layDanhSachGiaPha = sb.layDanhSachGiaPha;
 export const chonGiaPha = sb.chonGiaPha;
 
 // ============================================================
-// ⚠ ĐỔI HÌNH
-// ============================================================
-
-/**
- * Tải một tấm ảnh lên kho.
- *
- * ⚠ **Vẫn nhận base64 dù Supabase nhận Blob thẳng.** Hai chỗ gọi
- * (`form-anh.js`, `person-edit.js`) đang cầm sẵn chuỗi base64 do
- * `utils/image.compressImage()` trả về, nên đổi ở đây là đổi cả hai màn hình.
- * Giàn giáo này giải mã ngược base64 về Blob rồi mới gửi — tốn một lần chép
- * bộ nhớ cho mỗi tấm, và đó là cái giá tạm thời phải chịu.
- *
- * Khi rà lại hai màn hình ấy: `compressImage` vốn đã dựng Blob **trước khi**
- * mã hoá base64. Nơi gọi chỉ việc dừng sớm một bước, rồi gọi thẳng
- * `sb.taiAnh(treeId, blob, ten)` — bỏ được cả bước mã hoá lẫn bước giải mã,
- * và bỏ luôn 33% dung lượng mà base64 phình ra.
- *
- * ⚠ `fileId` trả về nay là **đường dẫn trong kho** (`<tree_id>/<tên>.jpg`),
- * không phải mã file Drive. Nó được cất vào `media.driveFileId` — tên trường
- * còn chữ "drive" là một vết sẹo có chủ ý, xem `luoc-do/01-bang.sql` mục 7.
- *
- * @returns {Promise<{ok:boolean, fileId:string, loi:string|null}>}
- */
-export async function taiAnh(base64, tenFile) {
-  let blob;
-  try {
-    blob = base64ThanhBlob(base64);
-  } catch (e) {
-    return { ok: false, fileId: '', loi: 'Ảnh hỏng, không đọc ra được nội dung.' };
-  }
-  const kq = await sb.taiAnh(maCay(), blob, tenFile);
-  return { ok: kq.ok, fileId: kq.duongDan || '', loi: kq.loi };
-}
-
-/** Xoá CẢ LOẠT ảnh — bước cuối của một lần *Dọn thùng rác*. */
-export const xoaAnhThat = sb.xoaAnhThat;
-
-/**
- * Xoá MỘT ảnh. Bản cũ cho vào thùng rác Drive nên còn lấy lại được;
- * ⚠ ở đây là **xoá hẳn khỏi kho, không có thùng rác nào**.
- */
-export function xoaAnhThu(duongDan) {
-  return sb.xoaAnhThat([duongDan]);
-}
-
-// ============================================================
 // ⛔ CHƯA LÀM
 // ============================================================
 
@@ -118,8 +63,8 @@ export function xoaAnhThu(duongDan) {
 // của Supabase rồi ghi file JSON ra Drive — tức bản sao lưu nằm NGOÀI
 // Supabase, đúng tinh thần "sao lưu độc lập".
 //
-// ⚠ Cho tới lúc ấy, **gia phả trên Supabase chưa có bản sao lưu nào.** Đây là
-//   việc gấp nhất trong danh sách còn dở, không phải việc để dành.
+// ⚠ Trigger ấy ĐÃ chạy (`sao-luu/SaoLuu.gs`, tab Sao lưu ở trang Quản trị) —
+//   chỉ màn hình cũ `backup.js` là chưa nối vào nó.
 
 const LY_DO_SAO_LUU =
   'Sao lưu trên nền Supabase làm bằng một trigger Apps Script chạy nền ' +
@@ -146,44 +91,3 @@ export const boChonGiaPha = chuaLam('Bỏ chọn gia phả',
   'Nền Supabase không có "gia phả mặc định" để quay về — mỗi người chỉ thấy ' +
   'những gia phả họ được thêm vào. Dùng nút chọn gia phả thay cho nút này.');
 
-// --- Quyền chia sẻ ảnh trên Drive ---
-//
-// ⚠ Ba hàm này KHÔNG có bản tương đương, và đó là tin tốt chứ không phải
-//   thiếu sót. Chúng sinh ra để đối phó với một nỗi khổ riêng của Drive: ảnh
-//   chỉ hiện được khi file đã mở quyền "bất kỳ ai có đường liên kết", nên app
-//   phải đi hỏi quyền từng tấm rồi xin mở. Kho Supabase không có nỗi khổ ấy —
-//   quyền là quyền của cả kho, đặt một lần ở `01-bang.sql`.
-export const trangThaiQuyenAnh = chuaLam('Kiểm quyền ảnh',
-  'Nền Supabase không phân quyền theo từng tấm ảnh — cả kho một luật.');
-export const moQuyenXemAnh = chuaLam('Mở quyền xem ảnh',
-  'Nền Supabase không phân quyền theo từng tấm ảnh — cả kho một luật.');
-export const layAnhBase64 = chuaLam('Đọc ảnh qua máy chủ',
-  'Đường vòng này sinh ra vì Drive chặn ảnh chưa mở quyền. Kho Supabase ' +
-  'trả ảnh thẳng cho thẻ <img>, không cần đường vòng.');
-
-// ============================================================
-// Mẩu dùng chung
-// ============================================================
-
-/**
- * Chuỗi base64 → Blob.
- *
- * ⚠ Chuyển theo TỪNG KHỐI 8KB chứ không một lần. `String.fromCharCode(...ds)`
- *   trên một mảng 400.000 phần tử là 400.000 tham số cho một lần gọi hàm —
- *   trình duyệt ném `RangeError: Maximum call stack size exceeded`, và nó chỉ
- *   ném với ảnh LỚN, tức chỉ hỏng ở bản 1600px dùng để in, tức chỉ hỏng đúng
- *   lúc không ai đang ngồi thử.
- */
-function base64ThanhBlob(base64, mime = 'image/jpeg') {
-  const chuoi = String(base64 || '').replace(/^data:[^,]*,/, '');
-  const nhiPhan = atob(chuoi);
-  const khoi = [];
-  const CO_KHOI = 8192;
-
-  for (let i = 0; i < nhiPhan.length; i += CO_KHOI) {
-    const lat = new Uint8Array(Math.min(CO_KHOI, nhiPhan.length - i));
-    for (let j = 0; j < lat.length; j++) lat[j] = nhiPhan.charCodeAt(i + j);
-    khoi.push(lat);
-  }
-  return new Blob(khoi, { type: mime });
-}

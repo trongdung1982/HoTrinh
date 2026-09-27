@@ -41,9 +41,8 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
 - **Thêm cửa vào `sb.js` thì thêm ở `sb-gia.mjs`** — thiếu một tên là `SyntaxError`
   lúc nạp, cả bộ ảnh ra nền trơn (đã xảy ra b110b, b111). Tham số của bản giả
   phải cùng NGHĨA với máy chủ.
-- **Chữ ĐỎ ở đầu trang giả là lời của chính bản giả**, không phải lỗi bố cục:
-  nó kể cửa nào thiếu, dữ liệu nào bản giả không dựng được. Đọc nó trước, đừng
-  đi sửa CSS.
+- **Chữ ĐỎ đầu trang giả là lời của bản giả** (cửa nào thiếu), không phải lỗi
+  bố cục — đọc nó trước khi sửa CSS.
 - **Nhìn bằng mắt trước khi báo xong** — hai bộ ảnh, hai việc khác nhau:
   · `node ../kiem-thu/so-quantri3.mjs [lọc]` (cặp `sq-p-*` prototype /
   `sq-a-*` app) so giao diện, bắt *lệch so với prototype*.
@@ -97,13 +96,8 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   cuộn trong bảng mới thấy mục. Nới khung ảnh không chữa được; ảnh
   `kq-menu-saoluu.png` giữ lại đúng cảnh ấy.
 
-- **Duyệt hàng loạt (b140) — hộp kết quả dài tràn mép TRÊN màn hình**, tựa
-  hộp bị cắt; và cùng một câu từ chối lặp N lần. Vá: `.modal-box{max-height;
-  overflow-y:auto}` + gộp dòng hỏng theo câu máy chủ (`theoLyDo`). Bấm ô tích
-  trong ảnh chụp: `?bam=@<bộ chọn CSS>#n` (`trang-quan-tri-gia.html`, b140)
-  — `?bam=` thường chỉ bấm `<button>`. Cột *Nội dung thao tác* ở tab Chờ
-  duyệt vẫn co về một chữ mỗi dòng (năm cột kia `style=width` + padding đã
-  vượt bề ngang) — có từ prototype, cột ô tích chỉ lấy thêm ~30px.
+- **Hộp kết quả hàng loạt (b140) tràn mép trên** — vá `.modal-box{max-height;
+  overflow-y:auto}`. Bấm ô tích trong ảnh: `?bam=@<bộ chọn CSS>#n`.
 
 - **Đẩy CSS xong, máy chủ vẫn trả bản cũ trong 10 phút** (21/09/2026). `?v=`
   chống đệm cho FILE CSS, nhưng chính `QuanTri.html` — nơi chứa con số `?v=`

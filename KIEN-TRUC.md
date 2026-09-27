@@ -108,7 +108,7 @@ nghĩa là chạm vào `domains/`.
 |---|---|---|
 | Cột `drive_file_id`, trường `driveFileId` | Không còn Drive nào; giá trị nay là đường dẫn kho Supabase | `domains/media.js`, `gedcom.js`, `excel.js` và bảy màn hình đọc/ghi trường này ở hơn ba mươi chỗ |
 | Hàm `driveThumbUrl()` | Dựng URL Supabase, và **bỏ qua tham số `size`** | Tám chỗ gọi, một trong đó là `domains/render.js` |
-| File `services/tuong-thich.js` | Là giàn giáo, không phải kiến trúc | Bảy màn hình còn `import` những lệnh của Apps Script |
+| File `services/tuong-thich.js` | Là giàn giáo, không phải kiến trúc | Hai màn hình chưa làm (`backup` · `chon-gia-pha`) còn `import` nó — từ bảy (03/09) |
 
 Đổi tên cả ba là **một việc riêng**, một phiên riêng, có bước đổi dữ liệu và
 có bộ kiểm chạy lại. Đừng để nó lẻn vào một lần sửa khác.

@@ -241,7 +241,6 @@ import { planPurge, applyPurge, moTaKePurge } from '../domains/purge.js';
 import { mauVien } from '../domains/render.js';
 import { luuCay, suaDuoc, timNguoiMoiCay, docNguoiTheoMa,
          nopDeNghiQuanHe } from '../services/repo.js';
-import { taiAnh, xoaAnhThat } from '../services/tuong-thich.js';
 import { ganGoiY, dongNguoiCayKhac } from './quan-tri/o-goi-y.js';
 import { buildIndex } from '../utils/graph.js';
 import { fullName, coGiaTri, removeDiacritics, doiSongNguoi, matchesSearch } from '../utils/text.js';

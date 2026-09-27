@@ -4,7 +4,7 @@
 // Lớp      : services — được gọi bởi: pages · gọi: services/sb,
 //            services/hinh-dang, utils, state
 // Phụ thuộc: services/sb.js, services/hinh-dang.js, utils/graph.js, state.js
-// Phiên bản: 0.8.0 · Cập nhật: 27/09/2026 (b125g) — `state.doi`, đọc lại sau Lưu
+// Phiên bản: 0.9.0 · Cập nhật: 28/09/2026 07:00 (b141) — `taiAnh(blob)` thay giàn giáo
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -151,6 +151,20 @@ export async function xinMa(loai, so) {
   if (!kq.ok) return { ok: false, loi: kq.loi, so: 0 };
   napKho(loai, kq.ds);
   return { ok: true, loi: null, so: kq.ds.length };
+}
+
+/**
+ * Tải một tấm ảnh lên kho của gia phả đang mở (b141 — thay giàn giáo
+ * `tuong-thich.taiAnh`, bỏ vòng base64 → Blob). `fileId` là đường dẫn trong
+ * kho, đem cất vào `media.driveFileId` (vết sẹo tên, `KIEN-TRUC.md` mục 4).
+ *
+ * @param {Blob} blob  `compressImage().blob`
+ * @returns {Promise<{ok:boolean, fileId:string, loi:string|null}>}
+ */
+export async function taiAnh(blob, tenFile) {
+  if (!state.treeId) return { ok: false, fileId: '', loi: 'Chưa mở gia phả nào nên chưa tải ảnh được.' };
+  const kq = await sb.taiAnh(state.treeId, blob, tenFile);
+  return { ok: kq.ok, fileId: kq.duongDan || '', loi: kq.loi };
 }
 
 /**
