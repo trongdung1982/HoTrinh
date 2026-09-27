@@ -4,7 +4,7 @@
 //            Ráp dòng thành cây, và so hai cây ra danh sách phép ghi.
 // Lớp      : services — được gọi bởi: services/repo · gọi: utils/date
 // Phụ thuộc: utils/date.js
-// Phiên bản: 0.7.0 · Cập nhật: 27/09/2026 (b125g) — `rapDoi()`
+// Phiên bản: 0.8.0 · Cập nhật: 27/09/2026 (b133) — `rapGiaDinh()`
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -182,23 +182,7 @@ function veBang(bang, mac, banGhi) {
  */
 export function rapCay(dong) {
   const t = dong.tree;
-
-  // Con gom theo hôn nhân trước, để khỏi quét lại cả mảng cho từng union —
-  // 681 người mà quét lồng nhau là 661 × 700 phép so cho một việc đáng lẽ
-  // chỉ tốn một vòng.
-  const conTheoUnion = new Map();
-  for (const c of dong.children || []) {
-    if (!conTheoUnion.has(c.union_id)) conTheoUnion.set(c.union_id, []);
-    conTheoUnion.get(c.union_id).push({
-      personId: c.person_id,
-      relation: c.relation,
-      order:    c.ord,          // `order` là từ khoá SQL nên trong bảng tên `ord`
-      revision: c.revision,     // đi tròn một vòng, xem `TEN_PERSON.revision`
-    });
-  }
-  for (const ds of conTheoUnion.values()) {
-    ds.sort((a, b) => (a.order || 0) - (b.order || 0));
-  }
+  const conTheoUnion = gomCon(dong.children);
 
   return {
     format:  'giapha-json',
@@ -262,6 +246,51 @@ export function rapCay(dong) {
  */
 export function rapMotNguoi(dong) {
   return dong ? veCay(TEN_PERSON, dong) : null;
+}
+
+/**
+ * Dòng thô của `sb.docGiaDinhNguoi()` → một "cây nhỏ" `{persons, unions}`
+ * đủ cho `utils/graph.buildIndex()` và `getParents/getSpouses/getChildren`
+ * của `domains/union.js`, cộng `cacCay` — các cây có mặt người ấy, kèm Đời
+ * (b133, trang Hồ sơ người).
+ *
+ * Cùng luật với `rapMotNguoi()`: đây là bản ĐỂ ĐỌC, **không bao giờ gửi lên
+ * lại** — nó không thuộc cây nào, và thiếu hẳn những người RLS không cho
+ * xem.
+ */
+export function rapGiaDinh(dong) {
+  const conTheoUnion = gomCon(dong.children);
+  return {
+    nguoi: dong.nguoi ? veCay(TEN_PERSON, dong.nguoi) : null,
+    persons: (dong.persons || []).map((r) => veCay(TEN_PERSON, r)),
+    unions: (dong.unions || []).map((r) => ({
+      ...veCay(TEN_UNION, r),
+      children: conTheoUnion.get(r.id) || [],
+    })),
+    cacCay: (dong.cay || []).map((r) => ({ treeId: r.tree_id, doi: Number(r.doi) || 0 })),
+  };
+}
+
+/**
+ * Dòng `union_children` → `Map` mã hôn nhân → mảng con đã xếp theo `order`.
+ * Gom một lượt trước, để khỏi quét lại cả mảng cho từng union — 681 người
+ * mà quét lồng nhau là 661 × 700 phép so cho một việc chỉ tốn một vòng.
+ */
+function gomCon(children) {
+  const conTheoUnion = new Map();
+  for (const c of children || []) {
+    if (!conTheoUnion.has(c.union_id)) conTheoUnion.set(c.union_id, []);
+    conTheoUnion.get(c.union_id).push({
+      personId: c.person_id,
+      relation: c.relation,
+      order:    c.ord,          // `order` là từ khoá SQL nên trong bảng tên `ord`
+      revision: c.revision,     // đi tròn một vòng, xem `TEN_PERSON.revision`
+    });
+  }
+  for (const ds of conTheoUnion.values()) {
+    ds.sort((a, b) => (a.order || 0) - (b.order || 0));
+  }
+  return conTheoUnion;
 }
 
 /**

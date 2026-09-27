@@ -1,6 +1,6 @@
 # Sổ tay · trang Quản trị
 
-Gồm      : `QuanTri.html` — NGUYÊN FILE prototype quantri3, dựng bằng máy · `quan-tri.css` — CSS nguyên văn quantri3 + vài dòng app · `js/pages/quan-tri/khung.js` — `#` → section · `khu-gia-pha.js` · `khu-tai-khoan.js` (b126d, panel Mã người & Dòng họ) · `khu-kiem-duyet.js` · `khu-quan-tri-he-thong.js` · `khu-sao-luu.js` (tab Sao lưu) · `khu-de-nghi-quan-he.js` · `khu-ho-so-don.js` (b126d) · `trang-cay.js` · `trang-moi.js` · `trang-tai-khoan.js` — đổ dữ liệu vào section của mình · `hop-thoai.js` — hộp hỏi + ô nhập · `o-bang.js` — mẩu ô bảng · `o-goi-y.js` — ô gợi ý
+Gồm      : `QuanTri.html` — NGUYÊN FILE prototype quantri3, dựng bằng máy · `quan-tri.css` — CSS nguyên văn quantri3 + vài dòng app · `js/pages/quan-tri/khung.js` — `#` → section · `khu-gia-pha.js` · `khu-tai-khoan.js` (b126d, panel Mã người & Dòng họ) · `khu-kiem-duyet.js` · `khu-quan-tri-he-thong.js` · `khu-sao-luu.js` (tab Sao lưu) · `khu-de-nghi-quan-he.js` · `khu-ho-so-don.js` (b126d) · `trang-cay.js` · `trang-moi.js` · `trang-tai-khoan.js` · `trang-ho-so-nguoi.js` — đổ dữ liệu vào section của mình · `hop-thoai.js` — hộp hỏi + ô nhập · `o-bang.js` — mẩu ô bảng · `o-goi-y.js` — ô gợi ý
 Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài repo: `../kiem-thu/sb-gia.mjs` · `trang-quan-tri-gia.html` · `so-quantri3.mjs` · `xem-khung-quan-tri.mjs` · prototype `../codex/dua_claude.ai/quantri3.html`
 
 ## Đính chính
@@ -43,7 +43,7 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   phải cùng NGHĨA với máy chủ.
 - **Chữ ĐỎ ở đầu trang giả là lời của chính bản giả**, không phải lỗi bố cục:
   nó kể cửa nào thiếu, dữ liệu nào bản giả không dựng được. Đọc nó trước, đừng
-  đi sửa CSS. *(chuyển từ `CHI-DAN.md` về đây b123 — file ấy chật trần.)*
+  đi sửa CSS.
 - **Nhìn bằng mắt trước khi báo xong** — hai bộ ảnh, hai việc khác nhau:
   · `node ../kiem-thu/so-quantri3.mjs [lọc]` (cặp `sq-p-*` prototype /
   `sq-a-*` app) so giao diện, bắt *lệch so với prototype*.
@@ -132,6 +132,9 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   dữ liệu* làm được, vì nó chỉ cần đọc Supabase (`dem_du_lieu`). Đừng tưởng
   thêm khoá bí mật hay Edge Function là "cho gọn" — xem `sao-luu/SaoLuu.gs`
   đã đâm vào đúng bức tường ấy một lần rồi.
+
+**Hồ sơ người (b133)**: một section, hai khu (`thanh-vien` ·
+`quan-tri-he-thong`); `data-back` đặt lúc mount.
 
 ## Hai điều ghi ngày 23/09/2026
 

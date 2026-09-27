@@ -5,8 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.37.0 · Cập nhật: 27/09/2026 (b132) — `dsCayCoNguoi()`: người
-//            được gắn có mặt ở những cây nào. Lịch sử: `git log -p`.
+// Phiên bản: 0.38.0 · Cập nhật: 27/09/2026 (b133) — `docGiaDinhNguoi()`: hồ
+//            sơ một người ngoài cây đang mở. Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -2021,6 +2021,81 @@ export async function dsCayCoNguoi(ma) {
     .eq('person_id', String(ma));
   if (error) return { ok: false, loi: cauLoi(error), treeIds: new Set() };
   return { ok: true, loi: null, treeIds: new Set((data || []).map((r) => r.tree_id)) };
+}
+
+/**
+ * Hồ sơ MỘT người, ngoài mọi "cây đang mở" (b133, trang `#…/nguoi/<mã>`):
+ * dòng `persons` của họ · mọi hôn nhân họ làm vợ/chồng hoặc làm con · con của
+ * các hôn nhân ấy · dòng `persons` của mọi người được nhắc tới · các cây có
+ * mặt họ kèm Đời. Trả DÒNG thô; `hinh-dang.rapGiaDinh()` ráp.
+ *
+ * ⚠ Không có hàm máy chủ mới, cùng lý lẽ với `docNguoiTheoMa()`: bốn bảng
+ *   dùng chung từ `26` không còn `tree_id`, và luật đọc `26` mục 5 (`doc_
+ *   persons` · `doc_unions` · `doc_union_children` · `doc_tree_persons`) đã
+ *   nói đúng điều cần nói. Ba vòng mạng nối tiếp nhau vì vòng sau cần mã của
+ *   vòng trước; mỗi vòng chỉ vài chục dòng.
+ *
+ * ⚠ Người thân nằm ở cây mình không xem được thì RLS bỏ họ đi **im lặng** —
+ *   hồ sơ thiếu người ấy, không phải lỗi. `buildIndex()` bỏ qua mã không có
+ *   bản ghi, nên không có dòng trống nào hiện ra.
+ */
+export async function docGiaDinhNguoi(ma) {
+  const k = layKhach();
+  const id = String(ma || '').trim();
+  if (!k || !id) return { ok: false, loi: 'Chưa nối được máy chủ.', dong: null };
+
+  try {
+    const [nguoi, lamVoChong, lamCon, cay] = await Promise.all([
+      k.from('persons').select('*').eq('id', id).maybeSingle(),
+      k.from('unions').select('*').contains('partners', [id]),
+      k.from('union_children').select('union_id').eq('person_id', id),
+      k.from('tree_persons').select('tree_id, doi').eq('person_id', id),
+    ]);
+    for (const kq of [nguoi, lamVoChong, lamCon, cay]) {
+      if (kq.error) return { ok: false, loi: cauLoi(kq.error), dong: null };
+    }
+    if (!nguoi.data) {
+      return { ok: false, dong: null,
+               loi: 'Không đọc được người mang mã ' + id + '. Có thể mã sai, ' +
+                    'hoặc người ấy nằm trong gia phả bạn không có quyền xem.' };
+    }
+
+    // Vòng 2: hôn nhân của cha mẹ (họ làm CON) chưa có trong vòng 1.
+    const daCo = new Set((lamVoChong.data || []).map((u) => u.id));
+    const maChaMe = [...new Set((lamCon.data || []).map((r) => r.union_id))]
+      .filter((u) => !daCo.has(u));
+    const chaMe = maChaMe.length
+      ? await k.from('unions').select('*').in('id', maChaMe) : { data: [] };
+    if (chaMe.error) return { ok: false, loi: cauLoi(chaMe.error), dong: null };
+    const unions = [...(lamVoChong.data || []), ...(chaMe.data || [])];
+
+    // Vòng 3: con của mọi hôn nhân ấy, rồi bản ghi của mọi người được nhắc tới.
+    const maUnion = unions.map((u) => u.id);
+    const con = maUnion.length
+      ? await k.from('union_children').select('*').in('union_id', maUnion) : { data: [] };
+    if (con.error) return { ok: false, loi: cauLoi(con.error), dong: null };
+
+    const maNguoi = new Set();
+    for (const u of unions) for (const p of u.partners || []) maNguoi.add(p);
+    for (const c of con.data || []) maNguoi.add(c.person_id);
+    maNguoi.delete(id);
+    const khac = maNguoi.size
+      ? await k.from('persons').select('*').in('id', [...maNguoi]) : { data: [] };
+    if (khac.error) return { ok: false, loi: cauLoi(khac.error), dong: null };
+
+    return {
+      ok: true, loi: null,
+      dong: {
+        nguoi: nguoi.data,
+        persons: [nguoi.data, ...(khac.data || [])],
+        unions,
+        children: con.data || [],
+        cay: cay.data || [],
+      },
+    };
+  } catch (e) {
+    return { ok: false, loi: cauLoi(e), dong: null };
+  }
 }
 
 /**

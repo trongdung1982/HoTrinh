@@ -5,9 +5,9 @@
 //            mã người & dòng họ (b126d) · các gia phả tôi tham gia · đổi
 //            mật khẩu).
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: services/sb, quan-tri/hop-thoai · trang-cay · o-bang
-// Phiên bản: 1.4.0 · Cập nhật: 27/09/2026 (b132) — cột "gắn với ai trong sơ
-//            đồ?" chỉ hiện người ở cây CÓ MẶT họ. Lịch sử: `git log -p`.
+// Phụ thuộc: services/sb, quan-tri/hop-thoai · trang-cay · trang-chi-tiet · o-bang
+// Phiên bản: 1.5.0 · Cập nhật: 27/09/2026 (b133) — tên ở cột "gắn với ai trong
+//            sơ đồ?" mở trang Hồ sơ người. Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -29,8 +29,9 @@ import {
 } from '../../services/sb.js';
 import { hoi, bao } from './hop-thoai.js';
 import { goiYNguoi, moSoDo } from './trang-cay.js';
+import { duongDan } from './trang-chi-tiet.js';
 import {
-  TEN_VAI, td, span, tenVaPhu, huyHieu, datHuyHieu, nut, nutLink, lienKet, chuaCo,
+  TEN_VAI, td, span, huyHieu, datHuyHieu, nut, nutLink, lienKet, chuaCo,
   hangNut, dongTrong, chuDau, ngay, ngayGio,
 } from './o-bang.js';
 
@@ -452,6 +453,13 @@ function veBangCay(sec, phien, kqCay, coMat, napLai) {
   ve();
 }
 
+/** Tên người bấm được → trang Hồ sơ người (b133), kèm dòng mã bên dưới. */
+function lienKetNguoi(ten, ma) {
+  const f = document.createDocumentFragment();
+  f.append(lienKet(ten, duongDan('thanh-vien', 'nguoi', ma)), span('sub', 'Mã: ' + ma));
+  return f;
+}
+
 /**
  * ⚠ Cột "Tôi được gắn với ai trong sơ đồ?": gắn là chuyện của TÀI KHOẢN
  *   (`34`), một mã chung — nhưng chỉ hiện ở dòng cây CÓ MẶT người ấy
@@ -473,7 +481,7 @@ function dongCay(c, phien, coMat) {
     gan = !phien.maNguoiGan ? span('muted', 'Chưa gắn người')
       : !coMat.ok ? span('muted', 'Không đọc được')
       : !coMat.treeIds.has(c.fileId) ? span('muted', 'Không có trong sơ đồ này')
-      : tenVaPhu(phien.tenNguoiGan || phien.maNguoiGan, 'Mã: ' + phien.maNguoiGan);
+      : lienKetNguoi(phien.tenNguoiGan || phien.maNguoiGan, phien.maNguoiGan);
   }
 
   const trang = trangThai === 'thanhvien' ? huyHieu('Đã duyệt')

@@ -6,8 +6,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, pages/dang-nhap, quan-tri/khu-kiem-duyet ·
 //            khu-gia-pha · khu-tai-khoan · khu-quan-tri-he-thong · trang-cay ·
-//            trang-tai-khoan · trang-moi · trang-chi-tiet · o-bang
-// Phiên bản: 1.2.0 · Cập nhật: 18/09/2026 (khay điều hướng điện thoại)
+//            trang-tai-khoan · trang-moi · trang-ho-so-nguoi · trang-chi-tiet · o-bang
+// Phiên bản: 1.3.0 · Cập nhật: 27/09/2026 (b133 — trang Hồ sơ người)
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -38,6 +38,7 @@ import { mountKhuQuanTriHeThong, mountChonCayMacDinh } from './khu-quan-tri-he-t
 import { mountTrangCay, MUC_TRANG_CAY } from './trang-cay.js';
 import { mountTrangTaiKhoan } from './trang-tai-khoan.js';
 import { mountTrangMoi } from './trang-moi.js';
+import { mountHoSoNguoi } from './trang-ho-so-nguoi.js';
 import { duongDan } from './trang-chi-tiet.js';
 import { chuDau } from './o-bang.js';
 
@@ -75,6 +76,10 @@ const TRANG = [
   // quantri3 `#sys-default-tree-selector`. Đoạn mã luôn là `chon`.
   { khu: 'quan-tri-he-thong', ma: 'cay-mac-dinh', view: 'sys-default-tree-selector',
     mount: mountChonCayMacDinh, muc: [] },
+  // KHÔNG có trong quantri3 — hồ sơ một người (b133). Cùng một trang ở hai
+  // khu: bấm từ *Tài khoản* thì quay về Tài khoản, từ Sổ tài khoản thì về đó.
+  { khu: 'thanh-vien', ma: 'nguoi', view: 'person-profile', mount: mountHoSoNguoi, muc: [] },
+  { khu: 'quan-tri-he-thong', ma: 'nguoi', view: 'person-profile', mount: mountHoSoNguoi, muc: [] },
 ];
 
 // ============================================================

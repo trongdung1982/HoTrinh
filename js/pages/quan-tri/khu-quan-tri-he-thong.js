@@ -7,9 +7,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang ·
 //            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don
-// Phiên bản: 1.6.0 · Cập nhật: 26/09/2026 (b126d) — tab *Đơn Hồ sơ cá nhân*
-//            (`khu-ho-so-don.js`): duyệt gắn mã người + dòng họ. Lịch sử
-//            trước: `git log -p`.
+// Phiên bản: 1.7.0 · Cập nhật: 27/09/2026 (b133) — tên ở Sổ tài khoản mở
+//            trang chi tiết tài khoản. Lịch sử trước: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -40,7 +39,7 @@ import { veKhuSaoLuu } from './khu-sao-luu.js';
 import { veKhuDeNghiQuanHe } from './khu-de-nghi-quan-he.js';
 import { veKhuHoSoDon } from './khu-ho-so-don.js';
 import {
-  td, span, tenVaPhu, huyHieu, nut, nutNho, nutMo, lienKet, hangNut, dongTrong,
+  td, span, huyHieu, nut, nutNho, nutMo, lienKet, hangNut, dongTrong,
   chepKieu, ngay, ngayGio,
 } from './o-bang.js';
 
@@ -222,7 +221,7 @@ function veSoTaiKhoan(sec, tk, napLai) {
     return;
   }
 
-  dem.textContent = tk.ds.length + ' tài khoản · Bấm vào cột Số cây để xem các gia phả của tài khoản đó';
+  dem.textContent = tk.ds.length + ' tài khoản · Bấm vào tên hoặc cột Số cây để xem chi tiết tài khoản';
   tb.innerHTML = '';
   for (const t of tk.ds) tb.append(dongTaiKhoan(t, tk.ds, napLai));
 }
@@ -230,7 +229,10 @@ function veSoTaiKhoan(sec, tk, napLai) {
 function dongTaiKhoan(t, ds, napLai) {
   const tr = document.createElement('tr');
 
-  const oTen = td(tenVaPhu(t.hoTen || t.email, [t.maNgan, t.laChinhToi ? 'Bạn' : ''].filter(Boolean).join(' · ')));
+  // Tên bấm được → trang chi tiết tài khoản (b133), cùng đích với cột Số cây.
+  const phuTen = [t.maNgan, t.laChinhToi ? 'Bạn' : ''].filter(Boolean).join(' · ');
+  const oTen = td(lienKet(t.hoTen || t.email, duongDan('quan-tri-he-thong', 'tai-khoan', t.maNgan)),
+    phuTen ? span('sub', phuTen) : '');
 
   const email = chepKieu(span('name', t.email), 'font-weight:400');
   const xn = chepKieu(huyHieu(t.daXacNhanEmail ? 'Đã xác nhận' : 'Chưa xác nhận',

@@ -6,8 +6,8 @@
 //            tin cậy · gỡ · duyệt đơn, cộng mời vào cây khác và đổi họ tên.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/hop-thoai · trang-cay · khu-quan-tri-he-thong · o-bang
-// Phiên bản: 1.0.1 · Cập nhật: 26/09/2026 (b126d) — bỏ mục *Gắn / đổi mã
-//            người* khỏi menu: gắn mã dời sang khu Tài khoản (Hồ sơ cá nhân).
+// Phiên bản: 1.1.0 · Cập nhật: 27/09/2026 (b133) — đầu trang thêm "gắn với
+//            ai" · dòng họ · số cây làm chủ; tên cây và tên người bấm được.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -35,7 +35,7 @@ import {
   hoiDoiVai, hoiTinCay, hoiGo, hoiDuyetDon, hoiTuChoiDon, moSoDo, cumCay,
 } from './trang-cay.js';
 import {
-  TEN_VAI, CHON_VAI, td, span, tenVaPhu, huyHieu, nut, mucMenu, menuTuyChon, chuaCo,
+  TEN_VAI, CHON_VAI, td, span, huyHieu, nut, mucMenu, menuTuyChon, chuaCo, lienKet,
   dongTrong, ngay,
 } from './o-bang.js';
 
@@ -88,8 +88,16 @@ export async function mountTrangTaiKhoan(sec, ctx) {
   const quyen = [tk.laQuanTriHeThong ? 'Quản trị hệ thống' : '', tk.duocTaoCay ? 'Được tạo cây' : '']
     .filter(Boolean).join(' · ') || 'Thành viên thông thường';
   $('sat-acc-name').textContent = 'Các gia phả của ' + (tk.hoTen || tk.email);
-  $('sat-acc-meta').textContent = ['Mã: ' + tk.maNgan, tk.email, 'Quyền hệ thống: ' + quyen,
-    'Trạng thái: Hoạt động'].join(' · ');
+  const meta = $('sat-acc-meta');
+  meta.textContent = ['Mã: ' + tk.maNgan, tk.email, 'Quyền hệ thống: ' + quyen,
+    tk.khoaLuc ? 'Trạng thái: Đã khoá' : 'Trạng thái: Hoạt động',
+    tk.tenDongHo ? 'Dòng họ: ' + tk.tenDongHo : ''].filter(Boolean).join(' · ');
+  // b133 — "gắn với ai" là chuyện của TÀI KHOẢN (`34`), một mã chung mọi cây;
+  // bấm tên mở trang Hồ sơ người.
+  meta.append(' · Gắn với: ', tk.maNguoiGan
+    ? lienKet((tk.tenNguoiGan || tk.maNguoiGan) + ' (' + tk.maNguoiGan + ')',
+      duongDan('quan-tri-he-thong', 'nguoi', tk.maNguoiGan))
+    : 'chưa gắn người nào');
   $('sat-acc-code').textContent = tk.maNgan;
 
   // — Đổi họ tên: chỗ DUY NHẤT điền tên cho một tài khoản (b109b) —
@@ -136,7 +144,9 @@ export async function mountTrangTaiKhoan(sec, ctx) {
   const ds = kqDs.ds;
   const soVao = ds.filter((c) => c.daDuyet).length;
   const treo = ds.length - soVao;
+  const soChu = ds.filter((c) => c.laChuCay).length;
   $('sat-tree-count').textContent = 'Đang tham gia ' + soVao + ' cây' +
+    (soChu ? ' · làm chủ ' + soChu + ' cây' : '') +
     (treo ? ' · ' + treo + ' đơn hoặc lời mời đang chờ' : '');
 
   if (!ds.length) {
@@ -212,10 +222,14 @@ function dongCay(c, tk, phien, napLai) {
 
   const tr = document.createElement('tr');
   tr.append(
-    td(tenVaPhu(c.ten || c.maCay, 'Mã: ' + c.maCay)),
+    // b133 — tên cây → trang cây sẵn có; tên người → trang Hồ sơ người.
+    td(lienKet(c.ten || c.maCay, duongDan('gia-pha', 'cay', c.maCay)), span('sub', 'Mã: ' + c.maCay)),
     td(maCay),
     td(vai),
-    td(c.maNguoi ? tenVaPhu(c.tenNguoi || c.maNguoi, 'ID: ' + c.maNguoi) : span('name', 'Chưa gắn')),
+    td(...(c.maNguoi
+      ? [lienKet(c.tenNguoi || c.maNguoi, duongDan('quan-tri-he-thong', 'nguoi', c.maNguoi)),
+        span('sub', 'ID: ' + c.maNguoi)]
+      : [span('name', 'Chưa gắn')])),
     td(chuaCo('Chưa có', LY_DO_CONG_KHAI)),
     trang,
     td(menuTuyChon('Chọn ▾', ds)),
