@@ -137,3 +137,6 @@ td .link { text-align:left; }
 #tp-bang td.col-tk .btn{ margin-left:6px; }
 #tp-bang td.col-tk .sub{ white-space:normal; max-width:300px; margin-top:4px; }
 #tp-bang td.col-tk .link{ white-space:nowrap; }
+/* b125f — menu Xuất Excel neo mép TRÁI: trên điện thoại nút đứng sát mép trái,
+   neo phải như `.action-options` gốc thì menu tràn ra ngoài màn hình. */
+#tp-xuat-menu{ right:auto; left:0; }

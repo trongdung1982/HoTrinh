@@ -3,8 +3,8 @@
 // Vai trò  : MENU vòng tròn (mở từ nút ⓘ · chuột phải) + THẺ người + THẺ GIA ĐÌNH
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, domains/{person,union,render}, services/{repo,sb},
-//            utils/{text,date,image,avatar,glyph,id}, config
-// Phiên bản: 1.33.0 · Cập nhật: 23/09/2026 (b127b) — kể tên người vành đai
+//            utils/{text,date,image,avatar,glyph,graph,id}, config
+// Phiên bản: 1.34.0 · Cập nhật: 27/09/2026 (b125f) — hàng Đời tính từ cây
 // Sổ tay   : so-tay/the-thong-tin.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -26,6 +26,7 @@ import { formatDate, calcAge } from '../utils/date.js';
 import { driveThumbUrl } from '../utils/image.js';
 import { anhMacDinhUri } from '../utils/avatar.js';
 import { veBieuTuongTron } from '../utils/glyph.js';
+import { tinhDoi } from '../utils/graph.js';
 import { nhanLoaiTenPhu, chuThichQuanHe,
          rongHop, caoHop, leLopPhu } from '../config.js';
 
@@ -923,17 +924,19 @@ function doDayBang(bang, p) {
 
 /** "12/03/1927 · Hà Nội" — phần nào trống thì bỏ hẳn, không để dấu chấm lơ lửng. */
 /**
- * Đời, kể ra thành chữ. Số 0 hoặc không phải số thì coi như CHƯA AI GHI, và
- * `veHang()` tính hàng ấy là một MỤC CÒN TRỐNG — chứ không kể ra "Đời 0".
+ * Đời, kể ra thành chữ — TÍNH từ cây đang mở (`utils/graph.tinhDoi`, b125f),
+ * không đọc `vn.generation`: một người dùng chung nhiều cây thì mỗi cây một
+ * đời. Số ghi tay chỉ còn làm NEO cho phép tính. Người ngoài cây (vành đai)
+ * không có đời trong cây này → trống, `veHang()` ẩn hàng.
  *
  * ⚠ Trả về *"thứ 5"* chứ không phải *"Đời thứ 5"*: nhãn của hàng đã là chữ
- * *Đời* rồi, nên lặp lại nó trong giá trị thành *"Đời — Đời thứ 5"*. Cũng
- * không trả về mỗi con số: *"thứ"* là chữ nói rằng đây là thứ bậc, không
- * phải số lượng.
+ * *Đời* rồi. Tính lại mỗi lần mở thẻ — cây 681 người mất vài mili giây, rẻ
+ * hơn giữ một bản đệm phải nhớ xoá mỗi lần sửa quan hệ.
  */
 function doiCua(p) {
-  const n = p && p.vn ? Number(p.vn.generation) : NaN;
-  return (Number.isFinite(n) && n > 0) ? ('thứ ' + n) : '';
+  if (!p || !state.tree) return '';
+  const n = tinhDoi(state.tree.persons, state.tree.unions).get(p.id);
+  return n ? ('thứ ' + n) : '';
 }
 
 function ghepNgayNoi(khoiNgay) {

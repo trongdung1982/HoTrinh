@@ -1,214 +1,223 @@
 // ============================================================
 // giapha-supabase · js/pages/quan-tri/xuat-excel.js
-// Vai trò  : Xuất bảng người của một cây ra Excel — HAI định dạng chọn được:
-//            bảng phẳng cột ĐỘNG (thêm cột khi ai đó có nhiều cha mẹ/vợ
-//            chồng, không bỏ sót như bản cũ) và hai sheet tách người/gia
-//            đình (không giới hạn số hôn nhân/số con một người).
+// Vai trò  : Xuất bảng người của một cây ra Excel — HAI khuôn: bảng phẳng
+//            (một dòng một người, cột ĐỘNG theo cây) và hai sheet Người +
+//            Gia đình (một dòng một cuộc hôn nhân).
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: utils/{text,date} · config (nhãn quan hệ, trạng thái cặp) ·
+// Phụ thuộc: utils/{text,date,graph} · config (nhãn quan hệ, trạng thái cặp) ·
 //            vendor/xlsx.mjs (nạp bằng import() động)
-// Phiên bản: 0.2.0 · Cập nhật: 27/09/2026 (b125f)
+// Phiên bản: 0.3.0 · Cập nhật: 27/09/2026 (b125f)
+// Sổ tay   : so-tay/xuat-excel.md
 // ============================================================
 //
-// ⚠ KHÔNG đặt các hàm này trong `domains/`: `excel.js` (đọc) nằm trong mười
-//   file `domains/` phải giống hệt bit-với-bit giữa hai nhánh (`/kiem-tra`
-//   phép 9) — thêm hàm xuất vào đó kéo theo phải sửa cả bản Apps Script.
+// ⚠ KHÔNG đặt các hàm này trong `domains/`: mười file `domains/` phải giống
+//   hệt bit-với-bit giữa hai nhánh (`/kiem-tra` phép 9).
 //
-// ⚠ CẢ HAI định dạng KHÔNG nạp lại được qua màn Nhập GEDCOM/Excel — số cột
-//   đổi theo từng lần xuất, sheet2 tách bảng khác hẳn khuôn `domains/excel.js`
-//   đọc. Chỉ để xem/sửa tay/báo cáo (chốt 27/09/2026, KE-HOACH.md mục b125f).
+// ⚠ CẢ HAI khuôn KHÔNG nạp lại được qua màn Nhập GEDCOM/Excel — chỉ để xem,
+//   sửa tay, báo cáo. Khuôn nạp được là `domains/excel.js` (sheet `DuLieu`).
 //
-// ⚠ Bỏ hẳn cột "Mã số" (mã Excel gốc thời trước app) và "Tiểu sử" (gộp vào
-//   "Thông tin khác"). "ID mới" giữ TÊN CŨ nhưng là `p.id` thật, không đánh
-//   lại — xem lý do ở KE-HOACH.md mục b125f.
+// ⚠ ĐỜI là số TÍNH từ cây (`utils/graph.tinhDoi`), không đọc `vn.generation`
+//   — một người dùng chung nhiều cây thì mỗi cây một đời.
 //
-// ⚠ Một NHÓM cột động (một loại quan hệ cha/mẹ, hoặc một cuộc hôn nhân) chỉ
-//   mang SỐ THỨ TỰ khi cả cây có người có từ hai nhóm cùng loại trở lên —
-//   nhưng LUÔN đủ hết mọi nhóm của mỗi người, không bỏ sót cặp thứ hai như
-//   lỗi bản trước (`dungHangExcel` cũ). Xem `gomTheoNguoi()`/`dungCotDong()`.
+// ⚠ Chồng/vợ chỉ là NHÃN lúc xuất (như GEDCOM, `CLAUDE.md` mục 7): dữ liệu
+//   vẫn là mảng `partners`. Nam → chồng, nữ → vợ; cặp cùng giới hoặc chưa rõ
+//   giới thì xếp theo thứ tự trong `partners`. Luật đánh số cột: sổ tay.
 
 import { fullName } from '../../utils/text.js';
 import { formatDate } from '../../utils/date.js';
+import { tinhDoi } from '../../utils/graph.js';
 import { nhanQuanHeCon, nhanTrangThaiCap } from '../../config.js';
 
 const TEN_SHEET_PHANG = 'BangPhang';
-const TEN_SHEET_NGUOI = 'ThongTinNguoi';
+const TEN_SHEET_NGUOI = 'Nguoi';
 const TEN_SHEET_GIADINH = 'GiaDinh';
 
-// Nhãn NGẮN cho tên cột "ID cha <nhãn> <số>"/"ID mẹ <nhãn> <số>" — rút gọn từ
-// `config.QUAN_HE_CON_NHAN` (ở đó nhãn ghép chung "Cha mẹ …", ở đây cần tách
-// cha/mẹ riêng cột nên không dùng thẳng được). `birth` để rỗng — không hiện
-// chữ, cùng quy ước với `chuThichQuanHe()`: con đẻ là lệ thường, không cần gọi tên.
-const NHAN_NGAN = { birth: '', adopted: 'nuôi', step: 'kế', foster: 'nuôi dưỡng', thua_tu: 'thừa tự' };
 const THU_TU_QUAN_HE = ['birth', 'adopted', 'step', 'foster', 'thua_tu'];
+// Tên cột cha/mẹ theo loại — `config.QUAN_HE_CON_NHAN` ghép chung "Cha mẹ …"
+// nên không dùng thẳng được khi cha và mẹ nằm hai cột riêng.
+const CHA_ME = {
+  birth: ['cha', 'mẹ'], adopted: ['cha nuôi', 'mẹ nuôi'], step: ['cha dượng', 'mẹ kế'],
+  foster: ['cha nuôi dưỡng', 'mẹ nuôi dưỡng'], thua_tu: ['cha thừa tự', 'mẹ thừa tự'],
+};
+
+/** Mã quan hệ lạ rơi về `birth` — cùng lối `domains/union.js`. */
+function loaiCua(relation) { return THU_TU_QUAN_HE.includes(relation) ? relation : 'birth'; }
+/** "con" · "con nuôi" · "con riêng" … — nhãn phía người con của `config`. */
+function chuCon(loai) { return loai === 'birth' ? 'con' : nhanQuanHeCon(loai, 'con').toLowerCase(); }
 
 function chuGioiTinh(sex) { return sex === 'M' ? 'Nam' : sex === 'F' ? 'Nữ' : ''; }
 function chuTinhTrang(living) { return living === false ? 'Đã mất' : 'Còn sống'; }
 
 // ============================================================
-// Cột THÔNG TIN NGƯỜI — dùng chung cho cả hai định dạng, KHÔNG có cột quan hệ
+// Nền chung: đời, chồng/vợ, hôn nhân và con của từng người
 // ============================================================
 
-const COT_NGUOI_TINH = [
+function dungNen(persons, unions) {
+  const theoId = new Map((persons || []).map((p) => [p.id, p]));
+  const song = (id) => theoId.has(id) && !theoId.get(id).deleted;
+  const conSong = (persons || []).filter((p) => !p.deleted);
+  const unionsSong = (unions || []).filter((u) => u && !u.deleted);
+  const doi = tinhDoi(persons, unionsSong);
+
+  const chongVo = new Map();   // union.id -> {chong, vo}
+  for (const u of unionsSong) {
+    let chong = '', vo = '';
+    const cho = [];
+    for (const id of u.partners || []) {
+      const s = theoId.has(id) ? theoId.get(id).sex : '';
+      if (s === 'M' && !chong) chong = id;
+      else if (s === 'F' && !vo) vo = id;
+      else cho.push(id);
+    }
+    for (const id of cho) { if (!chong) chong = id; else if (!vo) vo = id; }
+    chongVo.set(u.id, { chong, vo });
+  }
+
+  // Con của một cặp, theo loại quan hệ, đúng thứ tự con — bỏ người đã xoá.
+  const conTheoLoai = (u) => {
+    const m = new Map();
+    const ds = [...(u.children || [])].filter((c) => c && song(c.personId))
+      .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+    for (const c of ds) {
+      const loai = loaiCua(c.relation || 'birth');
+      if (!m.has(loai)) m.set(loai, []);
+      m.get(loai).push(c.personId);
+    }
+    return m;
+  };
+
+  // Hôn nhân của một người, xếp "hôn nhân 1, 2, 3…": thứ bậc của người kia
+  // (vợ cả trước vợ thứ), rồi ngày cưới, rồi mã.
+  const honNhanCua = new Map();
+  for (const u of unionsSong) {
+    for (const id of u.partners || []) {
+      if (!honNhanCua.has(id)) honNhanCua.set(id, []);
+      honNhanCua.get(id).push(u);
+    }
+  }
+  for (const [id, ds] of honNhanCua) {
+    const khoa = (u) => {
+      const kia = (u.partners || []).find((x) => x !== id);
+      return [(u.ranks && kia && u.ranks[kia]) || 1, (u.marriage && u.marriage.iso) || '9999', u.id];
+    };
+    ds.sort((a, b) => {
+      const ka = khoa(a), kb = khoa(b);
+      return (ka[0] - kb[0]) || (ka[1] < kb[1] ? -1 : ka[1] > kb[1] ? 1 : 0) ||
+        (ka[2] < kb[2] ? -1 : ka[2] > kb[2] ? 1 : 0);
+    });
+  }
+
+  return { theoId, song, conSong, unionsSong, doi, chongVo, conTheoLoai, honNhanCua };
+}
+
+/** Số cột cần cho mỗi loại = số lớn nhất một dòng dùng tới. */
+function demToiDa(dsMap) {
+  const max = new Map();
+  for (const m of dsMap) for (const [loai, ds] of m) max.set(loai, Math.max(max.get(loai) || 0, ds.length));
+  return max;
+}
+
+/** Cột "ID con 1…", "ID con nuôi 1…" theo `max` — loại không ai dùng thì không có cột. */
+function cotCon(max) {
+  const cot = [];
+  for (const loai of THU_TU_QUAN_HE) {
+    for (let i = 1; i <= (max.get(loai) || 0); i++) cot.push({ loai, i, ten: 'ID ' + chuCon(loai) + ' ' + i });
+  }
+  return cot;
+}
+
+// ============================================================
+// Cột THÔNG TIN NGƯỜI — dùng chung hai khuôn, KHÔNG có cột quan hệ
+// ============================================================
+
+const COT_NGUOI = [
   'ID', 'Đời', 'Tên húy', 'Biệt danh', 'Giới tính', 'Ngày sinh', 'Tình trạng',
   'Nơi sinh', 'Ngày mất', 'Ngày giỗ', 'Mộ tại', 'Chức tước', 'Nghề nghiệp',
   'Học vấn', 'Tôn giáo', 'Nơi ở', 'Dân tộc', 'Thông tin khác',
 ];
 
-function hangNguoiTinh(p) {
+function hangNguoi(p, doi) {
   const bietDanh = (p.names || []).find((n) => n && n.type === 'thuong_goi');
   return [
-    p.id,
-    (p.vn && p.vn.generation) || '',
-    fullName(p),
-    bietDanh ? fullName(bietDanh) : '',
-    chuGioiTinh(p.sex),
-    formatDate(p.birth),
-    chuTinhTrang(p.living),
-    (p.birth && p.birth.place) || '',
-    formatDate(p.death),
-    (p.vn && p.vn.gio) || '',
-    p.burialPlace || '',
-    p.title || '',
-    p.occupation || '',
-    p.education || '',
-    p.religion || '',
-    p.residence || '',
-    p.nationality || '',
-    p.note || '',
+    p.id, doi.get(p.id) || '', fullName(p), bietDanh ? fullName(bietDanh) : '',
+    chuGioiTinh(p.sex), formatDate(p.birth), chuTinhTrang(p.living),
+    (p.birth && p.birth.place) || '', formatDate(p.death), (p.vn && p.vn.gio) || '',
+    p.burialPlace || '', p.title || '', p.occupation || '', p.education || '',
+    p.religion || '', p.residence || '', p.nationality || '', p.note || '',
   ];
 }
 
 // ============================================================
-// Gom quan hệ theo NGƯỜI — nền chung cho bảng phẳng cột động
+// Khuôn 1 — BẢNG PHẲNG
 // ============================================================
 
 /**
- * Với mỗi người: MỌI lần người ấy là con (theo từng loại quan hệ riêng) và
- * MỌI lần người ấy là vợ/chồng trong một union còn sống (chưa xoá mềm).
- * Quét MỘT LƯỢT `unionsSong`, không đoán, không bỏ sót — khác lỗi bản cũ chỉ
- * nhớ union ĐẦU TIÊN.
- */
-function gomTheoNguoi(personsAll, unionsSong) {
-  const theoId = new Map((personsAll || []).map((p) => [p.id, p]));
-  const chaMeCuaNguoi = new Map();  // id -> Map(relation -> [{idCha,idMe,order}])
-  const honNhanCuaNguoi = new Map(); // id -> union[]
-
-  for (const u of unionsSong) {
-    for (const c of u.children || []) {
-      const relation = c.relation || 'birth';
-      let idCha = '', idMe = '';
-      for (const pid of u.partners || []) {
-        if (pid === c.personId) continue;
-        const kia = theoId.get(pid);
-        if (kia && kia.sex === 'F') { if (!idMe) idMe = pid; else if (!idCha) idCha = pid; }
-        else { if (!idCha) idCha = pid; else if (!idMe) idMe = pid; }
-      }
-      if (!chaMeCuaNguoi.has(c.personId)) chaMeCuaNguoi.set(c.personId, new Map());
-      const theoLoai = chaMeCuaNguoi.get(c.personId);
-      if (!theoLoai.has(relation)) theoLoai.set(relation, []);
-      theoLoai.get(relation).push({ idCha, idMe, order: c.order || '' });
-    }
-    for (const pid of u.partners || []) {
-      if (!honNhanCuaNguoi.has(pid)) honNhanCuaNguoi.set(pid, []);
-      honNhanCuaNguoi.get(pid).push(u);
-    }
-  }
-  return { chaMeCuaNguoi, honNhanCuaNguoi };
-}
-
-function soCotToiDa(map, persons) {
-  let max = 0;
-  for (const p of persons) max = Math.max(max, (map.get(p.id) || []).length);
-  return max;
-}
-
-function soCotToiDaTheoLoai(chaMeCuaNguoi, persons) {
-  const max = new Map();
-  for (const p of persons) {
-    const theoLoai = chaMeCuaNguoi.get(p.id);
-    if (!theoLoai) continue;
-    for (const [loai, ds] of theoLoai) max.set(loai, Math.max(max.get(loai) || 0, ds.length));
-  }
-  return max;
-}
-
-/**
- * Danh sách NHÓM cột động thật sự cần cho cây này — bỏ hẳn loại quan hệ
- * không ai dùng (không xuất cột rỗng), và chỉ đánh số khi cần (xem cảnh báo
- * đầu file).
- */
-function dungCotDong(chaMeCuaNguoi, honNhanCuaNguoi, persons) {
-  const maxTheoLoai = soCotToiDaTheoLoai(chaMeCuaNguoi, persons);
-  const nhomChaMe = [];
-  for (const loai of THU_TU_QUAN_HE) {
-    const max = maxTheoLoai.get(loai) || 0;
-    if (max === 0) continue;
-    const coSo = max > 1;
-    for (let i = 1; i <= max; i++) nhomChaMe.push({ loai, idx: i, coSo });
-  }
-
-  const maxHonNhan = soCotToiDa(honNhanCuaNguoi, persons);
-  const coSoHonNhan = maxHonNhan > 1;
-  const nhomHonNhan = [];
-  for (let i = 1; i <= maxHonNhan; i++) nhomHonNhan.push({ idx: i, coSo: coSoHonNhan });
-
-  return { nhomChaMe, nhomHonNhan };
-}
-
-function tenCotNhomChaMe(nhom) {
-  const hau = nhom.coSo ? ' ' + nhom.idx : '';
-  const qual = NHAN_NGAN[nhom.loai] ? ' ' + NHAN_NGAN[nhom.loai] : '';
-  return {
-    cha: 'ID cha' + qual + hau,
-    me: 'ID mẹ' + qual + hau,
-    thuTu: 'Số thứ tự con' + qual + hau,
-  };
-}
-
-function tenCotNhomHonNhan(nhom) {
-  const hau = nhom.coSo ? ' ' + nhom.idx : '';
-  return { id: 'ID phối ngẫu' + hau, thuTu: 'Số thứ tự hôn nhân' + hau };
-}
-
-// ============================================================
-// Định dạng 1 — BẢNG PHẲNG, cột động theo cây
-// ============================================================
-
-/**
- * Dựng mảng-của-mảng cho sheet `BangPhang` — một dòng một người CÒN SỐNG
- * trong dữ liệu (bỏ người đã xoá mềm), cột động theo cây (xem đầu file).
- * Hàm THUẦN — không chạm DOM, không nạp thư viện đọc/ghi Excel.
+ * Một dòng một người còn sống. Sau cột thông tin: cha/mẹ theo từng loại quan
+ * hệ, phối ngẫu 1…N (đúng thứ tự hôn nhân), con 1…N theo từng loại. Không
+ * có cột "số thứ tự" — vị trí cột đã nói thứ tự. Hàm THUẦN.
  *
  * @param {object[]} persons
  * @param {object[]} unions
  * @returns {Array[]}
  */
 export function dungBangPhang(persons, unions) {
-  const unionsSong = (unions || []).filter((u) => !u.deleted);
-  const conSong = (persons || []).filter((p) => !p.deleted);
-  const { chaMeCuaNguoi, honNhanCuaNguoi } = gomTheoNguoi(persons, unionsSong);
-  const { nhomChaMe, nhomHonNhan } = dungCotDong(chaMeCuaNguoi, honNhanCuaNguoi, conSong);
+  const n = dungNen(persons, unions);
 
-  const dau = [...COT_NGUOI_TINH];
-  for (const n of nhomChaMe) { const t = tenCotNhomChaMe(n); dau.push(t.cha, t.me, t.thuTu); }
-  for (const n of nhomHonNhan) { const t = tenCotNhomHonNhan(n); dau.push(t.id, t.thuTu); }
+  // Mỗi người: cha mẹ theo loại · hôn nhân · con theo loại (qua mọi hôn nhân).
+  const chaMeCua = new Map();
+  for (const u of n.unionsSong) {
+    const { chong, vo } = n.chongVo.get(u.id);
+    for (const [loai, ds] of n.conTheoLoai(u)) {
+      for (const id of ds) {
+        if (!chaMeCua.has(id)) chaMeCua.set(id, new Map());
+        const m = chaMeCua.get(id);
+        if (!m.has(loai)) m.set(loai, []);
+        m.get(loai).push({ cha: chong === id ? '' : chong, me: vo === id ? '' : vo });
+      }
+    }
+  }
+  const conCua = new Map();
+  for (const p of n.conSong) {
+    const m = new Map();
+    for (const u of n.honNhanCua.get(p.id) || []) {
+      for (const [loai, ds] of n.conTheoLoai(u)) {
+        if (!m.has(loai)) m.set(loai, []);
+        for (const id of ds) if (!m.get(loai).includes(id)) m.get(loai).push(id);
+      }
+    }
+    conCua.set(p.id, m);
+  }
 
-  const hang = conSong.map((p) => {
-    const dong = hangNguoiTinh(p);
-    const theoLoai = chaMeCuaNguoi.get(p.id) || new Map();
-    for (const n of nhomChaMe) {
-      const muc = (theoLoai.get(n.loai) || [])[n.idx - 1];
-      dong.push(muc ? muc.idCha : '', muc ? muc.idMe : '', muc ? muc.order : '');
+  const maxChaMe = demToiDa(n.conSong.map((p) => chaMeCua.get(p.id) || new Map()));
+  const nhomChaMe = [];
+  for (const loai of THU_TU_QUAN_HE) {
+    const max = maxChaMe.get(loai) || 0;
+    for (let i = 1; i <= max; i++) {
+      const hau = max > 1 ? ' ' + i : '';
+      nhomChaMe.push({ loai, i, cha: 'ID ' + CHA_ME[loai][0] + hau, me: 'ID ' + CHA_ME[loai][1] + hau });
     }
-    const honNhan = honNhanCuaNguoi.get(p.id) || [];
-    for (const n of nhomHonNhan) {
-      const u = honNhan[n.idx - 1];
-      if (!u) { dong.push('', ''); continue; }
-      const idKia = (u.partners || []).find((pid) => pid !== p.id) || '';
-      const rank = (u.ranks && u.ranks[p.id] > 1) ? u.ranks[p.id] : '';
-      dong.push(idKia, rank);
+  }
+  const soPhoiNgau = Math.max(0, ...n.conSong.map((p) => (n.honNhanCua.get(p.id) || []).length));
+  const nhomCon = cotCon(demToiDa(n.conSong.map((p) => conCua.get(p.id))));
+
+  const dau = [...COT_NGUOI];
+  for (const g of nhomChaMe) dau.push(g.cha, g.me);
+  for (let i = 1; i <= soPhoiNgau; i++) dau.push('ID phối ngẫu ' + i);
+  for (const c of nhomCon) dau.push(c.ten);
+
+  const hang = n.conSong.map((p) => {
+    const dong = hangNguoi(p, n.doi);
+    const cm = chaMeCua.get(p.id) || new Map();
+    for (const g of nhomChaMe) {
+      const muc = (cm.get(g.loai) || [])[g.i - 1];
+      dong.push(muc ? muc.cha : '', muc ? muc.me : '');
     }
+    const hn = n.honNhanCua.get(p.id) || [];
+    for (let i = 0; i < soPhoiNgau; i++) {
+      dong.push(hn[i] ? ((hn[i].partners || []).find((x) => x !== p.id) || '') : '');
+    }
+    const cc = conCua.get(p.id);
+    for (const c of nhomCon) dong.push((cc.get(c.loai) || [])[c.i - 1] || '');
     return dong;
   });
 
@@ -216,47 +225,42 @@ export function dungBangPhang(persons, unions) {
 }
 
 // ============================================================
-// Định dạng 2 — HAI SHEET, tách người / gia đình
+// Khuôn 2 — HAI SHEET: Người + Gia đình
 // ============================================================
 
 /**
- * Dựng hai bảng: `ThongTinNguoi` (thuộc tính cá nhân thuần, không quan hệ) và
- * `GiaDinh` (một dòng một cuộc hôn nhân — vợ/chồng, loại quan hệ với TỪNG
- * con, không giới hạn số con). Hàm THUẦN.
+ * `Nguoi`: thông tin cá nhân thuần, không cột quan hệ. `GiaDinh`: một dòng
+ * một cuộc hôn nhân — người nhiều hôn nhân nằm ở nhiều dòng. Hàm THUẦN.
  *
  * @param {object[]} persons
  * @param {object[]} unions
  * @returns {{nguoi: Array[], giaDinh: Array[]}}
  */
 export function dungHaiSheet(persons, unions) {
-  const conSong = (persons || []).filter((p) => !p.deleted);
-  const theoId = new Map((persons || []).map((p) => [p.id, p]));
-  const unionsSong = (unions || []).filter((u) => !u.deleted);
+  const n = dungNen(persons, unions);
+  const nguoi = [COT_NGUOI, ...n.conSong.map((p) => hangNguoi(p, n.doi))];
 
-  const sheetNguoi = [COT_NGUOI_TINH, ...conSong.map(hangNguoiTinh)];
+  const conMoiCap = new Map(n.unionsSong.map((u) => [u.id, n.conTheoLoai(u)]));
+  const nhomCon = cotCon(demToiDa(conMoiCap.values()));
+  // Thứ tự hôn nhân vắng mặt nghĩa là 1 — quy ước `ranks` (b46).
+  const thuTu = (u, id) => (id ? (u.ranks && u.ranks[id]) || 1 : '');
 
-  const dauGiaDinh = [
-    'ID hôn nhân', 'ID vợ/chồng 1', 'Số thứ tự hôn nhân (vợ/chồng 1)',
-    'ID vợ/chồng 2', 'Số thứ tự hôn nhân (vợ/chồng 2)',
-    'Tình trạng hôn nhân', 'Ngày cưới', 'Các con (mã — quan hệ)', 'Ghi chú',
+  const dau = [
+    'ID gia đình', 'ID chồng', 'ID vợ', 'Thứ tự hôn nhân của chồng',
+    'Thứ tự hôn nhân của vợ', 'Tình trạng hôn nhân', 'Ngày cưới', 'Ghi chú',
+    ...nhomCon.map((c) => c.ten),
   ];
-  const hangGiaDinh = unionsSong.map((u) => {
-    const p1 = (u.partners || [])[0] || '';
-    const p2 = (u.partners || [])[1] || '';
-    const rank1 = (u.ranks && p1 && u.ranks[p1] > 1) ? u.ranks[p1] : '';
-    const rank2 = (u.ranks && p2 && u.ranks[p2] > 1) ? u.ranks[p2] : '';
-    const con = [...(u.children || [])]
-      .sort((a, b) => (a.order || 0) - (b.order || 0))
-      .filter((c) => theoId.has(c.personId) && !theoId.get(c.personId).deleted)
-      .map((c) => c.personId + ' — ' + nhanQuanHeCon(c.relation || 'birth', 'con'))
-      .join('; ');
+  const hang = n.unionsSong.map((u) => {
+    const { chong, vo } = n.chongVo.get(u.id);
+    const con = conMoiCap.get(u.id);
     return [
-      u.id, p1, rank1, p2, rank2,
-      nhanTrangThaiCap(u.status), formatDate(u.marriage), con, u.note || '',
+      u.id, chong, vo, thuTu(u, chong), thuTu(u, vo),
+      nhanTrangThaiCap(u.status), formatDate(u.marriage), u.note || '',
+      ...nhomCon.map((c) => (con.get(c.loai) || [])[c.i - 1] || ''),
     ];
   });
 
-  return { nguoi: sheetNguoi, giaDinh: [dauGiaDinh, ...hangGiaDinh] };
+  return { nguoi, giaDinh: [dau, ...hang] };
 }
 
 // ============================================================
@@ -264,8 +268,6 @@ export function dungHaiSheet(persons, unions) {
 // ============================================================
 
 /**
- * Ghi file `.xlsx` và tự tải về — gọi từ một cú bấm chuột (`trang-nguoi.js`).
- *
  * @param {object[]} persons
  * @param {object[]} unions
  * @param {string} tenFile  không kèm đuôi `.xlsx`
@@ -275,9 +277,8 @@ export function dungHaiSheet(persons, unions) {
 export async function xuatExcelNguoi(persons, unions, tenFile, kieu) {
   let XLSX;
   try {
-    // Cùng thư viện với `domains/excel.js` (đọc), nạp riêng ở đây vì đây là
-    // chỗ DUY NHẤT của `pages/quan-tri/` cần GHI Excel — domains/ không được
-    // đụng (xem cảnh báo đầu file).
+    // Cùng thư viện `domains/excel.js` dùng để ĐỌC — nạp riêng vì domains/
+    // không được đụng (xem cảnh báo đầu file).
     XLSX = await import('../../vendor/xlsx.mjs');
   } catch (e) {
     return { ok: false, loi: 'Không nạp được thư viện ghi Excel (js/vendor/xlsx.mjs). ' +
@@ -292,8 +293,8 @@ export async function xuatExcelNguoi(persons, unions, tenFile, kieu) {
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(nguoi), TEN_SHEET_NGUOI);
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(giaDinh), TEN_SHEET_GIADINH);
     } else {
-      const aoa = dungBangPhang(persons, unions);
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), TEN_SHEET_PHANG);
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(dungBangPhang(persons, unions)),
+        TEN_SHEET_PHANG);
     }
   } catch (e) {
     return { ok: false, loi: 'Không dựng được file: ' + (e && e.message ? e.message : String(e)) };

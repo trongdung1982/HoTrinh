@@ -1,13 +1,11 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 27/09/2026 · b125f XONG (mã, bằng Opus) — nút *Xuất Excel* nay có ô
-chọn khuôn: **bảng phẳng cột động** (`dungBangPhang()`, thay hẳn bản b125e cũ
-hay bỏ sót cặp cha/mẹ thứ hai) hoặc **hai sheet tách người/gia đình**
-(`dungHaiSheet()`). Cả hai không nạp lại được qua Nhập Excel — chỉ để xem/sửa
-tay/báo cáo. Đã thử bằng Node (dữ liệu `tai-lieu/giapha-nguyen-trong-bac.json`
-+ ca giả 2 cặp cha mẹ đẻ/3 hôn nhân) — không mất dữ liệu. **Điểm dừng: CHỦ DỰ
-ÁN CHƯA BẤM THỬ trên trình duyệt thật** — bấm ở *Danh sách người → chọn khuôn
-→ Xuất Excel*, mở file `.xlsx` ra xem cột/dữ liệu đúng không.
+*Cập nhật 27/09/2026 · b125f XONG vòng 2 (sửa theo góp ý chủ dự án) — nút
+*Xuất Excel ▾* mở menu hai khuôn, bấm là tải; bảng phẳng có cột ID con/con nuôi,
+bỏ cột số thứ tự; sheet Gia đình có ID chồng/ID vợ; **Đời TÍNH từ cây**
+(`utils/graph.tinhDoi`, đo 681/681 khớp Excel gốc) — hiện ở file Excel, cột mới
+của bảng Danh sách người và thẻ người ở sơ đồ. Luật + phép đo:
+`so-tay/xuat-excel.md`. **Điểm dừng: chủ dự án bấm thử** (bảng dưới).*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -40,7 +38,7 @@ Quản trị hệ thống**.
 | **b118d** — cả trang Quản trị | Còn: các trang con; menu *Chọn hành động* và *Chọn ▾* mỗi thứ một lần; một Duyệt + một Từ chối ở Kiểm duyệt |
 | **b129c** — cột Tài khoản (`39` đã dán) | Danh sách người → Chỉnh sửa → gắn một người chưa có tài khoản; chọn một tài khoản đã liên kết (phải bị chặn, nói rõ gia phả); Đề xuất gỡ → người ấy vào Hồ sơ cá nhân bấm Đồng ý gỡ |
 | **b127d** — đề nghị sửa quan hệ (`33`, xong d-1→d-3) | Form người có quan hệ ngoài cây: bấm ✉ gửi đề nghị → Quản trị hệ thống → tab *Đề nghị sửa quan hệ* → Duyệt (gỡ) hoặc Từ chối |
-| **b125f** — Xuất Excel bản đầy đủ | Danh sách người → chọn khuôn (*bảng phẳng* / *hai sheet*) → Xuất Excel → mở file `.xlsx` xem cột/dữ liệu, thử trên người có ≥2 hôn nhân hoặc con nuôi nếu cây có |
+| **b125f** — Xuất Excel + Đời | Danh sách người (cây 681) → *Xuất Excel ▾* → mỗi khuôn một lần, mở file xem cột Đời, ID con, ID chồng/vợ; cột *Đời* của bảng; mở thẻ một người ở sơ đồ xem hàng *Đời* |
 ---
 
 ## SQL — đã dán gì
@@ -90,13 +88,9 @@ a→c + e đã viết và tự kiểm; d (chọn nhiều dòng, sửa hàng lo�
 quyết định 27/09/2026, chưa viết dòng nào nên không có gì gỡ. Điểm dừng bấm
 thử còn lại của e: bảng trên.
 
-⚠ **b125f — Xuất Excel bản ĐẦY ĐỦ — mã XONG (Opus, 27/09/2026)**, điểm dừng
-bấm thử ở bảng trên. `dungBangPhang()`/`dungHaiSheet()` thay hẳn
-`dungHangExcel()` cũ (bỏ sót cặp cha/mẹ thứ hai) — đã thử bằng Node, không mất
-dữ liệu. ⚠ Cột *Đời* (`vn.generation`) — lúc bấm thử b125e chủ dự án thấy
-thiếu; mã đọc đúng trường, CHƯA xác minh được trên dữ liệu thật vì dữ liệu
-giả cục bộ không có ai điền Đời — xem lại bằng mắt trên một người ĐÃ biết
-chắc có điền Đời khi bấm thử b125f.
+⚠ **b125f — mã XONG, chờ bấm thử** (bảng trên). Còn một câu chưa chốt: ô
+*Đời* trong form sửa người vẫn ghi `vn.generation`, nay chỉ còn làm NEO cho
+phép tính — giữ, đổi thành chỉ đọc, hay bỏ? `so-tay/xuat-excel.md`.
 
 ### Sau đó — chưa đặt số, chưa chốt
 

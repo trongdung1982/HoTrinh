@@ -3,8 +3,9 @@
 // Vai trò  : Duyệt đồ thị dùng chung. MỌI hàm ở đây bắt buộc có tập visited.
 // Lớp      : utils
 // Phụ thuộc: (không)
-// Phiên bản: 0.7.0 · Cập nhật: 25/09/2026 23:59
+// Phiên bản: 0.8.0 · Cập nhật: 27/09/2026 (b125f) — tinhDoi()
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (dâu/rể)
+//            · so-tay/xuat-excel.md (Đời tính từ cây)
 // ============================================================
 //
 // ⚠ HAI NHÓM CHỈ MỤC, HAI VIỆC — đừng dùng lẫn (chủ dự án 24/09/2026):
@@ -224,6 +225,115 @@ export function chiMucVe(tree) {
     unions.push(Object.assign({}, u, gon));
   }
   return buildIndex({ persons, unions });
+}
+
+/**
+ * ĐỜI của mọi người TRONG MỘT CÂY, tính từ quan hệ — không đọc một con số
+ * cất sẵn, vì từ b121 một người dùng chung nhiều cây, mà cùng một người ở
+ * cây này là đời 5, ở cây kia là đời 2 (chủ dự án 27/09/2026).
+ *
+ * Cách tính: cha mẹ → con là +1, vợ ↔ chồng là 0 (dâu/rể mang đời của người
+ * mình lấy). Duyệt từng khối nối liền, ra đời TƯƠNG ĐỐI; rồi neo khối ấy:
+ *   • có người đã ghi tay `vn.generation` → lấy độ lệch mà ĐA SỐ họ đồng ý
+ *     (cây nhập từ Excel/GEDCOM mang sẵn Đời gốc, nên đời tính ra khớp nó);
+ *   • không ai ghi → người cao nhất khối là đời 1.
+ * Ai tính ra < 1 (tổ tiên của dâu/rể, cao hơn cả thuỷ tổ) thì bỏ trống.
+ *
+ * Đường nối trái nhau (lấy người khác vai vế) — cha mẹ/con đi TRƯỚC vợ
+ * chồng: huyết thống quyết đời, hôn nhân chỉ gán đời cho người không có
+ * đường máu nào khác. Đo trên cây 681 người: xem so-tay/xuat-excel.md.
+ *
+ * @param {object[]} persons
+ * @param {object[]} unions
+ * @returns {Map<string, number>}  mã người -> đời (chỉ người có đời ≥ 1)
+ */
+export function tinhDoi(persons, unions) {
+  const trong = new Map();
+  for (const p of persons || []) if (p && p.id && !p.deleted) trong.set(p.id, p);
+
+  const mau = new Map();    // id -> [{id, lech}]  cha mẹ ↔ con
+  const vc  = new Map();    // id -> [id]          vợ ↔ chồng
+  for (const id of trong.keys()) { mau.set(id, []); vc.set(id, []); }
+  for (const u of unions || []) {
+    if (!u || u.deleted) continue;
+    const cap = (u.partners || []).filter((id) => trong.has(id));
+    const con = (u.children || []).map((c) => c && c.personId).filter((id) => trong.has(id));
+    for (let i = 0; i < cap.length; i++) {
+      for (let j = i + 1; j < cap.length; j++) { vc.get(cap[i]).push(cap[j]); vc.get(cap[j]).push(cap[i]); }
+      for (const c of con) {
+        if (c === cap[i]) continue;
+        mau.get(cap[i]).push({ id: c, lech: 1 });
+        mau.get(c).push({ id: cap[i], lech: -1 });
+      }
+    }
+  }
+
+  const daGhi = (id) => {
+    const p = trong.get(id);
+    const n = Number(p && p.vn && p.vn.generation);
+    return Number.isInteger(n) && n > 0 ? n : 0;
+  };
+  // Mở khối từ người đã ghi đời NHỎ nhất (thường là thuỷ tổ), rồi theo mã.
+  const thuTu = [...trong.keys()].sort((a, b) =>
+    ((daGhi(a) || Infinity) - (daGhi(b) || Infinity)) || (a < b ? -1 : a > b ? 1 : 0));
+
+  const tuongDoi = new Map();   // VỪA là kết quả tương đối VỪA là tập visited
+  const ketQua = new Map();
+  for (const goc of thuTu) {
+    if (tuongDoi.has(goc)) continue;
+    const khoi = lanKhoi(goc, tuongDoi, mau, vc);
+
+    const phieu = new Map();
+    let thapNhat = Infinity;
+    for (const id of khoi) {
+      const r = tuongDoi.get(id);
+      if (r < thapNhat) thapNhat = r;
+      const g = daGhi(id);
+      if (g) phieu.set(g - r, (phieu.get(g - r) || 0) + 1);
+    }
+    let lech = 1 - thapNhat;
+    let soPhieu = 0;
+    for (const [l, n] of phieu) {
+      if (n > soPhieu || (n === soPhieu && l < lech)) { lech = l; soPhieu = n; }
+    }
+    for (const id of khoi) {
+      const d = tuongDoi.get(id) + lech;
+      if (d >= 1) ketQua.set(id, d);
+    }
+  }
+  return ketQua;
+}
+
+/**
+ * Lan một khối từ `goc`: hết đường MÁU trước (BFS), rồi mới bước qua một
+ * đường vợ/chồng, và từ người vừa tới lại lan hết đường máu của họ.
+ * `tuongDoi` là tập visited dùng chung cho mọi khối.
+ */
+function lanKhoi(goc, tuongDoi, mau, vc) {
+  const khoi = [];
+  const choVc = [];     // người đã tới, còn chờ bước qua vợ/chồng
+  const lanMau = (dau) => {
+    for (let i = khoi.push(dau) - 1; i < khoi.length; i++) {
+      const id = khoi[i];
+      choVc.push(id);
+      for (const k of mau.get(id)) {
+        if (tuongDoi.has(k.id)) continue;
+        tuongDoi.set(k.id, tuongDoi.get(id) + k.lech);
+        khoi.push(k.id);
+      }
+    }
+  };
+  tuongDoi.set(goc, 0);
+  lanMau(goc);
+  for (let i = 0; i < choVc.length; i++) {
+    const id = choVc[i];
+    for (const k of vc.get(id)) {
+      if (tuongDoi.has(k)) continue;
+      tuongDoi.set(k, tuongDoi.get(id));
+      lanMau(k);
+    }
+  }
+  return khoi;
 }
 
 /**

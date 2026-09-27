@@ -4,11 +4,12 @@
 //            một cây, như một trang tính: tìm, sắp xếp, phân trang, sửa tại
 //            chỗ từng ô rồi Lưu theo DÒNG qua `luu_cay()`. Cột *Tài khoản*
 //            (đang Chỉnh sửa) gắn/gỡ liên kết tài khoản ↔ người (b129c). Nút
-//            *Xuất Excel* chọn khuôn (bảng phẳng cột động / hai sheet, b125f).
+//            *Xuất Excel ▾* mở menu hai khuôn, bấm là tải; cột Đời tính từ
+//            cây (b125f).
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · services/hinh-dang · domains/person ·
-//            utils/{text,date} · quan-tri/{trang-cay,o-goi-y,o-bang,xuat-excel}
-// Phiên bản: 0.7.0 · Cập nhật: 27/09/2026 (b125f) — chọn khuôn xuất Excel
+//            utils/{text,date,graph} · quan-tri/{trang-cay,o-goi-y,o-bang,xuat-excel}
+// Phiên bản: 0.7.0 · Cập nhật: 27/09/2026 (b125f) — menu Xuất Excel, cột Đời
 // Sổ tay   : so-tay/trang-quan-tri.md · so-tay/luu-mot-dong-quan-tri.md
 // ============================================================
 //
@@ -32,6 +33,7 @@ import { rapCay, soSanh, coGiDeGhi, tangSoSauKhiLuu } from '../../services/hinh-
 import { updatePerson } from '../../domains/person.js';
 import { fullName, removeDiacritics } from '../../utils/text.js';
 import { stampNow } from '../../utils/date.js';
+import { tinhDoi } from '../../utils/graph.js';
 import { timCay, cumCay, cayNho, wireTabsTrangCay, datSoDon } from './trang-cay.js';
 import { ganGoiY } from './o-goi-y.js';
 import { hoi } from './hop-thoai.js';
@@ -85,6 +87,9 @@ const TRUONG_DOI = {
  */
 const COT = [
   { ma: 'id',    chu: 'Mã',        lay: (p) => p.id || '' },
+  // Đời TÍNH từ cây (`tinhDoi`), không sửa tại chỗ — đổi đời là đổi quan hệ.
+  { ma: 'doi',   chu: 'Đời',       lay: (p) => (p.doiTinh ? String(p.doiTinh) : ''),
+    so: (p) => p.doiTinh || Number.POSITIVE_INFINITY },
   { ma: 'ten',   chu: 'Họ và tên', lay: (p) => fullName(p) || '(chưa có tên)', sua: 'ten' },
   { ma: 'sex',   chu: 'Giới',      lay: (p) => ({ M: 'Nam', F: 'Nữ' }[p.sex] || ''), sua: 'sex' },
   { ma: 'sinh',  chu: 'Sinh',      lay: (p) => moc(p.birth), so: (p) => nam(p.birth), sua: 'text' },
@@ -187,9 +192,10 @@ export async function mountTrangNguoi(sec, ctx, hashLuc) {
   const dsNguoi = rap.persons;
   unionsDangXem = rap.unions;
   for (const p of dsNguoi) goc.set(p.id, p);
+  const doi = tinhDoi(dsNguoi, unionsDangXem);
   const ds = dsNguoi.map((p) => {
     const lk = lkTheoMa.get(p.id) || null;
-    return { ...p, lk, emailGan: lk ? lk.email : '' };
+    return { ...p, lk, emailGan: lk ? lk.email : '', doiTinh: doi.get(p.id) || 0 };
   });
 
   const ve = () => veBang(sec, ds, kqLK.ok, cay, ctx, quyenTk, () => ve());
@@ -198,23 +204,32 @@ export async function mountTrangNguoi(sec, ctx, hashLuc) {
   ve();
 }
 
-/** Nút *Xuất Excel* — gắn một lần mỗi lần mount, đọc `ds`/`unionsDangXem` LÚC
- *  BẤM (không phải lúc gắn) qua closure `layDs`, nên luôn xuất bản mới nhất.
- *  Khuôn file (bảng phẳng / hai sheet) đọc từ `#tp-xuat-kieu` (b125f). */
+/** Nút *Xuất Excel ▾* — mở menu hai khuôn (`.action-menu` của quantri3);
+ *  bấm một khuôn là tải file NGAY (b125f). Gắn một lần mỗi lần mount, đọc
+ *  `ds`/`unionsDangXem` LÚC BẤM qua closure `layDs`, nên luôn xuất bản mới
+ *  nhất. Bấm ra ngoài thì đóng: bộ nghe chung của `o-bang.js`. */
 function ganNutXuatExcel(sec, cay, layDs) {
   const b = sec.querySelector('#tp-xuat-excel');
-  const oKieu = sec.querySelector('#tp-xuat-kieu');
+  const menu = sec.querySelector('#tp-xuat-menu');
   const tt = sec.querySelector('#tp-xuat-trang-thai');
-  b.onclick = async () => {
-    b.disabled = true;
-    tt.textContent = 'Đang tạo file…';
-    const kieu = oKieu.value === 'hai-sheet' ? 'hai-sheet' : 'phang';
-    const hauTo = kieu === 'hai-sheet' ? '_HaiSheet' : '_BangPhang';
-    const ten = 'DanhSachNguoi_' + (cay.treeCode || cayDangXem) + hauTo + '_' + ngayTenFile();
-    const kq = await xuatExcelNguoi(layDs(), unionsDangXem, ten, kieu);
-    b.disabled = false;
-    tt.textContent = kq.ok ? '' : (kq.loi || 'Không tạo được file.');
+  b.onclick = (e) => {
+    e.stopPropagation();
+    for (const x of document.querySelectorAll('.action-options')) if (x !== menu) x.hidden = true;
+    menu.hidden = !menu.hidden;
   };
+  for (const muc of menu.querySelectorAll('[data-xuat-kieu]')) {
+    muc.onclick = async () => {
+      menu.hidden = true;
+      b.disabled = true;
+      tt.textContent = 'Đang tạo file…';
+      const kieu = muc.getAttribute('data-xuat-kieu') === 'hai-sheet' ? 'hai-sheet' : 'phang';
+      const hauTo = kieu === 'hai-sheet' ? '_NguoiGiaDinh' : '_BangPhang';
+      const ten = 'DanhSachNguoi_' + (cay.treeCode || cayDangXem) + hauTo + '_' + ngayTenFile();
+      const kq = await xuatExcelNguoi(layDs(), unionsDangXem, ten, kieu);
+      b.disabled = false;
+      tt.textContent = kq.ok ? '' : (kq.loi || 'Không tạo được file.');
+    };
+  }
 }
 
 /** `27-09-2026` — chỉ dùng cho tên file, không phải hiển thị cho người đọc. */
