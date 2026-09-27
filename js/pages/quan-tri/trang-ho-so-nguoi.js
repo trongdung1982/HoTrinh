@@ -16,7 +16,8 @@
 // ⚠ Không đọc "cây đang mở" (luật 5a): gia đình đọc bốn bảng dùng chung qua
 //   `sb.docGiaDinhNguoi()`. Người thân ở cây mình không xem được thì RLS
 //   bỏ đi im lặng — hồ sơ thiếu họ, không phải lỗi.
-// ⚠ "Vai trò" = QUYỀN của tài khoản gắn với người này (KE-HOACH b133).
+// ⚠ "Vai trò" = vai của TÀI KHOẢN gắn với người này trong cây (Chủ gia phả
+//   / Thành viên / Khách…), KHÔNG phải vị trí trong sơ đồ — chốt 27/09/2026.
 //   Chỉ biết được ở hai ca: người này là chính mình, hoặc mình là Quản trị
 //   hệ thống. Ca khác để trống cột và nói lý do — không đoán.
 // ⚠ Một trang, hai lối vào: `data-back` của nút "← …" đặt theo khu đang mở.
