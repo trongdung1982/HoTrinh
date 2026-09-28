@@ -174,6 +174,14 @@ khi chuyển cây. Mã file → mã cây chỉ còn nằm ở sổ nhập (`tree
 Kho cạn thì đếm từ `P0001` trong cây rỗng = chắc chắn trùng — đừng bỏ bước
 xin. Đo: `../kiem-thu/kiem-nhap-cay-moi.mjs` (có cây 681 người).
 
+⚠ **Sổ nhập `imports.source` chỉ nhận `GEDCOM`/`EXCEL`** (`check` ở `01`).
+Tới b151b cả hai chế độ nhập gửi `maNguon` = `HEAD.SOUR` thô (`GIAPHA`,
+`PAF`…) → máy chủ từ chối CẢ lần ghi; mọi bài kiểm Node vẫn xanh vì không có
+cơ sở dữ liệu. Nay qua `loaiFileNhap()`. Bài học: đường nhập phải đo bằng
+`luu_cay()` thật — `../kiem-thu/ban-thu-sql/do-b151b.mjs` (681 người: gói
+624 KB, `luu_cay` 0,6–0,73 s trên bàn thử, trần Supabase 8 s → một lần gửi,
+không chia lô).
+
 ## Đọc cây đi qua `doc_cay()`, không đọc thẳng bốn bảng (b122b)
 
 `sb.layDong()` cũ gọi `.eq('tree_id', …)` cho `persons` · `unions` ·

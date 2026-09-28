@@ -3,7 +3,7 @@
 // Vai trò  : Xuất gia phả ra GEDCOM 5.5.1, và ĐỌC file .ged thành bản xem trước
 // Lớp      : domains — HÀM THUẦN, không chạm DOM, không gọi services
 // Phụ thuộc: utils/date, utils/text, utils/id, utils/graph, config, domains/union
-// Phiên bản: 1.15.0 · Cập nhật: 28/09/2026 22:23
+// Phiên bản: 1.15.1 · Cập nhật: 28/09/2026 22:39
 // Sổ tay   : so-tay/luu-du-lieu.md (Kho mã)
 // ============================================================
 //
@@ -1999,7 +1999,7 @@ function tronMoi(tree, imported, t, thua) {
   cay.imports.push({
     at: luc, by: boi,
     file: chu(t.tenFile),
-    source: chu(imported.maNguon),
+    source: loaiFileNhap(imported),
     sourceName: chu(imported.tenCay),
     exporter: chu(imported.nguonXuat),
     counts: { matched: 0, added: nguoiFile.length + capFile.length + nguonFile.length },
@@ -2302,7 +2302,7 @@ function tronBoSung(tree, imported, t, thua) {
     at: luc,
     by: boi,
     file: chu(t.tenFile),
-    source: chu(imported.maNguon),
+    source: loaiFileNhap(imported),
     sourceName: chu(imported.tenCay),
     exporter: chu(imported.nguonXuat),
     counts: {
@@ -2333,6 +2333,16 @@ function tronBoSung(tree, imported, t, thua) {
       soBoSung, soLay, soGiu,
     },
   };
+}
+
+/**
+ * `imports[].source` là LOẠI FILE — `GEDCOM` hoặc `EXCEL` (`CAU-TRUC-DU-LIEU`
+ * mục *imports*; máy chủ có `check` chỉ nhận hai chữ ấy). KHÔNG phải
+ * `maNguon` (`HEAD.SOUR` thô: `GIAPHA`, `PAF`…) — gửi nó là máy chủ từ chối
+ * cả lần ghi. Phần mềm xuất file đã nằm ở `exporter`.
+ */
+function loaiFileNhap(imported) {
+  return chu(imported && imported.maNguon).toUpperCase() === 'EXCEL' ? 'EXCEL' : 'GEDCOM';
 }
 
 /**
