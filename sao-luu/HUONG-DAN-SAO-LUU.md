@@ -340,9 +340,11 @@ thật nào nên chưa mất gì, nhưng ngày bắt đầu gắn ảnh thì đ�
 thật. Mở file sao lưu, tìm dòng `"anh":` trong khối `"dem"` — con số ấy chính
 là số tấm ảnh **chưa được chép đi đâu cả**.
 
-**3. Chưa ai thử KHÔI PHỤC từ file này.** Có file sao lưu chưa phải là có khả
-năng khôi phục — hai chuyện khác nhau, và chuyện thứ hai chỉ chứng minh được
-bằng cách làm thử một lần trên một project Supabase trống. Việc ấy chưa làm.
+**3. Khôi phục mới đo trên máy, chưa chạy trên Supabase thật.** Từ 28/09/2026
+có script đổ ngược (`sao-luu/khoi-phuc.mjs`), đã đo trọn vòng trên bàn thử tại
+chỗ bằng bản sao lưu thật: đổ lại → phá → đổ lại → 19 bảng khớp từng dòng.
+Chạy trên Supabase thật thì chưa — còn hai điều chỉ máy chủ thật trả lời được
+(`so-tay/sao-luu.md`).
 
 ---
 
@@ -364,6 +366,11 @@ File JSON có khuôn thế này:
 Mỗi khoá trong `bang` là **tên một bảng Postgres**, và mỗi dòng bên trong giữ
 **đúng tên cột** của bảng ấy. Nghĩa là đổ ngược lại được, không phải đoán.
 
-**Đừng tự làm việc này một mình** — nói với Claude Code, đưa file, và bảo dựng
-script đổ ngược. Đổ nhầm thứ tự bảng thì Postgres từ chối giữa chừng và để lại
-một cơ sở dữ liệu nửa vời.
+**Script đổ ngược đã có:** `sao-luu/khoi-phuc.mjs` đổi file JSON thành một
+file SQL. Nó **xoá sạch** dữ liệu gia phả hiện có rồi đổ lại bản chụp — mọi
+sửa đổi sau lúc chụp sẽ mất. Cả file chạy trong một giao dịch: hỏng giữa
+chừng thì không gì bị đổi.
+
+**Đừng tự làm việc này một mình** — nói với Claude Code, đưa file. File SQL
+sinh ra chứa cả gia phả: để ở `kiem-thu/` (ngoài repo), **không bao giờ** thả
+vào `supabase/`.
