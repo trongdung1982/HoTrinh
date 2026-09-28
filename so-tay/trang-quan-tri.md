@@ -119,7 +119,11 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
 - **Người duyệt · lúc duyệt · lý do từ chối** đến từ `43` (b136) — bản đứng
   cuối của `ds_kiem_duyet()`. Máy chủ chưa dán `43` thì ba ô trống, không bịa.
 - **`#account-detail` · `#public-info-detail` có trong HTML mà không có lối vào** —
-  cái sau chưa dựng (máy chủ có từ `47`; nút sang nó bị ẩn).
+  cái sau chưa dựng. ⚠ Trong quantri3 nó là cài đặt theo NGƯỜI của từng tài
+  khoản ("Nhân vật của bạn"), KHÔNG phải bảng theo cây của `47` (tab Cây mặc
+  định) — đọc nhầm một lần 28/09. Chờ chốt: `KE-HOACH.md` b150.
+- **`?tab=<tên>` trên địa chỉ QuanTri.html** mở thẳng một tab của khu QTHT
+  (b149, lối vào từ Cài đặt sơ đồ) — đọc một lần rồi xoá khỏi địa chỉ.
 - **Duyệt *xin đổi quyền* nối vào bảng Thành viên & quyền sẵn có, KHÔNG ở
   `#tree-requests`** (b118c) — mục đó là trang JOIN request TĨNH của prototype,
   cột và hình dạng dữ liệu không khớp một lá đơn xin đổi vai của người ĐÃ ở

@@ -1,7 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 17:45 · **b148 (giấu người còn sống với vai xem) XONG MÃ
-— `50` CHƯA DÁN.** b146 · b147 xong, `48` · `49` đã dán. Chín điểm dừng dưới chưa bấm thử.*
+*Cập nhật 28/09/2026 · **b148 (giấu người còn sống + ngày cưới với vai xem)
+XONG MÃ — `50` CHƯA DÁN · b149 (nút Sao lưu sang QuanTri) XONG · b150 TẠM
+DỪNG chờ chủ dự án chọn (A)/(B).** Mười điểm dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -136,14 +137,11 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 28/09 08:04 chỉ có cây NTB; file SQL khôi phục chứa cả gia phả, KHÔNG thả vào
 `supabase/`.
 
-**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử chín điểm
+**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử mười điểm
 dừng ở trên trước.
 
-**Đã chốt 28/09 (chủ dự án "Đồng ý" cả ba đề xuất):**
-1. ✓ **b149** Nút Sao lưu trong Cài đặt của sơ đồ: QTHT → tab Sao lưu ở
-   `QuanTri.html` (`?tab=sao-luu`); người khác không thấy; `pages/backup.js` đã
-   xoá → giàn giáo `tuong-thich` còn 1.
-2. ⏸ **b150 TẠM DỪNG — chờ chủ dự án chọn lại.** Đề xuất đã được gật ("chủ
+**Đang chặn — cần chủ dự án chọn:**
+- ⏸ **b150 TẠM DỪNG — chờ chủ dự án chọn lại.** Đề xuất đã được gật ("chủ
    cây đặt cho cả cây") ĐỌC SAI prototype: trong `quantri3.html`,
    `#public-info-detail` là *"Thông tin công khai CỦA TÔI trong cây X"* — mỗi
    TÀI KHOẢN chọn trường nào về CHÍNH NGƯỜI MÌNH được gắn thì người ngoài thấy
@@ -157,7 +155,6 @@ dừng ở trên trước.
    đặt; trang không có cột "Thông tin đã nhập".
    Claude nghiêng về (A) vì prototype đã duyệt — nhưng (A) là việc lớn hơn
    (lược đồ mới), nên hỏi trước. Chưa viết dòng mã nào cho b150.
-3. ✓ Che ngày cưới + ghi chú hôn nhân với người chỉ xem — gộp vào `50` (b148d).
 
 ### Trang Quản trị — đọc `so-tay/trang-quan-tri.md` trước khi đụng
 
@@ -177,7 +174,7 @@ Sổ tay: `so-tay/luu-du-lieu.md` · kéo người + báo trùng/gộp:
 ở b143 bằng mật khẩu tạm — *gửi liên kết qua email* còn mờ, cần màn hình đặt
 mật khẩu + SMTP riêng, xem `so-tay/tao-tai-khoan.md` · công khai theo từng
 trường XONG ở b145 cho cây mặc định — trang `#public-info-detail` chưa dựng,
-xem *Đã chốt* mục 2 (b150 tạm dừng) · sao lưu đêm báo vào
+xem *Đang chặn* (b150 tạm dừng) · sao lưu đêm báo vào
 nhật ký XONG ở b147)* ·
 nhập GEDCOM/Excel qua máy chủ · **tối ưu tốc độ đọc** khi mọi
 chức năng đã chạy *(681 người: ~0,4s)*. *(Số mục = `THIET-KE-QUAN-TRI.md`.)*
