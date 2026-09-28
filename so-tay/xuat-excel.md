@@ -28,6 +28,10 @@ Liên quan: đường NHẬP Excel là `domains/excel.js` (sheet `DuLieu`) — k
   một dòng một cuộc hôn nhân: `ID chồng` · `ID vợ` · thứ tự hôn nhân của chồng
   / của vợ (vắng `ranks` = 1) · tình trạng · ngày cưới · ghi chú · `ID con 1…`,
   `ID con nuôi 1…`. Người nhiều hôn nhân nằm ở nhiều dòng.
+- **Cột *Liên hệ*** (b150b, `persons.contact`) có ở cả hai khuôn, sau *Dân
+  tộc*. Đường NHẬP (`domains/excel.js`, sheet `DuLieu`) không đọc nó — cũng
+  như mọi ô chữ tự do khác (Nghề nghiệp, Nơi ở…). Khách xuất thì máy chủ đã
+  xoá trắng cột này nếu nhóm Liên hệ tắt (`luoc-do/52`).
 - **Chồng/vợ chỉ là NHÃN lúc xuất** (như GEDCOM, `CLAUDE.md` mục 7): nam →
   chồng, nữ → vợ; cùng giới hoặc chưa rõ giới thì xếp theo thứ tự `partners`.
   Dữ liệu vẫn là mảng `partners` — đừng thêm trường chồng/vợ vào đâu cả.

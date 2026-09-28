@@ -6,7 +6,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: utils/{text,date} · config (nhãn quan hệ, trạng thái cặp) ·
 //            vendor/xlsx.mjs (nạp bằng import() động)
-// Phiên bản: 0.4.0 · Cập nhật: 27/09/2026 (b125g) — Đời nhận từ ngoài vào
+// Phiên bản: 0.5.0 · Cập nhật: 28/09/2026 (b150b) — cột *Liên hệ* (`contact`, `luoc-do/52`)
 // Sổ tay   : so-tay/xuat-excel.md
 // ============================================================
 //
@@ -132,7 +132,7 @@ function cotCon(max) {
 const COT_NGUOI = [
   'ID', 'Đời', 'Tên húy', 'Biệt danh', 'Giới tính', 'Ngày sinh', 'Tình trạng',
   'Nơi sinh', 'Ngày mất', 'Ngày giỗ', 'Mộ tại', 'Chức tước', 'Nghề nghiệp',
-  'Học vấn', 'Tôn giáo', 'Nơi ở', 'Dân tộc', 'Thông tin khác',
+  'Học vấn', 'Tôn giáo', 'Nơi ở', 'Dân tộc', 'Liên hệ', 'Thông tin khác',
 ];
 
 function hangNguoi(p, doi) {
@@ -142,7 +142,7 @@ function hangNguoi(p, doi) {
     chuGioiTinh(p.sex), formatDate(p.birth), chuTinhTrang(p.living),
     (p.birth && p.birth.place) || '', formatDate(p.death), (p.vn && p.vn.gio) || '',
     p.burialPlace || '', p.title || '', p.occupation || '', p.education || '',
-    p.religion || '', p.residence || '', p.nationality || '', p.note || '',
+    p.religion || '', p.residence || '', p.nationality || '', p.contact || '', p.note || '',
   ];
 }
 
