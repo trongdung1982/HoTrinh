@@ -93,7 +93,9 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 ⚠ **Bản sao lưu TRƯỚC 28/09/2026 08:04 chỉ chứa cây NTB** — đo bằng
 `tree_members.added_at` của vai `sao_luu`: NTB từ 04/09, bốn cây kia (NPG 681
 người · LVT433 · TH957 · T388) mới được `45` bù sáng 28/09. Thử khôi phục
-chỉ dùng bản từ 28/09 trở đi.
+chỉ dùng bản từ 28/09 trở đi — bản đủ đầu tiên: `giapha-sao-luu-2026-09-28-0810.json`
+(1,3 MB, chủ dự án bấm tay). ⚠ File ấy chứa cả gia phả: đặt ở `../kiem-thu/`
+(ngoài repo), KHÔNG thả vào `supabase/`.
 
 **b142b — khôi phục thật.** Script đổ ngược file sao lưu JSON → SQL, đo cả
 vòng trên bàn thử (sao lưu → phá → khôi phục → so từng bảng khớp từng dòng).
