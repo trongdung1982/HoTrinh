@@ -1,8 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 09:23 · b142b XONG và ĐÃ CHẠY THẬT: khôi phục từ bản
-sao lưu 08:10 lên Supabase thật, 19 bảng so từng dòng khớp (sổ tay
-`so-tay/sao-luu.md`). Sáu điểm dừng dưới chưa bấm thử.*
+*Cập nhật 28/09/2026 11:54 · b143 (tạo tài khoản qua Edge Function) và b144
+(khoá chặn đăng nhập, `46`) XONG, ĐÃ CHẠY THẬT. Sáu điểm dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
