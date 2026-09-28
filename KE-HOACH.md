@@ -1,9 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 22:44 · **b150 + b150b XONG — `51`, `52` ĐÃ DÁN · b151a → b151c
-(nhập GEDCOM/Excel tạo gia phả mới: cấp mã mới · sửa sổ nhập bị máy chủ từ
-chối · đo 681 người GEDCOM lẫn Excel trên bàn thử) XONG MÃ, không có SQL.**
-Mười ba điểm dừng dưới chưa bấm thử.*
+*Cập nhật 29/09/2026 02:29 · **Nút Tông màu (10 tông của Antigravity) · nới cột
+Nội dung thao tác ở Kiểm duyệt · b152 (công khai theo từng người áp cả cho vai
+`xem`) XONG MÃ. ⚠ `53` CHƯA DÁN — được dán, xem mục SQL.** Mười sáu điểm
+dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -28,6 +28,9 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b152** Công khai theo từng người — cả vai Xem | ⚠ Dán `53` trước (mục SQL). Ctrl+F5. Cần một người CÓ tài khoản gắn, ở cây thử `TH957` (ví dụ người của bạn): *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia* → dòng `TH957` → cột *Thông tin công khai* → tắt *Quê quán* + *Tiểu sử* → *Lưu*. Mời `khach@io.vn` vào `TH957` vai **Khách** (`xem`), đăng nhập `khach@io.vn` → mở `TH957` → bấm người của bạn: KHÔNG thấy quê quán, tiểu sử. Người khác vẫn đủ như cũ (người còn sống vẫn bị lược như b148). Đăng nhập lại tài khoản của bạn: thấy đủ. Xong: bật lại hai trường, gỡ vai của `khach@io.vn` |
+| **Tông màu** (trang Quản trị) | Ctrl+F5 → *Quản trị* → thanh trái có nút **🎨 Tông màu** ngay trên *← Về trang sơ đồ* → bấm → bảng 10 tông mở sang phải nút → chọn *Đêm hoài cổ* → cả trang tối lại, chữ đọc được → tải lại trang (F5) → vẫn tông ấy. Chọn *Kem tối giản (mặc định)* → về y như cũ. Điện thoại: ☰ → *Tông màu* → bảng đứng giữa màn hình. ⚠ Chỉ đổi trang Quản trị — trang sơ đồ chưa theo |
+| **Cột Nội dung thao tác** (Kiểm duyệt) | Ctrl+F5 → *Quản trị → Kiểm duyệt*: cột *Nội dung thao tác* đọc thành câu, không còn một chữ mỗi dòng. Tab *Đã từ chối & hoàn tác*: cột *Lý do từ chối* cũng vậy |
 | **b151a** Nhập tạo gia phả mới | ⚠ Bước này DỰNG một gia phả thật trên máy chủ — thử xong thì xoá nó. Cần tài khoản được phép tạo cây. Ctrl+F5 → ⚙ Cài đặt → *Nhập GEDCOM/Excel* → chọn `tai-lieu/My Family Tree.ged` → ô *Tên gia phả mới* gõ `Thu b151` → *Tạo gia phả mới và ghi vào đó*. Đạt khi: hộp báo ghi xong 6 người, KHÔNG báo "Mã mới vừa cấp đã có bản ghi khác giữ"; sơ đồ hiện đủ 6 người, 2 gia đình; *Danh sách người* cho thấy mã người là số lớn (không phải `P0001`…`P0006`). Xong: *Quản trị → Gia phả* → xoá `Thu b151` |
 | **b151b** Nhập 681 người qua mạng thật | Sau b151a. Mở cây Nguyễn Phúc Giáo → ⚙ Cài đặt → *Xuất GEDCOM* → tải file về. Rồi *Nhập GEDCOM/Excel* → chọn file vừa tải → tên `Thu b151b` → *Tạo gia phả mới và ghi vào đó*. Đạt khi: báo ghi xong 681 người trong vài giây, sơ đồ mở được. Bàn thử đo 0,6–0,73 s; đây là phép duy nhất đo được đường mạng thật (gói ~624 KB). Xong: xoá `Thu b151b` |
 | **b151c** Nhập Excel tạo gia phả mới | Sau b151a. ⚙ Cài đặt → *Nhập GEDCOM/Excel* → chọn file `Cay gia pha 17 doi cu Nguyen Phuc Giao (Pass VBA 12345).xlsb` (nằm trong thư mục `Claude_Code`) → bản xem trước ghi 681 người → tên `Thu b151c` → *Tạo gia phả mới và ghi vào đó*. Đạt khi báo ghi xong 681 người, sơ đồ mở được, cột Đời có số. Bàn thử đo 1,04 s. Xong: xoá `Thu b151c` |
@@ -152,6 +155,17 @@ CHỖ** `luu_cay()` · `tu_choi_thay_doi()` · `gop_hai_nguoi()` — dán lại
 `26`/`28`/`32`/`47`/`48`/`50`/`51` thì PHẢI dán lại `52` (`so-tay/phan-quyen.md`).
 Dán lại nhiều lần được. Tự kiểm 6/6 phải ĐẠT. Bàn thử: `do-b150b.mjs` 32/32.
 
+**`53` (b152) — ⚠ CHƯA DÁN · ĐƯỢC DÁN NGAY** (đứng sau `52`, đã dán).
+Supabase → *SQL Editor* → *New query* → dán NGUYÊN file
+`luoc-do/53-cong-khai-vai-xem.sql` → *Run* → bảng cuối phải ra **ĐẠT cả 4
+dòng**. Chưa dán thì app chạy y như hôm nay (vai `xem` chưa theo cài đặt
+riêng). Không đổi cột, không đổi tên/tham số hàm app gọi (`doc_cay` ·
+`doc_ho_so_nguoi`) → không cần Ctrl+F5 cho SQL. Một hàm mới khoá kín
+`an_bot_rieng` · ⚠ bản ĐỨNG CUỐI của `doc_cay()` · `ds_nguoi_xem_duoc()` ·
+`ds_nguoi_bi_che()` · `doc_ho_so_nguoi()` — dán lại `47`/`50`/`51`/`52`
+thì PHẢI dán lại `53` (`so-tay/phan-quyen.md`). Dán lại nhiều lần được.
+Bàn thử: `do-b152.mjs` 29/29.
+
 ---
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
@@ -167,10 +181,11 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 **Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử mười ba
 điểm dừng ở trên trước (ba điểm b151 đứng đầu bảng).
 
-⚠ **b150 mới che với KHÁCH** (người xem cây chỉ nhờ cây mặc định — cùng người
-`47` che). Thành viên vai `xem` vẫn theo luật người còn sống của `50`, KHÔNG
-theo cài đặt riêng. Muốn áp cả cho vai `xem` thì một dòng ở `doc_cay()` —
-chờ chủ dự án bảo.
+⚠ **b152 — ba điều Claude Code tự chốt thay (chủ dự án ngủ), xem lại khi dậy**:
+① vai `xem` thấy = nhóm NGƯỜI bật, KHÔNG giao với nhóm của CÂY (tab *Cây mặc
+định* chỉ cho khách) · ② người còn sống: giao luật b148 với cài đặt riêng —
+chặt hơn thắng · ③ người xem có quyền sửa ở cây khác chứa người ấy thì thấy
+đủ (như b148). Muốn khác thì một chỗ ở `53`.
 
 ### Trang Quản trị — đọc `so-tay/trang-quan-tri.md` trước khi đụng
 
@@ -211,6 +226,8 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **b103 → b105 của Antigravity vẫn nằm NGOÀI repo**, trong `codex/`. Từng dán thử lên Staging nhưng Staging đã XOÁ 26/09 — nay chưa dán ở đâu cả, chưa rà kỹ, chưa đo | `PHOI-HOP-AI.md` |
 | ⚠ **Bộ bất biến bố cục đang gác nhầm nhánh** — xem ngay dưới bảng. Đường chạy tạm: `--import ./sang-supabase.mjs` (b128b) — ⚠ KHÔNG ăn vào bài chạy trong Chrome; `kiem-buoc-80` dùng bản `kiem-buoc-80-sb.mjs` | `/kiem-tra` phép 9 |
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |
+| ⚠ **Vai `xem` đọc thẳng `tree_persons.doi` qua REST** — Đời của người tắt nhóm Đời vẫn lộ theo đường ấy (app không đi đường ấy, `53` khép ba đường kia). Đóng = giấu cả dòng `tree_persons`, đụng mọi chỗ hỏi "người này ở cây nào" | `luoc-do/53` đầu file · `so-tay/phan-quyen.md` |
+| **Tông màu chỉ ở trang Quản trị** — trang sơ đồ viết màu thẳng vào `style.cssText` (~420 chỗ, 5–6 màu chính); theo tông = một bước riêng, đụng bộ vẽ | `so-tay/trang-quan-tri.md` *Tông màu* |
 | Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
 | ⚠ **`tree_members.person_id` vẫn là cột chết từ b126** — `duyet_thanh_vien()` (đơn xin vào cây) vẫn GHI vào đó; từ b132 không hàm đọc nào dùng nó nữa. Bỏ hẳn cột là một bước riêng | `so-tay/luu-mot-dong-quan-tri.md` |
 | ⚠ **Sao lưu KHÔNG chép ảnh** — chỉ liệt kê. Ảnh vẫn nằm đúng một chỗ | `KIEN-TRUC.md` mục 7 |

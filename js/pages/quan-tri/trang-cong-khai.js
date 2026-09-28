@@ -2,11 +2,12 @@
 // giapha-supabase · js/pages/quan-tri/trang-cong-khai.js
 // Vai trò  : Trang *Thông tin công khai trong gia phả* — đổ dữ liệu vào section
 //            `#public-info-detail` của quantri3: một tài khoản chọn trường nào
-//            về NGƯỜI MÌNH ĐƯỢC GẮN thì khách của cây ấy thấy (b150, `luoc-do/51`).
+//            về NGƯỜI MÌNH ĐƯỢC GẮN thì khách của cây ấy thấy (b150, `luoc-do/51`)
+//            — và từ b152 (`luoc-do/53`) cả thành viên vai `xem` của cây ấy.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · services/hinh-dang · utils/{text,date} ·
 //            quan-tri/{trang-chi-tiet,hop-thoai,khu-quan-tri-he-thong,o-bang}
-// Phiên bản: 0.2.0 · Cập nhật: 28/09/2026 (b150b) — mười nhóm, đủ 11 dòng
+// Phiên bản: 0.2.1 · Cập nhật: 29/09/2026 (b152) — chữ: áp cả cho vai xem
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -17,6 +18,8 @@
 // ⚠ Khách thấy = nhóm CÂY bật ∩ nhóm NGƯỜI bật — cột "Người ngoài thấy" tính
 //   cả hai, không chỉ ô tích của trang này. Hai luật kéo theo của `che_nguoi`:
 //   bật ngày sinh đủ thì năm đi theo; tắt sống/mất thì ngày mất cũng ẩn.
+// ⚠ Vai `xem` thấy = nhóm NGƯỜI bật (không giao nhóm cây); người còn sống thì
+//   giao thêm luật `50`. Cột ấy vẫn tính cho KHÁCH — trường hợp chặt hơn.
 
 import {
   docCongKhaiTaiKhoan, datCongKhaiTaiKhoan, layDanhSachGiaPha, dsTaiKhoanHeThong,
@@ -140,7 +143,7 @@ export async function mountCongKhai(sec, ctx) {
     await bao(tuQTHT ? 'Quản trị hệ thống đã lưu' : 'Lưu thành công',
       'Đã lưu thiết lập thông tin công khai trong gia phả "' + tenCay + '". Hiện có ' +
       (1 + bat.size) + '/' + (1 + NHOM_CONG_KHAI.length) +
-      ' trường được phép hiển thị cho khách và người ngoài.');
+      ' trường được phép hiển thị cho khách và thành viên chỉ có quyền Xem.');
     ve();
   };
 }

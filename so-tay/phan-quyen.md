@@ -40,12 +40,14 @@ Dán lại file bên trái thì phải dán tiếp các file bên phải, đúng
 - `03`/`06`/`08`/`13`→`25`→`27`→**`28`** — `28` giữ bản cuối của `luu_cay()` và
   `tu_choi_thay_doi()`, khác `27` chín chỗ. Dán lại `27` sau `28` là mất cả
   chín, **không một lời báo**.
-- `26`/`27`/`30`→`47`→`50`→`51`→**`52`** (`50` giữ bản cuối `ds_nguoi_xem_duoc()`
-  · `ds_hon_nhan_xem_duoc()` · luật `doc_change_log`; **`52` giữ bản cuối
-  `doc_cay()` · `che_nguoi()` · `doc_ho_so_nguoi()` · luật `doc_tree_persons`**)
+- `26`/`27`/`30`→`47`→`50`→`51`→`52`→**`53`** (`50` giữ bản cuối
+  `ds_hon_nhan_xem_duoc()` · luật `doc_change_log`; `52` giữ bản cuối
+  `che_nguoi()` · luật `doc_tree_persons`; **`53` giữ bản cuối `doc_cay()` ·
+  `ds_nguoi_xem_duoc()` · `ds_nguoi_bi_che()` · `doc_ho_so_nguoi()`**)
   — quên `47` là khách đọc lại MỌI trường; quên `50` là người chỉ xem đọc lại
   chi tiết người còn sống; quên `51`/`52` là khách thấy lại trường chính chủ
-  đã tắt, và đọc lại Đời qua `tree_persons`. Cả bốn im lặng.
+  đã tắt, và đọc lại Đời qua `tree_persons`; quên `53` là người chỉ xem thấy
+  lại trường chính chủ đã tắt. Cả năm im lặng.
 - ⚠ **`28`/`32`/`48` → `52`**: `52` VÁ TẠI CHỖ `tu_choi_thay_doi()` ·
   `luu_cay()` · `gop_hai_nguoi()` (thêm `contact`). Dán lại một trong ba mà
   quên `52` là ô Liên hệ thôi lưu / thôi trả lại / thôi gộp — im lặng.
@@ -143,6 +145,16 @@ thấy. Khách thấy = nhóm cây bật (`47`) ∩ nhóm người bật. Chỉ 
   ⚠ Đời có đường đọc thứ hai (`tree_persons`, app đọc thẳng) — che ở
   `doc_cay()` phải kèm khép luật đọc bảng ấy với khách, không là tấm rèm.
   Đo: `do-b150b.mjs` 32/32.
+- **Áp cả cho vai `xem` từ `53` (b152, 29/09/2026)**: vai `xem` thấy = nhóm
+  NGƯỜI bật, KHÔNG giao nhóm cây (nhóm cây là cho khách); người còn sống thì
+  giao thêm `c_mo_song` của `50`. Có đường thấy đủ (`ds_nguoi_xem_day_du()`)
+  thì không che. Ba đường khép cùng nhau như `50`: `doc_cay()` ·
+  `ds_nguoi_xem_duoc()` (→ `persons`/`media`) + `ds_nguoi_bi_che()` (→
+  `unions`) · `doc_ho_so_nguoi()` (cài đặt chặt nhất — `truong_rieng_nguoi(mã,
+  null)` = giao mọi cây). ⚠ `bi_che` của `doc_cay()` VẪN chỉ kể người còn
+  sống (app nói "còn sống nên lược bớt"). ⚠ **Khe còn mở**: vai `xem` đọc
+  thẳng `tree_persons.doi` — Đời của người tắt nhóm ấy lộ qua REST (app không
+  đi đường ấy). Đo: `do-b152.mjs` 29/29.
 
 ## Bài học
 

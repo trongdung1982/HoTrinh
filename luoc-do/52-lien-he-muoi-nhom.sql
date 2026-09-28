@@ -3,6 +3,8 @@
 -- Vai trò  : Cột mới `persons.contact` (Liên hệ) · công khai theo MƯỜI nhóm
 --            thay vì sáu — thêm Sống/mất · Đời · Quê quán (tách khỏi Tiểu
 --            sử) · Liên hệ (b150b). Đủ 11 dòng của quantri3 `#public-info-detail`.
+-- ⚠ TỪ 29/09: `53` đứng sau file này cho `doc_cay()` · `doc_ho_so_nguoi()` —
+--   dán lại file này thì PHẢI dán lại `53` (so-tay/phan-quyen.md).
 -- Cần có   : `51`. ⚠ Bản ĐỨNG CUỐI của `che_nguoi()` · `doc_cay()` ·
 --            `doc_ho_so_nguoi()` · `dat_truong_cong_khai()` ·
 --            `dat_cong_khai_tai_khoan()` · `truong_rieng_nguoi()` · luật đọc
