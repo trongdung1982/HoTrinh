@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 11:54 · b143 (tạo tài khoản qua Edge Function) và b144
-(khoá chặn đăng nhập, `46`) XONG, ĐÃ CHẠY THẬT. Sáu điểm dừng dưới chưa bấm thử.*
+*Cập nhật 28/09/2026 · b145 (công khai theo từng trường, `47`) XONG, `47` ĐÃ
+DÁN. b143 · b144 đã chạy thật. Bảy điểm dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -26,6 +26,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b145** Công khai theo trường | Ctrl+F5 → *Quản trị hệ thống → Cây mặc định*: bảng bảy dòng có ô tích. Đặt cây thử `TH957` làm mặc định, tắt *Ngày tháng sinh cụ thể* + *Ảnh* → *Lưu*. Đăng nhập `khach@io.vn` (không có chân ở `TH957`) mở sơ đồ: thẻ người chỉ còn năm sinh, không ảnh. Đăng nhập lại bằng tài khoản của bạn: vẫn thấy đủ. *Nhật ký* có dòng "Đổi trường công khai cho khách". ⚠ Xong nhớ đặt lại cây mặc định như cũ |
 | **b141** Tải ảnh | Ctrl+F5. Mở một người ở cây `TH957` → *Sửa* → khối Ảnh → thêm một tấm ảnh chụp điện thoại → *Lưu*. Đạt khi ảnh hiện trên ô sơ đồ, và bấm vào ảnh ở trang chi tiết thì ra bản lớn nét |
 | **b140** Duyệt hàng loạt | *Quản trị → Kiểm duyệt*, tab *Đang chờ duyệt* (Ctrl+F5 trước). Cây thử `TH957`: sửa 2–3 lần bằng tài khoản thử để có dòng chờ. Tích hai dòng → thanh trên bảng ghi "Đã chọn 2 / n" → *Duyệt các dòng đã chọn* → *Duyệt chính thức* → hộp "Đã duyệt 2 / 2", hai dòng sang tab *Đã nhận chính thức*. Lặp với *Từ chối các dòng đã chọn* + một lý do → dữ liệu về như cũ, tab *Đã từ chối* hiện lý do ấy ở cả hai dòng. Đổi bộ lọc cây → các ô tích tự bỏ hết |
 | **b139** Nhập GEDCOM bổ sung | Mở cây thử `TH957` → *Nhập GEDCOM/Excel* → chọn một file `.ged` có vài người CHƯA có trong cây → ghép đôi → *Ghi*. Đạt khi ghi xong không báo "Mã mới vừa cấp đã có bản ghi khác giữ", và người mới hiện trên sơ đồ |
@@ -87,6 +88,12 @@ Khoá tài khoản thì chặn luôn đăng nhập (`banned_until`). Một trigg
 khoá. Không định nghĩa lại hàm nào của file khác → không kéo chuỗi dán lại.
 Bàn thử: `do-b144.mjs` 20/20.
 
+**`47` (b145) — ĐÃ DÁN lên THẬT 28/09, tự kiểm 6/6 ĐẠT** (chủ dự án báo). Thêm cột `trees.truong_cong_khai` (mặc định bật
+cả sáu = y hệt hôm nay) · `la_khach_cay` · `che_nguoi` · `dat_truong_cong_khai`
+· ⚠ bản ĐỨNG CUỐI của `doc_cay()` và `ds_nguoi_xem_duoc()` — dán lại
+`26`/`27`/`30` thì PHẢI dán lại `47` (`so-tay/phan-quyen.md`). Bàn thử:
+`do-b145a.mjs` 43/43.
+
 ---
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
@@ -118,8 +125,9 @@ Sổ tay: `so-tay/luu-du-lieu.md` · kéo người, b124b chưa dựng:
 
 **Nhóm E quantri3** *(9.5 — nhật ký hệ thống XONG ở b134; tạo tài khoản XONG
 ở b143 bằng mật khẩu tạm — *gửi liên kết qua email* còn mờ, cần màn hình đặt
-mật khẩu + SMTP riêng, xem `so-tay/tao-tai-khoan.md` · công khai theo từng trường · ghi bản sao lưu đêm vào nhật ký: `SaoLuu.gs`
-gọi một hàm mới)* · **dòng họ + cây chính do người tự chọn** (`6`) ·
+mật khẩu + SMTP riêng, xem `so-tay/tao-tai-khoan.md` · công khai theo từng
+trường XONG ở b145 cho cây mặc định — trang `#public-info-detail` theo từng cây
+chưa dựng · ghi bản sao lưu đêm vào nhật ký: `SaoLuu.gs` gọi một hàm mới)* · **dòng họ + cây chính do người tự chọn** (`6`) ·
 nhập GEDCOM/Excel qua máy chủ · **tối ưu tốc độ đọc** khi mọi
 chức năng đã chạy *(681 người: ~0,4s)*. *(Số mục = `THIET-KE-QUAN-TRI.md`.)*
 

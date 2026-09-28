@@ -8,8 +8,8 @@
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang ·
 //            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don · khu-nhat-ky ·
 //            khu-tao-tai-khoan
-// Phiên bản: 1.9.1 · Cập nhật: 28/09/2026 (b144) — câu hộp Khoá nói thêm
-//            chặn đăng nhập (`luoc-do/46`). Lịch sử: `git log -p`.
+// Phiên bản: 1.10.0 · Cập nhật: 28/09/2026 (b145) — bảng trường công khai
+//            của Cây mặc định nối máy chủ (`luoc-do/47`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -30,7 +30,8 @@
 //   tài khoản* (mềm 60 ngày) đã nối · *Xóa* nay ĐÒI đã khoá đủ 60 ngày.
 
 import {
-  layDanhSachGiaPha, layCayMacDinh, datCayMacDinh, dsTaiKhoanHeThong, dsThanhVien,
+  layDanhSachGiaPha, layCayMacDinh, datCayMacDinh, docTruongCongKhai, datTruongCongKhai,
+  dsTaiKhoanHeThong, dsThanhVien,
   duyetXoaCay, huyXinXoaCay, phucHoiCay, donThungRac, xoaAnhThat,
   datQuanTriHeThong, datDuocTaoCay, xoaTaiKhoan, khoaTaiKhoan, moKhoaTaiKhoan,
 } from '../../services/sb.js';
@@ -137,17 +138,14 @@ function veChuaCo(sec) {
   // b134: nhật ký hệ thống đã có (`khu-nhat-ky.js`) — ô `notice` chỉ còn nói
   // nó ghi gì và KHÔNG ghi gì.
   dat('nk-chua-co', 'Máy chủ tự ghi: đăng nhập, tài khoản mới, khoá/mở khoá/xoá tài khoản, cờ Quản ' +
-    'trị hệ thống và quyền tạo cây, tạo/xoá/phục hồi/bàn giao gia phả, cây mặc định. Không ghi việc ' +
+    'trị hệ thống và quyền tạo cây, tạo/xoá/phục hồi/bàn giao gia phả, cây mặc định và trường công khai. Không ghi việc ' +
     'sửa dữ liệu trong cây (xem ở khu Kiểm duyệt), không ghi bản sao lưu đêm.');
 
   mo('#btn-don-tai-khoan-60ngay', 'Xoá mềm 60 ngày chưa có ở máy chủ — làm ở b118b.');
-  mo('#btn-save-default-tree-fields', 'Công khai theo từng trường chưa có ở máy chủ — làm sau b120.');
 
   dongTrong(sec.querySelector('#sl-lich-su-tbody'), 5,
     'Không đọc được — máy chủ này không nối tới Google Drive. Xem tại script.google.com → Executions.');
   // `#sl-doi-chieu-tbody` không mờ ở đây nữa — `veKhuSaoLuu()` tự vẽ số thật.
-  dongTrong(sec.querySelector('#default-tree-fields-tbody'), 4,
-    'Công khai theo từng trường chưa có ở máy chủ — làm sau b120.');
   dongTrong(sec.querySelector('#stk-cho-xoa-tbody'), 7,
     'Chưa có ở máy chủ — xoá mềm 60 ngày làm ở b118b. Hôm nay Xóa tài khoản là xoá hẳn.');
   dat('stk-cho-xoa-dem', '');
@@ -463,9 +461,10 @@ function veCayMacDinh(sec, ds, cmd, napLai) {
       else oTV.closest('li').hidden = true;
     });
   }
-  sec.querySelector('#cmd-truong-mo-ta').textContent =
-    'Công khai theo từng trường chưa có ở máy chủ — làm sau b120.';
-  sec.querySelector('#btn-view-default-tree-public-detail').textContent = 'Chưa có';
+  // Nút sang `#public-info-detail` — trang ấy chưa dựng, và bảng ngay dưới đã
+  // là đủ nội dung của nó cho cây mặc định. Ẩn, không để chữ "Chưa có" gãy dòng.
+  sec.querySelector('#btn-view-default-tree-public-detail').hidden = true;
+  veTruongCongKhai(sec, cay, napLai);
 
   const chon = sec.querySelector('#sys-select-cay-mac-dinh');
   chon.innerHTML = '';
@@ -506,6 +505,119 @@ function veCayMacDinh(sec, ds, cmd, napLai) {
       lam: () => datCayMacDinh(null),
     });
     if (kq) napLai();
+  };
+}
+
+// ============================================================
+// Công khai theo từng trường — `luoc-do/47` (b145)
+// ============================================================
+// ⚠ Máy chủ che trong `doc_cay()` và khép luật đọc thẳng bảng người; bảng này
+//   chỉ đặt công tắc. "Khách" = tài khoản xem được cây CHỈ NHỜ nó là cây mặc
+//   định — thành viên của cây và QTHT luôn thấy đủ.
+// ⚠ Bảy dòng theo CỘT THẬT (chốt 28/09/2026), không theo tám dòng mẫu của
+//   quantri3: bỏ *Số điện thoại & Email* (bảng người không có cột ấy), gộp
+//   *Quê quán* vào *Tiểu sử* (nơi ở) và nơi sinh vào *Ngày sinh cụ thể*.
+// ⚠ Mã nhóm dưới phải khớp mảng cho phép trong `luoc-do/47` (ràng buộc cột +
+//   `dat_truong_cong_khai` + `che_nguoi`) — thêm nhóm là sửa CẢ HAI phía.
+
+const TRUONG_CONG_KHAI = [
+  // [mã nhóm, tên dòng, khách thấy gì khi bật, chữ huy hiệu khi tắt]
+  ['', 'Họ và tên nhân vật', 'Họ tên, tên khác và Đời', ''],
+  ['gioi_tinh', 'Giới tính', 'Nam / Nữ', 'Ẩn bảo mật'],
+  ['nam_sinh', 'Năm sinh', 'Chỉ năm, ví dụ 1982', 'Ẩn bảo mật'],
+  ['ngay_sinh', 'Ngày tháng sinh cụ thể', 'Ngày sinh đầy đủ và nơi sinh', 'Ẩn bảo mật'],
+  ['ngay_mat', 'Ngày mất, ngày giỗ & nơi an táng', 'Ngày mất · giỗ · nơi an táng', 'Ẩn bảo mật'],
+  ['anh', 'Ảnh chân dung', 'Ảnh đại diện và ảnh trong hồ sơ', 'Ảnh mặc định'],
+  ['tieu_su', 'Tiểu sử & Sự nghiệp', 'Ghi chú, chức danh, nghề, học vấn, tôn giáo, nơi ở, dân tộc', 'Ẩn bảo mật'],
+];
+
+async function veTruongCongKhai(sec, cay, napLai) {
+  const tbody = sec.querySelector('#default-tree-fields-tbody');
+  const bLuu = sec.querySelector('#btn-save-default-tree-fields');
+  const oDem = sec.querySelector('#cmd-truong-dem');
+  const oMoTa = sec.querySelector('#cmd-truong-mo-ta');
+  bLuu.disabled = true;
+  oDem.hidden = true;
+  oMoTa.textContent = '';
+
+  if (!cay) {
+    bLuu.title = 'Chưa đặt cây mặc định.';
+    dongTrong(tbody, 4, 'Chưa đặt cây mặc định — chọn một cây ở ô dưới trước.');
+    return;
+  }
+  dongTrong(tbody, 4, 'Đang đọc…');
+  const hashLuc = window.location.hash;
+  const kq = await docTruongCongKhai(cay.fileId);
+  if (window.location.hash !== hashLuc) return;
+  if (!kq.ok) {
+    bLuu.title = kq.loi;
+    dongTrong(tbody, 4, kq.loi, () => veTruongCongKhai(sec, cay, napLai));
+    return;
+  }
+
+  const bat = new Set(kq.ds);
+  const oTich = new Map();
+  tbody.innerHTML = '';
+  for (const [ma, ten, viDu, chuTat] of TRUONG_CONG_KHAI) {
+    const tr = document.createElement('tr');
+    const oHuy = td();
+    const oViDu = td();
+    let oCong;
+    if (!ma) {
+      oCong = chepKieu(td(chepKieu(span('muted', 'Cố định'), 'font-size:11px')), 'text-align:center');
+    } else {
+      const o = document.createElement('input');
+      o.type = 'checkbox';
+      o.className = 'def-tree-chk';
+      o.checked = bat.has(ma);
+      chepKieu(o, 'cursor:pointer;width:16px;height:16px');
+      oTich.set(ma, o);
+      oCong = chepKieu(td(o), 'text-align:center');
+    }
+    const oTen = document.createElement('strong');
+    oTen.textContent = ten;
+    tr.append(td(oTen), oHuy, oViDu, oCong);
+    tr._ve = () => {
+      const mo = !ma || oTich.get(ma).checked;
+      oHuy.replaceChildren(huyHieu(mo ? 'Công khai' : chuTat, mo ? 'ok' : 'wait'));
+      oViDu.textContent = mo ? viDu : '-';
+      oViDu.className = mo ? '' : 'muted';
+      if (mo) chepKieu(oViDu, 'color:var(--ink)'); else oViDu.removeAttribute('style');
+    };
+    tbody.append(tr);
+  }
+
+  // Bật ngày sinh cụ thể thì năm đi theo — máy chủ cũng hiểu thế (`che_nguoi`).
+  const veLai = () => {
+    const ns = oTich.get('nam_sinh');
+    if (oTich.get('ngay_sinh').checked) { ns.checked = true; ns.disabled = true;
+      ns.title = 'Ngày sinh cụ thể đã gồm năm sinh.'; }
+    else { ns.disabled = false; ns.title = ''; }
+    for (const tr of tbody.children) tr._ve();
+    const dang = [...oTich].filter(([, o]) => o.checked).map(([m]) => m);
+    oDem.textContent = (dang.length + 1) + '/' + TRUONG_CONG_KHAI.length + ' trường công khai';
+    oDem.hidden = false;
+    oMoTa.textContent = (dang.length + 1) + '/' + TRUONG_CONG_KHAI.length + ' trường cho tài khoản ' +
+      'không có chân trong cây. Thành viên và Quản trị hệ thống luôn thấy đủ.';
+    return dang;
+  };
+  for (const o of oTich.values()) o.onchange = veLai;
+  veLai();
+
+  bLuu.disabled = false;
+  bLuu.title = '';
+  bLuu.onclick = async () => {
+    const dang = veLai();
+    const tat = TRUONG_CONG_KHAI.filter(([m]) => m && !dang.includes(m)).map(([, t]) => t);
+    const kqLuu = await hoi({
+      tua: 'Lưu thiết lập hiển thị cây mặc định',
+      chu: 'Khách xem “' + (cay.ten || cay.treeCode) + '” sẽ ' +
+        (tat.length ? 'KHÔNG thấy: ' + tat.join(' · ') + '.' : 'thấy đủ mọi trường.') +
+        ' Áp dụng ngay từ lần khách mở cây kế tiếp.',
+      nutOk: 'Lưu thiết lập', kieuOk: 'warm',
+      lam: () => datTruongCongKhai(cay.fileId, dang),
+    });
+    if (kqLuu) napLai();
   };
 }
 

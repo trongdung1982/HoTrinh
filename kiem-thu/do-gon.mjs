@@ -6,8 +6,8 @@
 //            node supabase/kiem-thu/do-gon.mjs --tat-ca    (in hết nợ cũ)
 //            node supabase/kiem-thu/do-gon.mjs --ha-moc    (nợ đã giảm → khoá mức mới)
 //            node supabase/kiem-thu/do-gon.mjs --lap-moc   (chỉ chạy được khi chưa có sổ)
-// Phiên bản: 0.3.0 · Cập nhật: 27/09/2026 (b131) — bỏ trần cứng của
-//            `KE-HOACH.md` (chuyển sang XEM_PHIEN, chỉ đo không chặn)
+// Phiên bản: 0.4.0 · Cập nhật: 28/09/2026 (b145) — bỏ trần cứng của
+//            `so-tay/*.md` (chuyển sang XEM, như `KE-HOACH.md` ở b131)
 // ============================================================
 //
 // LỖI    — vượt trần mà không có trong sổ nợ, hoặc nợ cũ TĂNG. Thoát mã 1.
@@ -32,7 +32,7 @@ const TRAN = {
   dongIndex: 250,  // ký tự mỗi dòng nhat-ky/INDEX.md
   maDai: 1500,     // dòng một file mã — chỉ XEM
   nhatKy: 43,      // số file nhat-ky/b*.md — ĐÓNG 15/09/2026, không được tăng
-  soTay: 12000,    // byte mỗi so-tay/*.md — vượt thì tách chức năng nhỏ hơn
+  soTay: 12000,    // byte mỗi so-tay/*.md — chỉ XEM, không chặn (bỏ trần 28/09/2026, b145)
 };
 
 // File nạp ở đầu MỌI phiên: [đường dẫn từ Claude_Code, trần dòng, trần byte, trần ký tự/dòng]
@@ -136,13 +136,14 @@ for (const rel of XEM_PHIEN) {
   doDuoc.push({ khoa: 'index:dong-dai', nhan: `nhat-ky/INDEX.md — số dòng dài quá ${TRAN.dongIndex} ký tự`, gt: n, tran: 0, dv: 'dòng' });
 }
 
-// 4. Sổ tay — mỗi sổ một trần byte
+// 4. Sổ tay — chỉ XEM, KHÔNG trần cứng (chủ dự án chốt 28/09/2026, b145):
+//    gọn bằng luật chống phình S1–S5 của QUY-TAC-GON.md, không bằng con số.
 {
   const thu = path.join(REPO, 'so-tay');
   if (fs.existsSync(thu)) {
     for (const t of fs.readdirSync(thu).filter((x) => x.endsWith('.md'))) {
       const b = soByte(docChu(path.join(thu, t)));
-      doDuoc.push({ khoa: `so-tay:${t}:byte`, nhan: `so-tay/${t} — cỡ file`, gt: b, tran: TRAN.soTay, dv: 'byte' });
+      if (b > TRAN.soTay) xem.push(`${b} byte · so-tay/${t} (cân nhắc tách chức năng nhỏ hơn — S4)`);
     }
   }
 }

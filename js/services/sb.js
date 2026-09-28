@@ -828,6 +828,40 @@ export async function datCayMacDinh(treeId) {
 }
 
 /**
+ * Các nhóm trường KHÁCH được thấy ở một cây (`luoc-do/47`). Khách = xem được
+ * cây chỉ nhờ nó là cây mặc định; máy chủ che trong `doc_cay()`, không ở đây.
+ *
+ * @returns {Promise<{ok:boolean, ds:string[]|null, loi:string|null}>} `ds` là
+ *   tập con của `gioi_tinh · nam_sinh · ngay_sinh · ngay_mat · anh · tieu_su`.
+ *   Cột chưa có (chưa dán `47`) thì `ok:false` — đừng đoán là bật hết.
+ */
+export async function docTruongCongKhai(treeId) {
+  const k = layKhach();
+  if (!k) return { ok: false, ds: null, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.from('trees').select('truong_cong_khai')
+    .eq('id', treeId).maybeSingle();
+  if (error) return { ok: false, ds: null, loi: cauLoi(error) };
+  if (!data || !Array.isArray(data.truong_cong_khai)) {
+    return { ok: false, ds: null, loi: 'Máy chủ chưa có công khai theo từng trường.' };
+  }
+  return { ok: true, ds: data.truong_cong_khai, loi: null };
+}
+
+/** Đặt các nhóm trường khách được thấy. Chỉ Quản trị hệ thống — máy chủ gác. */
+export async function datTruongCongKhai(treeId, ds) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('dat_truong_cong_khai', {
+    p_tree: treeId, p_truong: ds || [],
+  });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  if (data && data.ok === false) {
+    return { ok: false, loi: data.lyDo || 'Không lưu được thiết lập công khai.' };
+  }
+  return { ok: true, loi: null };
+}
+
+/**
  * Bật/tắt công tắc "cho người lạ thấy tên cây này".
  *
  * ⚠ Bật KHÔNG mở nội dung cây — chỉ mở tên, mã, số người và email chủ cây.

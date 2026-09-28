@@ -119,8 +119,7 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
 - **Người duyệt · lúc duyệt · lý do từ chối** đến từ `43` (b136) — bản đứng
   cuối của `ds_kiem_duyet()`. Máy chủ chưa dán `43` thì ba ô trống, không bịa.
 - **`#account-detail` · `#public-info-detail` có trong HTML mà không có lối vào** —
-  prototype không nối cái đầu; cái sau cần công khai theo từng trường, máy chủ
-  chưa có (sau b120). Chép cho đủ file.
+  cái sau chưa dựng (máy chủ có từ `47`; nút sang nó bị ẩn).
 - **Duyệt *xin đổi quyền* nối vào bảng Thành viên & quyền sẵn có, KHÔNG ở
   `#tree-requests`** (b118c) — mục đó là trang JOIN request TĨNH của prototype,
   cột và hình dạng dữ liệu không khớp một lá đơn xin đổi vai của người ĐÃ ở

@@ -40,6 +40,8 @@ Dán lại file bên trái thì phải dán tiếp các file bên phải, đúng
 - `03`/`06`/`08`/`13`→`25`→`27`→**`28`** — `28` giữ bản cuối của `luu_cay()` và
   `tu_choi_thay_doi()`, khác `27` chín chỗ. Dán lại `27` sau `28` là mất cả
   chín, **không một lời báo**.
+- `26`/`27`/`30`→**`47`** (bản cuối `doc_cay()` · `ds_nguoi_xem_duoc()`) —
+  quên là khách đọc lại MỌI trường, im lặng.
 - **Sau `26` KHÔNG dán lại `02`/`11`** — luật đọc trên bảng người của chúng hỏi
   `tree_id` đã bỏ; bản đứng cuối của bốn luật ấy ở `26` mục 5.
 - `34`→`35`→`36`→`37`→`38`→`39`. `36` giữ bản cuối của

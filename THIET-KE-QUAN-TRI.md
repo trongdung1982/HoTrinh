@@ -743,7 +743,7 @@ grep `luoc-do/` trước.
 | **B · `sb.js` không SQL** | `doiMatKhau(moi)` → `auth.updateUser`; thêm cờ *dựng cây* vào `layPhien()` | `sb.js` + ⚠⚠ `kiem-thu/sb-gia.mjs` |
 | **C · SQL nhỏ, không đụng vai** | `rut_don_xin_vao` · `roi_cay` | file `luoc-do/22` mới |
 | **D · SQL theo bốn quyết định** | QTHT hai chữ ký · khoá mềm tài khoản · `16` sửa ẩn-ngay + 120 ngày · xin đổi quyền *(cột + ba hàm)* | `14` · `16` · `18` — ⚠ **đụng `la_quan_tri_he_thong()` và `co_the_xem_cay()`**, nền móng quyền |
-| **E · tách sau b120** | tạo tài khoản mới · công khai theo từng trường · nhật ký hệ thống | lược đồ mới mỗi việc |
+| **E · tách sau b120** | tạo tài khoản mới *(✓ b143)* · công khai theo từng trường *(✓ b145, `47` — tab Cây mặc định; trang `#public-info-detail` chưa dựng)* · nhật ký hệ thống *(✓ b134)* | lược đồ mới mỗi việc |
 
 ⚠ **Nhóm D đứng SAU nhóm A** theo đúng luật thứ tự của `KE-HOACH.md` — *việc
 đụng vai đứng sau việc không đụng*. Giao diện của bốn quyết định vẽ trước,

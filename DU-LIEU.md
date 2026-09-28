@@ -70,6 +70,13 @@ tạo cây mới · mã ngắn của tài khoản là gì*.
 Và hai cột mới trên `trees`: `chu_so_huu` (người dựng cây) ·
 `cho_nguoi_la_thay_ten` (công tắc tầng 1, **mặc định TẮT**).
 
+Cột `trees.truong_cong_khai text[]` *(b145, `luoc-do/47`)* — nhóm trường
+**KHÁCH** (xem được cây chỉ nhờ nó là cây mặc định) được thấy: tập con của
+`gioi_tinh · nam_sinh · ngay_sinh · ngay_mat · anh · tieu_su`. Lưu danh sách
+BẬT, mặc định bật cả sáu. Máy chủ che trong `doc_cay()` (`che_nguoi()`), và
+khách không đọc thẳng được `persons`/`unions`/`media`. Ghi chỉ qua
+`dat_truong_cong_khai()`, chỉ Quản trị hệ thống.
+
 ### 2d. Năm cột THÙNG RÁC trên `trees` — 09/09/2026, `luoc-do/16-thung-rac-cay.sql`
 
 `xin_xoa_luc` · `xin_xoa_boi` · `xin_xoa_ly_do` · `da_xoa_luc` · `da_xoa_boi`.

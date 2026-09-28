@@ -81,6 +81,7 @@ hướng, nhưng gọn hay không nay dựa hoàn toàn vào **V2 + V4** dưới
 dựa vào con số. File đọc mỗi phiên còn lại (`CLAUDE.md` · `MEMORY.md` ·
 `CHI-DAN.md`) vẫn giữ trần — chúng không mang "nội dung một bước" cần đủ chi
 tiết như `KE-HOACH.md`, mà là luật/định tuyến, nén được mà không mất ý.
+`so-tay/*.md` cũng thôi trần cứng từ 28/09/2026 (b145) — mục S4.
 
 | Kết quả | Nghĩa |
 |---|---|
@@ -113,7 +114,9 @@ trú khác còn sống — kiểm bằng mắt từng dòng, không cắt lướ
   lần sau chạm tới thì gộp nốt. *(Riêng `nhat-ky/` không bao giờ sửa.)*
 - **S4. Tên sổ theo chức năng** (`bang-quyen.md`, `cua-may-chu.md`), không theo
   bước hay ngày. Một điều chỉ ở **một** sổ; điều áp cho nhiều chức năng vào
-  `so-tay/chung.md`. Sổ vượt 12 KB thì tách chức năng nhỏ hơn.
+  `so-tay/chung.md`. ⚠ Sổ tay **KHÔNG có trần cứng** (chủ dự án chốt
+  28/09/2026, b145) — gọn bằng S1–S5, không bằng con số. `do-gon.mjs` chỉ
+  nêu ở mục XEM sổ nào quá 12 KB, để cân nhắc tách chức năng nhỏ hơn.
 - **S5. Việc của phiên nằm ở lời commit** — việc đã làm · chưa chạy thật · sổ
   tay nào đổi. Không viết `nhat-ky/bXX-*.md` nữa.
 

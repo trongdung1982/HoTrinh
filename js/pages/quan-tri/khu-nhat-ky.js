@@ -56,10 +56,17 @@ const TEN_VIEC = {
   xoa_han_cay: ['Xoá hẳn gia phả', 'red'],
   doi_chu_cay: ['Bàn giao chủ gia phả', 'wait'],
   doi_cay_mac_dinh: ['Đổi cây mặc định', 'wait'],
+  doi_truong_cong_khai: ['Đổi trường công khai cho khách', 'wait'],
   xoa_nhat_ky: ['Xoá nhật ký → thùng rác', 'red'],
   phuc_hoi_nhat_ky: ['Phục hồi nhật ký', 'wait'],
   don_nhat_ky_rac: ['Dọn thùng rác nhật ký', 'red'],
   bat_dau_nhat_ky: ['Bắt đầu ghi nhật ký', ''],
+};
+
+/** Tên nhóm trường công khai (`luoc-do/47`) cho câu chi tiết. */
+const TEN_TRUONG = {
+  gioi_tinh: 'giới tính', nam_sinh: 'năm sinh', ngay_sinh: 'ngày sinh',
+  ngay_mat: 'ngày mất', anh: 'ảnh', tieu_su: 'tiểu sử',
 };
 
 /** Câu chi tiết — phần trống thì không nói (`CLAUDE.md` mục 7). */
@@ -73,6 +80,9 @@ function chiTiet(d) {
   if (d.suKien === 'doi_cay_mac_dinh') {
     phan[0] = d.doiTuong ? 'Nay: ' + d.doiTuong : 'Bỏ cây mặc định';
     if (c.cu) phan.push('trước: ' + c.cu);
+  }
+  if (d.suKien === 'doi_truong_cong_khai' && Array.isArray(c.moi)) {
+    phan.push('nay bật: ' + (c.moi.map((m) => TEN_TRUONG[m] || m).join(', ') || 'không trường nào'));
   }
   if (d.suKien === 'bat_dau_nhat_ky') phan.push('Mọi việc trước lúc này không có trong nhật ký.');
   return phan.filter(Boolean).join(' · ');
