@@ -108,9 +108,10 @@ táng, giỗ) + sinh chưa quá 100 năm hoặc không rõ năm.
   ấy, hoặc là chính mình (`tai_khoan.person_id`) — `ds_nguoi_xem_day_du()`.
 - App hỏi `bi_che` (danh sách mã máy chủ đã che), KHÔNG hỏi `p.living`: cụ 1850
   mang `living` bật mà không bị che.
-- ⚠ Hệ quả: người chỉ xem mở trang hồ sơ (`docGiaDinhNguoi`, đọc thẳng bảng)
-  của người còn sống thì báo *không có quyền xem* — dòng bị RLS bỏ, không có
-  bản che. Muốn hiện bản che ở đó thì cần hàm máy chủ riêng.
+- ⚠ **Đường nào đọc thẳng bảng người là mất người còn sống** (RLS bỏ dòng,
+  không có bản che). Trang hồ sơ (`docGiaDinhNguoi`) vì thế đi qua
+  `doc_ho_so_nguoi()`. Thêm màn hình mới đọc thẳng `persons` thì phải hỏi câu
+  này — `docNguoiTheoMa` (form sửa) không cần, người chỉ xem không vào form ấy.
 - Chưa che (như `47`): `unions` (ngày cưới) · `sources`. Đo: `do-b148a.mjs`.
 
 ## Bài học

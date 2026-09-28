@@ -24,6 +24,8 @@
 --   (`tai_khoan.person_id`) → thấy đủ, ở mọi cây.
 -- Chưa che (như `47`): `unions` (ngày cưới, ghi chú hôn nhân) · `sources`.
 -- Tìm người (`tim_nguoi_*`, báo trùng) chỉ trả tên + năm sinh → không đụng.
+-- Trang Hồ sơ người đọc qua `doc_ho_so_nguoi()` (mục 7) để thấy bản che thay
+--   vì bị RLS bỏ dòng.
 
 begin;
 
@@ -234,8 +236,83 @@ create policy doc_change_log on public.change_log
          and tree_id not in (select public.ds_cay_chi_xem()));
 
 -- ------------------------------------------------------------
--- 7. Quyền gọi
+-- 7. doc_ho_so_nguoi() — trang Hồ sơ người, bản ĐÃ CHE
 -- ------------------------------------------------------------
+-- Trang `#…/nguoi/<mã>` (b133) đọc thẳng bảng. Sau mục 5, người chỉ xem bấm
+-- vào một người còn sống ở bảng *Danh sách người* (bảng ấy đi qua `doc_cay`,
+-- đã che) thì trang hồ sơ báo "không có quyền xem" — sai, họ được xem, chỉ
+-- là xem bản che. Hàm này trả đúng năm thứ trang cần, cùng hình dòng thô như
+-- đọc thẳng bảng: `nguoi` · `persons` · `unions` · `children` · `cay`.
+--   Thấy đủ  = `ds_nguoi_xem_duoc()` (đúng luật đọc thẳng bảng).
+--   Thấy che = người còn sống ở cây mình chỉ xem, không có đường thấy đủ.
+--   Còn lại  = không có mặt (như RLS bỏ dòng). Khách cây mặc định: như cũ,
+--   không mở rộng.
+create or replace function public.doc_ho_so_nguoi(p_ma text)
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_du   text[];
+  v_che  text[];
+  v_hn   text[];
+  v_ma   text[];
+  c_mo_song constant text[] := array['gioi_tinh', 'nam_sinh', 'ngay_mat'];
+begin
+  v_du  := array(select public.ds_nguoi_xem_duoc());
+  v_che := array(
+    select tp.person_id from public.tree_persons tp
+      join public.persons p on p.id = tp.person_id
+     where tp.tree_id in (select public.ds_cay_chi_xem())
+       and tp.tree_id in (select public.ds_cay_xem_duoc())
+       and public.coi_con_song(p.living, p.birth, p.death, p.burial_place, p.vn)
+       and tp.person_id <> all(v_du));
+
+  if p_ma is null or not (p_ma = any(v_du) or p_ma = any(v_che)) then
+    return jsonb_build_object('ok', false,
+      'loi', 'Không đọc được người mang mã ' || coalesce(p_ma, '') || '. Có thể mã sai, '
+             || 'hoặc người ấy nằm trong gia phả bạn không có quyền xem.');
+  end if;
+
+  v_hn := array(
+    select u.id from public.unions u where p_ma = any(u.partners)
+    union
+    select uc.union_id from public.union_children uc where uc.person_id = p_ma);
+
+  v_ma := array(
+    select distinct x from (
+      select unnest(partners) as x from public.unions where id = any(v_hn)
+      union
+      select person_id from public.union_children where union_id = any(v_hn)
+      union
+      select p_ma) t
+    where x = any(v_du) or x = any(v_che));
+
+  return jsonb_build_object('ok', true,
+    'nguoi', (select case when p.id = any(v_che) then public.che_nguoi(to_jsonb(p.*), c_mo_song)
+                          else to_jsonb(p.*) end
+                from public.persons p where p.id = p_ma),
+    'persons', (select coalesce(jsonb_agg(
+                         case when p.id = any(v_che) then public.che_nguoi(to_jsonb(p.*), c_mo_song)
+                              else to_jsonb(p.*) end order by p.id), '[]'::jsonb)
+                  from public.persons p where p.id = any(v_ma)),
+    'unions', (select coalesce(jsonb_agg(to_jsonb(u.*) order by u.id), '[]'::jsonb)
+                 from public.unions u where u.id = any(v_hn)),
+    'children', (select coalesce(jsonb_agg(to_jsonb(c.*) order by c.union_id, c.ord), '[]'::jsonb)
+                   from public.union_children c where c.union_id = any(v_hn)),
+    'cay', (select coalesce(jsonb_agg(jsonb_build_object('tree_id', tp.tree_id, 'doi', tp.doi)), '[]'::jsonb)
+              from public.tree_persons tp
+             where tp.person_id = p_ma and tp.tree_id in (select public.ds_cay_xem_duoc())));
+end;
+$$;
+
+-- ------------------------------------------------------------
+-- 8. Quyền gọi
+-- ------------------------------------------------------------
+revoke all on function public.doc_ho_so_nguoi(text)      from public, anon;
+grant execute on function public.doc_ho_so_nguoi(text)    to authenticated;
 revoke all on function public.coi_con_song(boolean, jsonb, jsonb, text, jsonb) from public, anon;
 revoke all on function public.la_chi_xem_cay(uuid)       from public, anon;
 revoke all on function public.ds_nguoi_xem_day_du()      from public, anon;
@@ -271,10 +348,12 @@ select 3, 'luật đọc change_log bớt cây chỉ xem',
               and tablename = 'change_log' and policyname = 'doc_change_log') like '%ds_cay_chi_xem%'
        then 'ĐẠT' else 'HỎNG' end
 union all
-select 4, 'anon không gọi được doc_cay · la_chi_xem_cay · ds_nguoi_xem_day_du',
+select 4, 'anon không gọi được doc_cay · la_chi_xem_cay · ds_nguoi_xem_day_du · doc_ho_so_nguoi',
   case when not has_function_privilege('anon', 'public.doc_cay(uuid)', 'execute')
         and not has_function_privilege('anon', 'public.la_chi_xem_cay(uuid)', 'execute')
         and not has_function_privilege('anon', 'public.ds_nguoi_xem_day_du()', 'execute')
+        and not has_function_privilege('anon', 'public.doc_ho_so_nguoi(text)', 'execute')
+        and has_function_privilege('authenticated', 'public.doc_ho_so_nguoi(text)', 'execute')
        then 'ĐẠT' else 'HỎNG' end
 union all
 select 5, 'coi_con_song: sinh 1990 không ngày mất → sống; có ngày mất → không',

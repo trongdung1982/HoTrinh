@@ -2118,11 +2118,10 @@ export async function dsCayCoNguoi(ma) {
  * các hôn nhân ấy · dòng `persons` của mọi người được nhắc tới · các cây có
  * mặt họ kèm Đời. Trả DÒNG thô; `hinh-dang.rapGiaDinh()` ráp.
  *
- * ⚠ Không có hàm máy chủ mới, cùng lý lẽ với `docNguoiTheoMa()`: bốn bảng
- *   dùng chung từ `26` không còn `tree_id`, và luật đọc `26` mục 5 (`doc_
- *   persons` · `doc_unions` · `doc_union_children` · `doc_tree_persons`) đã
- *   nói đúng điều cần nói. Ba vòng mạng nối tiếp nhau vì vòng sau cần mã của
- *   vòng trước; mỗi vòng chỉ vài chục dòng.
+ * ⚠ Đi qua `doc_ho_so_nguoi()` (`luoc-do/50`) — luật đọc bảng lọc theo DÒNG,
+ *   không trả được bản che người còn sống cho người chỉ xem. Đường đọc thẳng
+ *   bốn bảng bên dưới chỉ còn để chạy khi máy chủ chưa dán `50`: ba vòng mạng
+ *   nối tiếp nhau vì vòng sau cần mã của vòng trước.
  *
  * ⚠ Người thân nằm ở cây mình không xem được thì RLS bỏ họ đi **im lặng** —
  *   hồ sơ thiếu người ấy, không phải lỗi. `buildIndex()` bỏ qua mã không có
@@ -2132,6 +2131,28 @@ export async function docGiaDinhNguoi(ma) {
   const k = layKhach();
   const id = String(ma || '').trim();
   if (!k || !id) return { ok: false, loi: 'Chưa nối được máy chủ.', dong: null };
+
+  // ⚠ Từ `luoc-do/50` (b148): người chỉ xem KHÔNG đọc thẳng được dòng người
+  //   còn sống — RLS bỏ dòng, không có bản che. `doc_ho_so_nguoi()` trả bản
+  //   che cùng hình dòng thô như dưới. Máy chủ chưa dán `50` thì đi đường cũ.
+  try {
+    const { data, error } = await k.rpc('doc_ho_so_nguoi', { p_ma: id });
+    if (!error) {
+      if (!data || data.ok !== true) {
+        return { ok: false, dong: null, loi: (data && data.loi) || 'Máy chủ không trả hồ sơ.' };
+      }
+      return {
+        ok: true, loi: null,
+        dong: { nguoi: data.nguoi, persons: data.persons || [], unions: data.unions || [],
+                children: data.children || [], cay: data.cay || [] },
+      };
+    }
+    if (!/Could not find the function/i.test(error.message || '')) {
+      return { ok: false, loi: cauLoi(error), dong: null };
+    }
+  } catch (e) {
+    return { ok: false, loi: cauLoi(e), dong: null };
+  }
 
   try {
     const [nguoi, lamVoChong, lamCon, cay] = await Promise.all([
