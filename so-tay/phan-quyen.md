@@ -41,7 +41,7 @@ Dán lại file bên trái thì phải dán tiếp các file bên phải, đúng
   `tu_choi_thay_doi()`, khác `27` chín chỗ. Dán lại `27` sau `28` là mất cả
   chín, **không một lời báo**.
 - `26`/`27`/`30`→`47`→**`50`** (bản cuối `doc_cay()` · `ds_nguoi_xem_duoc()`
-  · luật `doc_change_log`) — quên `47` là khách đọc lại MỌI trường; quên `50`
+  · `ds_hon_nhan_xem_duoc()` · luật `doc_change_log`) — quên `47` là khách đọc lại MỌI trường; quên `50`
   là người chỉ xem đọc lại chi tiết người còn sống. Cả hai im lặng.
 - ⚠ **`02` định nghĩa `doc_change_log` bản rộng** — dán lại `02` (vốn đã cấm
   sau `26`) là mở lại `change_log` cho người chỉ xem.
@@ -112,7 +112,13 @@ táng, giỗ) + sinh chưa quá 100 năm hoặc không rõ năm.
   không có bản che). Trang hồ sơ (`docGiaDinhNguoi`) vì thế đi qua
   `doc_ho_so_nguoi()`. Thêm màn hình mới đọc thẳng `persons` thì phải hỏi câu
   này — `docNguoiTheoMa` (form sửa) không cần, người chỉ xem không vào form ấy.
-- Chưa che (như `47`): `unions` (ngày cưới) · `sources`. Đo: `do-b148a.mjs`.
+- Hôn nhân có vợ/chồng bị che: xoá trắng ngày/nơi cưới + ghi chú, giữ tình
+  trạng (`che_hon_nhan`); đọc thẳng `unions`/`union_children` thì không thấy
+  dòng ấy (`ds_hon_nhan_xem_duoc` bản `50`).
+- ⚠ **Chỉ che cho người KHÔNG Lưu được.** `doc_cay()` che khi người gọi chỉ
+  xem CÂY ẤY; che cho người sửa được là mời họ Lưu bản trắng đè dữ liệu thật.
+  Trang hồ sơ chỉ đọc nên che theo `ds_nguoi_bi_che()` toàn phần mềm.
+- Chưa che: `sources`. Đo: `do-b148a.mjs` 57/57.
 
 ## Bài học
 

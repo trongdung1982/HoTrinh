@@ -113,13 +113,15 @@ thì bản sao lưu vẫn ghi bình thường, chỉ không báo về. Bàn th�
 22/22 · `kiem-sao-luu.mjs` 46/46.
 
 **`50` (b148) — CHƯA DÁN. ĐƯỢC dán, sau `49`.** Giấu chi tiết người còn sống
-với thành viên chỉ có vai `xem`. Năm hàm mới (`coi_con_song` · `la_chi_xem_cay`
-· `ds_nguoi_xem_day_du` · `ds_cay_chi_xem` · `doc_ho_so_nguoi` cho trang Hồ sơ
-người) · ⚠ bản ĐỨNG CUỐI của `doc_cay()`,
-`ds_nguoi_xem_duoc()` và luật đọc `doc_change_log` — dán lại `47` thì PHẢI dán
+với thành viên chỉ có vai `xem` — cả ngày cưới + ghi chú hôn nhân của họ.
+Bảy hàm mới (`coi_con_song` · `la_chi_xem_cay` · `ds_nguoi_xem_day_du` ·
+`ds_cay_chi_xem` · `che_hon_nhan` · `ds_nguoi_bi_che` · `doc_ho_so_nguoi` cho
+trang Hồ sơ người) · ⚠ bản ĐỨNG CUỐI của `doc_cay()`, `ds_nguoi_xem_duoc()`,
+`ds_hon_nhan_xem_duoc()` và luật đọc `doc_change_log` — dán lại `47` thì PHẢI dán
 lại `50` (`so-tay/phan-quyen.md`). Dán lại nhiều lần được. Tự kiểm 6/6 phải
 ĐẠT. Chưa dán thì app chạy như cũ (cờ che luôn tắt, trang hồ sơ đi đường
-đọc thẳng bảng). Bàn thử: `do-b148a.mjs` 48/48, cây 681 người đọc ~0,2s.
+đọc thẳng bảng). Bàn thử: `do-b148a.mjs` 57/57; cây 681 người đọc nhanh
+ngang Quản trị hệ thống (không bị che).
 
 ---
 
@@ -136,13 +138,13 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 **Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử chín điểm
 dừng ở trên trước.
 
-**Chờ chủ dự án chốt** (28/09, rà sau b148 — mọi việc còn lại đều vướng một câu):
-1. Nút *Mở Sao lưu & khôi phục* trong Cài đặt của sơ đồ mở màn hình chỉ báo
-   lỗi. Đề xuất: QTHT → mở tab Sao lưu ở `QuanTri.html`; người khác → ẩn nút;
-   **xoá `pages/backup.js`** (cần cho phép) → giàn giáo `tuong-thich` còn 1.
-2. `#public-info-detail` theo từng cây: ai được đặt? Đề xuất: chủ cây đặt cho
-   cây mình; QTHT đặt mọi cây. Chỉ có hiệu lực khi cây là cây mặc định.
-3. Người chỉ xem: che luôn ngày cưới + ghi chú hôn nhân của người còn sống?
+**Đã chốt 28/09 (chủ dự án "Đồng ý" cả ba đề xuất):**
+1. **b149** Nút *Mở Sao lưu & khôi phục* trong Cài đặt của sơ đồ: QTHT → mở
+   tab Sao lưu ở `QuanTri.html`; người khác → ẩn nút; xoá `pages/backup.js`
+   (đã cho phép) → giàn giáo `tuong-thich` còn 1.
+2. **b150** `#public-info-detail` theo từng cây: chủ cây đặt cho cây mình, QTHT
+   đặt mọi cây. Chỉ có hiệu lực khi cây là cây mặc định.
+3. ✓ Che ngày cưới + ghi chú hôn nhân với người chỉ xem — gộp vào `50` (b148d).
 
 ### Trang Quản trị — đọc `so-tay/trang-quan-tri.md` trước khi đụng
 
@@ -195,7 +197,6 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Sao lưu KHÔNG chép ảnh** — chỉ liệt kê. Ảnh vẫn nằm đúng một chỗ | `KIEN-TRUC.md` mục 7 |
 | Repo vệ tinh `LeVanTrac` · `NguyenQuang` kẹt Pages từ 28/09 08:12 (push dồn → deploy giẫm nhau). Chủ dự án bảo **treo** — app chưa xong; lần push sau thường tự gỡ | `.github/workflows/dong-bo-sang-levantrac.yml` |
 | Bốn màn hình chưa mở được (sao lưu · dựng gia phả mới · bỏ chọn · quyền ảnh) | `KIEN-TRUC.md` mục 6 |
-| Người chỉ xem: ngày cưới + ghi chú hôn nhân (`unions`) của người còn sống chưa che — ngoài luật đã chốt | `so-tay/phan-quyen.md` mục b148 |
 | Tháo giàn giáo `tuong-thich.js` — mốc **2 file** (b141: `backup` · `chon-gia-pha`, hai màn hình chưa làm), chỉ được giảm. Nối hai màn ấy (hoặc bỏ hẳn) là về 0, xoá file | `KIEN-TRUC.md` mục 4 |
 | Đổi tên ba vết sẹo (`driveFileId` · `driveThumbUrl` · `tuong-thich`) | `KIEN-TRUC.md` mục 4 |
 | Đợt 7 của phép tách `person-edit.js` — treo từ b48 | `BAT-DAU.md` mục 5 |
