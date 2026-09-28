@@ -32,18 +32,18 @@
 - `change_log.user_id` KHÔNG có khoá ngoại tới `auth.users` → giữ nguyên mã
   của tài khoản đã mất. Đúng như máy chủ thật, không phải lỗi.
 
-## ⚠ Chưa chứng minh trên Supabase thật
+## Đã chạy THẬT trên Supabase — 28/09/2026 09:20
 
-Bàn thử chạy bằng superuser (ký ức *bàn thử nói dối ở ba chỗ*). Hai điều chỉ
-máy chủ thật trả lời được:
+Chủ dự án dán bản khôi phục từ `giapha-sao-luu-2026-09-28-0810.json` vào SQL
+Editor: 19 bảng **so từng dòng khớp**, 21 trigger bật lại, người thêm sau
+08:10 mất đúng như dự kiến. Hai điều bàn thử (superuser) không trả lời được
+nay đã rõ: SQL Editor **nhận** câu ~950 KB; vai `postgres` là chủ bảng nên
+`disable trigger` chạy được. Có hộp cảnh báo *destructive operation* — bấm
+chạy tiếp là đúng.
 
-1. `alter table … disable trigger` cần **chủ bảng**. Kiểm trước (chỉ đọc):
-   `select tablename, tableowner from pg_tables where schemaname = 'public';`
-   — phải là `postgres` cả.
-2. SQL Editor có nhận **một câu ~1 MB** không. Không nhận thì chạy bằng
-   `psql` với chuỗi kết nối của project (máy này có psql 17).
-
-Staging đã xoá 26/09 → chưa có chỗ thử thật mà không đụng dữ liệu đang dùng.
+⚠ Bước 3c (tự so bằng `except all`) là thứ làm kết quả trên đáng tin: đếm số
+dòng khớp chưa đủ. Nó dựa vào `to_jsonb` in ngày giờ đúng dạng PostgREST đã
+ghi — nên đầu file SQL đặt `timezone = 'UTC'`. Bỏ dòng ấy là báo lệch oan.
 
 ## Bẫy đã gặp
 

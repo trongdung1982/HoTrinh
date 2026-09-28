@@ -1,8 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 08:10 · b142a XONG và ĐÃ NGHIỆM THU: `45` đã dán,
-`SaoLuu.gs` 0.5.0 đã thay, `kiemTraKetNoi` ra "Đối chiếu với máy chủ: ĐỦ"
-(5 cây · 782 người). Sáu điểm dừng dưới chưa bấm thử.*
+*Cập nhật 28/09/2026 09:23 · b142b XONG và ĐÃ CHẠY THẬT: khôi phục từ bản
+sao lưu 08:10 lên Supabase thật, 19 bảng so từng dòng khớp (sổ tay
+`so-tay/sao-luu.md`). Sáu điểm dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -90,21 +90,12 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-⚠ **Bản sao lưu TRƯỚC 28/09/2026 08:04 chỉ chứa cây NTB** — đo bằng
-`tree_members.added_at` của vai `sao_luu`: NTB từ 04/09, bốn cây kia (NPG 681
-người · LVT433 · TH957 · T388) mới được `45` bù sáng 28/09. Thử khôi phục
-chỉ dùng bản từ 28/09 trở đi — bản đủ đầu tiên: `giapha-sao-luu-2026-09-28-0810.json`
-(1,3 MB, chủ dự án bấm tay). ⚠ File ấy chứa cả gia phả: đặt ở `../kiem-thu/`
-(ngoài repo), KHÔNG thả vào `supabase/`.
+⚠ **Sao lưu / khôi phục: `so-tay/sao-luu.md` trước tiên** — bản sao lưu trước
+28/09 08:04 chỉ có cây NTB; file SQL khôi phục chứa cả gia phả, KHÔNG thả vào
+`supabase/`.
 
-**b142b — khôi phục thật.** Script đổ ngược file sao lưu JSON → SQL, đo cả
-vòng trên bàn thử (sao lưu → phá → khôi phục → so từng bảng khớp từng dòng).
-Đã tra sẵn 28/09: 19 bảng không có vòng khoá ngoại · `change_log`/`imports`
-dùng `serial` (phải `setval`) · mọi trigger người dùng trên 19 bảng phải tắt
-lúc đổ (Đời, nhật ký, `chan_ghi_de`, `chan_quan_he_trung`, và ⚠ `them_may_sao_
-luu` của `45` — để bật thì nó đẻ dòng `tree_members` đụng dòng sắp đổ) · bảng nhật ký không trỏ khoá
-ngoại vào 19 bảng ấy nên `truncate` không lan. Chưa quyết: tài khoản có trong
-bản sao lưu mà đã mất khỏi `auth.users` thì dừng hay bỏ dòng.
+**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử sáu điểm
+dừng ở trên trước.
 
 ### Trang Quản trị — đọc `so-tay/trang-quan-tri.md` trước khi đụng
 
@@ -125,8 +116,7 @@ Sổ tay: `so-tay/luu-du-lieu.md` · kéo người, b124b chưa dựng:
 công khai theo từng trường · ghi bản sao lưu đêm vào nhật ký: `SaoLuu.gs`
 gọi một hàm mới)* · chặn đăng nhập tài khoản bị
 khoá *(`banned_until`)* · **dòng họ + cây chính do người tự chọn** (`6`) ·
-nhập GEDCOM/Excel qua máy chủ · **khôi phục thật** *(đo cả vòng sao lưu→đổi→
-khôi phục→về đúng cũ, không chỉ "có file")* · **tối ưu tốc độ đọc** khi mọi
+nhập GEDCOM/Excel qua máy chủ · **tối ưu tốc độ đọc** khi mọi
 chức năng đã chạy *(681 người: ~0,4s)*. *(Số mục = `THIET-KE-QUAN-TRI.md`.)*
 
 ⚠ **Cột *Nội dung thao tác* ở Kiểm duyệt co về một chữ mỗi dòng** (có từ
@@ -154,7 +144,6 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
 | ⚠ **`tree_members.person_id` vẫn là cột chết từ b126** — `duyet_thanh_vien()` (đơn xin vào cây) vẫn GHI vào đó; từ b132 không hàm đọc nào dùng nó nữa. Bỏ hẳn cột là một bước riêng | `so-tay/luu-mot-dong-quan-tri.md` |
 | ⚠ **Sao lưu KHÔNG chép ảnh** — chỉ liệt kê. Ảnh vẫn nằm đúng một chỗ | `KIEN-TRUC.md` mục 7 |
-| ⚠ **Chưa ai thử KHÔI PHỤC từ file sao lưu** — *có file* khác *khôi phục được* | `sao-luu/HUONG-DAN-SAO-LUU.md` |
 | Repo vệ tinh `LeVanTrac` · `NguyenQuang` kẹt Pages từ 28/09 08:12 (push dồn → deploy giẫm nhau). Chủ dự án bảo **treo** — app chưa xong; lần push sau thường tự gỡ | `.github/workflows/dong-bo-sang-levantrac.yml` |
 | Bốn màn hình chưa mở được (sao lưu · dựng gia phả mới · bỏ chọn · quyền ảnh) | `KIEN-TRUC.md` mục 6 |
 | Giấu chi tiết người còn sống với người chỉ có quyền xem | `KIEN-TRUC.md` mục 6 |

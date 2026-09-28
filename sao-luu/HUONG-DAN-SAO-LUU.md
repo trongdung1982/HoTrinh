@@ -340,11 +340,10 @@ thật nào nên chưa mất gì, nhưng ngày bắt đầu gắn ảnh thì đ�
 thật. Mở file sao lưu, tìm dòng `"anh":` trong khối `"dem"` — con số ấy chính
 là số tấm ảnh **chưa được chép đi đâu cả**.
 
-**3. Khôi phục mới đo trên máy, chưa chạy trên Supabase thật.** Từ 28/09/2026
-có script đổ ngược (`sao-luu/khoi-phuc.mjs`), đã đo trọn vòng trên bàn thử tại
-chỗ bằng bản sao lưu thật: đổ lại → phá → đổ lại → 19 bảng khớp từng dòng.
-Chạy trên Supabase thật thì chưa — còn hai điều chỉ máy chủ thật trả lời được
-(`so-tay/sao-luu.md`).
+**3. Khôi phục: đã làm thật một lần, 28/09/2026.** Script đổ ngược
+`sao-luu/khoi-phuc.mjs` đổi file JSON thành một file SQL; dán vào SQL Editor,
+19 bảng về khớp bản chụp từng dòng. Ảnh và mật khẩu thì không về — hai điều
+trên vẫn đúng.
 
 ---
 
