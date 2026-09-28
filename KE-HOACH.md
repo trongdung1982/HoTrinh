@@ -143,8 +143,20 @@ dừng ở trên trước.
 1. ✓ **b149** Nút Sao lưu trong Cài đặt của sơ đồ: QTHT → tab Sao lưu ở
    `QuanTri.html` (`?tab=sao-luu`); người khác không thấy; `pages/backup.js` đã
    xoá → giàn giáo `tuong-thich` còn 1.
-2. **b150** `#public-info-detail` theo từng cây: chủ cây đặt cho cây mình, QTHT
-   đặt mọi cây. Chỉ có hiệu lực khi cây là cây mặc định.
+2. ⏸ **b150 TẠM DỪNG — chờ chủ dự án chọn lại.** Đề xuất đã được gật ("chủ
+   cây đặt cho cả cây") ĐỌC SAI prototype: trong `quantri3.html`,
+   `#public-info-detail` là *"Thông tin công khai CỦA TÔI trong cây X"* — mỗi
+   TÀI KHOẢN chọn trường nào về CHÍNH NGƯỜI MÌNH được gắn thì người ngoài thấy
+   (tiêu đề "Nhân vật của bạn: P0001", cột "Thông tin đã nhập" = giá trị của
+   người ấy, 11 trường, lối vào từ *Tài khoản của tôi* · *Gia phả* · QTHT →
+   *Các gia phả của tài khoản*). Hai đường:
+   **(A) theo prototype** — cài đặt theo NGƯỜI: cột mới (vd `persons.truong_an`
+   hay bảng riêng), `doc_cay()` che thêm theo từng người với khách; ai được
+   đặt: chính chủ tài khoản gắn với người ấy + QTHT.
+   **(B) theo đề xuất** — cài đặt theo CÂY như tab Cây mặc định (b145), chủ cây
+   đặt; trang không có cột "Thông tin đã nhập".
+   Claude nghiêng về (A) vì prototype đã duyệt — nhưng (A) là việc lớn hơn
+   (lược đồ mới), nên hỏi trước. Chưa viết dòng mã nào cho b150.
 3. ✓ Che ngày cưới + ghi chú hôn nhân với người chỉ xem — gộp vào `50` (b148d).
 
 ### Trang Quản trị — đọc `so-tay/trang-quan-tri.md` trước khi đụng
@@ -164,8 +176,8 @@ Sổ tay: `so-tay/luu-du-lieu.md` · kéo người + báo trùng/gộp:
 **Nhóm E quantri3** *(9.5 — nhật ký hệ thống XONG ở b134; tạo tài khoản XONG
 ở b143 bằng mật khẩu tạm — *gửi liên kết qua email* còn mờ, cần màn hình đặt
 mật khẩu + SMTP riêng, xem `so-tay/tao-tai-khoan.md` · công khai theo từng
-trường XONG ở b145 cho cây mặc định — trang `#public-info-detail` theo từng cây
-chưa dựng — cần chốt AI được đặt: hôm nay chỉ QTHT · sao lưu đêm báo vào
+trường XONG ở b145 cho cây mặc định — trang `#public-info-detail` chưa dựng,
+xem *Đã chốt* mục 2 (b150 tạm dừng) · sao lưu đêm báo vào
 nhật ký XONG ở b147)* ·
 nhập GEDCOM/Excel qua máy chủ · **tối ưu tốc độ đọc** khi mọi
 chức năng đã chạy *(681 người: ~0,4s)*. *(Số mục = `THIET-KE-QUAN-TRI.md`.)*
