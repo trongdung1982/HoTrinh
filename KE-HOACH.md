@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 · b145 (công khai theo từng trường, `47`) XONG, `47` ĐÃ
-DÁN. b143 · b144 đã chạy thật. Bảy điểm dừng dưới chưa bấm thử.*
+*Cập nhật 28/09/2026 · **b146 (báo trùng người + QTHT duyệt gộp = b124b)
+XONG mã, `48` CHƯA DÁN.** b145 (`47`) đã dán. Tám điểm dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -26,6 +26,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b146** Báo trùng + gộp | ⚠ **Dán `48` trước** (mục SQL dưới). Ctrl+F5 → *Quản trị → Gia phả → chip Báo trùng người*: ô 1 gõ tên một người ở cây thử `TH957`, bấm chọn một dòng; ô 2 chọn một người trùng với họ ở `T388` (hoặc cùng cây); ghi lý do → *Gửi báo trùng* → hộp báo mã nào sẽ ở lại, bảng dưới có dòng "Chờ duyệt". Sang *Quản trị hệ thống → tab Báo trùng người* → *Duyệt (gộp)* → *Duyệt và gộp* → hộp "Đã gộp …". Mở sơ đồ cây của người bị gộp: chỉ còn một người, vợ/chồng + con của cả hai bản đều về người ấy. Tab *Nhật ký* có dòng "Gộp hai bản ghi người". ⚠ Chỉ thử trên hai cây thử — gộp KHÔNG hoàn tác được bằng nút |
 | **b145** Công khai theo trường | Ctrl+F5 → *Quản trị hệ thống → Cây mặc định*: bảng bảy dòng có ô tích. Đặt cây thử `TH957` làm mặc định, tắt *Ngày tháng sinh cụ thể* + *Ảnh* → *Lưu*. Đăng nhập `khach@io.vn` (không có chân ở `TH957`) mở sơ đồ: thẻ người chỉ còn năm sinh, không ảnh. Đăng nhập lại bằng tài khoản của bạn: vẫn thấy đủ. *Nhật ký* có dòng "Đổi trường công khai cho khách". ⚠ Xong nhớ đặt lại cây mặc định như cũ |
 | **b141** Tải ảnh | Ctrl+F5. Mở một người ở cây `TH957` → *Sửa* → khối Ảnh → thêm một tấm ảnh chụp điện thoại → *Lưu*. Đạt khi ảnh hiện trên ô sơ đồ, và bấm vào ảnh ở trang chi tiết thì ra bản lớn nét |
 | **b140** Duyệt hàng loạt | *Quản trị → Kiểm duyệt*, tab *Đang chờ duyệt* (Ctrl+F5 trước). Cây thử `TH957`: sửa 2–3 lần bằng tài khoản thử để có dòng chờ. Tích hai dòng → thanh trên bảng ghi "Đã chọn 2 / n" → *Duyệt các dòng đã chọn* → *Duyệt chính thức* → hộp "Đã duyệt 2 / 2", hai dòng sang tab *Đã nhận chính thức*. Lặp với *Từ chối các dòng đã chọn* + một lý do → dữ liệu về như cũ, tab *Đã từ chối* hiện lý do ấy ở cả hai dòng. Đổi bộ lọc cây → các ô tích tự bỏ hết |
@@ -94,6 +95,15 @@ cả sáu = y hệt hôm nay) · `la_khach_cay` · `che_nguoi` · `dat_truong_co
 `26`/`27`/`30` thì PHẢI dán lại `47` (`so-tay/phan-quyen.md`). Bàn thử:
 `do-b145a.mjs` 43/43.
 
+**`48` (b146) — CHƯA DÁN. ĐƯỢC dán, sau `47`, một mình.** Supabase → SQL
+Editor → dán nguyên file `luoc-do/48-bao-trung-nguoi.sql` → *Run* → bảng tự
+kiểm cuối phải 5 dòng ĐẠT. Thêm bảng `bao_trung_nguoi` + sáu hàm gọi được
+(`tim_nguoi_bao_trung` · `nop_bao_trung` · `rut_bao_trung` · `ds_bao_trung` ·
+`duyet_bao_trung` · `tu_choi_bao_trung`) + sáu hàm phụ khoá kín. Chỉ `create
+or replace`, không định nghĩa lại hàm nào của file khác → không kéo chuỗi dán
+lại; dán lại nhiều lần được. Chưa dán thì hai màn hình báo *"Máy chủ chưa có
+chức năng này"*. Bàn thử: `do-b146.mjs` 64/64.
+
 ---
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
@@ -115,9 +125,9 @@ dừng ở trên trước.
 `sb.js` không phải danh sách hàm máy chủ (`THIET-KE-QUAN-TRI.md` 9.5).
 ⚠ Khung KHÔNG đổi sang tab ngang: thanh trái, dưới 850px mới thành hàng thẻ.
 
-### ⚠⚠ Một người một bản ghi — b121 → b124 (xong, trừ b124b)
+### ⚠⚠ Một người một bản ghi — b121 → b124 (xong; b124b dựng ở b146)
 
-Sổ tay: `so-tay/luu-du-lieu.md` · kéo người, b124b chưa dựng:
+Sổ tay: `so-tay/luu-du-lieu.md` · kéo người + báo trùng/gộp:
 `so-tay/nguoi-xuyen-cay.md` · b124c: `so-tay/phan-quyen.md` *Nới hẹp tự duyệt*.
 ⚠ Ô gợi ý trên điện thoại thật chưa ai bấm lại — `so-tay/o-goi-y.md`.
 
@@ -127,7 +137,7 @@ Sổ tay: `so-tay/luu-du-lieu.md` · kéo người, b124b chưa dựng:
 ở b143 bằng mật khẩu tạm — *gửi liên kết qua email* còn mờ, cần màn hình đặt
 mật khẩu + SMTP riêng, xem `so-tay/tao-tai-khoan.md` · công khai theo từng
 trường XONG ở b145 cho cây mặc định — trang `#public-info-detail` theo từng cây
-chưa dựng · ghi bản sao lưu đêm vào nhật ký: `SaoLuu.gs` gọi một hàm mới)* · **dòng họ + cây chính do người tự chọn** (`6`) ·
+chưa dựng · ghi bản sao lưu đêm vào nhật ký: `SaoLuu.gs` gọi một hàm mới)* ·
 nhập GEDCOM/Excel qua máy chủ · **tối ưu tốc độ đọc** khi mọi
 chức năng đã chạy *(681 người: ~0,4s)*. *(Số mục = `THIET-KE-QUAN-TRI.md`.)*
 
@@ -146,7 +156,8 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 |---|---|
 | ⚠ **Nhập chế độ `moi` (dựng gia phả mới) vẫn giữ mã của file** → `trungma` ngay. Màn ấy chưa mở nên chưa ai vào; mở thì phải cấp mã mới cho mọi bản ghi (sửa `domains/gedcom.js` `tronMoi`, hỏi chủ dự án) | `so-tay/luu-du-lieu.md` *Kho mã* |
 | ⚠ **`di-doi/sinh-sql-di-doi.mjs` lạc hậu từ `26`** — SQL nó sinh còn gắn `tree_id` vào bốn bảng dùng chung. Ba cây đã di dời xong nên chưa có việc; chạy sẽ lỗi to tiếng | đầu chính file ấy |
-| Hai bảng nhật ký (`42`) cố ý CHƯA sao lưu — không cần để khôi phục app, tự có thùng rác 120 ngày. Sáu bảng hệ thống đã vào ở b137 | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
+| Hai bảng nhật ký (`42`) cố ý CHƯA sao lưu — không cần để khôi phục app, tự có thùng rác 120 ngày. Sáu bảng hệ thống đã vào ở b137. **`bao_trung_nguoi` (`48`) cũng cố ý chưa** — con trỏ gộp đã nằm ở `persons.meta.gopVao` + `change_log.truoc`; mất bảng chỉ mất đơn đang chờ. Muốn vào thì sửa `sao_luu_bang_he_thong()` + `SaoLuu.gs` cùng lúc | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
+| ⚠ **Bảng/cột mới mang MÃ NGƯỜI phải vào `gop_hai_nguoi()` mục 5** (`48`) — sót thì gộp để lại mã thua ở đó, im lặng | `so-tay/luu-du-lieu.md` đầu file |
 | ⚠ **Hai hàm của `16` LỆCH NGHĨA với tên** (`xin_xoa_cay` ẩn cây NGAY; `huy_xin_xoa_cay` = trả lại cho chủ). Giữ tên cũ là cố ý; đổi tên là một bước riêng | `luoc-do/23-bon-luat-moi.sql` khối đầu |
 | ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa *(b126 sẽ đụng cả hai)* | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **b127b chưa bấm thật**: thẻ người kéo sang `T388` phải đủ vợ/con | — |

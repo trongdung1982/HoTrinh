@@ -291,7 +291,9 @@ console.log('KIỂM SAO LƯU — chạy thẳng sao-luu/SaoLuu.gs trong Node\n')
 //   giấu rác. Mỗi tên ở đây là một lỗ đã biết, có ghi ở `KE-HOACH.md`; thêm
 //   một tên vào đây mà không ghi ra là biến bộ kiểm thành thứ gật bừa.
 // b137: sáu bảng hệ thống đã vào (`BANG_HE_THONG` của SaoLuu.gs, qua hàm `44`).
-const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac'];
+// b146: `bao_trung_nguoi` — con trỏ gộp đã nằm ở `persons.meta.gopVao` +
+//   `change_log.truoc`; mất bảng chỉ mất đơn đang chờ (báo lại được).
+const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac', 'bao_trung_nguoi'];
 {
   const thuMuc = dirname(FILE_SQL);
   const trongSql = [];
@@ -307,7 +309,7 @@ const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac'];
   const thieu = trongSql.filter((t) => !trongGs.includes(t) && !CHUA_SAO_LUU.includes(t));
   const thua = trongGs.filter((t) => !trongSql.includes(t));
   kiem('mọi bảng của luoc-do/ đều được sao lưu, không thừa bảng nào',
-       thieu.length === 0 && thua.length === 0 && trongSql.length === 21,
+       thieu.length === 0 && thua.length === 0 && trongSql.length === 22,
        `sql=${trongSql.length} gs=${trongGs.length}` +
        (thieu.length ? ' · THIẾU: ' + thieu.join(',') : '') +
        (thua.length ? ' · THỪA: ' + thua.join(',') : ''));

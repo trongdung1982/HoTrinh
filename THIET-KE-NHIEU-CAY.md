@@ -414,7 +414,7 @@ ngày mất của anh Minh còn nguyên.
 | **b121** | Lược đồ: `persons` khoá `id` · `tree_persons` · quan hệ bỏ `tree_id` · mã `P` toàn cục · chống ghi đè theo người. Chuyển dữ liệu giả hiện có. Chạy trên bàn thử SQL, gồm kịch bản ghi đè ba bước | Bàn thử xanh, rồi mới đưa file dán |
 | **b122** | `luu_cay()` · đọc cây · `pham_vi_sua()` · kiểm duyệt theo mô hình mới; bỏ `noiVe` ở JS | Mở ba cây, sửa một người, lưu, mở lại đúng |
 | **b124a** *(PHÒNG — làm trước, chủ dự án chốt 21/09)* | Thêm người: ô *"đã có trong phần mềm chưa"* tìm trong các cây được xem, chọn thì thêm vào cây. *(Số cũ b123 — bước ấy đã tiêu vào việc khác.)* | Thêm một người cây A vào cây B, sửa ở B thấy ở A |
-| **b124b** *(CHỮA)* | Mục *Báo trùng người giữa các cây* (trang Gia phả) + QTHT duyệt gộp | Gửi một báo trùng, QTHT duyệt, mã thua trỏ về mã giữ |
+| ✓ **b124b** *(CHỮA — dựng ở b146, `luoc-do/48`)* | Mục *Báo trùng người giữa các cây* (trang Gia phả) + QTHT duyệt gộp | Gửi một báo trùng, QTHT duyệt, mã thua trỏ về mã giữ |
 | **b124c** | Nới hẹp luật tự duyệt theo mục 11.10 *(việc SQL riêng, không lẫn vào hai bước trên)* | Chủ cây tự duyệt đơn của mình được; người chưa có vai vẫn bị từ chối |
 
 

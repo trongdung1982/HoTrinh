@@ -16,7 +16,7 @@ Thêm người nào cũng là người MỚI, như trước b124a.
 | Ô *"Người này đã có trong phần mềm chưa?"* ở form thêm người (b124a, b124a2) | **BẬT LẠI 23/09** theo lời chủ dự án, để thử `30` — trước b127b/b127c. Tắt: `person-edit.js`, `CAN_KEO_NGUOI_XUYEN_CAY = false` |
 | Hàm máy chủ `tim_nguoi_moi_cay()` + hàng rào 3b nới trong `luu_cay()` (`luoc-do/28`) | **CÒN TRÊN MÁY CHỦ**, không ai gọi tới. ⚠ Nghĩa là: ai tự soạn lệnh REST vẫn kéo được người ở cây mình ĐƯỢC XEM. Không mở thêm lỗ nào so với 21/09, nhưng đừng viết là "đã khoá ở máy chủ" |
 | `repo.timNguoiMoiCay` · `repo.docNguoiTheoMa` · `sb.*` cùng tên · `o-goi-y.js dongNguoiCayKhac` | Còn nguyên, không ai gọi |
-| b124b *Báo trùng người giữa các cây* + hàm gộp | **CHƯA DỰNG, đóng băng theo** — cùng một câu hỏi bên dưới |
+| b124b *Báo trùng người giữa các cây* + hàm gộp | **DỰNG ở b146** (`luoc-do/48`, 28/09) — mục *Báo trùng + gộp* cuối file |
 | b124c nới hẹp luật tự duyệt đơn gắn mã (`THIET-KE-NHIEU-CAY.md` 11.10) | **KHÔNG thuộc chức năng này**, vẫn là việc kế tiếp được |
 
 
@@ -138,8 +138,7 @@ Hàng rào 1 gác CẢ vẽ LẪN sửa. Vi phạm là từ chối, không có n
    CÂY, không gỡ `mocId` (mất luôn quan hệ với con chung); hàng Cha mẹ/Con gỡ
    đúng người của hàng đó. d-3 đọc theo quy ước này.
 4. ✓ `CAN_KEO_NGUOI_XUYEN_CAY = true` — chủ dự án bật 23/09, trước b127b/c.
-5. b124b (Báo trùng + gộp) đi sau cùng — gộp hai người là đổ hai nhánh vào nhau,
-   nên càng phụ thuộc câu 1–5.
+5. ✓ b124b (Báo trùng + gộp) — dựng ở **b146**, mục cuối file.
 
 ## Bản đồ mã đang nằm yên
 
@@ -150,3 +149,34 @@ Hàng rào 1 gác CẢ vẽ LẪN sửa. Vi phạm là từ chối, không có n
 | `js/services/repo.js` · `sb.js` | `timNguoiMoiCay` · `docNguoiTheoMa` |
 | `js/pages/quan-tri/o-goi-y.js` | `dongNguoiCayKhac` (ô gợi ý tự nó vẫn dùng ở Mời + Tài khoản) |
 | Bài đo | `../kiem-thu/ban-thu-sql/do-b124a.mjs` · `../kiem-thu/do-chon-that.mjs` (bài này đo ô đã tắt — sẽ báo không thấy ô cho tới khi bật lại) |
+
+## Báo trùng + gộp — b146 (`luoc-do/48`, 28/09/2026)
+
+Gửi: *Quản trị → Gia phả → chip Báo trùng người* · Duyệt: *Quản trị hệ
+thống → tab Báo trùng người* · Mã: `pages/quan-tri/khu-bao-trung.js` ·
+Đo: `../kiem-thu/ban-thu-sql/do-b146.mjs` (64 phép).
+
+- **Máy chọn mã giữ = mã NHỎ HƠN, so SỐ** (`P9999` < `P10000`) — `cap_giu_thua()`.
+  Bên thua: `deleted` + `meta.gopVao`, rời mọi cây; không thêm cột vào
+  `persons` (cột mới = bốn chỗ phải sửa, `luu-du-lieu.md`).
+- **⚠ Mười ba chỗ mang mã người**, đếm bằng `information_schema` — danh sách
+  21/09 thiếu `tai_khoan.person_id` và `de_nghi_quan_he.person_id`. Thêm bảng/
+  cột mang mã người thì thêm vào `gop_hai_nguoi()` mục 5 — sót là mất IM LẶNG.
+- **⚠ `31` chặn mọi quan hệ trùng mới sinh, kể cả của hàm gộp.** Gộp ông X
+  rồi gộp bà vợ W thì X có hai hôn nhân với W → hàm TỰ GỘP hôn nhân cùng bộ
+  vợ/chồng (mã hôn nhân nhỏ giữ; con + ảnh cưới chuyển). Thứ tự bắt buộc:
+  `deleted` cho hôn nhân bỏ TRƯỚC, rồi mới đổi vợ/chồng và chuyển con.
+- **Quan hệ trùng KHÁC loại** (con của A ở A+B, bản trùng là con của A ở
+  hôn nhân A-một-mình) thì KHÔNG đoán: `31` chặn, cả lần gộp lùi lại nguyên
+  vẹn (khối `exception` = giao dịch con), đơn vẫn chờ, QTHT đọc câu báo có
+  tên người. Gộp người/gia đình liên quan trước, hoặc gỡ quan hệ thừa (`33`).
+- **Hai người cùng gắn tài khoản** → từ chối (`tai_khoan_mot_nguoi_mot_tk`).
+- Nhật ký `gop_nguoi` ở mọi cây dính vào, `trang_thai = 'duyet'` → nút hoàn
+  tác không chạm tới; `truoc` giữ ảnh chụp để khôi phục tay. Từ chối một lần
+  lưu CŨ chạm người vừa gộp bị `ban_ghi_lech_so()` chặn (đo: phần H).
+- Duyệt xong, đơn KHÁC đang chờ nhắc bên thua tự chuyển sang bên giữ (trùng
+  một đơn đang chờ thì tự đóng).
+- ⚠ Bàn thử **nói dối ở grant**: bảng mới tạo sau `grant all …` thì người
+  dùng bị `permission denied` thay vì bị RLS lọc — bài đo phải `grant` lại
+  y như Supabase thật rồi mới đo RLS (P7 · P8).
+- `bao_trung_nguoi` cố ý CHƯA sao lưu — `kiem-sao-luu.mjs` `CHUA_SAO_LUU`.

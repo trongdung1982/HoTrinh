@@ -7,9 +7,9 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang ·
 //            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don · khu-nhat-ky ·
-//            khu-tao-tai-khoan
-// Phiên bản: 1.10.0 · Cập nhật: 28/09/2026 (b145) — bảng trường công khai
-//            của Cây mặc định nối máy chủ (`luoc-do/47`). Lịch sử: `git log -p`.
+//            khu-tao-tai-khoan · khu-bao-trung
+// Phiên bản: 1.11.0 · Cập nhật: 28/09/2026 (b146) — tab *Báo trùng người*
+//            (`luoc-do/48`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -39,6 +39,7 @@ import { duongDan } from './trang-chi-tiet.js';
 import { hoi, bao } from './hop-thoai.js';
 import { veKhuSaoLuu } from './khu-sao-luu.js';
 import { veKhuDeNghiQuanHe } from './khu-de-nghi-quan-he.js';
+import { veKhuDuyetBaoTrung } from './khu-bao-trung.js';
 import { veKhuHoSoDon } from './khu-ho-so-don.js';
 import { veKhuNhatKy } from './khu-nhat-ky.js';
 import { veKhuTaoTaiKhoan } from './khu-tao-tai-khoan.js';
@@ -87,6 +88,7 @@ export async function mountKhuQuanTriHeThong(sec, phien) {
   veThungRac(sec, kq, napLai);
   veKhuSaoLuu(sec, dsSong);
   veKhuDeNghiQuanHe(sec);
+  veKhuDuyetBaoTrung(sec);
   veKhuHoSoDon(sec);
   veKhuNhatKy(sec);
   veKhuTaoTaiKhoan(sec, napLai);

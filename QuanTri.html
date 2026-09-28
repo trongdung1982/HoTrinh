@@ -74,7 +74,7 @@
 
 <section id="gia-pha" class="view" hidden>
 <div class="head"><div><h1>Gia phả</h1><p class="lead">Quản lý những cây bạn sở hữu hoặc được giao quyền.</p></div><div class="scope" data-scope-cay hidden><small>Cây đang hiển thị tại trang Sơ đồ</small><strong data-cay-dang-mo></strong></div></div>
-<div class="tabs"><button class="chip active" data-family-tab="manage">Tôi quản lý</button><button class="chip" data-family-tab="member">Tôi là thành viên</button><button class="chip" data-family-tab="available">Có thể xin vào</button><button class="chip" data-family-tab="create">Tạo gia phả mới</button></div>
+<div class="tabs"><button class="chip active" data-family-tab="manage">Tôi quản lý</button><button class="chip" data-family-tab="member">Tôi là thành viên</button><button class="chip" data-family-tab="available">Có thể xin vào</button><button class="chip" data-family-tab="create">Tạo gia phả mới</button><button class="chip" data-family-tab="bao-trung">Báo trùng người</button></div>
 <div class="family-pane" data-family-pane="manage">
 <div class="panel"><div class="panel-head"><h3>Gia phả tôi quản lý</h3><span>Thành viên chỉ tính người đã được duyệt</span></div><table><thead><tr><th>Tên gia phả</th><th>Quyền của tôi</th><th>Thành viên và quyền</th><th>Thông tin công khai</th><th>Người lạ thấy tên</th><th>Cây hiển thị tại sơ đồ</th><th>Mời gia nhập</th><th>Đơn xin gia nhập</th><th>Xóa</th></tr></thead><tbody data-tbody="manage"></tbody></table></div>
 </div>
@@ -86,6 +86,12 @@
 </div>
 <div class="family-pane" data-family-pane="create" hidden>
 <div class="panel"><div class="panel-head"><h3>Tạo gia phả mới</h3><span>Mã cây do hệ thống sinh</span></div><div style="padding:20px;max-width:640px"><label class="sub">Tên gia phả</label><input id="tao-ten" maxlength="120" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;margin:5px 0 15px" placeholder="Ví dụ: Gia phả họ Nguyễn"><label class="sub">Ghi chú</label><textarea id="tao-ghi-chu" style="width:100%;min-height:90px;padding:11px;border:1px solid var(--line);border-radius:8px;margin:5px 0 15px" placeholder="Ghi chú tùy chọn"></textarea><button class="btn primary" id="tao-nut">Tạo gia phả</button><span class="loi-dong" id="tao-loi" hidden></span></div></div>
+</div>
+<div class="family-pane" data-family-pane="bao-trung" hidden>
+<!-- Không có trong bản thiết kế quantri3 — thêm ở b146 (luoc-do/48). -->
+<div class="notice" style="margin-bottom:16px">Thấy MỘT người bị nhập thành HAI bản ghi (thường ở hai gia phả khác nhau) thì báo ở đây. Quản trị hệ thống duyệt; duyệt xong hai bản ghi gộp làm một — mã nhỏ hơn ở lại, vợ/chồng, con, ảnh của bản kia chuyển sang.</div>
+<div class="panel" style="margin-bottom:18px"><div class="panel-head"><h3>Báo trùng người giữa các cây</h3><span>Chỉ tìm được người ở gia phả bạn là thành viên</span></div><div style="padding:20px;max-width:640px"><label class="sub">Người thứ nhất<input id="bt-x" autocomplete="off" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;margin:5px 0 4px" placeholder="Gõ tên hoặc mã người"></label><span class="sub" id="bt-x-chon"></span><label class="sub" style="display:block;margin-top:12px">Người thứ hai — cùng là người ấy<input id="bt-y" autocomplete="off" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;margin:5px 0 4px" placeholder="Gõ tên hoặc mã người"></label><span class="sub" id="bt-y-chon"></span><label class="sub" style="display:block;margin-top:12px">Vì sao là một người<textarea id="bt-ly-do" style="width:100%;min-height:90px;padding:11px;border:1px solid var(--line);border-radius:8px;margin:5px 0 15px" placeholder="Ví dụ: cùng tên, cùng năm sinh, cùng tên vợ và các con"></textarea></label><button class="btn primary" id="bt-gui">Gửi báo trùng</button><span class="loi-dong" id="bt-loi" hidden></span></div></div>
+<div class="panel"><div class="panel-head"><div><h3>Báo trùng tôi đã gửi</h3><span id="bt-dem"></span></div></div><table><thead><tr><th>Hai người</th><th>Lý do</th><th>Gửi lúc</th><th>Trạng thái</th><th>Hành động</th></tr></thead><tbody id="bt-tbody"></tbody></table></div>
 </div>
 </section>
 
@@ -246,7 +252,7 @@
 
 <section id="quan-tri-he-thong" class="view" hidden data-system-view>
 <div class="head"><div><h1>Quản trị hệ thống</h1><p class="lead">Chỉ dành cho tài khoản có cờ Quản trị hệ thống. Các chức năng ở đây áp dụng toàn ứng dụng.</p></div><span class="badge">Toàn hệ thống</span></div>
-<div class="tabs"><button class="chip active" data-sys-tab="tong-quan">Tổng quan</button><button class="chip" data-sys-tab="so-tai-khoan">Sổ tài khoản</button><button class="chip" data-sys-tab="tao-tai-khoan">+ Tạo tài khoản mới</button><button class="chip" data-sys-tab="cay-mac-dinh">Cây mặc định</button><button class="chip" data-sys-tab="sao-luu">Sao lưu &amp; khôi phục</button><button class="chip" data-sys-tab="thung-rac">Thùng rác</button><button class="chip" data-sys-tab="de-nghi-quan-he">Đề nghị sửa quan hệ</button><button class="chip" data-sys-tab="ho-so-don">Đơn Hồ sơ cá nhân</button><button class="chip" data-sys-tab="nhat-ky">Nhật ký</button></div>
+<div class="tabs"><button class="chip active" data-sys-tab="tong-quan">Tổng quan</button><button class="chip" data-sys-tab="so-tai-khoan">Sổ tài khoản</button><button class="chip" data-sys-tab="tao-tai-khoan">+ Tạo tài khoản mới</button><button class="chip" data-sys-tab="cay-mac-dinh">Cây mặc định</button><button class="chip" data-sys-tab="sao-luu">Sao lưu &amp; khôi phục</button><button class="chip" data-sys-tab="thung-rac">Thùng rác</button><button class="chip" data-sys-tab="de-nghi-quan-he">Đề nghị sửa quan hệ</button><button class="chip" data-sys-tab="bao-trung">Báo trùng người</button><button class="chip" data-sys-tab="ho-so-don">Đơn Hồ sơ cá nhân</button><button class="chip" data-sys-tab="nhat-ky">Nhật ký</button></div>
 <div data-sys-pane="tong-quan">
 <div class="cards" style="gap:14px;margin-bottom:20px">
 <div class="card" style="margin-bottom:0;padding:16px 18px">
@@ -527,6 +533,16 @@
 <div class="panel-head"><div><h3>Đề nghị đang chờ duyệt</h3><span id="dnqh-dem"></span></div></div>
 <table><thead><tr><th>Gia phả</th><th>Loại đề nghị</th><th>Người / quan hệ liên quan</th><th>Lý do</th><th>Người gửi &amp; ngày</th><th>Hành động</th></tr></thead>
 <tbody id="dnqh-tbody"></tbody></table>
+</div>
+</div>
+
+<div data-sys-pane="bao-trung" hidden>
+<!-- Không có trong bản thiết kế quantri3 — thêm ở b146 (luoc-do/48). -->
+<div class="notice" style="margin-bottom:16px">Hai bản ghi bị báo là cùng một người. Duyệt = máy chủ gộp NGAY: mã nhỏ hơn ở lại (máy chọn, không hỏi); ô nào bên giữ bỏ trống thì lấy của bên kia; vợ/chồng, con, ảnh, gia phả của bên kia chuyển sang. Không hoàn tác được bằng nút.</div>
+<div class="panel">
+<div class="panel-head"><div><h3>Báo trùng đang chờ duyệt</h3><span id="btd-dem"></span></div></div>
+<table><thead><tr><th>Giữ lại</th><th>Gộp vào (bỏ đi)</th><th>Lý do</th><th>Người gửi &amp; ngày</th><th>Hành động</th></tr></thead>
+<tbody id="btd-tbody"></tbody></table>
 </div>
 </div>
 

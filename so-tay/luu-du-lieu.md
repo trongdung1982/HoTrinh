@@ -13,6 +13,10 @@ Cột mới phải có tên ở **BỐN chỗ**. Thiếu chỗ nào thì hỏng 
 | `luu_cay()` — danh sách `on conflict do update set …` | người MỚI lưu được, người ĐÃ CÓ sửa không ăn |
 | `tu_choi_thay_doi()` — cùng danh sách ấy | từ chối một thay đổi không trả lại cột ấy |
 
+⚠ **Cột (hay bảng) mới MANG MÃ NGƯỜI** thì thêm chỗ thứ năm: `gop_hai_nguoi()`
+mục 5 (`luoc-do/48`) — không thì gộp hai người để lại mã thua ở đó, im lặng
+(`so-tay/nguoi-xuyen-cay.md` mục *Báo trùng + gộp*).
+
 ⚠ Hai hàm máy chủ **liệt kê tên cột**, không `set *`. Bẫy thứ ba và thứ tư tìm ra
 ở b120, trước đó tài liệu chỉ ghi bẫy thứ nhất. Bản đứng cuối của cả hai: `luoc-do/27`.
 

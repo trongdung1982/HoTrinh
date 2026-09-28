@@ -1,13 +1,13 @@
 // ============================================================
 // giapha-supabase · js/pages/quan-tri/khu-gia-pha.js
 // Vai trò  : Khu 1 của trang Quản trị — đổ dữ liệu thật vào section
-//            `#gia-pha` của prototype quantri3: bốn chip *Tôi quản lý · Tôi
-//            là thành viên · Có thể xin vào · Tạo gia phả mới*.
+//            `#gia-pha` của prototype quantri3: năm chip *Tôi quản lý · Tôi
+//            là thành viên · Có thể xin vào · Tạo gia phả mới · Báo trùng người*.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, utils/id, quan-tri/trang-chi-tiet ·
-//            quan-tri/hop-thoai · quan-tri/o-bang
-// Phiên bản: 1.3.0 · Cập nhật: 28/09/2026 (b135) — huy hiệu "n chờ kiểm
-//            duyệt" dưới tên cây (9.6). Lịch sử: `git log -p`.
+//            quan-tri/hop-thoai · quan-tri/o-bang · quan-tri/khu-bao-trung
+// Phiên bản: 1.4.0 · Cập nhật: 28/09/2026 (b146) — chip thứ năm *Báo trùng
+//            người* (`khu-bao-trung.js`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -27,6 +27,7 @@ import {
 } from '../../services/sb.js';
 import { sinhMaCay } from '../../utils/id.js';
 import { duongDan } from './trang-chi-tiet.js';
+import { veKhuBaoTrung } from './khu-bao-trung.js';
 import { hoi, bao } from './hop-thoai.js';
 import {
   TEN_VAI, td, span, tenVaPhu, huyHieu, nut, nutMo, lienKet, chuaCo, hangNut,
@@ -52,6 +53,7 @@ export async function mountKhuGiaPha(sec, phien) {
   ganChip(sec);
   veScope(sec, phien);
   ganTaoMoi(sec, phien);
+  veKhuBaoTrung(sec);
   await nap(sec, phien);
 }
 

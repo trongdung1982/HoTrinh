@@ -5,8 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.41.0 · Cập nhật: 28/09/2026 (b144) — câu báo tài khoản bị
-//            khoá (`luoc-do/46`); b143 `taoTaiKhoan`. Lịch sử: `git log -p`.
+// Phiên bản: 0.42.0 · Cập nhật: 28/09/2026 (b146) — sáu cửa báo trùng người
+//            (`luoc-do/48`); câu báo "chưa dán SQL". Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -90,6 +90,10 @@ function cauLoi(e) {
   }
   if (/JWT expired|token is expired/i.test(m)) {
     return 'Vé đăng nhập đã hết hạn. Đăng nhập lại rồi thử lại việc vừa làm.';
+  }
+  // PostgREST PGRST202: mã đã đẩy mà file `luoc-do/` đi kèm chưa dán.
+  if (/Could not find the function/i.test(m)) {
+    return 'Máy chủ chưa có chức năng này — file SQL mới chưa được dán vào Supabase.';
   }
   return m;
 }
@@ -2637,6 +2641,93 @@ export async function tuChoiDeNghiQuanHe(id, lyDo = '') {
   const { data, error } = await k.rpc('tu_choi_de_nghi_quan_he', {
     p_id: id, p_ly_do: String(lyDo || ''),
   });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+// ============================================================
+// Báo trùng người + Quản trị hệ thống duyệt gộp — `luoc-do/48` (b146)
+// ============================================================
+//
+// Một người bị nhập thành hai bản ghi (thường ở hai cây). Ai là thành viên
+// của cây chứa CẢ HAI người thì báo được; chỉ QTHT duyệt, và duyệt là máy chủ
+// TỰ GỘP — mã nhỏ hơn giữ lại, không hỏi. Không nhận `treeId`: báo trùng là
+// chuyện của hai NGƯỜI, không của cây đang mở.
+
+/**
+ * Ô gợi ý của form báo trùng — mọi người mình xem được, KHÔNG loại cây nào.
+ * Cùng hình dạng với `timNguoiMoiCay()` để dùng chung `dongNguoiCayKhac`.
+ * @returns {Promise<{ok:boolean, loi:string|null, ds:Array<{maNguoi:string,
+ *   ten:string, namSinh:string, namMat:string, gioi:string, cacCay:string}>}>}
+ */
+export async function timNguoiBaoTrung(chuoi) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', ds: [] };
+  const { data, error } = await k.rpc('tim_nguoi_bao_trung', { p_chuoi: String(chuoi || '') });
+  if (error) return { ok: false, loi: cauLoi(error), ds: [] };
+  const ds = (data || []).map((r) => ({
+    maNguoi: r.id || '',
+    ten: r.ten || '',
+    namSinh: r.nam_sinh || '',
+    namMat: r.nam_mat || '',
+    gioi: r.gioi || 'U',
+    cacCay: r.cac_cay || '',
+  }));
+  return { ok: true, loi: null, ds };
+}
+
+/** Nộp báo trùng. Máy chủ tự chọn mã giữ (nhỏ hơn) — trả `maGiu`/`maThua`. */
+export async function nopBaoTrung(maX, maY, lyDo) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('nop_bao_trung', {
+    p_x: String(maX || ''), p_y: String(maY || ''), p_ly_do: String(lyDo || ''),
+  });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/** Rút báo trùng đang chờ của chính mình. */
+export async function rutBaoTrung(id) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('rut_bao_trung', { p_id: id });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/**
+ * Danh sách báo trùng. `cuaToi = false` và là QTHT: mọi đơn ĐANG CHỜ (bảng
+ * duyệt). Còn lại: đơn của chính mình, mọi trạng thái.
+ * `giu`/`thua` là bản tóm tắt người máy chủ ráp sẵn: `{id, ten, gioi, namSinh,
+ * namMat, daXoa, gopVao, cacCay, soVoChong, soCon, soChaMe, coTaiKhoan}`.
+ * @returns {Promise<{ok:boolean, loi:string|null, ds:Array<{id:string,
+ *   maGiu:string, maThua:string, giu:object, thua:object, lyDo:string,
+ *   trangThai:string, taoLuc:string, xetLuc:string|null, loiXet:string,
+ *   nguoiGui:string, cuaToi:boolean}>}>}
+ */
+export async function dsBaoTrung(cuaToi = false) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', ds: [] };
+  const { data, error } = await k.rpc('ds_bao_trung', { p_cua_toi: Boolean(cuaToi) });
+  if (error) return { ok: false, loi: cauLoi(error), ds: [] };
+  return { ok: true, loi: null, ds: data || [] };
+}
+
+/** Duyệt — máy chủ tự gộp hai bản ghi. Chỉ QTHT gọi được. */
+export async function duyetBaoTrung(id) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('duyet_bao_trung', { p_id: id });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/** Từ chối — không đụng dữ liệu, chỉ ghi `loi_xet`. Chỉ QTHT gọi được. */
+export async function tuChoiBaoTrung(id, lyDo = '') {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('tu_choi_bao_trung', { p_id: id, p_ly_do: String(lyDo || '') });
   if (error) return { ok: false, loi: cauLoi(error) };
   return data || { ok: false, loi: 'Máy chủ không trả lời.' };
 }
