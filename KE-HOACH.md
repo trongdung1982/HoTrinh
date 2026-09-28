@@ -1,9 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 22:45 · **b150 + b150b XONG MÃ — `51` ĐÃ DÁN, `52` CHƯA
-DÁN · b151a + b151b (nhập tạo gia phả mới: cấp mã mới · sửa sổ nhập bị máy
-chủ từ chối · đo 681 người trên bàn thử) XONG MÃ, không có SQL.** Mười hai
-điểm dừng dưới chưa bấm thử.*
+*Cập nhật 28/09/2026 22:44 · **b150 + b150b XONG — `51`, `52` ĐÃ DÁN · b151a → b151c
+(nhập GEDCOM/Excel tạo gia phả mới: cấp mã mới · sửa sổ nhập bị máy chủ từ
+chối · đo 681 người GEDCOM lẫn Excel trên bàn thử) XONG MÃ, không có SQL.**
+Mười ba điểm dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -30,7 +30,8 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 |---|---|
 | **b151a** Nhập tạo gia phả mới | ⚠ Bước này DỰNG một gia phả thật trên máy chủ — thử xong thì xoá nó. Cần tài khoản được phép tạo cây. Ctrl+F5 → ⚙ Cài đặt → *Nhập GEDCOM/Excel* → chọn `tai-lieu/My Family Tree.ged` → ô *Tên gia phả mới* gõ `Thu b151` → *Tạo gia phả mới và ghi vào đó*. Đạt khi: hộp báo ghi xong 6 người, KHÔNG báo "Mã mới vừa cấp đã có bản ghi khác giữ"; sơ đồ hiện đủ 6 người, 2 gia đình; *Danh sách người* cho thấy mã người là số lớn (không phải `P0001`…`P0006`). Xong: *Quản trị → Gia phả* → xoá `Thu b151` |
 | **b151b** Nhập 681 người qua mạng thật | Sau b151a. Mở cây Nguyễn Phúc Giáo → ⚙ Cài đặt → *Xuất GEDCOM* → tải file về. Rồi *Nhập GEDCOM/Excel* → chọn file vừa tải → tên `Thu b151b` → *Tạo gia phả mới và ghi vào đó*. Đạt khi: báo ghi xong 681 người trong vài giây, sơ đồ mở được. Bàn thử đo 0,6–0,73 s; đây là phép duy nhất đo được đường mạng thật (gói ~624 KB). Xong: xoá `Thu b151b` |
-| **b150 · b150b** Thông tin công khai của tôi + Liên hệ | ⚠ Dán `52` trước (`50`, `51` đã dán). Ctrl+F5. Sơ đồ → mở người của bạn → *Sửa* → khối *Cuộc đời* có ô **Liên hệ** → gõ số điện thoại → *Lưu* → trang chi tiết có hàng *Liên hệ* → *Danh sách người* → *Xuất Excel ▾* → file có cột *Liên hệ* sau *Dân tộc*. *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia*: cột *Thông tin công khai* ghi "11 thông tin →" → bấm ở dòng cây thử `TH957` → trang MƯỜI MỘT dòng, giá trị của người bạn được gắn → tắt *Ảnh* + *Quê quán* → *Lưu thiết lập công khai*. *Quản trị hệ thống → Cây mặc định*: đặt `TH957` (tạm). Tab ấy nay có 10 nhóm, *Số điện thoại & Email liên hệ* mặc định TẮT. Đăng nhập `khach@io.vn` (không có chân ở `TH957`) mở sơ đồ: người của bạn không ảnh, không quê quán, không liên hệ; người khác vẫn đủ (trừ liên hệ). ⚠ Người của bạn phải CÓ trong `TH957` thì mới thấy khác. Xong: bật lại hai trường, đặt lại cây mặc định như cũ |
+| **b151c** Nhập Excel tạo gia phả mới | Sau b151a. ⚙ Cài đặt → *Nhập GEDCOM/Excel* → chọn file `Cay gia pha 17 doi cu Nguyen Phuc Giao (Pass VBA 12345).xlsb` (nằm trong thư mục `Claude_Code`) → bản xem trước ghi 681 người → tên `Thu b151c` → *Tạo gia phả mới và ghi vào đó*. Đạt khi báo ghi xong 681 người, sơ đồ mở được, cột Đời có số. Bàn thử đo 1,04 s. Xong: xoá `Thu b151c` |
+| **b150 · b150b** Thông tin công khai của tôi + Liên hệ | ✓ `50`, `51`, `52` đã dán. Ctrl+F5. Sơ đồ → mở người của bạn → *Sửa* → khối *Cuộc đời* có ô **Liên hệ** → gõ số điện thoại → *Lưu* → trang chi tiết có hàng *Liên hệ* → *Danh sách người* → *Xuất Excel ▾* → file có cột *Liên hệ* sau *Dân tộc*. *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia*: cột *Thông tin công khai* ghi "11 thông tin →" → bấm ở dòng cây thử `TH957` → trang MƯỜI MỘT dòng, giá trị của người bạn được gắn → tắt *Ảnh* + *Quê quán* → *Lưu thiết lập công khai*. *Quản trị hệ thống → Cây mặc định*: đặt `TH957` (tạm). Tab ấy nay có 10 nhóm, *Số điện thoại & Email liên hệ* mặc định TẮT. Đăng nhập `khach@io.vn` (không có chân ở `TH957`) mở sơ đồ: người của bạn không ảnh, không quê quán, không liên hệ; người khác vẫn đủ (trừ liên hệ). ⚠ Người của bạn phải CÓ trong `TH957` thì mới thấy khác. Xong: bật lại hai trường, đặt lại cây mặc định như cũ |
 | **b149** Nút Sao lưu | Ctrl+F5. Sơ đồ → ⚙ Cài đặt: có khối *Sao lưu & khôi phục*, nút *Mở Sao lưu (trang Quản trị)* → bấm → sang trang Quản trị, đang đứng ở tab **Sao lưu**. Đăng nhập `khach@io.vn` → ⚙ Cài đặt: KHÔNG có khối ấy |
 | **b148** Giấu người còn sống | ✓ `50` đã dán. Ctrl+F5. *Quản trị → Gia phả →* cây thử `TH957` → *Mời gia nhập*: mời `khach@io.vn` với vai **Khách** (`xem`). Đăng nhập `khach@io.vn` → nhận lời mời → mở `TH957`: người còn sống (không ngày mất, sinh chưa quá 100 năm) chỉ còn tên, giới tính, năm sinh — không ảnh, không tiểu sử; trang chi tiết có dòng *"Người này còn sống nên máy chủ đã lược bớt…"*. Người đã mất vẫn đủ. Thêm: *Quản trị → Gia phả →* `TH957` → *Danh sách người* → bấm tên một người còn sống → trang hồ sơ MỞ ĐƯỢC (bản che), không báo "không có quyền xem". Đăng nhập lại tài khoản của bạn: thấy đủ cả. Xong nhớ gỡ vai của `khach@io.vn` |
 | **b146** Báo trùng + gộp | ✓ `48` đã dán. Ctrl+F5 → *Quản trị → Gia phả → chip Báo trùng người*: ô 1 gõ tên một người ở cây thử `TH957`, bấm chọn một dòng; ô 2 chọn một người trùng với họ ở `T388` (hoặc cùng cây); ghi lý do → *Gửi báo trùng* → hộp báo mã nào sẽ ở lại, bảng dưới có dòng "Chờ duyệt". Sang *Quản trị hệ thống → tab Báo trùng người* → *Duyệt (gộp)* → *Duyệt và gộp* → hộp "Đã gộp …". Mở sơ đồ cây của người bị gộp: chỉ còn một người, vợ/chồng + con của cả hai bản đều về người ấy. Tab *Nhật ký* có dòng "Gộp hai bản ghi người". ⚠ Chỉ thử trên hai cây thử — gộp KHÔNG hoàn tác được bằng nút |
@@ -140,7 +141,8 @@ lại `51` (`so-tay/phan-quyen.md`). Dán lại nhiều lần được. Tự ki�
 ĐẠT. Chưa dán thì cột *Thông tin công khai* ghi "Xem →", bấm vào trang báo
 *"Máy chủ chưa có chức năng này"*. Bàn thử: `do-b150.mjs` 33/33.
 
-**`52` (b150b) — CHƯA DÁN. ĐƯỢC dán, SAU `51`** (tự dừng nếu thiếu `51`).
+**`52` (b150b) — ĐÃ DÁN lên THẬT 28/09** (chủ dự án báo; đo REST cùng ngày:
+`persons?select=contact` trả 200 — cột đã có).
 Cột `persons.contact` (CHO null — lý do ở đầu file) · mười nhóm công khai,
 chuyển dữ liệu MỘT lần (mọi danh sách thêm Sống/mất + Đời, có Tiểu sử thì
 thêm Quê quán; Liên hệ không tự bật) · `doc_cay()` trả Đời đã che, khách thôi
@@ -148,9 +150,7 @@ thêm Quê quán; Liên hệ không tự bật) · `doc_cay()` trả Đời đã
 `doc_ho_so_nguoi` · hai cửa đặt nhóm · luật đọc `tree_persons` · ⚠ **VÁ TẠI
 CHỖ** `luu_cay()` · `tu_choi_thay_doi()` · `gop_hai_nguoi()` — dán lại
 `26`/`28`/`32`/`47`/`48`/`50`/`51` thì PHẢI dán lại `52` (`so-tay/phan-quyen.md`).
-Dán lại nhiều lần được. Tự kiểm 6/6 phải ĐẠT. Chưa dán thì app vẫn Lưu bình
-thường (máy chủ bỏ qua khoá `contact` lạ) nhưng ô Liên hệ gõ vào KHÔNG được
-ghi. Bàn thử: `do-b150b.mjs` 32/32.
+Dán lại nhiều lần được. Tự kiểm 6/6 phải ĐẠT. Bàn thử: `do-b150b.mjs` 32/32.
 
 ---
 
@@ -164,14 +164,8 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 28/09 08:04 chỉ có cây NTB; file SQL khôi phục chứa cả gia phả, KHÔNG thả vào
 `supabase/`.
 
-**Đang làm: nhập GEDCOM/Excel dựng gia phả mới chạy được cỡ thật** — b151a
-+ b151b xong (681 người một lần gửi, không cần chia lô — `so-tay/luu-du-lieu.md`
-*Kho mã*). Còn một bước:
-
-- **b151c — kế tiếp** *(Sonnet đủ)*: đường Excel đi chung `veKhoiGhi` →
-  `tronMoi`, sổ nhập mang `EXCEL` (máy chủ nhận). Còn: thêm một ca Excel vào
-  `../kiem-thu/ban-thu-sql/do-b151b.mjs` (đọc `.xlsx` bằng `domains/excel.js`
-  → `luu_cay`), rồi viết hướng dẫn bấm thử.
+**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử mười ba
+điểm dừng ở trên trước (ba điểm b151 đứng đầu bảng).
 
 ⚠ **b150 mới che với KHÁCH** (người xem cây chỉ nhờ cây mặc định — cùng người
 `47` che). Thành viên vai `xem` vẫn theo luật người còn sống của `50`, KHÔNG

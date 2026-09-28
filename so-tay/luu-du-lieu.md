@@ -179,8 +179,8 @@ Tới b151b cả hai chế độ nhập gửi `maNguon` = `HEAD.SOUR` thô (`GIA
 `PAF`…) → máy chủ từ chối CẢ lần ghi; mọi bài kiểm Node vẫn xanh vì không có
 cơ sở dữ liệu. Nay qua `loaiFileNhap()`. Bài học: đường nhập phải đo bằng
 `luu_cay()` thật — `../kiem-thu/ban-thu-sql/do-b151b.mjs` (681 người: gói
-624 KB, `luu_cay` 0,6–0,73 s trên bàn thử, trần Supabase 8 s → một lần gửi,
-không chia lô).
+~620 KB, `luu_cay` 0,6–0,9 s với GEDCOM, 1,04 s với file Excel thật `.xlsb`,
+trên bàn thử; trần Supabase 8 s → một lần gửi, không chia lô).
 
 ## Đọc cây đi qua `doc_cay()`, không đọc thẳng bốn bảng (b122b)
 
