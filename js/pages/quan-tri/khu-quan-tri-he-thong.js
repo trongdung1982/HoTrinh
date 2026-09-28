@@ -6,9 +6,10 @@
 //            prototype) và trang `#sys-default-tree-selector`.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang ·
-//            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don · khu-nhat-ky
-// Phiên bản: 1.8.0 · Cập nhật: 28/09/2026 (b134) — tab Nhật ký nối máy chủ
-//            (`khu-nhat-ky.js`). Lịch sử trước: `git log -p`.
+//            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don · khu-nhat-ky ·
+//            khu-tao-tai-khoan
+// Phiên bản: 1.9.0 · Cập nhật: 28/09/2026 (b143) — tab Tạo tài khoản nối
+//            Edge Function (`khu-tao-tai-khoan.js`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -19,8 +20,8 @@
 // ⚠ Gắn thật: *Tổng quan* · *Sổ tài khoản* · *Cây mặc định* · *Thùng rác* ·
 //   *Sao lưu* (bảng Đối chiếu, `khu-sao-luu.js`) · *Đề nghị sửa quan hệ*
 //   (`khu-de-nghi-quan-he.js`, b127d-3) · *Đơn Hồ sơ cá nhân* (`khu-ho-so-
-//   don.js`, b126d) · *Nhật ký* (`khu-nhat-ky.js`, b134). Tab *Tạo tài
-//   khoản* còn trống — vẽ đúng HTML quantri3 nhưng mờ kèm lý do. Tab *Sao lưu* cũng còn hai phần
+//   don.js`, b126d) · *Nhật ký* (`khu-nhat-ky.js`, b134) · *Tạo tài khoản*
+//   (`khu-tao-tai-khoan.js`, Edge Function, b143). Tab *Sao lưu* còn hai phần
 //   mờ (lịch sử · nút "Sao lưu ngay"): không phải "chưa tới lượt", mà trình
 //   duyệt không gọi được Drive/Apps Script.
 //
@@ -39,6 +40,7 @@ import { veKhuSaoLuu } from './khu-sao-luu.js';
 import { veKhuDeNghiQuanHe } from './khu-de-nghi-quan-he.js';
 import { veKhuHoSoDon } from './khu-ho-so-don.js';
 import { veKhuNhatKy } from './khu-nhat-ky.js';
+import { veKhuTaoTaiKhoan } from './khu-tao-tai-khoan.js';
 import {
   td, span, huyHieu, nut, nutNho, nutMo, lienKet, hangNut, dongTrong,
   chepKieu, ngay, ngayGio,
@@ -86,6 +88,7 @@ export async function mountKhuQuanTriHeThong(sec, phien) {
   veKhuDeNghiQuanHe(sec);
   veKhuHoSoDon(sec);
   veKhuNhatKy(sec);
+  veKhuTaoTaiKhoan(sec, napLai);
 }
 
 // ============================================================
@@ -118,11 +121,6 @@ function veChuaCo(sec) {
   const mo = (chon, lyDo) => {
     for (const el of sec.querySelectorAll(chon)) { el.disabled = true; el.title = lyDo; }
   };
-
-  const LY_TAO = 'Chưa làm được: tạo tài khoản cần khoá service_role của Supabase, và khoá ấy chỉ ' +
-    'được sống trong một Edge Function — hạ tầng dự án chưa có. Việc riêng, làm sau b120.';
-  dat('ttk-chua-co', LY_TAO);
-  mo('#form-tao-tai-khoan input, #form-tao-tai-khoan select, #btn-reset-form-tao-tk, #btn-submit-tao-tk', LY_TAO);
 
   // ⚠ b119: bảng đối chiếu 5 số đếm nay đọc SỐNG (`veKhuSaoLuu`, dưới). Hai
   //   thứ còn lại vẫn không làm được — không phải "chưa tới lượt" mà là app

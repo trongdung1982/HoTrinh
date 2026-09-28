@@ -27,6 +27,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b143** Tạo tài khoản | ⚠ Cần DÁN Edge Function trước — sáu bước ở `so-tay/tao-tai-khoan.md` mục *Cách dán*. Rồi Ctrl+F5 → *Quản trị hệ thống → + Tạo tài khoản mới* → tên + email thử → *+ Tạo tài khoản ngay* → hộp *Đã tạo tài khoản* có mật khẩu tạm. Đăng nhập thử bằng nó, rồi xoá tài khoản thử (khoá trước — Xóa đòi đủ 60 ngày, nên để đó cũng được) |
 | **b141** Tải ảnh | Ctrl+F5. Mở một người ở cây `TH957` → *Sửa* → khối Ảnh → thêm một tấm ảnh chụp điện thoại → *Lưu*. Đạt khi ảnh hiện trên ô sơ đồ, và bấm vào ảnh ở trang chi tiết thì ra bản lớn nét |
 | **b140** Duyệt hàng loạt | *Quản trị → Kiểm duyệt*, tab *Đang chờ duyệt* (Ctrl+F5 trước). Cây thử `TH957`: sửa 2–3 lần bằng tài khoản thử để có dòng chờ. Tích hai dòng → thanh trên bảng ghi "Đã chọn 2 / n" → *Duyệt các dòng đã chọn* → *Duyệt chính thức* → hộp "Đã duyệt 2 / 2", hai dòng sang tab *Đã nhận chính thức*. Lặp với *Từ chối các dòng đã chọn* + một lý do → dữ liệu về như cũ, tab *Đã từ chối* hiện lý do ấy ở cả hai dòng. Đổi bộ lọc cây → các ô tích tự bỏ hết |
 | **b139** Nhập GEDCOM bổ sung | Mở cây thử `TH957` → *Nhập GEDCOM/Excel* → chọn một file `.ged` có vài người CHƯA có trong cây → ghép đôi → *Ghi*. Đạt khi ghi xong không báo "Mã mới vừa cấp đã có bản ghi khác giữ", và người mới hiện trên sơ đồ |
@@ -111,9 +112,9 @@ Sổ tay: `so-tay/luu-du-lieu.md` · kéo người, b124b chưa dựng:
 
 ### Sau đó — chưa đặt số, chưa chốt
 
-**Nhóm E quantri3** *(9.5 — nhật ký hệ thống XONG ở b134; còn tạo tài khoản
-⚠ cần `service_role` qua Edge Function, **không bao giờ** vào repo Public ·
-công khai theo từng trường · ghi bản sao lưu đêm vào nhật ký: `SaoLuu.gs`
+**Nhóm E quantri3** *(9.5 — nhật ký hệ thống XONG ở b134; tạo tài khoản XONG
+ở b143 bằng mật khẩu tạm — *gửi liên kết qua email* còn mờ, cần màn hình đặt
+mật khẩu + SMTP riêng, xem `so-tay/tao-tai-khoan.md` · công khai theo từng trường · ghi bản sao lưu đêm vào nhật ký: `SaoLuu.gs`
 gọi một hàm mới)* · chặn đăng nhập tài khoản bị
 khoá *(`banned_until`)* · **dòng họ + cây chính do người tự chọn** (`6`) ·
 nhập GEDCOM/Excel qua máy chủ · **tối ưu tốc độ đọc** khi mọi

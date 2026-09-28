@@ -1859,6 +1859,48 @@ export async function moKhoaTaiKhoan(userId) {
   return { ok: true, loi: null, email: data.email || '' };
 }
 
+/**
+ * **Tạo tài khoản mới** — Edge Function `tao-tai-khoan` (b143), cửa DUY NHẤT
+ * không đi qua `rpc()`: tạo người dùng cần khoá `service_role`, và khoá ấy chỉ
+ * sống trong biến môi trường của Edge Function, không bao giờ ở repo này.
+ *
+ * Trả { ok, loi, userId, email, maNgan, matKhau }. `matKhau` là mật khẩu tạm
+ * máy chủ sinh — chỉ hiện MỘT lần, không lưu ở đâu khác.
+ *
+ * ⚠ Gọi bằng `fetch` + thẻ phiên, không qua `functions.invoke()`: hàm luôn
+ *   trả 200 kèm { ok, loi } như các hàm SQL, khỏi bóc lỗi HTTP của thư viện.
+ */
+export async function taoTaiKhoan(email) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data: { session } } = await k.auth.getSession();
+  if (!session) return { ok: false, loi: 'Chưa đăng nhập.' };
+  try {
+    const r = await fetch(SUPABASE_URL.replace(/\/$/, '') + '/functions/v1/tao-tai-khoan', {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_KHOA_CONG_KHAI,
+        Authorization: 'Bearer ' + session.access_token,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: String(email || '').trim() }),
+    });
+    if (r.status === 404) {
+      return { ok: false, loi: 'Máy chủ chưa có hàm tao-tai-khoan — chưa dán Edge Function.' };
+    }
+    const data = await r.json().catch(() => null);
+    if (!data || data.ok !== true) {
+      return { ok: false, loi: noiTuChoi(data, 'Không tạo được tài khoản (HTTP ' + r.status + ').') };
+    }
+    return {
+      ok: true, loi: null, userId: data.userId, email: data.email,
+      maNgan: data.maNgan || '', matKhau: data.matKhau,
+    };
+  } catch (e) {
+    return { ok: false, loi: cauLoi(e) };
+  }
+}
+
 // ============================================================
 // BA CỬA TÌM KIẾM — `luoc-do/15-tim-kiem.sql`
 // ============================================================
