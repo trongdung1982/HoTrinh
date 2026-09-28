@@ -2,8 +2,8 @@
 
 *Cập nhật 28/09/2026 · **b146 (báo trùng người + QTHT duyệt gộp = b124b) ·
 b147 (sao lưu đêm báo vào nhật ký) XONG — `48` · `49` ĐÃ DÁN, `SaoLuu.gs`
-0.6.0 ĐÃ THAY, sao lưu chạy thành công** (chủ dự án báo 28/09 15:47). Chín điểm
-dừng dưới chưa bấm thử.*
+0.6.0 ĐÃ THAY, sao lưu chạy thành công** (chủ dự án báo 28/09 15:47); bảng Lịch sử
+sao lưu trên app thật hiện đúng dòng 15:42 · Đạt — b147 ĐÓNG. Tám điểm dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -28,7 +28,6 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b147** Sao lưu báo về nhật ký | ✓ `49` + `SaoLuu.gs` 0.6.0 đã xong, `saoLuuNgay` chạy thành công 28/09. Còn: Ctrl+F5 → *Quản trị hệ thống*: thẻ *Sao lưu & khôi phục* ở Tổng quan ghi giờ vừa chạy + "Đạt · tên file · dung lượng"; tab *Sao lưu & khôi phục* → bảng *Lịch sử sao lưu* có dòng ấy; tab *Nhật ký* có dòng "Sao lưu đêm". Sáng hôm sau có thêm dòng của lần chạy tự động 2 giờ sáng |
 | **b146** Báo trùng + gộp | ✓ `48` đã dán. Ctrl+F5 → *Quản trị → Gia phả → chip Báo trùng người*: ô 1 gõ tên một người ở cây thử `TH957`, bấm chọn một dòng; ô 2 chọn một người trùng với họ ở `T388` (hoặc cùng cây); ghi lý do → *Gửi báo trùng* → hộp báo mã nào sẽ ở lại, bảng dưới có dòng "Chờ duyệt". Sang *Quản trị hệ thống → tab Báo trùng người* → *Duyệt (gộp)* → *Duyệt và gộp* → hộp "Đã gộp …". Mở sơ đồ cây của người bị gộp: chỉ còn một người, vợ/chồng + con của cả hai bản đều về người ấy. Tab *Nhật ký* có dòng "Gộp hai bản ghi người". ⚠ Chỉ thử trên hai cây thử — gộp KHÔNG hoàn tác được bằng nút |
 | **b145** Công khai theo trường | Ctrl+F5 → *Quản trị hệ thống → Cây mặc định*: bảng bảy dòng có ô tích. Đặt cây thử `TH957` làm mặc định, tắt *Ngày tháng sinh cụ thể* + *Ảnh* → *Lưu*. Đăng nhập `khach@io.vn` (không có chân ở `TH957`) mở sơ đồ: thẻ người chỉ còn năm sinh, không ảnh. Đăng nhập lại bằng tài khoản của bạn: vẫn thấy đủ. *Nhật ký* có dòng "Đổi trường công khai cho khách". ⚠ Xong nhớ đặt lại cây mặc định như cũ |
 | **b141** Tải ảnh | Ctrl+F5. Mở một người ở cây `TH957` → *Sửa* → khối Ảnh → thêm một tấm ảnh chụp điện thoại → *Lưu*. Đạt khi ảnh hiện trên ô sơ đồ, và bấm vào ảnh ở trang chi tiết thì ra bản lớn nét |
