@@ -8,7 +8,7 @@
 //            xoa,anh}.js, pages/quan-tri/o-goi-y.js, state,
 //            domains/{person,union,validate,media,purge,render},
 //            services/repo, utils/{graph,text,date,image,avatar}, config
-// Phiên bản: 1.52.1 · Cập nhật: 28/09/2026 (b141) — bỏ import chết từ giàn giáo `tuong-thich`
+// Phiên bản: 1.53.0 · Cập nhật: 28/09/2026 (b150b) — ô *Liên hệ* (`contact`)
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/o-goi-y.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -784,6 +784,8 @@ function veCacO(nguoi) {
   ra.push(oChu('residence',  'Quê quán / nơi ở (khác nơi sinh)', nguoi.residence,
                'Hà Nam — nơi sống lâu nhất'));
   ra.push(oChu('nationality', 'Dân tộc',            nguoi.nationality, 'Kinh'));
+  // b150b — khách chỉ thấy khi cả cây lẫn chính chủ bật nhóm Liên hệ.
+  ra.push(oChu('contact',    'Liên hệ',             nguoi.contact,    'Điện thoại, email, Zalo…'));
 
   // ⚠ Chữ mờ của ô này đã ĐỔI ngày 21/08/2026, và lý do đáng ghi lại: bản cũ
   // mời người dùng gõ *"Chức tước, quê quán"* vào đây — đúng hai thứ vừa có ô
@@ -1014,6 +1016,7 @@ function dienTuNguoiCoSan(nguoi) {
   datO('religion',    nguoi.religion);
   datO('residence',   nguoi.residence);
   datO('nationality', nguoi.nationality);
+  datO('contact',     nguoi.contact);
   datO('note',        nguoi.note);
 
   if (o.living) o.living.checked = nguoi.living === true;
@@ -2791,6 +2794,7 @@ function gomThayDoi() {
     religion:    docO('religion'),
     residence:   docO('residence'),
     nationality: docO('nationality'),
+    contact:     docO('contact'),
     doi:         docO('doi'),
     chi:         docO('chi'),
     birth: { raw: docO('birth'), place: docO('birthPlace') },

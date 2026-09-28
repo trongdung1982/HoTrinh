@@ -4,7 +4,7 @@
 //            Ráp dòng thành cây, và so hai cây ra danh sách phép ghi.
 // Lớp      : services — được gọi bởi: services/repo · gọi: utils/date
 // Phụ thuộc: utils/date.js
-// Phiên bản: 0.8.0 · Cập nhật: 27/09/2026 (b133) — `rapGiaDinh()`
+// Phiên bản: 0.9.0 · Cập nhật: 28/09/2026 (b150b) — cột `contact` (`luoc-do/52`)
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -34,7 +34,7 @@ const TEN_PERSON = {
   id: null, uid: null, names: null, sex: null, birth: null, death: null,
   burialPlace: 'burial_place',
   title: null, occupation: null, education: null, religion: null,
-  residence: null, nationality: null,
+  residence: null, nationality: null, contact: null,
   living: null,
   photoFileId: 'photo_file_id',
   note: null, deleted: null, vn: null, meta: null,
@@ -111,7 +111,7 @@ const MAC_DINH_PERSON = {
   uid: '', names: [], sex: 'U', birth: NGAY_RONG, death: NGAY_RONG,
   burialPlace: '',
   title: '', occupation: '', education: '', religion: '',
-  residence: '', nationality: '',
+  residence: '', nationality: '', contact: '',
   living: true, photoFileId: '', note: '', deleted: false,
   vn: {}, meta: {}, revision: 0,
 };

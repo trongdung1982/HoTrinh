@@ -123,8 +123,8 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   TÀI KHOẢN trong một cây ("Nhân vật của bạn"), KHÔNG phải bảng theo cây của
   `47` (tab Cây mặc định) — đọc nhầm một lần 28/09. Ba lối vào là cột *Thông
   tin công khai* ở ba bảng; QTHT đặt hộ qua `#quan-tri-he-thong/cong-khai/
-  <mã tài khoản>~<mã cây>`. Bảy dòng thay vì mười một: bốn dòng kia không có
-  cột nào để che. Nút *Xem chi tiết* ở tab Cây mặc định vẫn ẩn.
+  <mã tài khoản>~<mã cây>`. Đủ 11 dòng từ b150b (`luoc-do/52`). Nút *Xem
+  chi tiết* ở tab Cây mặc định vẫn ẩn.
 - **`?tab=<tên>` trên địa chỉ QuanTri.html** mở thẳng một tab của khu QTHT
   (b149, lối vào từ Cài đặt sơ đồ) — đọc một lần rồi xoá khỏi địa chỉ.
 - **Duyệt *xin đổi quyền* nối vào bảng Thành viên & quyền sẵn có, KHÔNG ở

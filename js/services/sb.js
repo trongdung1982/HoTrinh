@@ -5,8 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.44.0 · Cập nhật: 28/09/2026 (b150) — ba cửa thông tin công khai
-//            của tài khoản (`luoc-do/51`). Lịch sử: `git log -p`.
+// Phiên bản: 0.45.0 · Cập nhật: 28/09/2026 (b150b) — Đời lấy từ `doc_cay` (`52`);
+//            ba cửa thông tin công khai của tài khoản (`51`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -628,7 +628,10 @@ export async function layDong(treeId) {
         sources:  sources.data  || [],
         imports:  imports.data  || [],
         maNhatKy: (maNhatKy.data || []).map((r) => r.ma),
-        doi:      (!doi.error && doi.data) || [],   // `luoc-do/40` — Đời theo cây, máy chủ tính
+        // `luoc-do/40` — Đời theo cây, máy chủ tính. Từ `52` `doc_cay` tự trả
+        // bản đã che cho khách, và khách thôi đọc thẳng `tree_persons` được —
+        // có thì dùng bản ấy; máy chủ chưa dán `52` thì về câu đọc thẳng như cũ.
+        doi:      Array.isArray(chung.data.doi) ? chung.data.doi : ((!doi.error && doi.data) || []),
         // `luoc-do/50` — máy chủ đã che người còn sống (người gọi chỉ có vai xem),
         // kèm ĐÚNG danh sách mã đã che. Máy chủ chưa dán `50` thì cả hai rỗng.
         cheConSong: chung.data.che_con_song === true,

@@ -8,8 +8,8 @@
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang ·
 //            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don · khu-nhat-ky ·
 //            khu-tao-tai-khoan · khu-bao-trung
-// Phiên bản: 1.13.1 · Cập nhật: 28/09/2026 (b150) — sửa ghi chú nút
-//            `#public-info-detail` (trang ấy theo tài khoản). Lịch sử: `git log -p`.
+// Phiên bản: 1.14.0 · Cập nhật: 28/09/2026 (b150b) — tab Cây mặc định đủ mười
+//            nhóm (`luoc-do/52`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -523,21 +523,24 @@ function veCayMacDinh(sec, ds, cmd, napLai) {
 // ⚠ Máy chủ che trong `doc_cay()` và khép luật đọc thẳng bảng người; bảng này
 //   chỉ đặt công tắc. "Khách" = tài khoản xem được cây CHỈ NHỜ nó là cây mặc
 //   định — thành viên của cây và QTHT luôn thấy đủ.
-// ⚠ Bảy dòng theo CỘT THẬT (chốt 28/09/2026), không theo tám dòng mẫu của
-//   quantri3: bỏ *Số điện thoại & Email* (bảng người không có cột ấy), gộp
-//   *Quê quán* vào *Tiểu sử* (nơi ở) và nơi sinh vào *Ngày sinh cụ thể*.
-// ⚠ Mã nhóm dưới phải khớp mảng cho phép trong `luoc-do/47` (ràng buộc cột +
-//   `dat_truong_cong_khai` + `che_nguoi`) — thêm nhóm là sửa CẢ HAI phía.
+// ⚠ Mười nhóm (b150b, `luoc-do/52`) — đủ tám dòng mẫu quantri3 cộng Sống/mất,
+//   Đời; nơi sinh vẫn đi theo *Ngày sinh cụ thể*. Liên hệ mặc định TẮT.
+// ⚠ Mã nhóm dưới phải khớp `ds_nhom_cong_khai()` của `luoc-do/52` (ràng buộc
+//   cột + hai cửa đặt + `che_nguoi`) — thêm nhóm là sửa CẢ HAI phía.
 
 const TRUONG_CONG_KHAI = [
   // [mã nhóm, tên dòng, khách thấy gì khi bật, chữ huy hiệu khi tắt]
-  ['', 'Họ và tên nhân vật', 'Họ tên, tên khác và Đời', ''],
+  ['', 'Họ và tên nhân vật', 'Họ tên và tên khác', ''],
   ['gioi_tinh', 'Giới tính', 'Nam / Nữ', 'Ẩn bảo mật'],
   ['nam_sinh', 'Năm sinh', 'Chỉ năm, ví dụ 1982', 'Ẩn bảo mật'],
   ['ngay_sinh', 'Ngày tháng sinh cụ thể', 'Ngày sinh đầy đủ và nơi sinh', 'Ẩn bảo mật'],
+  ['song_mat', 'Tình trạng sinh tử', 'Còn sống / Đã mất', 'Ẩn bảo mật'],
   ['ngay_mat', 'Ngày mất, ngày giỗ & nơi an táng', 'Ngày mất · giỗ · nơi an táng', 'Ẩn bảo mật'],
+  ['doi', 'Đời thứ trong tộc', 'Số Đời', 'Ẩn bảo mật'],
+  ['que_quan', 'Quê quán', 'Quê quán / nơi ở', 'Ẩn bảo mật'],
   ['anh', 'Ảnh chân dung', 'Ảnh đại diện và ảnh trong hồ sơ', 'Ảnh mặc định'],
-  ['tieu_su', 'Tiểu sử & Sự nghiệp', 'Ghi chú, chức danh, nghề, học vấn, tôn giáo, nơi ở, dân tộc', 'Ẩn bảo mật'],
+  ['tieu_su', 'Tiểu sử & Sự nghiệp', 'Ghi chú, chức danh, nghề, học vấn, tôn giáo, dân tộc', 'Ẩn bảo mật'],
+  ['lien_he', 'Số điện thoại & Email liên hệ', 'Ô Liên hệ', 'Ẩn bảo mật'],
 ];
 
 async function veTruongCongKhai(sec, cay, napLai) {
@@ -602,6 +605,11 @@ async function veTruongCongKhai(sec, cay, napLai) {
     if (oTich.get('ngay_sinh').checked) { ns.checked = true; ns.disabled = true;
       ns.title = 'Ngày sinh cụ thể đã gồm năm sinh.'; }
     else { ns.disabled = false; ns.title = ''; }
+    // Tắt Sống/mất thì ngày mất cũng che — ngày mất tự nói người ấy đã mất.
+    const nm = oTich.get('ngay_mat');
+    if (!oTich.get('song_mat').checked) { nm.checked = false; nm.disabled = true;
+      nm.title = 'Tình trạng sinh tử đang tắt — ngày mất cũng phải ẩn.'; }
+    else { nm.disabled = false; nm.title = ''; }
     for (const tr of tbody.children) tr._ve();
     const dang = [...oTich].filter(([, o]) => o.checked).map(([m]) => m);
     oDem.textContent = (dang.length + 1) + '/' + TRUONG_CONG_KHAI.length + ' trường công khai';

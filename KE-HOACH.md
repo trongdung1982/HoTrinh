@@ -1,8 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
 *Cập nhật 28/09/2026 · **b148 (giấu người còn sống) XONG MÃ — `50` CHƯA DÁN ·
-b149 (nút Sao lưu) XONG · b150 (Thông tin công khai của tôi, đường A) XONG MÃ —
-`51` CHƯA DÁN, dán SAU `50`.** Mười một điểm dừng dưới chưa bấm thử.*
+b149 (nút Sao lưu) XONG · b150 + b150b (Thông tin công khai của tôi, 11 dòng +
+ô Liên hệ) XONG MÃ — `51` · `52` CHƯA DÁN, dán `50`→`51`→`52`.** Mười một
+điểm dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -27,7 +28,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b150** Thông tin công khai của tôi | ⚠ Dán `50` rồi `51` trước. Ctrl+F5 → *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia*: cột *Thông tin công khai* ghi "7 thông tin →" → bấm ở dòng cây thử `TH957` → trang bảy dòng, giá trị của người bạn được gắn → tắt *Ảnh* + *Tiểu sử* → *Lưu thiết lập công khai*. *Quản trị hệ thống → Cây mặc định*: đặt `TH957` (tạm). Đăng nhập `khach@io.vn` (không có chân ở `TH957`) mở sơ đồ: người của bạn không ảnh, không tiểu sử; người khác vẫn đủ. ⚠ Người của bạn phải CÓ trong `TH957` thì mới thấy khác. Xong: bật lại hai trường, đặt lại cây mặc định như cũ |
+| **b150 · b150b** Thông tin công khai của tôi + Liên hệ | ⚠ Dán `50` → `51` → `52` trước. Ctrl+F5. Sơ đồ → mở người của bạn → *Sửa* → khối *Cuộc đời* có ô **Liên hệ** → gõ số điện thoại → *Lưu* → trang chi tiết có hàng *Liên hệ*. *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia*: cột *Thông tin công khai* ghi "11 thông tin →" → bấm ở dòng cây thử `TH957` → trang MƯỜI MỘT dòng, giá trị của người bạn được gắn → tắt *Ảnh* + *Quê quán* → *Lưu thiết lập công khai*. *Quản trị hệ thống → Cây mặc định*: đặt `TH957` (tạm). Tab ấy nay có 10 nhóm, *Số điện thoại & Email liên hệ* mặc định TẮT. Đăng nhập `khach@io.vn` (không có chân ở `TH957`) mở sơ đồ: người của bạn không ảnh, không quê quán, không liên hệ; người khác vẫn đủ (trừ liên hệ). ⚠ Người của bạn phải CÓ trong `TH957` thì mới thấy khác. Xong: bật lại hai trường, đặt lại cây mặc định như cũ |
 | **b149** Nút Sao lưu | Ctrl+F5. Sơ đồ → ⚙ Cài đặt: có khối *Sao lưu & khôi phục*, nút *Mở Sao lưu (trang Quản trị)* → bấm → sang trang Quản trị, đang đứng ở tab **Sao lưu**. Đăng nhập `khach@io.vn` → ⚙ Cài đặt: KHÔNG có khối ấy |
 | **b148** Giấu người còn sống | ⚠ Dán `50` trước (xem mục SQL). Ctrl+F5. *Quản trị → Gia phả →* cây thử `TH957` → *Mời gia nhập*: mời `khach@io.vn` với vai **Khách** (`xem`). Đăng nhập `khach@io.vn` → nhận lời mời → mở `TH957`: người còn sống (không ngày mất, sinh chưa quá 100 năm) chỉ còn tên, giới tính, năm sinh — không ảnh, không tiểu sử; trang chi tiết có dòng *"Người này còn sống nên máy chủ đã lược bớt…"*. Người đã mất vẫn đủ. Thêm: *Quản trị → Gia phả →* `TH957` → *Danh sách người* → bấm tên một người còn sống → trang hồ sơ MỞ ĐƯỢC (bản che), không báo "không có quyền xem". Đăng nhập lại tài khoản của bạn: thấy đủ cả. Xong nhớ gỡ vai của `khach@io.vn` |
 | **b146** Báo trùng + gộp | ✓ `48` đã dán. Ctrl+F5 → *Quản trị → Gia phả → chip Báo trùng người*: ô 1 gõ tên một người ở cây thử `TH957`, bấm chọn một dòng; ô 2 chọn một người trùng với họ ở `T388` (hoặc cùng cây); ghi lý do → *Gửi báo trùng* → hộp báo mã nào sẽ ở lại, bảng dưới có dòng "Chờ duyệt". Sang *Quản trị hệ thống → tab Báo trùng người* → *Duyệt (gộp)* → *Duyệt và gộp* → hộp "Đã gộp …". Mở sơ đồ cây của người bị gộp: chỉ còn một người, vợ/chồng + con của cả hai bản đều về người ấy. Tab *Nhật ký* có dòng "Gộp hai bản ghi người". ⚠ Chỉ thử trên hai cây thử — gộp KHÔNG hoàn tác được bằng nút |
@@ -133,6 +134,18 @@ tai_khoan` · ⚠ bản ĐỨNG CUỐI của `doc_cay()` — dán lại `47`/`50
 lại `51` (`so-tay/phan-quyen.md`). Dán lại nhiều lần được. Tự kiểm 5/5 phải
 ĐẠT. Chưa dán thì cột *Thông tin công khai* ghi "Xem →", bấm vào trang báo
 *"Máy chủ chưa có chức năng này"*. Bàn thử: `do-b150.mjs` 33/33.
+
+**`52` (b150b) — CHƯA DÁN. ĐƯỢC dán, SAU `51`** (tự dừng nếu thiếu `51`).
+Cột `persons.contact` (CHO null — lý do ở đầu file) · mười nhóm công khai,
+chuyển dữ liệu MỘT lần (mọi danh sách thêm Sống/mất + Đời, có Tiểu sử thì
+thêm Quê quán; Liên hệ không tự bật) · `doc_cay()` trả Đời đã che, khách thôi
+đọc thẳng `tree_persons` · ⚠ bản ĐỨNG CUỐI của `che_nguoi` · `doc_cay` ·
+`doc_ho_so_nguoi` · hai cửa đặt nhóm · luật đọc `tree_persons` · ⚠ **VÁ TẠI
+CHỖ** `luu_cay()` · `tu_choi_thay_doi()` · `gop_hai_nguoi()` — dán lại
+`26`/`28`/`32`/`47`/`48`/`50`/`51` thì PHẢI dán lại `52` (`so-tay/phan-quyen.md`).
+Dán lại nhiều lần được. Tự kiểm 6/6 phải ĐẠT. Chưa dán thì app vẫn Lưu bình
+thường (máy chủ bỏ qua khoá `contact` lạ) nhưng ô Liên hệ gõ vào KHÔNG được
+ghi. Bàn thử: `do-b150b.mjs` 32/32.
 
 ---
 

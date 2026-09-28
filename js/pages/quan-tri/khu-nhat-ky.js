@@ -6,8 +6,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · quan-tri/hop-thoai · o-bang
 // Sổ tay   : so-tay/nhat-ky-he-thong.md · so-tay/trang-quan-tri.md
-// Phiên bản: 0.4.0 · Cập nhật: 28/09/2026 (b150) — tên việc
-//            `doi_cong_khai_ca_nhan` (`luoc-do/51`)
+// Phiên bản: 0.4.1 · Cập nhật: 28/09/2026 (b150b) — tên việc
+//            `doi_cong_khai_ca_nhan` (`51`) · tên bốn nhóm mới (`52`)
 // ============================================================
 //
 // ⚠ Máy chủ TỰ GHI (trigger của `luoc-do/42`), trang này chỉ đọc và dọn.
@@ -73,6 +73,7 @@ const TEN_VIEC = {
 const TEN_TRUONG = {
   gioi_tinh: 'giới tính', nam_sinh: 'năm sinh', ngay_sinh: 'ngày sinh',
   ngay_mat: 'ngày mất', anh: 'ảnh', tieu_su: 'tiểu sử',
+  song_mat: 'sống/mất', doi: 'Đời', que_quan: 'quê quán', lien_he: 'liên hệ',
 };
 
 /** Câu chi tiết — phần trống thì không nói (`CLAUDE.md` mục 7). */

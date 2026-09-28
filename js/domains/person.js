@@ -3,11 +3,11 @@
 // Vai trò  : Nghiệp vụ hồ sơ cá nhân — tạo, sửa, đọc thông tin một người
 // Lớp      : domains — HÀM THUẦN. Không gọi services, không chạm DOM.
 // Phụ thuộc: utils/{text,date,id}
-// Phiên bản: 2.0.0 · Cập nhật: 18/09/2026 (b122b)
+// Phiên bản: 2.1.0 · Cập nhật: 28/09/2026 (b150b) — trường `contact` (Liên hệ)
 // ============================================================
-// ⚠ File duy nhất của `domains/` từng sửa trên nền Supabase, và cả hai lần đều
-//   là vì NGHIỆP VỤ chứ không vì đổi tầng lưu trữ: b120 thêm trường `noiVe`,
-//   b122b bỏ nó đi. `noiVe` sinh ra để nối hai bản ghi của cùng một người ở
+// ⚠ Một trong ba file `domains/` từng sửa trên nền Supabase, mọi lần đều vì
+//   NGHIỆP VỤ chứ không vì đổi tầng lưu trữ: b120 thêm trường `noiVe`,
+//   b122b bỏ nó đi, b150b thêm `contact` (chủ dự án cho phép 28/09/2026). `noiVe` sinh ra để nối hai bản ghi của cùng một người ở
 //   hai cây; từ `luoc-do/26` người ấy chỉ còn MỘT bản ghi nên không còn gì để
 //   nối. Đổi tầng lưu trữ mà phải sửa ở đây vẫn là dấu hiệu sai.
 import { fullName, coGiaTri, removeDiacritics, doiSongNguoi } from '../utils/text.js';
@@ -64,6 +64,9 @@ export function createPerson(tree, data, ghiNhan) {
     religion:    '',
     residence:   '',
     nationality: '',
+    // Liên hệ (b150b) — một ô chữ tự do: điện thoại, email, Zalo… Không có
+    // thẻ GEDCOM riêng cho INDI nên không xuất GEDCOM.
+    contact:     '',
 
     // Mặc định CÒN SỐNG — chủ dự án chốt 18/08/2026 sau lần thử đầu trên app
     // thật. Người thêm bằng tay gần như luôn là người đang sống; người đã khuất
@@ -95,6 +98,7 @@ export function createPerson(tree, data, ghiNhan) {
  *          altNames: [ { type, surname, middle, given } ],  // TÊN PHỤ, CẢ danh sách
  *          sex, living, burialPlace, note,
  *          title, occupation, education, religion, residence, nationality,
+ *          contact,                              // Liên hệ, chữ tự do (b150b)
  *          birth: { raw, place, iso? },
  *          death: { raw, place, iso? },
  *          gio,                                  // ngày giỗ ÂM LỊCH -> vn.gio
@@ -165,6 +169,7 @@ export function updatePerson(tree, personId, changes, ghiNhan) {
   datChuoi(moi, 'religion',    ch.religion,    ghi);
   datChuoi(moi, 'residence',   ch.residence,   ghi);
   datChuoi(moi, 'nationality', ch.nationality, ghi);
+  datChuoi(moi, 'contact',     ch.contact,     ghi);
 
   if (ch.living !== undefined) {
     const sau = ch.living === true;

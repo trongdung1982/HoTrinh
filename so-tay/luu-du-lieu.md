@@ -18,7 +18,16 @@ mục 5 (`luoc-do/48`) — không thì gộp hai người để lại mã thua �
 (`so-tay/nguoi-xuyen-cay.md` mục *Báo trùng + gộp*).
 
 ⚠ Hai hàm máy chủ **liệt kê tên cột**, không `set *`. Bẫy thứ ba và thứ tư tìm ra
-ở b120, trước đó tài liệu chỉ ghi bẫy thứ nhất. Bản đứng cuối của cả hai: `luoc-do/27`.
+ở b120, trước đó tài liệu chỉ ghi bẫy thứ nhất. Bản đứng cuối: `luu_cay()` ở
+`32`, `tu_choi_thay_doi()` ở `28` — cả hai đã được `52` vá thêm `contact`.
+
+**Cách `52` (b150b) thêm cột `contact`, dùng lại được:** không chép lại ba hàm
+400–500 dòng mà **vá tại chỗ** — đọc `pg_get_functiondef`, thay đúng MỘT chỗ
+neo, `execute` lại (`create or replace` giữ `grant`); neo khớp ≠ 1 lần thì
+`raise`, cả file lùi. Cột CHO null và cập nhật bằng
+`coalesce(excluded.contact, cũ)`: tab chưa Ctrl+F5 và ảnh chụp `change_log`
+cũ không mang khoá ấy — `not null` thì hỏng, còn gán thẳng thì xoá trắng.
+⚠ Dán lại `28`/`32`/`48` là mất bản vá → phải dán lại `52`.
 
 ## Khoá vắng mặt trong JSON gửi lên
 

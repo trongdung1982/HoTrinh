@@ -6,18 +6,17 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · services/hinh-dang · utils/{text,date} ·
 //            quan-tri/{trang-chi-tiet,hop-thoai,khu-quan-tri-he-thong,o-bang}
-// Phiên bản: 0.1.0 · Cập nhật: 28/09/2026 (b150)
+// Phiên bản: 0.2.0 · Cập nhật: 28/09/2026 (b150b) — mười nhóm, đủ 11 dòng
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
 // Ba lối vào, như quantri3:
 //   `#gia-pha/cong-khai/<mã cây>` · `#thanh-vien/cong-khai/<mã cây>` — của tôi;
 //   `#quan-tri-he-thong/cong-khai/<mã tài khoản>~<mã cây>` — QTHT đặt hộ.
-// ⚠ Bảy dòng, không phải mười một của prototype: bốn dòng kia (tình trạng sinh
-//   tử · Đời · quê quán · liên hệ) không có cột nào để che — vẽ công tắc không
-//   làm gì là nói dối. Sáu nhóm = sáu nhóm của `47`, Họ tên cố định.
+// ⚠ Mười một dòng như prototype = Họ tên cố định + mười nhóm của `luoc-do/52`.
 // ⚠ Khách thấy = nhóm CÂY bật ∩ nhóm NGƯỜI bật — cột "Người ngoài thấy" tính
-//   cả hai, không chỉ ô tích của trang này.
+//   cả hai, không chỉ ô tích của trang này. Hai luật kéo theo của `che_nguoi`:
+//   bật ngày sinh đủ thì năm đi theo; tắt sống/mất thì ngày mất cũng ẩn.
 
 import {
   docCongKhaiTaiKhoan, datCongKhaiTaiKhoan, layDanhSachGiaPha, dsTaiKhoanHeThong,
@@ -34,20 +33,24 @@ import { td, span, huyHieu, chepKieu, dongTrong, lienKet } from './o-bang.js';
 const SO_COT = 5;
 const GIOI = { M: 'Nam', F: 'Nữ' };
 
-/** Sáu nhóm của `luoc-do/47`, cùng thứ tự với bảng quantri3. */
+/** Mười nhóm của `luoc-do/52`, cùng thứ tự với bảng quantri3. */
 export const NHOM_CONG_KHAI = [
   ['gioi_tinh', 'Giới tính'],
   ['nam_sinh', 'Năm sinh'],
   ['ngay_sinh', 'Ngày tháng năm sinh đầy đủ'],
+  ['song_mat', 'Tình trạng sinh tử (Còn sống / Đã mất)'],
   ['ngay_mat', 'Ngày mất, ngày giỗ & nơi an táng'],
+  ['doi', 'Đời thứ trong tộc'],
   ['anh', 'Ảnh chân dung đại diện'],
+  ['que_quan', 'Quê quán / Nguyên quán'],
   ['tieu_su', 'Tiểu sử & ghi chú cá nhân'],
+  ['lien_he', 'Số điện thoại & Email liên hệ'],
 ];
 
 /**
  * Ô cột *Thông tin công khai* ở ba bảng (quantri3: *"n thông tin →"*). `hua` là
  * MỘT lần gọi `dsCongKhaiTaiKhoan()` cho cả bảng; về rồi mới điền số —
- * `null` = chưa đặt = đủ sáu. Máy chủ chưa dán `51` thì giữ chữ *Xem →*,
+ * `null` = chưa đặt = đủ mười. Máy chủ chưa dán `51` thì giữ chữ *Xem →*,
  * bấm vào trang nói lý do.
  */
 export function lienKetCongKhai(hash, hua, treeId) {
@@ -143,38 +146,39 @@ export async function mountCongKhai(sec, ctx) {
 }
 
 // ============================================================
-// Bảng bảy dòng
+// Bảng mười một dòng
 // ============================================================
 
 function veBang($, nguoi, doi, bat, cay) {
   const tb = $('pid-fields-tbody');
   tb.innerHTML = '';
-  const gt = giaTri(nguoi);
+  const gt = giaTri(nguoi, doi);
+  // Tắt sống/mất thì ngày mất cũng ẩn (`che_nguoi` của `52`) — ô ngày mất khoá theo.
+  if (!bat.has('song_mat')) bat.delete('ngay_mat');
 
   // Họ tên — cố định, không công tắc (quantri3: "Bắt buộc công khai để nhận diện sơ đồ").
   tb.append(dong('Họ và tên nhân vật', gt.ten, true, gt.ten,
     chepKieu(span('muted', 'Cố định'), 'font-size:11px'), 'Bắt buộc công khai để nhận diện sơ đồ'));
 
+  const mo = (m) => bat.has(m) && cay.has(m);
   for (const [ma, chu] of NHOM_CONG_KHAI) {
     const moNguoi = bat.has(ma);
-    // Bật ngày sinh đủ thì năm đi theo (`che_nguoi` của `47`).
-    const moThat = ma === 'nam_sinh'
-      ? (moNguoi || bat.has('ngay_sinh')) && (cay.has('nam_sinh') || cay.has('ngay_sinh'))
-      : moNguoi && cay.has(ma);
+    // Bật ngày sinh đủ thì năm đi theo; ngày mất cần cả sống/mất.
+    const moThat = ma === 'nam_sinh' ? mo('nam_sinh') || mo('ngay_sinh')
+      : ma === 'ngay_mat' ? mo('ngay_mat') && mo('song_mat')
+      : mo(ma);
     const lbl = chepKieu(document.createElement('label'), 'cursor:pointer;display:inline-flex;align-items:center;gap:4px');
     const o = chepKieu(document.createElement('input'), 'cursor:pointer;width:16px;height:16px');
     o.type = 'checkbox';
     o.checked = moNguoi;
+    if (ma === 'ngay_mat' && !bat.has('song_mat')) {
+      o.disabled = true;
+      lbl.title = 'Tình trạng sinh tử đang tắt — ngày mất cũng phải ẩn.';
+    }
     o.onchange = () => { if (o.checked) bat.add(ma); else bat.delete(ma); veBang($, nguoi, doi, bat, cay); };
     lbl.append(o, chepKieu(span('', moNguoi ? 'Bật' : 'Tắt'), 'font-size:12px'));
     const vi = !moThat && moNguoi && !cay.has(ma) ? 'Gia phả này đang tắt trường ấy với mọi khách' : '';
     tb.append(dong(chu, gt[ma], moNguoi, moThat ? gt[ma] : '-', lbl, vi));
-  }
-
-  if (coGiaTri(doi)) {
-    // Đời không có công tắc ở máy chủ — luôn hiện, nói thẳng thay vì vẽ ô tích giả.
-    tb.append(dong('Đời thứ trong tộc', 'Đời ' + doi, true, 'Đời ' + doi,
-      chepKieu(span('muted', 'Cố định'), 'font-size:11px'), 'Sơ đồ luôn hiện Đời'));
   }
 
   const n = 1 + bat.size;
@@ -198,23 +202,28 @@ function dong(ten, giaTriNhap, laCongKhai, khachThay, oCuoi, viSao) {
   return tr;
 }
 
-/** Giá trị đang nhập của người được gắn, theo sáu nhóm — trống thì '—'. */
-function giaTri(p) {
+/** Giá trị đang nhập của người được gắn, theo mười nhóm — trống thì '—'. */
+function giaTri(p, doi) {
   if (!p) return { ten: '— (Chưa gắn người)' };
+  const soDoi = coGiaTri(doi) ? doi : (p.vn && p.vn.generation);
   const nam = (p.birth && (String(p.birth.iso || '').slice(0, 4) ||
     (String(p.birth.raw || '').match(/\d{4}/) || [''])[0])) || '';
   const noi = (x) => [formatDate(x), x && x.place].filter(coGiaTri).join(' · ');
   const mat = [noi(p.death), p.vn && p.vn.gio ? 'Giỗ ' + p.vn.gio : '',
     p.burialPlace ? 'An táng: ' + p.burialPlace : ''].filter(coGiaTri).join(' · ');
-  const tieuSu = [p.note, p.title, p.occupation, p.education, p.religion, p.residence, p.nationality]
+  const tieuSu = [p.note, p.title, p.occupation, p.education, p.religion, p.nationality]
     .filter(coGiaTri).join(' · ');
   return {
     ten: fullName(p) || p.id,
     gioi_tinh: GIOI[p.sex] || '',
     nam_sinh: nam,
     ngay_sinh: noi(p.birth),
+    song_mat: p.living === false ? 'Đã mất' : 'Còn sống',
     ngay_mat: mat,
+    doi: coGiaTri(soDoi) ? 'Đời ' + soDoi : '',
     anh: p.photoFileId ? 'Có ảnh (' + p.photoFileId + ')' : '',
+    que_quan: p.residence || '',
     tieu_su: tieuSu.length > 80 ? tieuSu.slice(0, 80) + '…' : tieuSu,
+    lien_he: p.contact || '',
   };
 }

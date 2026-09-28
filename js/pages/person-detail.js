@@ -4,8 +4,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, domains/{person,union,render}, services/{repo,sb},
 //            utils/{text,date,image,avatar,glyph,id}, config
-// Phiên bản: 1.38.0 · Cập nhật: 28/09/2026 17:41 (b148b) — câu "đã lược bớt"
-//            hỏi `state.nguoiBiChe` (máy chủ nói), không đoán theo `living`
+// Phiên bản: 1.39.0 · Cập nhật: 28/09/2026 (b150b) — hàng *Liên hệ*. Câu "đã
+//            lược bớt" hỏi `state.nguoiBiChe` (máy chủ nói), không đoán theo `living`
 // Sổ tay   : so-tay/the-thong-tin.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -925,6 +925,7 @@ function doDayBang(bang, p) {
   hang('Quê quán', p.residence);
   hang('Dân tộc', p.nationality);
   hang('Tôn giáo', p.religion);
+  hang('Liên hệ', p.contact);
   hang('Đời', doiCua(p));
   hang('Chi / nhánh', p.vn && p.vn.branch);
 
