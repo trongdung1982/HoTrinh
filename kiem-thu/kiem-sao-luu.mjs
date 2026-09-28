@@ -4,8 +4,8 @@
 //            Script — bằng cách chạy CHÍNH file ấy trong Node, với một
 //            Supabase giả và một Google Drive giả.
 // Chạy     : cd supabase/kiem-thu && node kiem-sao-luu.mjs
-// Phiên bản: 0.3.0 · Cập nhật: 18/09/2026 (b122b) — phép 1 đọc cả thư mục
-//            `luoc-do/`, không riêng `01-bang.sql`
+// Phiên bản: 0.4.0 · Cập nhật: 28/09/2026 (b142a) — phép 11b: đối chiếu số
+//            dòng đọc được với số thật của máy chủ
 // ============================================================
 //
 // ═══ VÌ SAO BÀI KIỂM NÀY TỒN TẠI ═══
@@ -106,6 +106,15 @@ function dungMoiTruong(kichBan = {}) {
         return traLoi(200, JSON.stringify(kichBan.heThong || { ok: true, bang: {
           cau_hinh: [{ chi_mot_dong: true }], tai_khoan: [{ user_id: 'u1' }, { user_id: 'u2' }],
           doi_ma_toan_cuc: [], de_xuat_gan_nguoi: [], de_nghi_quan_he: [], de_xuat_dong_ho: [] } }));
+      }
+      // Số dòng thật (`luoc-do/45`, b142a). Mặc định = đúng số dòng máy chủ giả
+      // có, tức đọc đủ. `demThat` đè từng bảng để giả cảnh RLS giấu bớt dòng;
+      // `demThatHong` = máy chủ chưa dán `45`.
+      if (duong === '/rest/v1/rpc/sao_luu_dem_that') {
+        if (kichBan.demThatHong) return traLoi(404, '{"message":"function not found"}');
+        const d = {};
+        for (const [t, hang] of Object.entries(duLieu)) d[t] = hang.length;
+        return traLoi(200, JSON.stringify({ ok: true, dem: { ...d, ...(kichBan.demThat || {}) } }));
       }
 
       if (duong.startsWith('/rest/v1/')) {
@@ -560,6 +569,59 @@ const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac'];
        nhatKy.goi.filter((u) => u.includes('/persons')).length === 1 &&
        nhatKy.goi.some((u) => u.includes('/persons?select=*&limit=1')),
        nhatKy.goi.find((u) => u.includes('/persons')) || '(không gọi)');
+}
+
+// ---- 11b. Đối chiếu với số THẬT của máy chủ (b142a) -------------------
+//
+// ⚠ Lỗ b142a: cây không có dòng `sao_luu` bị RLS giấu SẠCH — file vẫn đẹp,
+//   `dem` trong file khớp chính nó. Chỉ số đếm phía máy chủ lộ ra chỗ thiếu.
+{
+  const du = dungMoiTruong({ duLieu: cayGia({ soNguoi: 59 }) });
+  du.api.saoLuuNgay();
+  const banDu = JSON.parse([...duyet(du.thuMuc)][0]._noiDung);
+  kiem('đọc đủ: file mang demMayChu, không cờ thiếu, không thư',
+       banDu.demMayChu && banDu.demMayChu.persons === 59 && banDu.thieuSoVoiMayChu === '' &&
+       banDu.loiDemThat === '' && du.nhatKy.thu.length === 0,
+       `thieu='${banDu.thieuSoVoiMayChu}' · ${du.nhatKy.thu.length} thư`);
+
+  const moi = dungMoiTruong();
+  const thuMuc = moi.taoThuMuc('cu');
+  for (let i = 1; i <= 40; i++) {
+    thuMuc.createFile('giapha-sao-luu-2026-08-' + String((i % 28) + 1).padStart(2, '0') +
+                      '-' + String(i).padStart(4, '0') + '.json', '{}');
+  }
+  const thieu = dungMoiTruong({ duLieu: cayGia({ soNguoi: 59 }), thuMuc,
+                                demThat: { trees: 3, persons: 740 } });
+  const truoc = [...duyet(thuMuc)].length;
+  thieu.api.saoLuuNgay();
+  const sau = [...duyet(thuMuc)].length;
+  const tepMoi = [...duyet(thuMuc)].find((f) => f.getName().startsWith('giapha-sao-luu-2026-09'));
+  const ban = JSON.parse(tepMoi._noiDung);
+  kiem('RLS giấu cây: file mang cờ thiếu, nêu đúng hai bảng thiếu',
+       /persons: máy chủ có 740, sao lưu đọc được 59/.test(ban.thieuSoVoiMayChu) &&
+       /trees: máy chủ có 3/.test(ban.thieuSoVoiMayChu) && !/change_log/.test(ban.thieuSoVoiMayChu),
+       ban.thieuSoVoiMayChu.slice(0, 120));
+  kiem('RLS giấu cây: gửi thư ⛔ THIẾU, chỉ vào luoc-do/45',
+       thieu.nhatKy.thu.length === 1 && /THIẾU/.test(thieu.nhatKy.thu[0].tieuDe) &&
+       thieu.nhatKy.thu[0].than.includes('45-sao-luu-du-cay'),
+       thieu.nhatKy.thu.map((t) => t.tieuDe).join(' | ') || '(không thư)');
+  kiem('RLS giấu cây: VẪN ghi file, KHÔNG dọn bản cũ',
+       sau === truoc + 1, `${truoc} file → ${sau} file`);
+
+  const hong = dungMoiTruong({ duLieu: cayGia({ soNguoi: 5 }), demThatHong: true });
+  hong.api.saoLuuNgay();
+  const banHong = JSON.parse([...duyet(hong.thuMuc)][0]._noiDung);
+  kiem('chưa dán 45: vẫn ghi đủ, file nói không đối chiếu được, không thư',
+       banHong.dem.persons === 5 && banHong.demMayChu === null &&
+       banHong.loiDemThat !== '' && banHong.thieuSoVoiMayChu === '' && hong.nhatKy.thu.length === 0,
+       `loi='${String(banHong.loiDemThat).slice(0, 50)}' · ${hong.nhatKy.thu.length} thư`);
+
+  const kt = dungMoiTruong({ duLieu: cayGia({ soNguoi: 59 }), demThat: { persons: 740 } });
+  const ket = kt.api.kiemTraKetNoi();
+  kiem('kiemTraKetNoi nói THIẾU khi máy chủ có nhiều hơn',
+       /THIẾU/.test(ket) && /persons: máy chủ có 740/.test(ket), ket.split('\n').slice(-6).join(' / '));
+  const kt2 = dungMoiTruong({ duLieu: cayGia({ soNguoi: 59 }) });
+  kiem('kiemTraKetNoi nói ĐỦ khi khớp', /ĐỦ/.test(kt2.api.kiemTraKetNoi()), '');
 }
 
 // ---- 12. Đặt lịch hai lần vẫn chỉ một lịch ---------------------------

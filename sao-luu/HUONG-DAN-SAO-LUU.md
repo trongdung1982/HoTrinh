@@ -100,9 +100,10 @@ on conflict do nothing;
 
 3. Bấm **Run**.
 
-> Câu này thêm tài khoản sao lưu vào **mọi cây đang có**. Sau này dựng thêm cây
-> mới thì chạy lại đúng câu ấy — `on conflict do nothing` khiến chạy lại không
-> hỏng gì.
+> Câu này thêm tài khoản sao lưu vào **mọi cây đang có**. Cây dựng về sau thì
+> **tự có** tài khoản sao lưu — từ khi dán `luoc-do/45-sao-luu-du-cay.sql`
+> (28/09/2026). Trước ngày ấy thì không: cây dựng sau bước này bị bỏ sót khỏi
+> mọi bản sao lưu, im lặng.
 
 **Tự kiểm:** chạy tiếp câu này, phải ra ít nhất một dòng có `role = sao_luu`:
 
@@ -297,6 +298,7 @@ Xong. Từ đêm nay máy tự chạy.
 | Tiêu đề thư | Nghĩa là | Làm gì |
 |---|---|---|
 | **⛔ SAO LƯU HỎNG** | Đêm qua không sao lưu được | Mở dự án, chạy `kiemTraKetNoi`, đọc câu lỗi |
+| **⛔ Bản sao lưu THIẾU dữ liệu so với máy chủ** | File đã ghi, nhưng máy chủ có nhiều dòng hơn số máy sao lưu đọc được — thường vì một cây chưa có tài khoản sao lưu | Dán lại `luoc-do/45-sao-luu-du-cay.sql` (nó bù cho mọi cây), rồi chạy `saoLuuNgay`. Thư không tới nữa là xong |
 | **⚠ Bản sao lưu hôm nay ít dữ liệu hơn hẳn lần trước** | Số người tụt hơn một nửa | Mở app kiểm bằng mắt. Có thể là thật (bạn vừa dọn thùng rác), có thể là mất dữ liệu. **Lần ấy máy KHÔNG dọn bản cũ**, nên bản cũ còn nguyên để cứu |
 | Thư của Google về "failure" | Google báo trigger lỗi | Cùng nguyên nhân với thư ⛔ |
 
@@ -306,21 +308,22 @@ Chạy hàm **`goLichSaoLuu`**. Lịch tự động tắt; sao lưu bấm tay v�
 
 ### Khi `SaoLuu.gs` có bản mới — thay mã, KHÔNG làm lại từ đầu
 
-*(Lần gần nhất: bản 0.4.0, 28/09/2026 — thêm sáu bảng cấp hệ thống: cờ Quản
-trị hệ thống, cây mặc định, bảng đổi mã, ba loại đơn.)*
+*(Lần gần nhất: bản 0.5.0, 28/09/2026 — đối chiếu số dòng đọc được với số
+thật trên máy chủ; thiếu thì gửi thư ⛔. Kèm SQL `45`: cây mới tự có tài khoản
+sao lưu, và bù cho cây đang thiếu.)*
 
 1. **Dán SQL trước:** Supabase → SQL Editor → dán cả file
-   `luoc-do/44-sao-luu-bang-he-thong.sql` → **Run**. Bảng cuối phải ra
-   **ĐẠT** ở ba dòng.
+   `luoc-do/45-sao-luu-du-cay.sql` → **Run**. Bảng cuối phải ra **ĐẠT** ở
+   bốn dòng. Dòng 3 kể tên cây còn thiếu — phải là *"không"*.
 2. `script.google.com` → mở dự án **Sao luu gia pha Supabase** → bấm vào ô
    soạn thảo → **Ctrl + A** → **Delete**.
 3. Chép lại mã mới đúng như **Bước 5** (Notepad hoặc GitHub) → **Ctrl + V** →
    bấm **đĩa mềm** (Save). Bốn giá trị cấu hình và lịch tự động **giữ
    nguyên**, không phải làm lại.
-4. Chọn hàm **`kiemTraKetNoi`** → **Run**. Nhật ký phải có thêm sáu dòng
-   `cau_hinh: … dòng` · `tai_khoan: … dòng` … Có dòng
-   **`(sáu bảng hệ thống): LỖI`** thì bước 1 chưa chạy hoặc chạy lỗi — bản
-   sao lưu gia phả vẫn chạy bình thường, chỉ thiếu sáu bảng ấy.
+4. Chọn hàm **`kiemTraKetNoi`** → **Run**. Dòng cuối nhật ký phải là
+   **`Đối chiếu với máy chủ: ĐỦ`**. Ra **`THIẾU`** kèm tên bảng thì còn cây
+   chưa có tài khoản sao lưu — chạy lại bước 1. Ra **`LỖI`** thì bước 1 chưa
+   chạy; bản sao lưu vẫn ghi bình thường, chỉ không tự đối chiếu được.
 
 ---
 

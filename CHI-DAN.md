@@ -27,7 +27,7 @@ file. ⚠ `KE-HOACH.md` **hết trần** (b131) — gọn bằng kỷ luật "xo
 | Đụng cách VẼ sơ đồ, dâu/rể | ⚠⚠ **`so-tay/ve-so-do.md`** (đè `QUY-TAC-VE`) · vẽ `chiMucVe()`, thẻ/form `state.index` · `../tai-lieu/QUY-TAC-VE_V14.md` |
 | Đụng thẻ người · thẻ gia đình · menu vòng tròn | `so-tay/the-thong-tin.md` |
 | Đụng ảnh | `KIEN-TRUC.md` mục 7 ⚠ có câu chưa chốt |
-| Đụng sao lưu, trigger Apps Script | `sao-luu/SaoLuu.gs` · `luoc-do/05-sao-luu.sql` · `kiem-thu/kiem-sao-luu.mjs` |
+| Đụng sao lưu, trigger Apps Script | `sao-luu/SaoLuu.gs` · `luoc-do/05-sao-luu.sql` · `44` · `45` · `kiem-thu/kiem-sao-luu.mjs` |
 | Đụng di dời dữ liệu vào bảng | `di-doi/HUONG-DAN-DI-DOI.md` · `di-doi/sinh-sql-di-doi.mjs` |
 | Thêm/nâng cấp thư viện | `js/vendor/DOC-VENDOR.md` — và **hỏi chủ dự án trước** |
 | **Gặp lỗi / điều đáng chú ý** · dọn rác · ghi chú đầu file · phép 10 báo LỖI | `QUY-TAC-GON.md` mục 4–5 · `so-tay/` · đo: `node kiem-thu/do-gon.mjs` |

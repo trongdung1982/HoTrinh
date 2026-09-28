@@ -10,8 +10,9 @@
 //            EMAIL_SAO_LUU · MAT_KHAU_SAO_LUU (bắt buộc),
 //            THU_MUC_DRIVE · SO_BAN_GIU (tuỳ chọn)
 //            SQL — luoc-do/05-sao-luu.sql phải chạy trước
-// Phiên bản: 0.4.0 · Cập nhật: 28/09/2026 (b137) — thêm sáu bảng cấp hệ
-//            thống qua `sao_luu_bang_he_thong()` (`luoc-do/44` phải dán trước)
+// Phiên bản: 0.5.0 · Cập nhật: 28/09/2026 (b142a) — so số dòng đọc được với
+//            số THẬT trên máy chủ (`sao_luu_dem_that()`, `luoc-do/45`); thiếu
+//            thì gửi thư ⛔ và không dọn bản cũ
 // ============================================================
 //
 // ⚠ ĐÂY KHÔNG PHẢI dự án Apps Script cũ. Dự án cũ (`giapha/gas/`) vẫn đang
@@ -115,8 +116,10 @@ function kiemTraKetNoi() {
   var cauHinh = docCauHinh_();
   var dong = ['Kết nối tới: ' + cauHinh.url, ''];
   var tong = 0;
+  var demDoc = {};
   Object.keys(THU_TU_DOC).forEach(function (bang) {
     var n = demDong_(cauHinh, bang);
+    demDoc[bang] = n;
     tong += n;
     dong.push('  ' + bang + ': ' + n + ' dòng');
   });
@@ -132,6 +135,13 @@ function kiemTraKetNoi() {
   dong.push('  (tài khoản đăng nhập): ' + nguoi.length + ' người');
   dong.push('');
   dong.push('Tổng cộng ' + tong + ' dòng dữ liệu gia phả.');
+
+  var demThat = docDemThat_(cauHinh);
+  dong.push('');
+  dong.push(demThat.loi
+    ? 'Đối chiếu với máy chủ: LỖI — ' + demThat.loi
+    : (soVoiMayChu_(demDoc, demThat.dem) ||
+       'Đối chiếu với máy chủ: ĐỦ — đọc được mọi dòng máy chủ đang có.'));
   var ket = dong.join('\n');
   Logger.log(ket);
   return ket;
@@ -161,8 +171,13 @@ function saoLuuNgay() {
 
     // ⚠ Nghi ngờ thì KHÔNG dọn. Nếu dữ liệu vừa mất thật, bản cũ đang là thứ
     //   duy nhất cứu được — dọn nó đi đúng lúc ấy là hỏng không sửa lại được.
-    var daXoa = loiCanhBao ? 0 : donBanCu_(thuMuc, cauHinh.soBanGiu);
+    var daXoa = (loiCanhBao || banSao.thieuSoVoiMayChu) ? 0 : donBanCu_(thuMuc, cauHinh.soBanGiu);
 
+    if (banSao.thieuSoVoiMayChu) {
+      guiThu_('[Gia phả] ⛔ Bản sao lưu THIẾU dữ liệu so với máy chủ',
+              banSao.thieuSoVoiMayChu + '\n\nFile vẫn đã được ghi: ' + ten +
+              '\nBản sao lưu cũ CHƯA bị dọn — lần này bỏ qua bước dọn.');
+    }
     if (loiCanhBao) {
       guiThu_('[Gia phả] ⚠ Bản sao lưu hôm nay ít dữ liệu hơn hẳn lần trước',
               loiCanhBao + '\n\nFile vẫn đã được ghi: ' + ten +
@@ -226,6 +241,10 @@ function goLichSaoLuu() {
  * thì không có.
  */
 function gomSaoLuu_(cauHinh) {
+  // ⚠ Đếm thật TRƯỚC khi đọc: dòng thêm trong lúc đọc thì số đọc được lớn
+  //   hơn số đếm — không báo oan. Chỉ dòng mất trong lúc đọc mới báo, và mất
+  //   dòng lúc 2 giờ sáng là chuyện đáng có thư.
+  var demThat = docDemThat_(cauHinh);
   var bang = {};
   var dem = {};
   Object.keys(THU_TU_DOC).forEach(function (ten) {
@@ -266,8 +285,53 @@ function gomSaoLuu_(cauHinh) {
     nguoiDung: nguoiDung,
     khoAnh: khoAnh,
     // Trống = sáu bảng hệ thống đã chép đủ. Có chữ = thiếu cả sáu, lý do đây.
-    loiBangHeThong: heThong.loi || ''
+    loiBangHeThong: heThong.loi || '',
+    // Số dòng THẬT trên máy chủ lúc bắt đầu chép (`luoc-do/45`). Trống thì
+    // `loiDemThat` nói vì sao không đối chiếu được.
+    demMayChu: demThat.dem || null,
+    loiDemThat: demThat.loi || '',
+    // Trống = đọc đủ. Có chữ = RLS giấu bớt dòng, bản này KHÔNG đủ để khôi phục.
+    thieuSoVoiMayChu: demThat.dem ? (soVoiMayChu_(dem, demThat.dem) || '') : ''
   };
+}
+
+/**
+ * Số dòng thật của mười ba bảng gia phả, qua `sao_luu_dem_that()`.
+ * KHÔNG ném lỗi — chưa dán `45` thì bản sao lưu vẫn ghi, chỉ không đối chiếu.
+ */
+function docDemThat_(cauHinh) {
+  try {
+    var kq = goi_(cauHinh, cauHinh.url + '/rest/v1/rpc/sao_luu_dem_that', 'đếm số dòng thật', {});
+    if (!kq || kq.ok !== true || !kq.dem) {
+      return { loi: (kq && kq.loi) || 'Máy chủ không trả số dòng thật (đã dán luoc-do/45 chưa?).' };
+    }
+    return { dem: kq.dem };
+  } catch (e) {
+    return { loi: String(e && e.message ? e.message : e).slice(0, 300) };
+  }
+}
+
+/**
+ * So số dòng đọc được với số thật. Trả câu cảnh báo, hoặc `null` nếu đủ.
+ *
+ * ⚠ Đây là chuông cho đúng lỗ b142a: máy sao lưu đọc qua RLS, cây nào nó
+ *   không giữ vai thì RLS giấu SẠCH — file vẫn đẹp, số `dem` trong file vẫn
+ *   khớp chính nó. Chỉ số đếm từ phía máy chủ mới lộ ra chỗ thiếu.
+ */
+function soVoiMayChu_(demDoc, demThat) {
+  var loi = [];
+  Object.keys(THU_TU_DOC).forEach(function (ten) {
+    var that = Number(demThat[ten]);
+    var doc = Number(demDoc[ten]) || 0;
+    if (!isNaN(that) && doc < that) {
+      loi.push('  ' + ten + ': máy chủ có ' + that + ', sao lưu đọc được ' + doc);
+    }
+  });
+  if (!loi.length) return null;
+  return 'Đối chiếu với máy chủ: THIẾU — máy sao lưu không được thấy hết dữ liệu:\n\n' +
+         loi.join('\n') + '\n\n' +
+         'Thường do một cây chưa có tài khoản sao lưu. Dán lại luoc-do/45-sao-luu-du-cay.sql ' +
+         '(nó bù cho mọi cây) rồi chạy lại saoLuuNgay.';
 }
 
 /**

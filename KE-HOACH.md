@@ -1,9 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 sáng · chủ dự án đã dán `42`·`43`·`44` + thay mã
-`SaoLuu.gs`. b139 (nhập GEDCOM xin đủ mã) · b140 (duyệt hàng loạt) · b141
-(tải ảnh gửi Blob thẳng, giàn giáo 4→2) XONG phần mã — không SQL mới. Bảy
-điểm dừng dưới chưa bấm thử.*
+*Cập nhật 28/09/2026 trưa · b142a XONG phần mã: bản sao lưu đêm bỏ sót mọi
+cây không có dòng `sao_luu` (đo trên bàn thử: 1/2 cây, 59/740 người) — vá bằng
+`45` + `SaoLuu.gs` 0.5.0, **CHƯA dán**. Bảy điểm dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -31,7 +30,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 | **b141** Tải ảnh | Ctrl+F5. Mở một người ở cây `TH957` → *Sửa* → khối Ảnh → thêm một tấm ảnh chụp điện thoại → *Lưu*. Đạt khi ảnh hiện trên ô sơ đồ, và bấm vào ảnh ở trang chi tiết thì ra bản lớn nét |
 | **b140** Duyệt hàng loạt | *Quản trị → Kiểm duyệt*, tab *Đang chờ duyệt* (Ctrl+F5 trước). Cây thử `TH957`: sửa 2–3 lần bằng tài khoản thử để có dòng chờ. Tích hai dòng → thanh trên bảng ghi "Đã chọn 2 / n" → *Duyệt các dòng đã chọn* → *Duyệt chính thức* → hộp "Đã duyệt 2 / 2", hai dòng sang tab *Đã nhận chính thức*. Lặp với *Từ chối các dòng đã chọn* + một lý do → dữ liệu về như cũ, tab *Đã từ chối* hiện lý do ấy ở cả hai dòng. Đổi bộ lọc cây → các ô tích tự bỏ hết |
 | **b139** Nhập GEDCOM bổ sung | Mở cây thử `TH957` → *Nhập GEDCOM/Excel* → chọn một file `.ged` có vài người CHƯA có trong cây → ghép đôi → *Ghi*. Đạt khi ghi xong không báo "Mã mới vừa cấp đã có bản ghi khác giữ", và người mới hiện trên sơ đồ |
-| **b137** Sao lưu sáu bảng hệ thống | `44` + `SaoLuu.gs` đã xong — còn chạy `kiemTraKetNoi` trong Apps Script (`sao-luu/HUONG-DAN-SAO-LUU.md` mục *Khi `SaoLuu.gs` có bản mới*, bước cuối). Đạt khi nhật ký có sáu dòng `cau_hinh` … `de_xuat_dong_ho`, không dòng LỖI |
+| **b142a** + **b137** Sao lưu đủ cây | Làm đúng `sao-luu/HUONG-DAN-SAO-LUU.md` mục *Khi `SaoLuu.gs` có bản mới* (dán `45` → thay mã 0.5.0 → chạy `kiemTraKetNoi`). Đạt khi: bảng tự kiểm của `45` ĐẠT bốn dòng · nhật ký có sáu dòng `cau_hinh` … `de_xuat_dong_ho` · dòng cuối **`Đối chiếu với máy chủ: ĐỦ`**. ⚠ Nhìn dòng 3 của bảng tự kiểm TRƯỚC khi dán lần hai — không có cây nào bị kể tên nghĩa là máy chủ thật chưa từng thiếu; có tên thì các bản sao lưu cũ thiếu đúng cây ấy |
 | **b136** Lịch sử Kiểm duyệt | *Quản trị → Kiểm duyệt*, tab *Đã nhận chính thức*: hai cột cuối có người duyệt + lúc duyệt; tab *Đã từ chối & hoàn tác*: người từ chối + lý do. Lần Lưu tự duyệt (người tin cậy) có thể trống người duyệt — đúng, không phải lỗi |
 | **b135** Huy hiệu (9.6) | *Quản trị → Gia phả*, chip *Tôi quản lý*: cây nào có nội dung chờ kiểm duyệt thì dưới tên có huy hiệu "n chờ kiểm duyệt", bấm sang Kiểm duyệt. Số trên nút *Kiểm duyệt* / *Gia phả* ở thanh trái nay CỘNG mọi cây bạn quản lý — đổi cây đang mở không làm số đổi |
 | **b134** Nhật ký hệ thống | Đăng xuất → đăng nhập lại → *Quản trị hệ thống → Nhật ký*: phải thấy dòng **"Bắt đầu ghi nhật ký"** và dòng **"Đăng nhập"** của chính bạn. Bấm *Cấp quyền tạo cây* rồi *Thu hồi* cho `khach@io.vn` → hai dòng mới, người làm là bạn. Tích một dòng → *Xóa các dòng đã chọn* → sang tab *Thùng rác*, bảng cuối có một lô → *Phục hồi* → dòng về lại. Thẻ *Nhật ký hệ thống* ở *Tổng quan* ra số sự kiện 7 ngày |
@@ -79,6 +78,11 @@ trigger (hai trên `auth.users`) + năm hàm QTHT — không kéo chuỗi dán l
 `43` là bản ĐỨNG CUỐI của `ds_kiem_duyet()` — dán lại `08`/`10` thì phải dán
 lại `43` (`so-tay/phan-quyen.md`). `44` = một hàm mới `sao_luu_bang_he_thong()`.
 
+**`45` (b142a) — CHƯA DÁN.** Dán sau `44`, rồi thay `SaoLuu.gs` 0.5.0. Một
+trigger mới trên `trees` · bù dòng `sao_luu` cho mọi cây · hàm mới
+`sao_luu_dem_that()`. Không định nghĩa lại hàm nào của file khác → không kéo
+chuỗi dán lại. Bàn thử: `do-b142a.mjs` 21/21.
+
 ---
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
@@ -87,8 +91,14 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-Chưa đặt số việc kế tiếp — chọn từ *Sau đó* dưới đây, hoặc theo yêu cầu mới
-của chủ dự án.
+**b142b — khôi phục thật.** Script đổ ngược file sao lưu JSON → SQL, đo cả
+vòng trên bàn thử (sao lưu → phá → khôi phục → so từng bảng khớp từng dòng).
+Đã tra sẵn 28/09: 19 bảng không có vòng khoá ngoại · `change_log`/`imports`
+dùng `serial` (phải `setval`) · mọi trigger người dùng trên 19 bảng phải tắt
+lúc đổ (Đời, nhật ký, `chan_ghi_de`, `chan_quan_he_trung`, và ⚠ `them_may_sao_
+luu` của `45` — để bật thì nó đẻ dòng `tree_members` đụng dòng sắp đổ) · bảng nhật ký không trỏ khoá
+ngoại vào 19 bảng ấy nên `truncate` không lan. Chưa quyết: tài khoản có trong
+bản sao lưu mà đã mất khỏi `auth.users` thì dừng hay bỏ dòng.
 
 ### Trang Quản trị — đọc `so-tay/trang-quan-tri.md` trước khi đụng
 
@@ -128,7 +138,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 |---|---|
 | ⚠ **Nhập chế độ `moi` (dựng gia phả mới) vẫn giữ mã của file** → `trungma` ngay. Màn ấy chưa mở nên chưa ai vào; mở thì phải cấp mã mới cho mọi bản ghi (sửa `domains/gedcom.js` `tronMoi`, hỏi chủ dự án) | `so-tay/luu-du-lieu.md` *Kho mã* |
 | ⚠ **`di-doi/sinh-sql-di-doi.mjs` lạc hậu từ `26`** — SQL nó sinh còn gắn `tree_id` vào bốn bảng dùng chung. Ba cây đã di dời xong nên chưa có việc; chạy sẽ lỗi to tiếng | đầu chính file ấy |
-| Hai bảng nhật ký (`42`) cố ý CHƯA sao lưu — không cần để khôi phục app, tự có thùng rác 120 ngày. Sáu bảng hệ thống đã vào ở b137 (chờ dán `44` + thay mã Apps Script) | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
+| Hai bảng nhật ký (`42`) cố ý CHƯA sao lưu — không cần để khôi phục app, tự có thùng rác 120 ngày. Sáu bảng hệ thống đã vào ở b137 | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
 | ⚠ **Hai hàm của `16` LỆCH NGHĨA với tên** (`xin_xoa_cay` ẩn cây NGAY; `huy_xin_xoa_cay` = trả lại cho chủ). Giữ tên cũ là cố ý; đổi tên là một bước riêng | `luoc-do/23-bon-luat-moi.sql` khối đầu |
 | ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa *(b126 sẽ đụng cả hai)* | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **b127b chưa bấm thật**: thẻ người kéo sang `T388` phải đủ vợ/con | — |
