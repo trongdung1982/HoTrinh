@@ -1,6 +1,7 @@
 # Sổ tay — Tạo tài khoản mới (Edge Function)
 
-*Từ b143, 28/09/2026*
+*Từ b143, 28/09/2026 · Edge Function đã dán lên Supabase thật, chủ dự án
+bấm thử tạo tài khoản ĐẠT cùng ngày*
 
 ## Bản đồ
 
