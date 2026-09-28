@@ -5,8 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.39.0 · Cập nhật: 28/09/2026 (b134) — năm cửa nhật ký hệ
-//            thống (`luoc-do/42`). Lịch sử: `git log -p`.
+// Phiên bản: 0.41.0 · Cập nhật: 28/09/2026 (b144) — câu báo tài khoản bị
+//            khoá (`luoc-do/46`); b143 `taoTaiKhoan`. Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -82,6 +82,11 @@ function cauLoi(e) {
   if (/issued at future|JWTIssuedAtFuture/i.test(m)) {
     return 'Vé đăng nhập của trình duyệt được cấp lúc đồng hồ máy còn lệch, '
          + 'nên máy chủ từ chối. Bấm Đăng xuất rồi đăng nhập lại là xong.';
+  }
+  // b144 (`luoc-do/46`): khoá tài khoản đặt `banned_until` → máy Auth trả
+  //   "User is banned" lúc đăng nhập và lúc làm mới vé.
+  if (/user is banned|user_banned/i.test(m)) {
+    return 'Tài khoản này đang bị khoá. Liên hệ Quản trị hệ thống để được mở lại.';
   }
   if (/JWT expired|token is expired/i.test(m)) {
     return 'Vé đăng nhập đã hết hạn. Đăng nhập lại rồi thử lại việc vừa làm.';

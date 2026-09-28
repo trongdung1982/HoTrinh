@@ -8,8 +8,8 @@
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang ·
 //            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don · khu-nhat-ky ·
 //            khu-tao-tai-khoan
-// Phiên bản: 1.9.0 · Cập nhật: 28/09/2026 (b143) — tab Tạo tài khoản nối
-//            Edge Function (`khu-tao-tai-khoan.js`). Lịch sử: `git log -p`.
+// Phiên bản: 1.9.1 · Cập nhật: 28/09/2026 (b144) — câu hộp Khoá nói thêm
+//            chặn đăng nhập (`luoc-do/46`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -385,8 +385,9 @@ async function hoiTaoCay(t, bat, napLai) {
 async function hoiKhoaTaiKhoan(t, napLai) {
   const kq = await hoi({
     tua: 'Khóa tài khoản',
-    chu: 'Khoá mềm ' + t.email + ' — họ không đăng nhập vào được gia phả nào nữa cho tới khi ' +
-      'mở khoá. Không chuyển chủ cây nào cả. Đủ 60 ngày mới xoá hẳn được.',
+    chu: 'Khoá mềm ' + t.email + ' — họ không đăng nhập được nữa cho tới khi mở khoá; nếu đang ' +
+      'mở app thì mất quyền ngay và bị đăng xuất trong vòng một giờ. Không chuyển chủ cây nào ' +
+      'cả. Đủ 60 ngày mới xoá hẳn được.',
     truong: [{ ma: 'email', nhan: 'Gõ lại email của tài khoản này', goiY: t.email },
       { ma: 'lyDo', nhan: 'Lý do (không bắt buộc)' }],
     nutOk: 'Khóa', nutHuy: 'Hủy', kieuOk: 'danger',

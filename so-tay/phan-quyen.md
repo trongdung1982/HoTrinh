@@ -155,7 +155,7 @@ chỉ đọc đúng một cột như cũ và **không có đường nào** để
 60 ngày là một **phép tính** trên `khoa_luc`, y như `16` không giữ cột "ngày dọn
 được". Hai chỗ ghi cùng một hạn là hai chỗ để lệch nhau, và chỗ lệch ấy không ai
 đọc ra bằng mắt. ⚠ Và hết 60 ngày **không tự mở khoá** — khoá đứng tới khi có
-người mở tay hoặc xoá hẳn; 60 ngày chỉ là lúc cánh cửa xoá hẳn mở ra.
+người mở tay hoặc xoá hẳn; 60 ngày chỉ là lúc cánh cửa xoá hẳn mở ra. Chặn đăng nhập: `46`.
 
 ### Đổi luật ở SQL là đổi hành vi của nút đang chạy, không phải lỗi
 
