@@ -1,6 +1,6 @@
 # Sổ tay · trang Quản trị
 
-Gồm      : `QuanTri.html` — NGUYÊN FILE prototype quantri3, dựng bằng máy · `quan-tri.css` — CSS nguyên văn quantri3 + vài dòng app · `js/pages/quan-tri/khung.js` — `#` → section · `khu-gia-pha.js` · `khu-tai-khoan.js` (b126d, panel Mã người & Dòng họ) · `khu-kiem-duyet.js` · `khu-quan-tri-he-thong.js` · `khu-sao-luu.js` (tab Sao lưu) · `khu-nhat-ky.js` (b134) · `khu-de-nghi-quan-he.js` · `khu-bao-trung.js` (b146 — chip ở `#gia-pha` + tab duyệt) · `khu-ho-so-don.js` (b126d) · `trang-cay.js` · `trang-moi.js` · `trang-tai-khoan.js` · `trang-ho-so-nguoi.js` — đổ dữ liệu vào section của mình · `hop-thoai.js` — hộp hỏi + ô nhập · `o-bang.js` — mẩu ô bảng · `o-goi-y.js` — ô gợi ý
+Gồm      : `QuanTri.html` — NGUYÊN FILE prototype quantri3, dựng bằng máy · `quan-tri.css` — CSS nguyên văn quantri3 + vài dòng app · `js/pages/quan-tri/khung.js` — `#` → section · `khu-gia-pha.js` · `khu-tai-khoan.js` (b126d, panel Mã người & Dòng họ) · `khu-kiem-duyet.js` · `khu-quan-tri-he-thong.js` · `khu-sao-luu.js` (tab Sao lưu) · `khu-nhat-ky.js` (b134) · `khu-de-nghi-quan-he.js` · `khu-bao-trung.js` (b146 — chip ở `#gia-pha` + tab duyệt) · `khu-ho-so-don.js` (b126d) · `trang-cay.js` · `trang-moi.js` · `trang-tai-khoan.js` · `trang-ho-so-nguoi.js` — đổ dữ liệu vào section của mình · `hop-thoai.js` — hộp hỏi + ô nhập · `o-bang.js` — mẩu ô bảng · `o-goi-y.js` — ô gợi ý · `phoi-mau.js` + `phoi-mau.css` — nút *Tông màu*, 10 tông (29/09/2026)
 Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài repo: `../kiem-thu/sb-gia.mjs` · `trang-quan-tri-gia.html` · `so-quantri3.mjs` · `xem-khung-quan-tri.mjs` · prototype `../codex/dua_claude.ai/quantri3.html`
 
 ## Đính chính
@@ -138,6 +138,16 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   `SaoLuu.gs` tự báo vào nhật ký, trang đọc nhật ký (`so-tay/nhat-ky-he-thong.md`). Đừng tưởng
   thêm khoá bí mật hay Edge Function là "cho gọn" — xem `sao-luu/SaoLuu.gs`
   đã đâm vào đúng bức tường ấy một lần rồi.
+
+**Tông màu (29/09/2026)** — 10 bảng màu Antigravity dựng cho khung b101
+(chủ dự án duyệt 06/09), chuyển sang biến quantri3 (`--bg` `--paper` `--ink`
+`--accent`…) + biến `--pm-*` cho thanh trái. ⚠ Mặc định = KHÔNG có
+`data-theme` → y hệt quantri3; mọi luật đè đứng sau `html[data-theme]`
+(PHẦN P canh). ⚠ Thêm màu viết cứng mới vào HTML/JS (`style="background:#…"`)
+thì tông tối lộ ra ô sáng — đè ở `phoi-mau.css`, soi bằng ảnh `kq-pm-dem*`.
+⚠ Bảng chọn dời ra `body`: `position:fixed` trong khay có `transform` bám
+theo khay, bị cắt trên điện thoại. **Chỉ trang Quản trị** — trang sơ đồ viết
+màu thẳng vào `style.cssText` (~420 chỗ), chưa đổi theo tông.
 
 **Hồ sơ người (b133)**: một section, hai khu (`thanh-vien` ·
 `quan-tri-he-thong`); `data-back` đặt lúc mount.

@@ -1404,6 +1404,36 @@ for (const [ten, ma] of [['hop-thoai.js', JS_HOP], ['trang-cay.js', JS_TC_SOM]])
 }
 
 // ============================================================
+// PHẦN P — nút Tông màu (29/09/2026, KHÔNG có trong quantri3)
+// ============================================================
+{
+  const CSS_PM = doc('../phoi-mau.css');
+  const JS_PM = doc('../js/pages/quan-tri/phoi-mau.js');
+  const trongHtml = [...HTML.matchAll(/class="pm-muc" data-ma="([a-z-]+)"/g)].map((m) => m[1]);
+  const trongCss = [...new Set([...CSS_PM.matchAll(/\[data-theme="([a-z-]+)"\]\s*[,{]/g)].map((m) => m[1]))];
+  kiem('mười tông, danh sách HTML khớp khối biến CSS',
+       trongHtml.length === 10 && trongHtml.length === trongCss.length &&
+       trongHtml.every((m) => trongCss.includes(m)),
+       'HTML: ' + trongHtml.join(',') + ' · CSS: ' + trongCss.join(','));
+  kiem('phoi-mau.css nạp SAU quan-tri.css (đè được biến)',
+       HTML.indexOf('href="phoi-mau.css') > HTML.indexOf('href="quan-tri.css') && HTML.indexOf('href="quan-tri.css') > 0,
+       'thứ tự thẻ link sai');
+  // Mọi luật đè màu phải đứng sau `html[data-theme]` — chưa chọn tông thì
+  // trang phải y hệt quantri3 từng điểm ảnh.
+  const luatDe = CSS_PM.replace(/\/\*[\s\S]*?\*\//g, '').replace(/@media[^{]*\{/g, '').split('}').map((x) => x.split('{')[0].trim())
+    .filter((s) => s && !/^(:root|\[data-theme|html\[data-theme\]|\.pm-|@media)/.test(s));
+  kiem('luật đè màu chỉ chạy khi đã chọn tông',
+       luatDe.length === 0, 'bộ chọn trần: ' + luatDe.slice(0, 3).join(' | '));
+  kiem('khoá nhớ tông trùng tên ở <head> và phoi-mau.js',
+       /'giapha_phoi_mau'/.test(HTML) && /'giapha_phoi_mau'/.test(JS_PM), 'lệch tên khoá');
+  kiem('khung gắn nút Tông màu', /ganNutPhoiMau\(app\)/.test(JS_KH), 'khung.js không gọi');
+  // `innerWidth` được dùng — để giữ bảng trong mép màn hình; RẼ NHÁNH máy tính /
+  // điện thoại thì không: việc ấy của `@media` trong phoi-mau.css.
+  kiem('phoi-mau.js không rẽ nhánh theo khổ màn hình',
+       !/matchMedia/.test(boGhiChuJs(JS_PM)), 'có matchMedia');
+}
+
+// ============================================================
 // PHẦN G — KIỂM CHỨNG NGƯỢC: bẻ gãy mã rồi xem bài kiểm có bắt được không
 // ============================================================
 console.log('\nPHẦN G — kiểm chứng ngược (bẻ gãy có chủ ý)');

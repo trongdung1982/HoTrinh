@@ -6,8 +6,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, pages/dang-nhap, quan-tri/khu-* (bốn khu) · trang-cay ·
 //            trang-tai-khoan · trang-moi · trang-ho-so-nguoi · trang-cong-khai ·
-//            trang-chi-tiet · o-bang
-// Phiên bản: 1.5.0 · Cập nhật: 28/09/2026 (b150 — trang Thông tin công khai)
+//            trang-chi-tiet · o-bang · phoi-mau
+// Phiên bản: 1.6.0 · Cập nhật: 29/09/2026 — gắn nút Tông màu
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -42,6 +42,7 @@ import { mountHoSoNguoi } from './trang-ho-so-nguoi.js';
 import { mountCongKhai } from './trang-cong-khai.js';
 import { duongDan } from './trang-chi-tiet.js';
 import { chuDau } from './o-bang.js';
+import { ganNutPhoiMau } from './phoi-mau.js';
 
 /**
  * Bốn khu, đúng thứ tự trên thanh. `ma` là chuỗi đi vào `#` của địa chỉ nên
@@ -132,6 +133,7 @@ export async function mountKhung(appEl) {
   }
 
   ganKhay(app);
+  ganNutPhoiMau(app);
 
   const veKhuDangMo = () => { dongKhay(); veKhu(app, nutTheoMa, phien); };
   window.addEventListener('hashchange', veKhuDangMo);

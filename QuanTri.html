@@ -3,10 +3,8 @@
      giapha-supabase · QuanTri.html
      Vai trò  : Trang QUẢN TRỊ — NGUYÊN FILE prototype `quantri3.html` chủ dự
                 án đã chốt 13/09/2026, bỏ dữ liệu giả, gắn chức năng thật.
-     Phiên bản: 2.1.1 · Cập nhật: 18/09/2026 — thêm nút khay điều hướng cho
-     điện thoại (xem so-tay/trang-quan-tri.md); bỏ `grid-template-columns:
-     repeat(3,1fr)` khỏi `style=` inline của hai khối `.cards` (Tổng quan
-     Quản trị hệ thống) — inline đè cả media query, mobile kẹt 3 cột.
+     Phiên bản: 2.2.0 · Cập nhật: 29/09/2026 — nút Tông màu ở thanh trái
+     (phoi-mau.css). Những chỗ khác quantri3: so-tay/trang-quan-tri.md.
 
      ⚠⚠ DỰNG BẰNG MÁY TỪ CẢ FILE PROTOTYPE, KHÔNG CHÉP TỪNG KHU. Thân trang là
        mọi `section` của quantri3 theo đúng thứ tự; chỉ bỏ: dòng dữ liệu mẫu
@@ -42,6 +40,16 @@
        không thì trình duyệt/CDN có thể phục vụ bản cũ đã cache (b122d,
        chủ dự án báo "chưa thấy đổi gì" dù đã đẩy lên GitHub). -->
   <link rel="stylesheet" href="quan-tri.css?v=1.1.8">
+  <!-- Tông màu — KHÔNG có trong quantri3. Nạp SAU quan-tri.css để đè biến. -->
+  <link rel="stylesheet" href="phoi-mau.css?v=1.0.0">
+  <!-- Đặt tông đã chọn TRƯỚC khi vẽ, để trang không loé màu mặc định rồi mới
+       đổi. Chỉ nhận chữ thường + gạch nối; tên lạ vẫn vô hại (phoi-mau.css có
+       giá trị dự phòng ở `:root`), và phoi-mau.js gỡ nó đi khi khung dựng xong. -->
+  <script>
+    try { var pm = localStorage.getItem('giapha_phoi_mau');
+      if (pm && /^[a-z-]{2,20}$/.test(pm) && pm !== 'goc') document.documentElement.setAttribute('data-theme', pm);
+    } catch (e) { /* trình duyệt chặn bộ nhớ thì dùng màu mặc định */ }
+  </script>
 
   <style>
     #loi { padding:24px; color:#c62828; line-height:1.6; font-size:15px; }
@@ -67,6 +75,27 @@
 <button class="nav" data-route="kiem-duyet">Kiểm duyệt</button>
 <button class="nav" data-route="quan-tri-he-thong" data-system-only hidden>Quản trị hệ thống</button>
 </nav>
+<!-- Nút Tông màu — KHÔNG có trong quantri3 (Antigravity b101, chủ dự án duyệt
+     06/09/2026). Màu ở phoi-mau.css, hành vi ở js/pages/quan-tri/phoi-mau.js.
+     Thêm/bớt một tông thì sửa CẢ danh sách dưới LẪN khối biến trong CSS. -->
+<div class="pm-khoi">
+<button type="button" class="nav pm-nut" aria-expanded="false" aria-haspopup="true" title="Đổi tông màu của trang">🎨 Tông màu <span class="pm-mui">›</span></button>
+<div class="pm-bang" role="dialog" aria-label="Chọn tông màu" hidden>
+<div class="pm-dau"><div><b>TÔNG MÀU (10)</b><span class="pm-dang-dung"></span></div><button type="button" class="pm-dong" title="Đóng">✕</button></div>
+<div class="pm-ds">
+<button type="button" class="pm-muc" data-ma="goc"><span class="pm-cap" data-theme="goc"><span class="pm-cham"></span><span class="pm-cham"></span></span>Kem tối giản (mặc định)</button>
+<button type="button" class="pm-muc" data-ma="be-oliu"><span class="pm-cap" data-theme="be-oliu"><span class="pm-cham"></span><span class="pm-cham"></span></span>Be &amp; Rêu Ô-liu</button>
+<button type="button" class="pm-muc" data-ma="nau-am"><span class="pm-cap" data-theme="nau-am"><span class="pm-cham"></span><span class="pm-cham"></span></span>Nâu đất &amp; Gỗ ấm</button>
+<button type="button" class="pm-muc" data-ma="xanh-cham"><span class="pm-cap" data-theme="xanh-cham"><span class="pm-cham"></span><span class="pm-cham"></span></span>Xanh chàm hiện đại</button>
+<button type="button" class="pm-muc" data-ma="giay-do"><span class="pm-cap" data-theme="giay-do"><span class="pm-cham"></span><span class="pm-cham"></span></span>Giấy dó &amp; Chu sa</button>
+<button type="button" class="pm-muc" data-ma="hoang-dan"><span class="pm-cap" data-theme="hoang-dan"><span class="pm-cham"></span><span class="pm-cham"></span></span>Hoàng đàn &amp; Hổ phách</button>
+<button type="button" class="pm-muc" data-ma="men-ngoc"><span class="pm-cap" data-theme="men-ngoc"><span class="pm-cham"></span><span class="pm-cham"></span></span>Gốm men ngọc Celadon</button>
+<button type="button" class="pm-muc" data-ma="truc-diep"><span class="pm-cap" data-theme="truc-diep"><span class="pm-cham"></span><span class="pm-cham"></span></span>Trúc diệp thanh lương</button>
+<button type="button" class="pm-muc" data-ma="hoang-gia"><span class="pm-cap" data-theme="hoang-gia"><span class="pm-cham"></span><span class="pm-cham"></span></span>Hoàng gia Huế</button>
+<button type="button" class="pm-muc" data-ma="dem-hoai-co"><span class="pm-cap" data-theme="dem-hoai-co"><span class="pm-cham"></span><span class="pm-cham"></span></span>Đêm hoài cổ (nền tối)</button>
+</div>
+</div>
+</div>
 <a class="back" href="index.html">← Về trang sơ đồ</a>
 </aside>
 <main>
