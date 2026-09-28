@@ -27,7 +27,6 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b144** Khoá chặn đăng nhập | Dán `luoc-do/46` (bảng tự kiểm 3 dòng ĐẠT). Rồi *Sổ tài khoản* → *Khóa tài khoản* `khach@io.vn` → báo Claude thử đăng nhập bằng nó (phải báo *"đang bị khoá"*) → *Mở khoá* → đăng nhập lại được |
 | **b141** Tải ảnh | Ctrl+F5. Mở một người ở cây `TH957` → *Sửa* → khối Ảnh → thêm một tấm ảnh chụp điện thoại → *Lưu*. Đạt khi ảnh hiện trên ô sơ đồ, và bấm vào ảnh ở trang chi tiết thì ra bản lớn nét |
 | **b140** Duyệt hàng loạt | *Quản trị → Kiểm duyệt*, tab *Đang chờ duyệt* (Ctrl+F5 trước). Cây thử `TH957`: sửa 2–3 lần bằng tài khoản thử để có dòng chờ. Tích hai dòng → thanh trên bảng ghi "Đã chọn 2 / n" → *Duyệt các dòng đã chọn* → *Duyệt chính thức* → hộp "Đã duyệt 2 / 2", hai dòng sang tab *Đã nhận chính thức*. Lặp với *Từ chối các dòng đã chọn* + một lý do → dữ liệu về như cũ, tab *Đã từ chối* hiện lý do ấy ở cả hai dòng. Đổi bộ lọc cây → các ô tích tự bỏ hết |
 | **b139** Nhập GEDCOM bổ sung | Mở cây thử `TH957` → *Nhập GEDCOM/Excel* → chọn một file `.ged` có vài người CHƯA có trong cây → ghép đôi → *Ghi*. Đạt khi ghi xong không báo "Mã mới vừa cấp đã có bản ghi khác giữ", và người mới hiện trên sơ đồ |
@@ -83,8 +82,9 @@ trigger mới trên `trees` · bù dòng `sao_luu` cho mọi cây · hàm mới
 `sao_luu_dem_that()`. Không định nghĩa lại hàm nào của file khác → không kéo
 chuỗi dán lại. Bàn thử: `do-b142a.mjs` 21/21.
 
-**`46` (b144) — CHƯA DÁN, ĐƯỢC DÁN.** Khoá tài khoản thì chặn luôn đăng nhập
-(`banned_until`). Một trigger mới trên `tai_khoan` + bù cho tài khoản đang
+**`46` (b144) — ĐÃ DÁN lên THẬT 28/09**, tự kiểm 3/3. Đo bằng REST cùng ngày:
+khoá `khach@io.vn` → đăng nhập trả `user_banned`; mở khoá → vào lại được.
+Khoá tài khoản thì chặn luôn đăng nhập (`banned_until`). Một trigger mới trên `tai_khoan` + bù cho tài khoản đang
 khoá. Không định nghĩa lại hàm nào của file khác → không kéo chuỗi dán lại.
 Bàn thử: `do-b144.mjs` 20/20.
 
