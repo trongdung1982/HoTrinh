@@ -1,9 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 · **b148 (giấu người còn sống) XONG MÃ — `50` CHƯA DÁN ·
+*Cập nhật 28/09/2026 · **b148 (giấu người còn sống) XONG — `50` ĐÃ DÁN ·
 b149 (nút Sao lưu) XONG · b150 + b150b (Thông tin công khai của tôi, 11 dòng +
-ô Liên hệ) XONG MÃ — `51` · `52` CHƯA DÁN, dán `50`→`51`→`52`.** Mười một
-điểm dừng dưới chưa bấm thử.*
+ô Liên hệ) XONG MÃ — `51` ĐÃ DÁN, `52` CHƯA DÁN.** Mười một điểm dừng dưới
+chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -28,9 +28,9 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b150 · b150b** Thông tin công khai của tôi + Liên hệ | ⚠ Dán `50` → `51` → `52` trước. Ctrl+F5. Sơ đồ → mở người của bạn → *Sửa* → khối *Cuộc đời* có ô **Liên hệ** → gõ số điện thoại → *Lưu* → trang chi tiết có hàng *Liên hệ* → *Danh sách người* → *Xuất Excel ▾* → file có cột *Liên hệ* sau *Dân tộc*. *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia*: cột *Thông tin công khai* ghi "11 thông tin →" → bấm ở dòng cây thử `TH957` → trang MƯỜI MỘT dòng, giá trị của người bạn được gắn → tắt *Ảnh* + *Quê quán* → *Lưu thiết lập công khai*. *Quản trị hệ thống → Cây mặc định*: đặt `TH957` (tạm). Tab ấy nay có 10 nhóm, *Số điện thoại & Email liên hệ* mặc định TẮT. Đăng nhập `khach@io.vn` (không có chân ở `TH957`) mở sơ đồ: người của bạn không ảnh, không quê quán, không liên hệ; người khác vẫn đủ (trừ liên hệ). ⚠ Người của bạn phải CÓ trong `TH957` thì mới thấy khác. Xong: bật lại hai trường, đặt lại cây mặc định như cũ |
+| **b150 · b150b** Thông tin công khai của tôi + Liên hệ | ⚠ Dán `52` trước (`50`, `51` đã dán). Ctrl+F5. Sơ đồ → mở người của bạn → *Sửa* → khối *Cuộc đời* có ô **Liên hệ** → gõ số điện thoại → *Lưu* → trang chi tiết có hàng *Liên hệ* → *Danh sách người* → *Xuất Excel ▾* → file có cột *Liên hệ* sau *Dân tộc*. *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia*: cột *Thông tin công khai* ghi "11 thông tin →" → bấm ở dòng cây thử `TH957` → trang MƯỜI MỘT dòng, giá trị của người bạn được gắn → tắt *Ảnh* + *Quê quán* → *Lưu thiết lập công khai*. *Quản trị hệ thống → Cây mặc định*: đặt `TH957` (tạm). Tab ấy nay có 10 nhóm, *Số điện thoại & Email liên hệ* mặc định TẮT. Đăng nhập `khach@io.vn` (không có chân ở `TH957`) mở sơ đồ: người của bạn không ảnh, không quê quán, không liên hệ; người khác vẫn đủ (trừ liên hệ). ⚠ Người của bạn phải CÓ trong `TH957` thì mới thấy khác. Xong: bật lại hai trường, đặt lại cây mặc định như cũ |
 | **b149** Nút Sao lưu | Ctrl+F5. Sơ đồ → ⚙ Cài đặt: có khối *Sao lưu & khôi phục*, nút *Mở Sao lưu (trang Quản trị)* → bấm → sang trang Quản trị, đang đứng ở tab **Sao lưu**. Đăng nhập `khach@io.vn` → ⚙ Cài đặt: KHÔNG có khối ấy |
-| **b148** Giấu người còn sống | ⚠ Dán `50` trước (xem mục SQL). Ctrl+F5. *Quản trị → Gia phả →* cây thử `TH957` → *Mời gia nhập*: mời `khach@io.vn` với vai **Khách** (`xem`). Đăng nhập `khach@io.vn` → nhận lời mời → mở `TH957`: người còn sống (không ngày mất, sinh chưa quá 100 năm) chỉ còn tên, giới tính, năm sinh — không ảnh, không tiểu sử; trang chi tiết có dòng *"Người này còn sống nên máy chủ đã lược bớt…"*. Người đã mất vẫn đủ. Thêm: *Quản trị → Gia phả →* `TH957` → *Danh sách người* → bấm tên một người còn sống → trang hồ sơ MỞ ĐƯỢC (bản che), không báo "không có quyền xem". Đăng nhập lại tài khoản của bạn: thấy đủ cả. Xong nhớ gỡ vai của `khach@io.vn` |
+| **b148** Giấu người còn sống | ✓ `50` đã dán. Ctrl+F5. *Quản trị → Gia phả →* cây thử `TH957` → *Mời gia nhập*: mời `khach@io.vn` với vai **Khách** (`xem`). Đăng nhập `khach@io.vn` → nhận lời mời → mở `TH957`: người còn sống (không ngày mất, sinh chưa quá 100 năm) chỉ còn tên, giới tính, năm sinh — không ảnh, không tiểu sử; trang chi tiết có dòng *"Người này còn sống nên máy chủ đã lược bớt…"*. Người đã mất vẫn đủ. Thêm: *Quản trị → Gia phả →* `TH957` → *Danh sách người* → bấm tên một người còn sống → trang hồ sơ MỞ ĐƯỢC (bản che), không báo "không có quyền xem". Đăng nhập lại tài khoản của bạn: thấy đủ cả. Xong nhớ gỡ vai của `khach@io.vn` |
 | **b146** Báo trùng + gộp | ✓ `48` đã dán. Ctrl+F5 → *Quản trị → Gia phả → chip Báo trùng người*: ô 1 gõ tên một người ở cây thử `TH957`, bấm chọn một dòng; ô 2 chọn một người trùng với họ ở `T388` (hoặc cùng cây); ghi lý do → *Gửi báo trùng* → hộp báo mã nào sẽ ở lại, bảng dưới có dòng "Chờ duyệt". Sang *Quản trị hệ thống → tab Báo trùng người* → *Duyệt (gộp)* → *Duyệt và gộp* → hộp "Đã gộp …". Mở sơ đồ cây của người bị gộp: chỉ còn một người, vợ/chồng + con của cả hai bản đều về người ấy. Tab *Nhật ký* có dòng "Gộp hai bản ghi người". ⚠ Chỉ thử trên hai cây thử — gộp KHÔNG hoàn tác được bằng nút |
 | **b145** Công khai theo trường | Ctrl+F5 → *Quản trị hệ thống → Cây mặc định*: bảng bảy dòng có ô tích. Đặt cây thử `TH957` làm mặc định, tắt *Ngày tháng sinh cụ thể* + *Ảnh* → *Lưu*. Đăng nhập `khach@io.vn` (không có chân ở `TH957`) mở sơ đồ: thẻ người chỉ còn năm sinh, không ảnh. Đăng nhập lại bằng tài khoản của bạn: vẫn thấy đủ. *Nhật ký* có dòng "Đổi trường công khai cho khách". ⚠ Xong nhớ đặt lại cây mặc định như cũ |
 | **b141** Tải ảnh | Ctrl+F5. Mở một người ở cây `TH957` → *Sửa* → khối Ảnh → thêm một tấm ảnh chụp điện thoại → *Lưu*. Đạt khi ảnh hiện trên ô sơ đồ, và bấm vào ảnh ở trang chi tiết thì ra bản lớn nét |
@@ -116,7 +116,8 @@ mới*). Dán `49` mà chưa thay mã thì không ai gọi; thay mã mà chưa d
 thì bản sao lưu vẫn ghi bình thường, chỉ không báo về. Bàn thử: `do-b147.mjs`
 22/22 · `kiem-sao-luu.mjs` 46/46.
 
-**`50` (b148) — CHƯA DÁN. ĐƯỢC dán, sau `49`.** Giấu chi tiết người còn sống
+**`50` (b148) — ĐÃ DÁN lên THẬT 28/09** (chủ dự án báo; đo REST cùng ngày:
+`doc_cay` trả `che_con_song` + `bi_che`, `doc_ho_so_nguoi` chạy). Giấu chi tiết người còn sống
 với thành viên chỉ có vai `xem` — cả ngày cưới + ghi chú hôn nhân của họ.
 Bảy hàm mới (`coi_con_song` · `la_chi_xem_cay` · `ds_nguoi_xem_day_du` ·
 `ds_cay_chi_xem` · `che_hon_nhan` · `ds_nguoi_bi_che` · `doc_ho_so_nguoi` cho
@@ -127,7 +128,9 @@ lại `50` (`so-tay/phan-quyen.md`). Dán lại nhiều lần được. Tự ki�
 đọc thẳng bảng). Bàn thử: `do-b148a.mjs` 57/57; cây 681 người đọc nhanh
 ngang Quản trị hệ thống (không bị che).
 
-**`51` (b150) — CHƯA DÁN. ĐƯỢC dán, SAU `50`** (file tự dừng nếu thiếu `50`).
+**`51` (b150) — ĐÃ DÁN lên THẬT 28/09** (chủ dự án báo; đo REST cùng ngày: ba
+cửa `ds_/doc_/dat_cong_khai_tai_khoan` chạy, `truong_rieng_nguoi` trả 403 với
+người dùng — đúng, khoá kín).
 Thêm cột `tree_members.truong_cong_khai` (trống = theo cây, y hệt hôm nay) ·
 `truong_rieng_nguoi` (khoá kín) · `giao_truong` · ba cửa `ds_/doc_/dat_cong_khai_
 tai_khoan` · ⚠ bản ĐỨNG CUỐI của `doc_cay()` — dán lại `47`/`50` thì PHẢI dán
