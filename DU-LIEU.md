@@ -70,12 +70,20 @@ tạo cây mới · mã ngắn của tài khoản là gì*.
 Và hai cột mới trên `trees`: `chu_so_huu` (người dựng cây) ·
 `cho_nguoi_la_thay_ten` (công tắc tầng 1, **mặc định TẮT**).
 
-Cột `trees.truong_cong_khai text[]` *(b145, `luoc-do/47`)* — nhóm trường
-**KHÁCH** (xem được cây chỉ nhờ nó là cây mặc định) được thấy: tập con của
-`gioi_tinh · nam_sinh · ngay_sinh · ngay_mat · anh · tieu_su`. Lưu danh sách
-BẬT, mặc định bật cả sáu. Máy chủ che trong `doc_cay()` (`che_nguoi()`), và
-khách không đọc thẳng được `persons`/`unions`/`media`. Ghi chỉ qua
-`dat_truong_cong_khai()`, chỉ Quản trị hệ thống.
+Cột `trees.truong_cong_khai text[]` *(b145, `luoc-do/47`; mười nhóm từ
+`52`)* — nhóm trường **KHÁCH** (xem được cây chỉ nhờ nó là cây mặc định) được
+thấy: tập con của `ds_nhom_cong_khai()` = `gioi_tinh · nam_sinh · ngay_sinh ·
+ngay_mat · song_mat · doi · que_quan · anh · tieu_su · lien_he`. Lưu danh sách
+BẬT; cây mới bật chín nhóm, **`lien_he` mặc định tắt**. Máy chủ che trong
+`doc_cay()` (`che_nguoi()`), và khách không đọc thẳng được `persons`/`unions`/
+`media`/`tree_persons`. Ghi chỉ qua `dat_truong_cong_khai()`, chỉ Quản trị hệ
+thống.
+
+Cột `tree_members.truong_cong_khai text[]` *(b150, `luoc-do/51`)* — cùng mười
+nhóm, nhưng cho **người được gắn với tài khoản ấy** trong cây ấy; `null` =
+chưa đặt = theo cây. Khách thấy = nhóm cây ∩ nhóm người. Ghi qua
+`dat_cong_khai_tai_khoan()` — chính chủ hoặc QTHT. Nằm trên dòng thành viên,
+không trên người, để gộp người (`48`) không làm mất.
 
 ### 2d. Năm cột THÙNG RÁC trên `trees` — 09/09/2026, `luoc-do/16-thung-rac-cay.sql`
 
@@ -370,5 +378,11 @@ này cho người thật, và đừng đưa nó vào màn hình chọn quyền c
 bằng chữ của người chép, ép vào danh sách là bắt người nhập chọn cái gần đúng
 rồi quên mất chữ gốc. Cái giá: *"Phật giáo"* và *"đạo Phật"* máy không biết là
 một. Chấp nhận.
+
+`persons.contact` *(b150b, `luoc-do/52`)* — ô **Liên hệ**, chữ tự do (điện
+thoại, email, Zalo…). ⚠ **Cho phép `null`**, khác sáu cột trên: bản ghi gửi
+lên thiếu khoá (tab cũ, ảnh chụp `change_log` trước `52`) ra `null`, và
+`luu_cay()`/`tu_choi_thay_doi()` cập nhật bằng `coalesce(excluded.contact, cũ)`
+để không xoá trắng. App đọc `null` như trống. Không xuất GEDCOM; có ở Xuất Excel.
 
 ⚠ `nationality` là **DÂN TỘC**, không phải quốc tịch.
