@@ -1,8 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
 *Cập nhật 28/09/2026 · **b146 (báo trùng người + QTHT duyệt gộp = b124b) ·
-b147 (sao lưu đêm báo vào nhật ký) XONG mã — `48` · `49` CHƯA DÁN, `SaoLuu.gs`
-0.6.0 CHƯA THAY.** b145 (`47`) đã dán. Chín điểm dừng dưới chưa bấm thử.*
+b147 (sao lưu đêm báo vào nhật ký) XONG — `48` · `49` ĐÃ DÁN, `SaoLuu.gs`
+0.6.0 ĐÃ THAY, sao lưu chạy thành công** (chủ dự án báo 28/09 15:47). Chín điểm
+dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -27,8 +28,8 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b147** Sao lưu báo về nhật ký | ⚠ Làm đủ 5 bước ở `sao-luu/HUONG-DAN-SAO-LUU.md` mục *Khi `SaoLuu.gs` có bản mới* (dán `49` → thay mã Apps Script bằng bản 0.6.0 → chạy `saoLuuNgay` một lần). Ctrl+F5 → *Quản trị hệ thống*: thẻ *Sao lưu & khôi phục* ở Tổng quan ghi giờ vừa chạy + "Đạt · tên file · dung lượng"; tab *Sao lưu & khôi phục* → bảng *Lịch sử sao lưu* có dòng ấy; tab *Nhật ký* có dòng "Sao lưu đêm". Sáng hôm sau có thêm dòng của lần chạy tự động 2 giờ sáng |
-| **b146** Báo trùng + gộp | ⚠ **Dán `48` trước** (mục SQL dưới). Ctrl+F5 → *Quản trị → Gia phả → chip Báo trùng người*: ô 1 gõ tên một người ở cây thử `TH957`, bấm chọn một dòng; ô 2 chọn một người trùng với họ ở `T388` (hoặc cùng cây); ghi lý do → *Gửi báo trùng* → hộp báo mã nào sẽ ở lại, bảng dưới có dòng "Chờ duyệt". Sang *Quản trị hệ thống → tab Báo trùng người* → *Duyệt (gộp)* → *Duyệt và gộp* → hộp "Đã gộp …". Mở sơ đồ cây của người bị gộp: chỉ còn một người, vợ/chồng + con của cả hai bản đều về người ấy. Tab *Nhật ký* có dòng "Gộp hai bản ghi người". ⚠ Chỉ thử trên hai cây thử — gộp KHÔNG hoàn tác được bằng nút |
+| **b147** Sao lưu báo về nhật ký | ✓ `49` + `SaoLuu.gs` 0.6.0 đã xong, `saoLuuNgay` chạy thành công 28/09. Còn: Ctrl+F5 → *Quản trị hệ thống*: thẻ *Sao lưu & khôi phục* ở Tổng quan ghi giờ vừa chạy + "Đạt · tên file · dung lượng"; tab *Sao lưu & khôi phục* → bảng *Lịch sử sao lưu* có dòng ấy; tab *Nhật ký* có dòng "Sao lưu đêm". Sáng hôm sau có thêm dòng của lần chạy tự động 2 giờ sáng |
+| **b146** Báo trùng + gộp | ✓ `48` đã dán. Ctrl+F5 → *Quản trị → Gia phả → chip Báo trùng người*: ô 1 gõ tên một người ở cây thử `TH957`, bấm chọn một dòng; ô 2 chọn một người trùng với họ ở `T388` (hoặc cùng cây); ghi lý do → *Gửi báo trùng* → hộp báo mã nào sẽ ở lại, bảng dưới có dòng "Chờ duyệt". Sang *Quản trị hệ thống → tab Báo trùng người* → *Duyệt (gộp)* → *Duyệt và gộp* → hộp "Đã gộp …". Mở sơ đồ cây của người bị gộp: chỉ còn một người, vợ/chồng + con của cả hai bản đều về người ấy. Tab *Nhật ký* có dòng "Gộp hai bản ghi người". ⚠ Chỉ thử trên hai cây thử — gộp KHÔNG hoàn tác được bằng nút |
 | **b145** Công khai theo trường | Ctrl+F5 → *Quản trị hệ thống → Cây mặc định*: bảng bảy dòng có ô tích. Đặt cây thử `TH957` làm mặc định, tắt *Ngày tháng sinh cụ thể* + *Ảnh* → *Lưu*. Đăng nhập `khach@io.vn` (không có chân ở `TH957`) mở sơ đồ: thẻ người chỉ còn năm sinh, không ảnh. Đăng nhập lại bằng tài khoản của bạn: vẫn thấy đủ. *Nhật ký* có dòng "Đổi trường công khai cho khách". ⚠ Xong nhớ đặt lại cây mặc định như cũ |
 | **b141** Tải ảnh | Ctrl+F5. Mở một người ở cây `TH957` → *Sửa* → khối Ảnh → thêm một tấm ảnh chụp điện thoại → *Lưu*. Đạt khi ảnh hiện trên ô sơ đồ, và bấm vào ảnh ở trang chi tiết thì ra bản lớn nét |
 | **b140** Duyệt hàng loạt | *Quản trị → Kiểm duyệt*, tab *Đang chờ duyệt* (Ctrl+F5 trước). Cây thử `TH957`: sửa 2–3 lần bằng tài khoản thử để có dòng chờ. Tích hai dòng → thanh trên bảng ghi "Đã chọn 2 / n" → *Duyệt các dòng đã chọn* → *Duyệt chính thức* → hộp "Đã duyệt 2 / 2", hai dòng sang tab *Đã nhận chính thức*. Lặp với *Từ chối các dòng đã chọn* + một lý do → dữ liệu về như cũ, tab *Đã từ chối* hiện lý do ấy ở cả hai dòng. Đổi bộ lọc cây → các ô tích tự bỏ hết |
@@ -97,17 +98,15 @@ cả sáu = y hệt hôm nay) · `la_khach_cay` · `che_nguoi` · `dat_truong_co
 `26`/`27`/`30` thì PHẢI dán lại `47` (`so-tay/phan-quyen.md`). Bàn thử:
 `do-b145a.mjs` 43/43.
 
-**`48` (b146) — CHƯA DÁN. ĐƯỢC dán, sau `47`, một mình.** Supabase → SQL
-Editor → dán nguyên file `luoc-do/48-bao-trung-nguoi.sql` → *Run* → bảng tự
-kiểm cuối phải 5 dòng ĐẠT. Thêm bảng `bao_trung_nguoi` + sáu hàm gọi được
+**`48` (b146) — ĐÃ DÁN lên THẬT 28/09, tự kiểm 5/5 ĐẠT** (chủ dự án báo). Thêm bảng `bao_trung_nguoi` + sáu hàm gọi được
 (`tim_nguoi_bao_trung` · `nop_bao_trung` · `rut_bao_trung` · `ds_bao_trung` ·
 `duyet_bao_trung` · `tu_choi_bao_trung`) + sáu hàm phụ khoá kín. Chỉ `create
 or replace`, không định nghĩa lại hàm nào của file khác → không kéo chuỗi dán
 lại; dán lại nhiều lần được. Chưa dán thì hai màn hình báo *"Máy chủ chưa có
 chức năng này"*. Bàn thử: `do-b146.mjs` 64/64.
 
-**`49` (b147) — CHƯA DÁN. ĐƯỢC dán, sau `45` (thứ tự với `48` không quan
-trọng).** Một hàm mới `ghi_sao_luu_dem()` — chỉ tài khoản mang vai `sao_luu`
+**`49` (b147) — ĐÃ DÁN lên THẬT 28/09, tự kiểm 3/3 ĐẠT; `SaoLuu.gs` 0.6.0 đã
+thay cùng buổi, sao lưu chạy thành công** (chủ dự án báo). Một hàm mới `ghi_sao_luu_dem()` — chỉ tài khoản mang vai `sao_luu`
 gọi được, chỉ chèn một dòng nhật ký loại `backup`. Tự kiểm 3/3. Không kéo
 chuỗi dán lại. ⚠ Đi CẶP với `SaoLuu.gs` 0.6.0 — thay mã Apps Script cùng
 buổi (hướng dẫn: `sao-luu/HUONG-DAN-SAO-LUU.md` mục *Khi `SaoLuu.gs` có bản
