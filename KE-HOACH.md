@@ -90,6 +90,11 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
+⚠ **Bản sao lưu TRƯỚC 28/09/2026 08:04 chỉ chứa cây NTB** — đo bằng
+`tree_members.added_at` của vai `sao_luu`: NTB từ 04/09, bốn cây kia (NPG 681
+người · LVT433 · TH957 · T388) mới được `45` bù sáng 28/09. Thử khôi phục
+chỉ dùng bản từ 28/09 trở đi.
+
 **b142b — khôi phục thật.** Script đổ ngược file sao lưu JSON → SQL, đo cả
 vòng trên bàn thử (sao lưu → phá → khôi phục → so từng bảng khớp từng dòng).
 Đã tra sẵn 28/09: 19 bảng không có vòng khoá ngoại · `change_log`/`imports`
