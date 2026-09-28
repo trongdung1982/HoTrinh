@@ -136,6 +136,14 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 **Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử chín điểm
 dừng ở trên trước.
 
+**Chờ chủ dự án chốt** (28/09, rà sau b148 — mọi việc còn lại đều vướng một câu):
+1. Nút *Mở Sao lưu & khôi phục* trong Cài đặt của sơ đồ mở màn hình chỉ báo
+   lỗi. Đề xuất: QTHT → mở tab Sao lưu ở `QuanTri.html`; người khác → ẩn nút;
+   **xoá `pages/backup.js`** (cần cho phép) → giàn giáo `tuong-thich` còn 1.
+2. `#public-info-detail` theo từng cây: ai được đặt? Đề xuất: chủ cây đặt cho
+   cây mình; QTHT đặt mọi cây. Chỉ có hiệu lực khi cây là cây mặc định.
+3. Người chỉ xem: che luôn ngày cưới + ghi chú hôn nhân của người còn sống?
+
 ### Trang Quản trị — đọc `so-tay/trang-quan-tri.md` trước khi đụng
 
 ⚠ Nói *"hàm máy chủ này thiếu"* thì grep `luoc-do/` trước — `export` của
