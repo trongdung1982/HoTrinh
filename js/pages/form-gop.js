@@ -5,7 +5,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: pages/person-edit.js (nền dùng chung), state,
 //            domains/{union,validate,media}, utils/{graph,text}, config
-// Phiên bản: 1.0.0 · Cập nhật: 27/08/2026 23:30
+// Phiên bản: 1.0.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
 // ============================================================
 //
 // Mảnh CUỐI của việc 8 (`tai-lieu/DAC-TA-GOP_V02.md` mục 5). Ba hàm thuần
@@ -112,7 +112,7 @@ export function openMergeForm(unionIdA, unionIdB, xuLy = {}) {
   const phu = document.createElement('div');
   phu.textContent = gopCtx.giu + '  +  ' + gopCtx.boDi;
   phu.style.cssText =
-    'font-size:12px;color:#b3aaa0;margin-top:3px;letter-spacing:.03em;line-height:1.45';
+    'font-size:12px;color:var(--sd-chu-mo,#b3aaa0);margin-top:3px;letter-spacing:.03em;line-height:1.45';
 
   const than = document.createElement('div');
   than.id = 'giapha-gop-than';
@@ -223,7 +223,7 @@ function loiMo(uGiu, uBoDi) {
   const d = document.createElement('div');
   d.style.cssText =
     'margin-top:12px;padding:9px 11px;font-size:12px;line-height:1.55;' +
-    'border-radius:8px;background:#faf8f5;border:1px solid #f0ebe4;color:#5c554e';
+    'border-radius:8px;background:var(--sd-nen,#faf8f5);border:1px solid var(--sd-vien-nhat,#f0ebe4);color:var(--sd-chu-vua,#5c554e)';
 
   const c1 = document.createElement('div');
   c1.textContent = 'Giữ lại ' + gopCtx.giu + ' — ' + keTenPartner(gopCtx.giu) +
@@ -259,8 +259,8 @@ function veCauHoi(nhan, khoa, cacMuc, than) {
     nut.style.cssText = KIEU_NUT_CHON +
       'min-height:44px;padding:8px 10px;text-align:left;line-height:1.4;' +
       (dangChon
-        ? 'background:#2a2622;color:#fffdf9;border:1px solid #2a2622;font-weight:600'
-        : 'background:#faf8f5;color:#2a2622;border:1px solid #e6e0d8');
+        ? 'background:var(--sd-nut,#2a2622);color:var(--sd-nut-chu,#fffdf9);border:1px solid var(--sd-nut,#2a2622);font-weight:600'
+        : 'background:var(--sd-nen,#faf8f5);color:var(--sd-chu,#2a2622);border:1px solid var(--sd-vien,#e6e0d8)');
     nut.textContent = coGiaTri(muc.chu) ? muc.chu : '(để trống)';
     nut.addEventListener('click', () => {
       gopCtx.chon[khoa] = muc.gt;
@@ -315,11 +315,11 @@ function hangXem(bang, nhan, giaTri) {
   hang.dataset.xem = nhan;
   hang.style.cssText =
     'display:flex;gap:10px;align-items:baseline;padding:6px 0;' +
-    'border-top:1px solid #f0ebe4';
+    'border-top:1px solid var(--sd-vien-nhat,#f0ebe4)';
 
   const n = document.createElement('div');
   n.textContent = nhan;
-  n.style.cssText = 'flex:0 0 72px;font-size:12px;line-height:1.35;color:#8a8078';
+  n.style.cssText = 'flex:0 0 72px;font-size:12px;line-height:1.35;color:var(--sd-chu-phu,#8a8078)';
 
   const g = document.createElement('div');
   g.textContent = String(giaTri);
@@ -368,7 +368,7 @@ function veChanGop(luuDuoc) {
   const chan = document.createElement('div');
   chan.style.cssText =
     'display:flex;gap:8px;margin-top:18px;position:sticky;bottom:-18px;' +
-    'padding:10px 0;background:#fffdf9;justify-content:center';
+    'padding:10px 0;background:var(--sd-giay,#fffdf9);justify-content:center';
 
   N.nutLuu = document.createElement('button');
   N.nutLuu.type = 'button';
@@ -376,7 +376,7 @@ function veChanGop(luuDuoc) {
   N.nutLuu.disabled = !luuDuoc;
   N.nutLuu.style.cssText = KIEU_NUT_CHAN +
     'flex:1 1 auto;max-width:' + RONG_NUT_TOI_DA + ';' +
-    'background:#2a2622;color:#fffdf9;border:1px solid #2a2622;font-weight:600' +
+    'background:var(--sd-nut,#2a2622);color:var(--sd-nut-chu,#fffdf9);border:1px solid var(--sd-nut,#2a2622);font-weight:600' +
     (luuDuoc ? '' : ';opacity:.45;cursor:not-allowed');
   if (luuDuoc) N.nutLuu.addEventListener('click', () => chayGop());
 
@@ -384,7 +384,7 @@ function veChanGop(luuDuoc) {
   huy.type = 'button';
   huy.textContent = 'Huỷ';
   huy.style.cssText = KIEU_NUT_CHAN +
-    'flex:0 0 auto;background:#faf8f5;color:#2a2622;border:1px solid #e6e0d8';
+    'flex:0 0 auto;background:var(--sd-nen,#faf8f5);color:var(--sd-chu,#2a2622);border:1px solid var(--sd-vien,#e6e0d8)';
   huy.addEventListener('click', () => closePersonForm());
 
   chan.append(N.nutLuu, huy);

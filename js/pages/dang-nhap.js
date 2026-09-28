@@ -3,7 +3,7 @@
 // Vai trò  : Màn hình đăng nhập bằng email và mật khẩu.
 // Lớp      : pages
 // Phụ thuộc: services/sb, config
-// Phiên bản: 0.1.0 · Cập nhật: 02/09/2026 22:45
+// Phiên bản: 0.1.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
 // ============================================================
 //
 // ⚠ **Màn hình này KHÔNG có nút "Đăng ký".** Đó là chủ ý, không phải thiếu
@@ -46,8 +46,8 @@ export function mountDangNhap(containerEl, khiXong) {
   nut.type = 'submit';
   nut.textContent = 'Đăng nhập';
   nut.style.cssText = 'width:100%;margin-top:18px;padding:12px 20px;' +
-    'font-size:16px;border:1px solid #c8bfb2;border-radius:8px;' +
-    'background:#fff;cursor:pointer';
+    'font-size:16px;border:1px solid var(--sd-vien-dam,#c8bfb2);border-radius:8px;' +
+    'background:var(--sd-giay,#fff);cursor:pointer';
 
   loi.style.cssText = 'margin:14px 0 0;color:#c62828;font-size:14px;min-height:1px';
   loi.hidden = true;
@@ -55,7 +55,7 @@ export function mountDangNhap(containerEl, khiXong) {
   quen.type = 'button';
   quen.textContent = 'Quên mật khẩu?';
   quen.style.cssText = 'margin-top:14px;padding:0;border:0;background:none;' +
-    'color:#6a625a;font-size:13px;text-decoration:underline;cursor:pointer';
+    'color:var(--sd-chu-vua,#6a625a);font-size:13px;text-decoration:underline;cursor:pointer';
 
   const form = document.createElement('form');
   form.append(oEmail.boc, oMatKhau.boc, nut, loi, quen);
@@ -97,7 +97,7 @@ export function mountDangNhap(containerEl, khiXong) {
       : kq.loi);
     if (kq.ok) {
       loi.hidden = false;
-      loi.style.color = '#2a2622';
+      loi.style.color = 'var(--sd-chu,#2a2622)';
       loi.textContent = 'Nếu email này có tài khoản, thư đặt lại mật khẩu ' +
                         'vừa được gửi. Mở hộp thư và làm theo hướng dẫn.';
     }
@@ -134,7 +134,7 @@ function oNhap(kieu, nhan, tuDien) {
 
   const chu = document.createElement('span');
   chu.textContent = nhan;
-  chu.style.cssText = 'display:block;font-size:13px;color:#6a625a;margin-bottom:5px';
+  chu.style.cssText = 'display:block;font-size:13px;color:var(--sd-chu-vua,#6a625a);margin-bottom:5px';
 
   const o = document.createElement('input');
   o.type = kieu;
@@ -143,7 +143,7 @@ function oNhap(kieu, nhan, tuDien) {
   // sai một chữ ở đây thì không có lỗi nào cả — chỉ là không bao giờ tự điền.
   o.autocomplete = tuDien;
   o.style.cssText = 'width:100%;box-sizing:border-box;padding:11px 12px;' +
-    'font-size:16px;border:1px solid #c8bfb2;border-radius:8px;background:#fff';
+    'font-size:16px;border:1px solid var(--sd-vien-dam,#c8bfb2);border-radius:8px;background:var(--sd-giay,#fff)';
   // ⚠ 16px chứ không nhỏ hơn: Safari trên iPhone TỰ PHÓNG TO cả trang khi
   //   người dùng bấm vào một ô chữ nhỏ hơn 16px, và không tự thu lại.
 
@@ -155,7 +155,7 @@ function khung(phanTu) {
   const d = document.createElement('div');
   d.style.cssText = 'max-width:' + rongHop(360, 420) + ';' +
                     'margin:0 auto;padding:48px 24px;' +
-                    'font-family:system-ui,sans-serif;color:#2a2622;' +
+                    'font-family:system-ui,sans-serif;color:var(--sd-chu,#2a2622);' +
                     'line-height:1.6';
   phanTu.filter(Boolean).forEach((x) => d.append(x));
   return d;
@@ -178,6 +178,6 @@ function doan(chu) {
 function nhoMo(chu) {
   const p = document.createElement('p');
   p.textContent = chu;
-  p.style.cssText = 'margin:20px 0 0;font-size:13px;color:#8a8078';
+  p.style.cssText = 'margin:20px 0 0;font-size:13px;color:var(--sd-chu-phu,#8a8078)';
   return p;
 }

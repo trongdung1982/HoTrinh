@@ -5,7 +5,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: pages/person-edit.js (nền dùng chung), state,
 //            domains/{union,render}, utils/{text,date,image,avatar}
-// Phiên bản: 1.2.0 · Cập nhật: 24/09/2026 (b128a) — rào thép: chỉ sắp con TRONG cây
+// Phiên bản: 1.2.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -247,13 +247,13 @@ function moManSap(unionId, mocId, laCon, xuLy) {
   const phu = document.createElement('div');
   phu.textContent = 'Con của ' + keTenPartner(unionId) + '  ·  ' + unionId;
   phu.style.cssText =
-    'font-size:12px;color:#b3aaa0;margin-top:3px;letter-spacing:.03em;line-height:1.45';
+    'font-size:12px;color:var(--sd-chu-mo,#b3aaa0);margin-top:3px;letter-spacing:.03em;line-height:1.45';
 
   const chiDan = document.createElement('div');
   chiDan.textContent =
     'Số 1 là anh/chị cả, số cuối cùng là em út. Kéo một thẻ sang chỗ khác, ' +
     'hoặc bấm ◀ ▶ để dịch từng nấc. Chưa có gì được ghi cho tới lúc bấm Xong.';
-  chiDan.style.cssText = 'margin-top:12px;font-size:12px;line-height:1.5;color:#8a8078';
+  chiDan.style.cssText = 'margin-top:12px;font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078)';
 
   sapDay = document.createElement('div');
   sapDay.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;margin-top:10px';
@@ -320,21 +320,21 @@ function veTheCon(id, i) {
     'display:flex;flex-direction:column;align-items:center;gap:2px;' +
     'touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;' +
     (id === sapCtx.mocId
-      ? 'background:#fdf6ec;border:1.5px solid #c07a3e;'
-      : 'background:#fff;border:1px solid #e6e0d8;') +
+      ? 'background:var(--sd-vang-nen,#fdf6ec);border:1.5px solid #c07a3e;'
+      : 'background:var(--sd-giay,#fff);border:1px solid var(--sd-vien,#e6e0d8);') +
     (conTrong ? '' : 'opacity:.45;') +
     (dangKeo ? 'opacity:.4;' : '');
 
   const so = document.createElement('div');
   so.textContent = String(i + 1);
   so.style.cssText =
-    'font-size:11px;font-weight:600;color:#8a8078;line-height:1';
+    'font-size:11px;font-weight:600;color:var(--sd-chu-phu,#8a8078);line-height:1';
   the.append(so);
 
   const tron = document.createElement('div');
   tron.style.cssText =
     'width:38px;height:38px;border-radius:50%;overflow:hidden;' +
-    'box-shadow:0 0 0 2px #ffffff, 0 0 0 3px ' + mauVien(p) + '66';
+    'box-shadow:0 0 0 2px var(--sd-giay,#ffffff), 0 0 0 3px ' + mauVien(p) + '66';
   const im = document.createElement('img');
   im.src = anhMacDinhUri(p && p.sex, mauVien(p));
   im.alt = '';
@@ -352,7 +352,7 @@ function veTheCon(id, i) {
   const ten = document.createElement('div');
   ten.textContent = p ? (fullName(p) || id) : id;
   ten.style.cssText =
-    'font-size:11px;line-height:1.25;text-align:center;color:#2a2622;' +
+    'font-size:11px;line-height:1.25;text-align:center;color:var(--sd-chu,#2a2622);' +
     'word-break:break-word';
   the.append(ten);
 
@@ -360,7 +360,7 @@ function veTheCon(id, i) {
   if (coGiaTri(phu)) {
     const d = document.createElement('div');
     d.textContent = phu;
-    d.style.cssText = 'font-size:10px;line-height:1.2;color:#8a8078;text-align:center';
+    d.style.cssText = 'font-size:10px;line-height:1.2;color:var(--sd-chu-phu,#8a8078);text-align:center';
     the.append(d);
   }
 
@@ -382,7 +382,7 @@ function nutDich(chu, huong, bat, chay) {
   nut.disabled = !bat;
   nut.style.cssText =
     'width:30px;height:26px;padding:0;font-size:11px;font-family:inherit;' +
-    'border-radius:6px;border:1px solid #e6e0d8;background:#faf8f5;color:#2a2622;' +
+    'border-radius:6px;border:1px solid var(--sd-vien,#e6e0d8);background:var(--sd-nen,#faf8f5);color:var(--sd-chu,#2a2622);' +
     'touch-action:manipulation;' +
     'cursor:' + (bat ? 'pointer' : 'not-allowed') + ';opacity:' + (bat ? '1' : '.35') + ';';
   if (bat) nut.addEventListener('click', chay);

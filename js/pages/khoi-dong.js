@@ -5,9 +5,7 @@
 // Lớp      : pages
 // Phụ thuộc: services/repo, services/sb, utils/date, pages/dang-nhap,
 //            pages/tree-view
-// Phiên bản: 0.13.1 · Cập nhật: 26/09/2026 (b126d) — bỏ `phien.tenHo` (hằng
-//            cứng đã xoá); hai câu chờ duyệt không còn gọi tên một họ cụ thể.
-//            Lịch sử các bản trước: `git log -p js/pages/khoi-dong.js`.
+// Phiên bản: 0.13.2 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
 // ============================================================
 //
 // ⚠ **ĐỔI SO VỚI BẢN APPS SCRIPT: có thêm một kết cục thứ ba.**
@@ -231,19 +229,19 @@ function veKhoiNhanLoiMoi(el, phien) {
   nutNhan.textContent = 'Nhận lời mời';
   nutNhan.style.cssText =
     'flex:1;min-height:44px;font:inherit;font-size:15px;font-weight:600;' +
-    'border-radius:9px;cursor:pointer;background:#2a2622;color:#fffdf9;' +
-    'border:1px solid #2a2622';
+    'border-radius:9px;cursor:pointer;background:var(--sd-nut,#2a2622);color:var(--sd-nut-chu,#fffdf9);' +
+    'border:1px solid var(--sd-nut,#2a2622)';
 
   const nutTuChoi = document.createElement('button');
   nutTuChoi.type = 'button';
   nutTuChoi.textContent = 'Từ chối';
   nutTuChoi.style.cssText =
     'flex:1;min-height:44px;font:inherit;font-size:15px;font-weight:600;' +
-    'border-radius:9px;cursor:pointer;background:#fffdf9;color:#2a2622;' +
-    'border:1px solid #c8bfb2';
+    'border-radius:9px;cursor:pointer;background:var(--sd-giay,#fffdf9);color:var(--sd-chu,#2a2622);' +
+    'border:1px solid var(--sd-vien-dam,#c8bfb2)';
 
   const bao = document.createElement('p');
-  bao.style.cssText = 'margin:10px 0 0;font-size:13px;line-height:1.5;color:#8a3a2a';
+  bao.style.cssText = 'margin:10px 0 0;font-size:13px;line-height:1.5;color:var(--sd-do,#8a3a2a)';
 
   const khoaCa = (khoa) => { nutNhan.disabled = khoa; nutTuChoi.disabled = khoa; };
 
@@ -297,7 +295,7 @@ function veKhoiXinVao(el, phien) {
   o.placeholder = 'Bạn là ai trong họ? (không bắt buộc) — ví dụ: cháu nội cụ Bắc, con ông Hùng';
   o.style.cssText =
     'width:100%;box-sizing:border-box;padding:10px;font:inherit;font-size:14px;' +
-    'border:1px solid #d8d0c6;border-radius:9px;background:#fffdf9;resize:vertical';
+    'border:1px solid var(--sd-vien,#d8d0c6);border-radius:9px;background:var(--sd-giay,#fffdf9);resize:vertical';
 
   const nut = document.createElement('button');
   nut.type = 'button';
@@ -305,7 +303,7 @@ function veKhoiXinVao(el, phien) {
   nut.style.cssText =
     'margin-top:10px;width:100%;min-height:44px;font:inherit;font-size:15px;' +
     'font-weight:600;border-radius:9px;cursor:pointer;' +
-    'background:#2a2622;color:#fffdf9;border:1px solid #2a2622';
+    'background:var(--sd-nut,#2a2622);color:var(--sd-nut-chu,#fffdf9);border:1px solid var(--sd-nut,#2a2622)';
 
   const bao = document.createElement('p');
   bao.style.cssText = 'margin:10px 0 0;font-size:13px;line-height:1.5';
@@ -317,7 +315,7 @@ function veKhoiXinVao(el, phien) {
     if (!kq || !kq.ok) {
       nut.disabled = false;
       nut.textContent = 'Xin vào gia phả';
-      bao.style.color = '#8a3a2a';
+      bao.style.color = 'var(--sd-do,#8a3a2a)';
       bao.textContent = (kq && kq.loi) || 'Không gửi được đơn. Thử lại sau.';
       return;
     }
@@ -337,8 +335,8 @@ function hienManHinhLoi(el, loi) {
   const nut = document.createElement('button');
   nut.textContent = 'Thử lại';
   nut.style.cssText = 'margin-top:16px;padding:10px 20px;font-size:16px;' +
-                      'border:1px solid #c8bfb2;border-radius:8px;' +
-                      'background:#fff;cursor:pointer';
+                      'border:1px solid var(--sd-vien-dam,#c8bfb2);border-radius:8px;' +
+                      'background:var(--sd-giay,#fff);cursor:pointer';
   nut.addEventListener('click', () => mountKhoiDong(el));
 
   el.append(khung([
@@ -357,7 +355,7 @@ function khung(phanTu) {
   const d = document.createElement('div');
   d.style.cssText = 'max-width:' + rongHop(520, 680) + ';' +
                     'margin:0 auto;padding:32px 24px;' +
-                    'font-family:system-ui,sans-serif;color:#2a2622;' +
+                    'font-family:system-ui,sans-serif;color:var(--sd-chu,#2a2622);' +
                     'line-height:1.6';
   phanTu.filter(Boolean).forEach(x => d.append(x));
   return d;
@@ -391,7 +389,7 @@ function veNutQuanTri() {
   b.textContent = 'Mở trang Quản trị';
   b.style.cssText =
     'margin:14px 0 0;padding:9px 16px;border-radius:7px;font:inherit;' +
-    'cursor:pointer;border:1px solid #2a2622;background:#2a2622;color:#fffdf9';
+    'cursor:pointer;border:1px solid var(--sd-nut,#2a2622);background:var(--sd-nut,#2a2622);color:var(--sd-nut-chu,#fffdf9)';
   b.addEventListener('click', () => {
     window.location.href = 'QuanTri.html#gia-pha';
   });
@@ -401,6 +399,6 @@ function veNutQuanTri() {
 function nhoMo(chu) {
   const p = document.createElement('p');
   p.textContent = chu;
-  p.style.cssText = 'margin:16px 0 0;font-size:13px;color:#8a8078';
+  p.style.cssText = 'margin:16px 0 0;font-size:13px;color:var(--sd-chu-phu,#8a8078)';
   return p;
 }

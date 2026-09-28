@@ -1408,16 +1408,29 @@ for (const [ten, ma] of [['hop-thoai.js', JS_HOP], ['trang-cay.js', JS_TC_SOM]])
 // ============================================================
 {
   const CSS_PM = doc('../phoi-mau.css');
+  const CSS_TM = doc('../tong-mau.css');
   const JS_PM = doc('../js/pages/quan-tri/phoi-mau.js');
   const trongHtml = [...HTML.matchAll(/class="pm-muc" data-ma="([a-z-]+)"/g)].map((m) => m[1]);
-  const trongCss = [...new Set([...CSS_PM.matchAll(/\[data-theme="([a-z-]+)"\]\s*[,{]/g)].map((m) => m[1]))];
+  const trongCss = [...new Set([...CSS_TM.matchAll(/\[data-theme="([a-z-]+)"\]\s*[,{]/g)].map((m) => m[1]))];
   kiem('mười tông, danh sách HTML khớp khối biến CSS',
        trongHtml.length === 10 && trongHtml.length === trongCss.length &&
        trongHtml.every((m) => trongCss.includes(m)),
        'HTML: ' + trongHtml.join(',') + ' · CSS: ' + trongCss.join(','));
-  kiem('phoi-mau.css nạp SAU quan-tri.css (đè được biến)',
-       HTML.indexOf('href="phoi-mau.css') > HTML.indexOf('href="quan-tri.css') && HTML.indexOf('href="quan-tri.css') > 0,
+  const viTri = (f) => HTML.indexOf('href="' + f);
+  kiem('quan-tri.css → tong-mau.css → phoi-mau.css (đè được biến)',
+       viTri('quan-tri.css') > 0 && viTri('tong-mau.css') > viTri('quan-tri.css') &&
+       viTri('phoi-mau.css') > viTri('tong-mau.css'),
        'thứ tự thẻ link sai');
+  // Khối biến chỉ được đặt biến — một luật đè lọt vào đây là lọt sang cả
+  // trang sơ đồ (index.html cũng nạp file này).
+  const khoiTm = CSS_TM.replace(/\/\*[\s\S]*?\*\//g, '').split('}').filter((x) => x.trim())
+    .map((x) => x.split('{'));
+  const boChonLa = khoiTm.map((k) => k[0].trim()).filter((s) => !/^(:root|\[data-theme)/.test(s));
+  const luatLa = khoiTm.map((k) => (k[1] || '').replace(/--[a-z-]+\s*:[^;]*;/g, '')
+    .replace(/color-scheme\s*:\s*dark\s*;/g, '').trim()).filter(Boolean);
+  kiem('tong-mau.css chỉ có khối biến',
+       boChonLa.length === 0 && luatLa.length === 0,
+       'lạ: ' + [...boChonLa, ...luatLa].slice(0, 3).join(' | '));
   // Mọi luật đè màu phải đứng sau `html[data-theme]` — chưa chọn tông thì
   // trang phải y hệt quantri3 từng điểm ảnh.
   const luatDe = CSS_PM.replace(/\/\*[\s\S]*?\*\//g, '').replace(/@media[^{]*\{/g, '').split('}').map((x) => x.split('{')[0].trim())
@@ -1427,6 +1440,25 @@ for (const [ten, ma] of [['hop-thoai.js', JS_HOP], ['trang-cay.js', JS_TC_SOM]])
   kiem('khoá nhớ tông trùng tên ở <head> và phoi-mau.js',
        /'giapha_phoi_mau'/.test(HTML) && /'giapha_phoi_mau'/.test(JS_PM), 'lệch tên khoá');
   kiem('khung gắn nút Tông màu', /ganNutPhoiMau\(app\)/.test(JS_KH), 'khung.js không gọi');
+  // b153a — trang SƠ ĐỒ theo tông. Chưa chọn tông thì phải y hệt trước.
+  const SO_DO = doc('../index.html');
+  const CSS_SD = doc('../so-do-mau.css');
+  kiem('index.html nạp tong-mau.css rồi so-do-mau.css, đọc cùng khoá nhớ tông',
+       SO_DO.indexOf('href="tong-mau.css') > 0 && SO_DO.indexOf('href="so-do-mau.css') > SO_DO.indexOf('href="tong-mau.css') &&
+       /'giapha_phoi_mau'/.test(SO_DO), 'thiếu thẻ link / lệch khoá');
+  const luatSd = CSS_SD.replace(/\/\*[\s\S]*?\*\//g, '').split('}').map((x) => x.split('{')[0].trim())
+    .filter((s) => s && !/^html\[data-theme/.test(s));
+  kiem('so-do-mau.css chỉ chạy khi đã chọn tông', luatSd.length === 0, 'bộ chọn trần: ' + luatSd.slice(0, 3).join(' | '));
+  // Mọi `var(--sd-…)` trong JS phải có giá trị dự phòng — thiếu nó thì chưa
+  // chọn tông, màu rơi về "không màu" thay vì màu cũ.
+  const thuMucPages = new URL('../js/pages/', import.meta.url);
+  const trongSuot = readdirSync(thuMucPages).filter((f) => f.endsWith('.js'))
+    .flatMap((f) => [...readFileSync(new URL(f, thuMucPages), 'utf8').matchAll(/var\(--sd-[a-z-]+\)/g)].map((m) => f + ' ' + m[0]));
+  const bienDung = new Set(readdirSync(thuMucPages).filter((f) => f.endsWith('.js'))
+    .flatMap((f) => [...readFileSync(new URL(f, thuMucPages), 'utf8').matchAll(/var\((--sd-[a-z-]+),/g)].map((m) => m[1])));
+  const chuaKhai = [...bienDung].filter((b) => !CSS_SD.includes(b + ':'));
+  kiem('mọi var(--sd-…) trong pages/ có giá trị dự phòng và được khai ở so-do-mau.css',
+       trongSuot.length === 0 && chuaKhai.length === 0, [...trongSuot, ...chuaKhai].slice(0, 3).join(' | '));
   // `innerWidth` được dùng — để giữ bảng trong mép màn hình; RẼ NHÁNH máy tính /
   // điện thoại thì không: việc ấy của `@media` trong phoi-mau.css.
   kiem('phoi-mau.js không rẽ nhánh theo khổ màn hình',

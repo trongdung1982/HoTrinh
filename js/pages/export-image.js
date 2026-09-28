@@ -6,7 +6,7 @@
 // Phụ thuộc: domains/gedcom.js (boDauChoTenFile — tái dùng luật đặt tên file),
 //            domains/render.js (VE.chuTen — cỡ chữ, để tính ngược khổ giấy),
 //            config.js (PHOTO — cỡ hai bản ảnh nhỏ/lớn)
-// Phiên bản: 0.8.1 · Cập nhật: 01/09/2026 (bước 80 — cỡ ảnh xin kho đọc từ PHOTO)
+// Phiên bản: 0.8.2 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
 // ============================================================
 //
 // VIỆC 12 của kế hoạch. Nguồn gốc: mã nháp Antigravity
@@ -1215,8 +1215,8 @@ export function veLinkTai(blob, tenFile, chuNut) {
   a.style.cssText =
     'display:block;width:100%;min-height:42px;margin-top:8px;padding:11px 14px;' +
     'box-sizing:border-box;text-align:center;text-decoration:none;font-size:14px;' +
-    'font-weight:600;border-radius:9px;background:#2a2622;color:#fffdf9;' +
-    'border:1px solid #2a2622;touch-action:manipulation';
+    'font-weight:600;border-radius:9px;background:var(--sd-nut,#2a2622);color:var(--sd-nut-chu,#fffdf9);' +
+    'border:1px solid var(--sd-nut,#2a2622);touch-action:manipulation';
   // Thu hồi blob URL khi rời trang — không thu hồi ngay, link còn phải sống
   // để người dùng bấm. Rò rỉ nhỏ, hết phiên là hết; đổi lấy sự chắc chắn link
   // luôn bấm được cho tới khi người dùng rời màn hình Cài đặt.

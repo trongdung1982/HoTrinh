@@ -1,6 +1,6 @@
 # Sổ tay · trang Quản trị
 
-Gồm      : `QuanTri.html` — NGUYÊN FILE prototype quantri3, dựng bằng máy · `quan-tri.css` — CSS nguyên văn quantri3 + vài dòng app · `js/pages/quan-tri/khung.js` — `#` → section · `khu-gia-pha.js` · `khu-tai-khoan.js` (b126d, panel Mã người & Dòng họ) · `khu-kiem-duyet.js` · `khu-quan-tri-he-thong.js` · `khu-sao-luu.js` (tab Sao lưu) · `khu-nhat-ky.js` (b134) · `khu-de-nghi-quan-he.js` · `khu-bao-trung.js` (b146 — chip ở `#gia-pha` + tab duyệt) · `khu-ho-so-don.js` (b126d) · `trang-cay.js` · `trang-moi.js` · `trang-tai-khoan.js` · `trang-ho-so-nguoi.js` — đổ dữ liệu vào section của mình · `hop-thoai.js` — hộp hỏi + ô nhập · `o-bang.js` — mẩu ô bảng · `o-goi-y.js` — ô gợi ý · `phoi-mau.js` + `phoi-mau.css` — nút *Tông màu*, 10 tông (29/09/2026)
+Gồm      : `QuanTri.html` — NGUYÊN FILE prototype quantri3, dựng bằng máy · `quan-tri.css` — CSS nguyên văn quantri3 + vài dòng app · `js/pages/quan-tri/khung.js` — `#` → section · `khu-gia-pha.js` · `khu-tai-khoan.js` (b126d, panel Mã người & Dòng họ) · `khu-kiem-duyet.js` · `khu-quan-tri-he-thong.js` · `khu-sao-luu.js` (tab Sao lưu) · `khu-nhat-ky.js` (b134) · `khu-de-nghi-quan-he.js` · `khu-bao-trung.js` (b146 — chip ở `#gia-pha` + tab duyệt) · `khu-ho-so-don.js` (b126d) · `trang-cay.js` · `trang-moi.js` · `trang-tai-khoan.js` · `trang-ho-so-nguoi.js` — đổ dữ liệu vào section của mình · `hop-thoai.js` — hộp hỏi + ô nhập · `o-bang.js` — mẩu ô bảng · `o-goi-y.js` — ô gợi ý · `phoi-mau.js` + `phoi-mau.css` — nút *Tông màu* + luật đè · `tong-mau.css` — biến 10 tông, dùng chung với trang sơ đồ · `so-do-mau.css` — trang sơ đồ theo tông (b153a)
 Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài repo: `../kiem-thu/sb-gia.mjs` · `trang-quan-tri-gia.html` · `so-quantri3.mjs` · `xem-khung-quan-tri.mjs` · prototype `../codex/dua_claude.ai/quantri3.html`
 
 ## Đính chính
@@ -147,8 +147,19 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
 (PHẦN P canh). ⚠ Thêm màu viết cứng mới vào HTML/JS (`style="background:#…"`)
 thì tông tối lộ ra ô sáng — đè ở `phoi-mau.css`, soi bằng ảnh `kq-pm-dem*`.
 ⚠ Bảng chọn dời ra `body`: `position:fixed` trong khay có `transform` bám
-theo khay, bị cắt trên điện thoại. **Chỉ trang Quản trị** — trang sơ đồ viết
-màu thẳng vào `style.cssText` (~420 chỗ), chưa đổi theo tông.
+theo khay, bị cắt trên điện thoại.
+
+**Trang sơ đồ theo tông (b153a)** — biến 10 tông ở `tong-mau.css` (DÙNG CHUNG,
+chỉ được chứa khối biến — PHẦN P canh); trang sơ đồ suy bộ `--sd-*` ở
+`so-do-mau.css`. Mã `js/pages/` viết `var(--sd-chu,#2a2622)`: giá trị dự
+phòng = màu cũ, nên chưa chọn tông thì trang **trùng từng byte** ảnh trước
+(đo 11 cảnh). ⚠ Viết màu mới trong `pages/` thì viết `var(--sd-…,#mã)`,
+đừng `#mã` trần — PHẦN P bắt `var(--sd-…)` thiếu dự phòng hoặc chưa khai.
+⚠ Màu nằm trong `? :` hay `el.style.x = '#…'` phải tự chọn biến theo thuộc
+tính (chữ/nền/viền) — máy đổi hàng loạt không đoán được. ⚠ **Ô người, nét
+nối, nốt tròn (`domains/render.js`) KHÔNG theo tông — chủ dự án chốt
+29/09/2026 không đổi render.js**, đừng đề xuất lại. Chụp để soi:
+`../kiem-thu/xem-so-do-that.mjs` (app thật, tài khoản thử).
 
 **Hồ sơ người (b133)**: một section, hai khu (`thanh-vien` ·
 `quan-tri-he-thong`); `data-back` đặt lúc mount.

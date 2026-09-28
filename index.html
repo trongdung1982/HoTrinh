@@ -2,7 +2,7 @@
 <!-- ============================================================
      giapha-supabase · index.html
      Vai trò  : Trang thật của app trên nền Supabase.
-     Phiên bản: 0.1.0 · Cập nhật: 02/09/2026 22:45
+     Phiên bản: 0.2.0 · Cập nhật: 29/09/2026 — theo tông màu (so-do-mau.css)
 
      ⚠ KHÁC HẲN `gas/index.html` của bản cũ. File kia là một VỎ MỎNG đặt bên
        trong Apps Script, chỉ để nạp mã thật từ GitHub Pages về. File này
@@ -26,10 +26,21 @@
 
   <title>Gia phả</title>
 
+  <!-- Tông màu chọn ở trang Quản trị (nút *Tông màu*) — cùng khoá nhớ
+       `giapha_phoi_mau`. Chưa chọn thì trang y hệt trước: so-do-mau.css ghi
+       vì sao. Đặt tông TRƯỚC khi vẽ để trang không loé màu mặc định. -->
+  <link rel="stylesheet" href="tong-mau.css?v=1.0.0">
+  <link rel="stylesheet" href="so-do-mau.css?v=1.0.0">
+  <script>
+    try { var pm = localStorage.getItem('giapha_phoi_mau');
+      if (pm && /^[a-z-]{2,20}$/.test(pm) && pm !== 'goc') document.documentElement.setAttribute('data-theme', pm);
+    } catch (e) { /* trình duyệt chặn bộ nhớ thì dùng màu mặc định */ }
+  </script>
+
   <style>
     html, body { margin:0; height:100%; }
     body { font-family: system-ui, sans-serif;
-           background:#faf8f5; color:#2a2622; overscroll-behavior:none; }
+           background:var(--sd-nen,#faf8f5); color:var(--sd-chu,#2a2622); overscroll-behavior:none; }
     #app { position:fixed; inset:0; }
     #loi { position:fixed; inset:0; padding:24px; background:#faf8f5;
            color:#c62828; line-height:1.6; font-size:15px; }

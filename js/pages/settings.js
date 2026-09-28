@@ -4,8 +4,7 @@
 //            đường sang Chọn gia phả · Sao lưu & khôi phục · Xuất/Nhập GEDCOM
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, services/sb, utils/text, pages/export-image
-// Phiên bản: 1.36.0 · Cập nhật: 28/09/2026 (b149) — khối Sao lưu sang trang
-//            Quản trị, chỉ Quản trị hệ thống thấy.
+// Phiên bản: 1.36.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
 // ============================================================
 //
 // Màn hình này tồn tại vì MỘT việc: đặt và bỏ người trung tâm mặc định của
@@ -128,12 +127,12 @@ export function openSettings(xuLy = {}) {
     'position:fixed;inset:0;background:rgba(42,38,34,.35);z-index:30;' +
     'display:flex;align-items:center;justify-content:center;' +
     'padding:' + leLopPhu() + ';' +
-    'font-family:system-ui,sans-serif;color:#2a2622';
+    'font-family:system-ui,sans-serif;color:var(--sd-chu,#2a2622)';
 
   const hop = document.createElement('div');
   hop.id = 'giapha-cai-dat';
   hop.style.cssText =
-    'background:#fffdf9;border-radius:14px;padding:18px;box-sizing:border-box;' +
+    'background:var(--sd-giay,#fffdf9);border-radius:14px;padding:18px;box-sizing:border-box;' +
     'width:100%;max-width:' + rongHop(380, 600) + ';' +
     'max-height:' + caoHop(82) + ';overflow:auto;' +
     'box-shadow:0 8px 32px rgba(42,38,34,.28);' +
@@ -153,7 +152,7 @@ export function openSettings(xuLy = {}) {
     const nhanCay = document.createElement('span');
     nhanCay.textContent = 'Cây đang hiển thị: ' + tenCayDangMo +
       (maCayDangMo ? ' (' + maCayDangMo + ')' : '');
-    nhanCay.style.cssText = 'font-size:13px;color:#8a8078';
+    nhanCay.style.cssText = 'font-size:13px;color:var(--sd-chu-phu,#8a8078)';
     tieuDe.append(nhanCay);
   }
   hop.append(tieuDe);
@@ -190,7 +189,7 @@ export function openSettings(xuLy = {}) {
   dong.style.cssText =
     'margin:18px auto 0;display:block;width:100%;height:42px;' +
     'max-width:' + RONG_NUT_TOI_DA + ';font-size:14px;font-family:inherit;' +
-    'border:1px solid #e6e0d8;border-radius:9px;background:#faf8f5;cursor:pointer;' +
+    'border:1px solid var(--sd-vien,#e6e0d8);border-radius:9px;background:var(--sd-nen,#faf8f5);cursor:pointer;' +
     'touch-action:manipulation';
   dong.addEventListener('click', () => closeSettings());
   hop.append(dong);
@@ -236,7 +235,7 @@ function veLaiKhoiMacDinh(loi) {
   const nguoiMacDinh = macDinh && state.index ? state.index.personById.get(macDinh) : null;
 
   const giaiThich = document.createElement('div');
-  giaiThich.style.cssText = 'font-size:13px;line-height:1.55;color:#8a8078;margin-bottom:10px';
+  giaiThich.style.cssText = 'font-size:13px;line-height:1.55;color:var(--sd-chu-phu,#8a8078);margin-bottom:10px';
   if (coGiaTri(macDinh) && nguoiMacDinh) {
     giaiThich.textContent =
       'Mỗi lần bạn mở app, sơ đồ sẽ vẽ quanh ' + fullName(nguoiMacDinh) + '. ' +
@@ -344,14 +343,14 @@ function veKhoiHienThi(vao) {
   const nhan = document.createElement('label');
   nhan.style.cssText =
     'display:flex;align-items:center;gap:9px;margin-top:6px;padding:9px 11px;' +
-    'border:1px solid #e6e0d8;border-radius:9px;background:#faf8f5;' +
+    'border:1px solid var(--sd-vien,#e6e0d8);border-radius:9px;background:var(--sd-nen,#faf8f5);' +
     'font-size:14px;cursor:pointer;touch-action:manipulation';
 
   const hopChon = document.createElement('input');
   hopChon.type = 'checkbox';
   hopChon.id = 'giapha-ct-ngay-gio';
   hopChon.checked = state.hienNgayGio === true;
-  hopChon.style.cssText = 'width:18px;height:18px;accent-color:#2a2622';
+  hopChon.style.cssText = 'width:18px;height:18px;accent-color:var(--sd-chu,#2a2622)';
   hopChon.addEventListener('change', () => {
     state.hienNgayGio = hopChon.checked;
     notify();
@@ -384,7 +383,7 @@ function veKhoiHienThi(vao) {
   const nhac = document.createElement('div');
   nhac.textContent =
     'Bật lên thì mọi ô cao thêm một hàng, kể cả ô chưa có ngày giỗ.';
-  nhac.style.cssText = 'font-size:12px;line-height:1.5;color:#8a8078;margin-top:6px';
+  nhac.style.cssText = 'font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:6px';
   khoi.append(nhac);
 
   vao.append(khoi);
@@ -413,7 +412,7 @@ function veKhoiChonGiaPha(vao) {
     (dangMo ? 'Đang mở ' + dangMo + '. ' : '') +
     'Đổi sang một cây khác được chia sẻ cho bạn. Lựa chọn này của riêng tài khoản bạn.';
   giaiThich.style.cssText =
-    'font-size:13px;line-height:1.55;color:#8a8078;margin-bottom:10px';
+    'font-size:13px;line-height:1.55;color:var(--sd-chu-phu,#8a8078);margin-bottom:10px';
   khoi.append(giaiThich);
 
   const b = nut('Chọn gia phả khác', false, true, () => xuLyNgoai.onMoChonGiaPha());
@@ -507,7 +506,7 @@ function veKhoiXuatAnh(khoi) {
   chu.textContent = 'Ảnh và PDF dưới đây chỉ chụp đúng PHẦN SƠ ĐỒ ĐANG HIỆN '
                    + 'trên màn hình (theo đúng phạm vi đời đang chọn) — không '
                    + 'phải toàn bộ gia phả như file GEDCOM ở trên.';
-  chu.style.cssText = 'font-size:12px;line-height:1.5;color:#8a8078;margin-top:10px';
+  chu.style.cssText = 'font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:10px';
   khoi.append(chu);
 
   if (xuLyNgoai.onXuatAnhPng) {
@@ -518,7 +517,7 @@ function veKhoiXuatAnh(khoi) {
       nutPng.style.opacity = '0.6';
       nutPng.style.cursor = 'wait';
       ketQua.textContent = 'Đang tạo ảnh...';
-      ketQua.style.cssText = 'font-size:13px;color:#8a8078;margin-top:8px';
+      ketQua.style.cssText = 'font-size:13px;color:var(--sd-chu-phu,#8a8078);margin-top:8px';
       try {
         const anh = await xuLyNgoai.onXuatAnhPng();
         ketQua.textContent = '';
@@ -534,7 +533,7 @@ function veKhoiXuatAnh(khoi) {
                + 'trình duyệt dựng nổi). Muốn nét hơn thì dùng "Ảnh độ phân '
                + 'giải cao" bên dưới, hoặc thu bớt số đời đang hiện.'
              : '.');
-        doDuoc.style.cssText = 'font-size:12px;line-height:1.5;color:#8a8078;margin-top:8px';
+        doDuoc.style.cssText = 'font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:8px';
         ketQua.append(doDuoc);
 
         ketQua.append(veLinkTai(anh.blob, anh.tenFile, 'Tải ảnh PNG về máy'));
@@ -587,12 +586,12 @@ function veKhoiPdfNhieuTrang(khoi) {
   const boc = document.createElement('div');
   boc.dataset.viec = 'khoi-pdf-nhieu-trang';
   boc.style.cssText =
-    'margin-top:10px;padding:10px;border:1px solid #e6e0d8;border-radius:8px;' +
-    'background:#faf8f5';
+    'margin-top:10px;padding:10px;border:1px solid var(--sd-vien,#e6e0d8);border-radius:8px;' +
+    'background:var(--sd-nen,#faf8f5)';
 
   const nhan = document.createElement('label');
   nhan.textContent = 'In treo tường — chữ in ra cao bao nhiêu mm?';
-  nhan.style.cssText = 'display:block;font-size:12px;color:#8a8078;margin-bottom:6px';
+  nhan.style.cssText = 'display:block;font-size:12px;color:var(--sd-chu-phu,#8a8078);margin-bottom:6px';
   boc.append(nhan);
 
   const hang = document.createElement('div');
@@ -607,14 +606,14 @@ function veKhoiPdfNhieuTrang(khoi) {
   oChu.dataset.viec = 'chu-cao-mm';
   oChu.style.cssText =
     'width:80px;min-height:38px;padding:6px 8px;font-size:14px;font-family:inherit;' +
-    'border-radius:8px;border:1px solid #e6e0d8;box-sizing:border-box';
+    'border-radius:8px;border:1px solid var(--sd-vien,#e6e0d8);box-sizing:border-box';
 
   // Khổ giấy: mỗi khổ hai chiều, gộp thành một ô chọn cho gọn.
   const oKho = document.createElement('select');
   oKho.dataset.viec = 'kho-giay';
   oKho.style.cssText =
     'flex:1;min-width:150px;min-height:38px;padding:6px 8px;font-size:14px;' +
-    'font-family:inherit;border-radius:8px;border:1px solid #e6e0d8;box-sizing:border-box';
+    'font-family:inherit;border-radius:8px;border:1px solid var(--sd-vien,#e6e0d8);box-sizing:border-box';
   for (const ten of Object.keys(KHO_GIAY)) {
     for (const nam of [false, true]) {
       const o = document.createElement('option');
@@ -634,7 +633,7 @@ function veKhoiPdfNhieuTrang(khoi) {
   oDpi.dataset.viec = 'dpi-nhieu-trang';
   oDpi.style.cssText =
     'width:100%;min-height:38px;margin-top:8px;padding:6px 8px;font-size:14px;' +
-    'font-family:inherit;border-radius:8px;border:1px solid #e6e0d8;box-sizing:border-box';
+    'font-family:inherit;border-radius:8px;border:1px solid var(--sd-vien,#e6e0d8);box-sizing:border-box';
   for (const dpi of DAI_DPI) {
     const o = document.createElement('option');
     o.value = String(dpi);
@@ -648,7 +647,7 @@ function veKhoiPdfNhieuTrang(khoi) {
   // Dòng nói TRƯỚC sẽ ra cái gì — thứ chủ dự án đòi đích danh.
   const xemTruoc = document.createElement('div');
   xemTruoc.dataset.viec = 'xem-truoc-pdf';
-  xemTruoc.style.cssText = 'font-size:12px;line-height:1.5;color:#8a8078;margin-top:8px';
+  xemTruoc.style.cssText = 'font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:8px';
   boc.append(xemTruoc);
 
   const ketQua = document.createElement('div');
@@ -684,7 +683,7 @@ function veKhoiPdfNhieuTrang(khoi) {
     nutXuat.disabled = true;
     nutXuat.style.opacity = '0.6';
     nutXuat.style.cursor = 'wait';
-    ketQua.style.cssText = 'font-size:13px;color:#8a8078;margin-top:8px';
+    ketQua.style.cssText = 'font-size:13px;color:var(--sd-chu-phu,#8a8078);margin-top:8px';
     ketQua.textContent = 'Đang dựng trang 1/' + xem.tong + '...';
     try {
       const [tenKho, chieu] = String(oKho.value).split('|');
@@ -704,7 +703,7 @@ function veKhoiPdfNhieuTrang(khoi) {
         'Xong: ' + pdf.tong + ' trang, ghép lại thành ' + (pdf.rongMm / 10).toFixed(0) +
         '×' + (pdf.caoMm / 10).toFixed(0) + 'cm. Chữ in ra cao đúng ' +
         oChu.value + 'mm.';
-      doDuoc.style.cssText = 'font-size:12px;line-height:1.5;color:#8a8078;margin-top:8px';
+      doDuoc.style.cssText = 'font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:8px';
       ketQua.append(doDuoc, veLinkTai(pdf.blob, pdf.tenFile, 'Tải file PDF về máy'));
     } catch (e) {
       ketQua.textContent = 'Không dựng được PDF: ' + (e && e.message ? e.message : String(e));
@@ -725,7 +724,7 @@ function veKhoiPdfNhieuTrang(khoi) {
     '1–1,5m. Chữ càng cao thì khổ giấy càng lớn và càng nhiều trang. Khổ giấy ' +
     'ghi thẳng trong file PDF nên mang ra tiệm in là đúng cỡ, không phụ thuộc ' +
     'máy in nào.';
-  giaiThich.style.cssText = 'font-size:11px;line-height:1.5;color:#8a8078;margin-top:6px';
+  giaiThich.style.cssText = 'font-size:11px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:6px';
   boc.append(giaiThich);
 
   khoi.append(boc);
@@ -763,12 +762,12 @@ function veKhoiAnhDpi(khoi) {
   const boc = document.createElement('div');
   boc.dataset.viec = 'khoi-anh-dpi';
   boc.style.cssText =
-    'margin-top:10px;padding:10px;border:1px solid #e6e0d8;border-radius:8px;' +
-    'background:#faf8f5';
+    'margin-top:10px;padding:10px;border:1px solid var(--sd-vien,#e6e0d8);border-radius:8px;' +
+    'background:var(--sd-nen,#faf8f5)';
 
   const nhan = document.createElement('label');
   nhan.textContent = 'Ảnh độ phân giải cao (gửi máy in PDF, tiệm in) — bề ngang khổ giấy, cm:';
-  nhan.style.cssText = 'display:block;font-size:12px;color:#8a8078;margin-bottom:6px';
+  nhan.style.cssText = 'display:block;font-size:12px;color:var(--sd-chu-phu,#8a8078);margin-bottom:6px';
   boc.append(nhan);
 
   const hang = document.createElement('div');
@@ -783,13 +782,13 @@ function veKhoiAnhDpi(khoi) {
   oNhap.dataset.viec = 'rong-anh-dpi-cm';
   oNhap.style.cssText =
     'width:80px;min-height:38px;padding:6px 8px;font-size:14px;font-family:inherit;' +
-    'border-radius:8px;border:1px solid #e6e0d8;box-sizing:border-box';
+    'border-radius:8px;border:1px solid var(--sd-vien,#e6e0d8);box-sizing:border-box';
 
   const oDpi = document.createElement('select');
   oDpi.dataset.viec = 'chon-dpi';
   oDpi.style.cssText =
     'flex:1;min-width:150px;min-height:38px;padding:6px 8px;font-size:14px;' +
-    'font-family:inherit;border-radius:8px;border:1px solid #e6e0d8;box-sizing:border-box';
+    'font-family:inherit;border-radius:8px;border:1px solid var(--sd-vien,#e6e0d8);box-sizing:border-box';
   for (const dpi of DAI_DPI) {
     const o = document.createElement('option');
     o.value = String(dpi);
@@ -803,7 +802,7 @@ function veKhoiAnhDpi(khoi) {
 
   const canhBao = document.createElement('div');
   canhBao.dataset.viec = 'canh-bao-dpi';
-  canhBao.style.cssText = 'font-size:11px;line-height:1.5;color:#8a8078;margin-top:6px';
+  canhBao.style.cssText = 'font-size:11px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:6px';
   boc.append(canhBao);
 
   const ketQua = document.createElement('div');
@@ -866,7 +865,7 @@ function veKhoiAnhDpi(khoi) {
     nutTao.style.opacity = '0.6';
     nutTao.style.cursor = 'wait';
     ketQua.textContent = 'Đang tạo ảnh...';
-    ketQua.style.cssText = 'font-size:13px;color:#8a8078;margin-top:8px';
+    ketQua.style.cssText = 'font-size:13px;color:var(--sd-chu-phu,#8a8078);margin-top:8px';
     try {
       const anh = await xuLyNgoai.onXuatAnhDpi(Number(oNhap.value), Number(oDpi.value));
       ketQua.textContent = '';
@@ -874,7 +873,7 @@ function veKhoiAnhDpi(khoi) {
       const doDuoc = document.createElement('div');
       doDuoc.textContent = 'Đã tạo ảnh ' + anh.w + '×' + anh.h + ' điểm ảnh — khổ ' +
                            Math.round(anh.rongMm / 10) + '×' + Math.round(anh.caoMm / 10) + 'cm.';
-      doDuoc.style.cssText = 'font-size:12px;color:#8a8078;margin-top:8px';
+      doDuoc.style.cssText = 'font-size:12px;color:var(--sd-chu-phu,#8a8078);margin-top:8px';
       ketQua.append(doDuoc);
 
       // ⚠ Dùng LẠI đúng object URL mà `veLinkTai()` vừa tạo (`a.href`) cho nút
@@ -898,7 +897,7 @@ function veKhoiAnhDpi(khoi) {
         'Nút này mở hộp thoại in của máy — khổ giấy sẽ do chính máy in quyết ' +
         'định, không phải khổ đã gõ ở trên. Muốn đúng khổ thì dùng nút "Tải ' +
         'file PDF" bên trên.';
-      nhacIn.style.cssText = 'font-size:11px;line-height:1.5;color:#8a8078;margin-top:6px';
+      nhacIn.style.cssText = 'font-size:11px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:6px';
       ketQua.append(nhacIn);
     } catch (e) {
       ketQua.textContent = 'Không tạo được ảnh: ' + (e && e.message ? e.message : String(e));
@@ -923,7 +922,7 @@ function veKhoiAnhDpi(khoi) {
         nutPdf.style.opacity = '0.6';
         nutPdf.style.cursor = 'wait';
         ketQua.textContent = 'Đang dựng file PDF...';
-        ketQua.style.cssText = 'font-size:13px;color:#8a8078;margin-top:8px';
+        ketQua.style.cssText = 'font-size:13px;color:var(--sd-chu-phu,#8a8078);margin-top:8px';
         try {
           const pdf = await xuLyNgoai.onXuatPdfDpi(Number(oNhap.value), Number(oDpi.value));
           ketQua.textContent = '';
@@ -934,7 +933,7 @@ function veKhoiAnhDpi(khoi) {
             'PDF khổ ' + (pdf.rongMm / 10).toFixed(1) + '×' + (pdf.caoMm / 10).toFixed(1) +
             'cm, ảnh bên trong ' + pdf.w + '×' + pdf.h + ' điểm ảnh. Khổ này nằm ' +
             'trong chính file — mở ở đâu, in ở tiệm nào cũng đúng bằng đó.';
-          doDuoc.style.cssText = 'font-size:12px;line-height:1.5;color:#8a8078;margin-top:8px';
+          doDuoc.style.cssText = 'font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:8px';
           ketQua.append(doDuoc);
           ketQua.append(veLinkTai(pdf.blob, pdf.tenFile, 'Tải file PDF về máy'));
         } catch (e) {
@@ -992,7 +991,7 @@ function veKhoiNhap(vao) {
   const chu = document.createElement('div');
   chu.textContent = 'Xem file .ged có những gì, rồi ghi vào một gia phả MỚI. '
                   + 'Gia phả đang mở không bị đụng tới.';
-  chu.style.cssText = 'font-size:12px;line-height:1.5;color:#8a8078;margin-top:6px';
+  chu.style.cssText = 'font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:6px';
   khoi.append(chu);
 
   vao.append(khoi);
@@ -1152,7 +1151,7 @@ function veKhoiPhien(vao) {
   nhac.textContent =
     'Quyền do máy chủ quyết định theo vai trò của tài khoản trong gia phả này, ' +
     'không sửa được trong app. Cần đổi thì nhờ người quản lý.';
-  nhac.style.cssText = 'margin-top:8px;font-size:12px;line-height:1.5;color:#8a8078';
+  nhac.style.cssText = 'margin-top:8px;font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078)';
   khoi.append(nhac);
 
   // "Bị ẩn" KHÔNG phải "còn thiếu" — câu này chuyển về đây ở bước 30, khi khối
@@ -1192,8 +1191,8 @@ function veNutDangXuat() {
     if (!daHoi) {
       daHoi = true;
       b.textContent = 'Bấm lần nữa để đăng xuất';
-      b.style.color = '#8a3a2a';
-      b.style.borderColor = '#f0d8d0';
+      b.style.color = 'var(--sd-do,#8a3a2a)';
+      b.style.borderColor = 'var(--sd-do-vien,#f0d8d0)';
       return;
     }
     b.disabled = true;
@@ -1235,14 +1234,14 @@ function veNhanKhoi(chu) {
   const n = document.createElement('div');
   n.textContent = chu;
   n.style.cssText =
-    'font-size:12px;font-weight:600;letter-spacing:.04em;color:#8a8078;margin-bottom:6px';
+    'font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--sd-chu-phu,#8a8078);margin-bottom:6px';
   return n;
 }
 
 function veTheNho(p) {
   const the = document.createElement('div');
   the.style.cssText =
-    'padding:9px 11px;border:1px solid #e6e0d8;border-radius:8px;background:#faf8f5';
+    'padding:9px 11px;border:1px solid var(--sd-vien,#e6e0d8);border-radius:8px;background:var(--sd-nen,#faf8f5)';
 
   const ten = document.createElement('div');
   ten.textContent = fullName(p);
@@ -1253,7 +1252,7 @@ function veTheNho(p) {
   const phu = [song, p.id].filter(coGiaTri).join('  ·  ');
   const d = document.createElement('div');
   d.textContent = phu;
-  d.style.cssText = 'font-size:12px;color:#8a8078;margin-top:2px';
+  d.style.cssText = 'font-size:12px;color:var(--sd-chu-phu,#8a8078);margin-top:2px';
   the.append(d);
 
   return the;
@@ -1264,11 +1263,11 @@ function hang(bang, nhan, giaTri) {
   if (!coGiaTri(giaTri)) return;
   const h = document.createElement('div');
   h.style.cssText =
-    'display:flex;gap:10px;align-items:baseline;padding:6px 0;border-top:1px solid #f0ebe4';
+    'display:flex;gap:10px;align-items:baseline;padding:6px 0;border-top:1px solid var(--sd-vien-nhat,#f0ebe4)';
 
   const n = document.createElement('div');
   n.textContent = nhan;
-  n.style.cssText = 'flex:0 0 100px;font-size:12px;color:#8a8078';
+  n.style.cssText = 'flex:0 0 100px;font-size:12px;color:var(--sd-chu-phu,#8a8078)';
 
   const g = document.createElement('div');
   g.textContent = String(giaTri).trim();
@@ -1289,8 +1288,8 @@ function nut(chu, chinh, batDuoc, chay_) {
     'cursor:' + (batDuoc ? 'pointer' : 'not-allowed') + ';' +
     'opacity:' + (batDuoc ? '1' : '0.45') + ';' +
     (chinh
-      ? 'background:#2a2622;color:#fffdf9;border:1px solid #2a2622;font-weight:600'
-      : 'background:#faf8f5;color:#2a2622;border:1px solid #e6e0d8');
+      ? 'background:var(--sd-nut,#2a2622);color:var(--sd-nut-chu,#fffdf9);border:1px solid var(--sd-nut,#2a2622);font-weight:600'
+      : 'background:var(--sd-nen,#faf8f5);color:var(--sd-chu,#2a2622);border:1px solid var(--sd-vien,#e6e0d8)');
   if (batDuoc) b.addEventListener('click', chay_);
   return b;
 }
@@ -1301,7 +1300,7 @@ function veLoiNhan(chu, laLoi) {
   d.style.cssText =
     'margin-top:10px;padding:9px 11px;font-size:12px;line-height:1.5;border-radius:8px;' +
     (laLoi
-      ? 'color:#8a3a2a;background:#fbf0ec;border:1px solid #f0d8d0'
-      : 'color:#8a8078;background:#faf8f5;border:1px solid #f0ebe4');
+      ? 'color:var(--sd-do,#8a3a2a);background:var(--sd-do-nen,#fbf0ec);border:1px solid var(--sd-do-vien,#f0d8d0)'
+      : 'color:var(--sd-chu-phu,#8a8078);background:var(--sd-nen,#faf8f5);border:1px solid var(--sd-vien-nhat,#f0ebe4)');
   return d;
 }

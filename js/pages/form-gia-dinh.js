@@ -5,7 +5,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: pages/{person-edit,form-sua-con,form-go-noi}.js, state,
 //            domains/{union,validate}, services/repo, utils/{graph,text}, config
-// Phiên bản: 1.1.0 · Cập nhật: 27/08/2026 22:30
+// Phiên bản: 1.1.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 4 của
@@ -128,7 +128,7 @@ export function openFamilyForm(personId, xuLy = {}) {
   const phu = document.createElement('div');
   phu.textContent = tenNguoi(personId) + '  ·  ' + personId;
   phu.style.cssText =
-    'font-size:12px;color:#b3aaa0;margin-top:3px;letter-spacing:.03em;line-height:1.45';
+    'font-size:12px;color:var(--sd-chu-mo,#b3aaa0);margin-top:3px;letter-spacing:.03em;line-height:1.45';
 
   hop.append(tieuDe, phu);
 
@@ -168,18 +168,18 @@ function veNhanKhoiGD(chu, phu) {
   const nhan = document.createElement('div');
   nhan.style.cssText =
     'margin-top:18px;margin-bottom:6px;padding-bottom:4px;' +
-    'border-bottom:1px solid #f0ebe4';
+    'border-bottom:1px solid var(--sd-vien-nhat,#f0ebe4)';
 
   const t = document.createElement('div');
   t.textContent = chu;
   t.style.cssText =
-    'font-size:12px;font-weight:600;letter-spacing:.04em;color:#8a8078';
+    'font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--sd-chu-phu,#8a8078)';
   nhan.append(t);
 
   if (coGiaTri(phu)) {
     const d = document.createElement('div');
     d.textContent = phu;
-    d.style.cssText = 'font-size:11px;color:#b3aaa0;margin-top:2px';
+    d.style.cssText = 'font-size:11px;color:var(--sd-chu-mo,#b3aaa0);margin-top:2px';
     nhan.append(d);
   }
   return nhan;
@@ -210,13 +210,13 @@ function veDongNguoi(vai, id, ghiChu, chay, chuChinh) {
     // nó cũng phải có viền liền — không thì một sự thật đã chép trông y hệt
     // một chỗ chưa ai điền.
     (id || coGiaTri(chuChinh)
-      ? 'color:#2a2622;border:1px solid #e6e0d8;background:#fff'
-      : 'color:#8a8078;border:1px dashed #e6e0d8;background:none');
+      ? 'color:var(--sd-chu,#2a2622);border:1px solid var(--sd-vien,#e6e0d8);background:var(--sd-giay,#fff)'
+      : 'color:var(--sd-chu-phu,#8a8078);border:1px dashed var(--sd-vien,#e6e0d8);background:none');
 
   const nhan = document.createElement('span');
   nhan.textContent = vai;
   nhan.style.cssText =
-    'flex:0 0 78px;font-size:12px;line-height:1.35;color:#8a8078;letter-spacing:.03em';
+    'flex:0 0 78px;font-size:12px;line-height:1.35;color:var(--sd-chu-phu,#8a8078);letter-spacing:.03em';
   nut.append(nhan);
 
   const cot = document.createElement('span');
@@ -231,7 +231,7 @@ function veDongNguoi(vai, id, ghiChu, chay, chuChinh) {
   if (coGiaTri(ghiChu)) {
     const d = document.createElement('span');
     d.textContent = ghiChu;
-    d.style.cssText = 'display:block;font-size:12px;color:#8a8078;margin-top:2px';
+    d.style.cssText = 'display:block;font-size:12px;color:var(--sd-chu-phu,#8a8078);margin-top:2px';
     cot.append(d);
   }
 
@@ -246,7 +246,7 @@ function nutGachDut(chu, chay) {
   nut.type = 'button';
   nut.style.cssText =
     'display:block;width:100%;text-align:left;padding:9px 11px;margin-top:6px;' +
-    'font-family:inherit;font-size:13px;color:#8a8078;border:1px dashed #e6e0d8;' +
+    'font-family:inherit;font-size:13px;color:var(--sd-chu-phu,#8a8078);border:1px dashed var(--sd-vien,#e6e0d8);' +
     'border-radius:8px;background:none;cursor:pointer;touch-action:manipulation';
   nut.textContent = chu;
   nut.addEventListener('click', chay);
@@ -528,7 +528,7 @@ function veKhoiChuaCoChaMe(personId, xuLy) {
 
   const d = document.createElement('div');
   d.textContent = tenNguoi(personId) + ' chưa có cha mẹ trong gia phả.';
-  d.style.cssText = 'font-size:12px;line-height:1.5;color:#8a8078;margin-top:6px';
+  d.style.cssText = 'font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:6px';
   boc.append(d);
 
   if (suaDuoc() && xuLy.onKetNoi) {
@@ -545,7 +545,7 @@ function veKhoiChuaCoVoChong(personId, xuLy) {
   const d = document.createElement('div');
   d.textContent = tenNguoi(personId) + ' chưa đứng trong cặp vợ chồng nào, nên ' +
                   'chưa có nhà riêng để ghi con cái.';
-  d.style.cssText = 'font-size:12px;line-height:1.5;color:#8a8078;margin-top:6px';
+  d.style.cssText = 'font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:6px';
   boc.append(d);
 
   if (suaDuoc() && xuLy.onKetNoi) {
@@ -794,7 +794,7 @@ function moHopChonNguoiVaoCap(unionId, nguoiCuId, personId, xuLy) {
     : 'Ai đứng vào chỗ còn trống của gia đình này?';
   dan.style.cssText =
     'margin-top:14px;padding:9px 11px;font-size:12px;line-height:1.5;' +
-    'border-radius:8px;color:#8a8078;background:#faf8f5;border:1px solid #f0ebe4';
+    'border-radius:8px;color:var(--sd-chu-phu,#8a8078);background:var(--sd-nen,#faf8f5);border:1px solid var(--sd-vien-nhat,#f0ebe4)';
   N.khoiKetQua.append(dan);
 
   const nhac = document.createElement('div');
@@ -804,7 +804,7 @@ function moHopChonNguoiVaoCap(unionId, nguoiCuId, personId, xuLy) {
     'nghe như lỗi.';
   nhac.style.cssText =
     'margin-top:6px;padding:7px 10px;font-size:11px;line-height:1.5;' +
-    'border-radius:8px;color:#5c554e;background:#faf8f5;border:1px solid #f0ebe4';
+    'border-radius:8px;color:var(--sd-chu-vua,#5c554e);background:var(--sd-nen,#faf8f5);border:1px solid var(--sd-vien-nhat,#f0ebe4)';
   N.khoiKetQua.append(nhac);
 
   const oTim = document.createElement('input');
@@ -820,7 +820,7 @@ function moHopChonNguoiVaoCap(unionId, nguoiCuId, personId, xuLy) {
   N.khoiKetQua.append(day);
 
   const demDong = document.createElement('div');
-  demDong.style.cssText = 'font-size:11px;color:#b3aaa0;margin-top:8px';
+  demDong.style.cssText = 'font-size:11px;color:var(--sd-chu-mo,#b3aaa0);margin-top:8px';
   N.khoiKetQua.append(demDong);
 
   // Xét MỘT LẦN cho cả gia phả, không xét lại mỗi lần gõ một chữ: bộ quy tắc
@@ -886,10 +886,10 @@ function veDongUngVien(m, chay) {
     'display:block;width:100%;text-align:left;padding:10px 12px;font-family:inherit;' +
     'font-size:14px;border-radius:9px;cursor:pointer;touch-action:manipulation;' +
     (m.xet.muc === 'khoa'
-      ? 'color:#8a3a2a;border:1px solid #f0d8d0;background:#fbf0ec'
+      ? 'color:var(--sd-do,#8a3a2a);border:1px solid var(--sd-do-vien,#f0d8d0);background:var(--sd-do-nen,#fbf0ec)'
       : (m.xet.muc === 'canhbao'
-          ? 'color:#2a2622;border:1px solid #e8dcc4;background:#fdfaf2'
-          : 'color:#2a2622;border:1px solid #e6e0d8;background:#fff'));
+          ? 'color:var(--sd-chu,#2a2622);border:1px solid var(--sd-vang-vien,#e8dcc4);background:var(--sd-giay,#fdfaf2)'
+          : 'color:var(--sd-chu,#2a2622);border:1px solid var(--sd-vien,#e6e0d8);background:var(--sd-giay,#fff)'));
 
   const d1 = document.createElement('div');
   d1.textContent = (m.xet.muc === 'khoa' ? '⛔  ' : (m.xet.muc === 'canhbao' ? '⚠  ' : '')) + m.ten;
@@ -913,7 +913,7 @@ function veDongUngVien(m, chay) {
   if (coGiaTri(phu)) {
     const d2 = document.createElement('div');
     d2.textContent = phu;
-    d2.style.cssText = 'font-size:12px;color:#8a8078;margin-top:2px;line-height:1.4';
+    d2.style.cssText = 'font-size:12px;color:var(--sd-chu-phu,#8a8078);margin-top:2px;line-height:1.4';
     nut.append(d2);
   }
 

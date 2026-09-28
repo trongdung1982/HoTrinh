@@ -5,7 +5,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: pages/person-edit.js (nền dùng chung + kho ảnh), state,
 //            domains/{union,validate}, utils/{graph,date,text}, config
-// Phiên bản: 1.1.0 · Cập nhật: 27/08/2026 22:30
+// Phiên bản: 1.1.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 5 của
@@ -150,7 +150,7 @@ function moFormCap(unionId, xuLy, mocId) {
   const phu = document.createElement('div');
   phu.textContent = keTenPartner(unionId) + '  ·  ' + unionId;
   phu.style.cssText =
-    'font-size:12px;color:#b3aaa0;margin-top:3px;letter-spacing:.03em;line-height:1.45';
+    'font-size:12px;color:var(--sd-chu-mo,#b3aaa0);margin-top:3px;letter-spacing:.03em;line-height:1.45';
 
   hop.append(tieuDe, phu);
   hop.append(...veCacOCap(u, mocId));
@@ -221,7 +221,7 @@ function oNgayCuoi(u) {
   o.marriage = input;
 
   const doc = document.createElement('div');
-  doc.style.cssText = 'font-size:11px;line-height:1.45;color:#8a8078;margin-top:4px';
+  doc.style.cssText = 'font-size:11px;line-height:1.45;color:var(--sd-chu-phu,#8a8078);margin-top:4px';
   const capNhat = () => { doc.textContent = mayDocDuocGi(input.value); };
   input.addEventListener('input', capNhat);
   capNhat();
@@ -243,8 +243,8 @@ function veChonTrangThai(u) {
     for (const { ma, nut } of cacNut) {
       nut.style.cssText = KIEU_NUT_CHON +
         (ma === dangChon
-          ? 'background:#2a2622;color:#fffdf9;border:1px solid #2a2622;font-weight:600'
-          : 'background:#faf8f5;color:#2a2622;border:1px solid #e6e0d8');
+          ? 'background:var(--sd-nut,#2a2622);color:var(--sd-nut-chu,#fffdf9);border:1px solid var(--sd-nut,#2a2622);font-weight:600'
+          : 'background:var(--sd-nen,#faf8f5);color:var(--sd-chu,#2a2622);border:1px solid var(--sd-vien,#e6e0d8)');
     }
   };
 
@@ -266,7 +266,7 @@ function veChonTrangThai(u) {
   nhac.textContent =
     'Ly hôn KHÔNG gỡ ai ra khỏi cặp: hai người vẫn là cha mẹ của những người ' +
     'con đứng dưới, và sơ đồ vẫn vẽ đúng như thế.';
-  nhac.style.cssText = 'font-size:11px;line-height:1.45;color:#8a8078;margin-top:4px';
+  nhac.style.cssText = 'font-size:11px;line-height:1.45;color:var(--sd-chu-phu,#8a8078);margin-top:4px';
 
   const boc = document.createElement('div');
   boc.append(hang, nhac);
@@ -300,7 +300,7 @@ function oThuBac(u, mocId) {
     '1 là vợ cả / chồng đầu, 2 là vợ thứ hai… tính riêng theo phía ' +
     tenNguoi(mocId) + '. Đây là thứ bậc trong gia đình, không phải chỗ đứng ' +
     'trái phải trên hình.';
-  nhac.style.cssText = 'font-size:11px;line-height:1.45;color:#8a8078;margin-top:4px';
+  nhac.style.cssText = 'font-size:11px;line-height:1.45;color:var(--sd-chu-phu,#8a8078);margin-top:4px';
 
   boc.append(input, nhac);
   return boc;
@@ -318,7 +318,7 @@ function veDoiChoTraiPhai(u) {
     const mot = document.createElement('div');
     mot.textContent =
       'Cặp này mới có một người, nên chưa có chỗ trái phải nào để đổi.';
-    mot.style.cssText = 'font-size:12px;line-height:1.5;color:#8a8078;margin-top:6px';
+    mot.style.cssText = 'font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:6px';
     boc.append(mot);
     o.doiCho = null;
     return boc;
@@ -327,13 +327,13 @@ function veDoiChoTraiPhai(u) {
   const nhan = document.createElement('label');
   nhan.style.cssText =
     'display:flex;align-items:center;gap:9px;margin-top:6px;padding:9px 11px;' +
-    'border:1px solid #e6e0d8;border-radius:9px;background:#faf8f5;' +
+    'border:1px solid var(--sd-vien,#e6e0d8);border-radius:9px;background:var(--sd-nen,#faf8f5);' +
     'font-size:14px;cursor:pointer;touch-action:manipulation';
 
   const hopChon = document.createElement('input');
   hopChon.type = 'checkbox';
   hopChon.checked = false;
-  hopChon.style.cssText = 'width:18px;height:18px;accent-color:#2a2622';
+  hopChon.style.cssText = 'width:18px;height:18px;accent-color:var(--sd-chu,#2a2622)';
   o.doiCho = hopChon;
 
   const chu = document.createElement('span');
@@ -347,7 +347,7 @@ function veDoiChoTraiPhai(u) {
     canh.textContent =
       'Hai người này khác giới, mà sơ đồ luôn xếp nam bên trái, nữ bên phải. ' +
       'Đổi thì dữ liệu có đổi thật, nhưng hình sẽ đứng nguyên như cũ.';
-    canh.style.cssText = 'font-size:11px;line-height:1.45;color:#8a8078;margin-top:4px';
+    canh.style.cssText = 'font-size:11px;line-height:1.45;color:var(--sd-chu-phu,#8a8078);margin-top:4px';
     boc.append(canh);
   }
 

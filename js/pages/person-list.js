@@ -5,7 +5,7 @@
 //            + MÀN HÌNH THÙNG RÁC — đường quay lại của người và cặp đã xoá
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, domains/person, domains/union, utils/text, config
-// Phiên bản: 1.7.0 · Cập nhật: 22/08/2026 20:10
+// Phiên bản: 1.7.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
 // ============================================================
 //
 // --- Vì sao màn hình này phải có (bước 24) ------------------------------
@@ -221,7 +221,7 @@ function moManHinh(che, xuLy) {
     'position:fixed;inset:0;background:rgba(42,38,34,.35);z-index:30;' +
     'display:flex;align-items:center;justify-content:center;' +
     'padding:' + leLopPhu() + ';' +
-    'font-family:system-ui,sans-serif;color:#2a2622';
+    'font-family:system-ui,sans-serif;color:var(--sd-chu,#2a2622)';
 
   // Cột dọc, phần đầu đứng yên và chỉ phần danh sách cuộn: gõ thêm một chữ mà
   // ô tìm trôi mất khỏi màn hình thì không sửa lại chữ vừa gõ được.
@@ -234,7 +234,7 @@ function moManHinh(che, xuLy) {
   const hop = document.createElement('div');
   hop.id = 'giapha-danh-sach';
   hop.style.cssText =
-    'background:#fffdf9;border-radius:14px;padding:18px;box-sizing:border-box;' +
+    'background:var(--sd-giay,#fffdf9);border-radius:14px;padding:18px;box-sizing:border-box;' +
     'width:100%;max-width:' + rongHop(420, 680) + ';' +
     'height:' + caoHop(82) + ';display:flex;flex-direction:column;' +
     'box-shadow:0 8px 32px rgba(42,38,34,.28)';
@@ -256,7 +256,7 @@ function moManHinh(che, xuLy) {
   // bấm một cái tên và ngạc nhiên vì hồ sơ không mở ra.
   khoiNhac = document.createElement('div');
   khoiNhac.style.cssText =
-    'font-size:13px;line-height:1.5;color:#8a8078;margin-top:4px;flex:0 0 auto';
+    'font-size:13px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:4px;flex:0 0 auto';
   veLaiNhac();
   const nhac = khoiNhac;
 
@@ -278,19 +278,19 @@ function moManHinh(che, xuLy) {
     oTim.style.cssText =
       'margin-top:12px;flex:0 0 auto;width:100%;box-sizing:border-box;height:44px;' +
       'padding:0 12px;font-size:16px;font-family:inherit;color:inherit;' +
-      'border:1px solid #e6e0d8;border-radius:9px;background:#fff';
+      'border:1px solid var(--sd-vien,#e6e0d8);border-radius:9px;background:var(--sd-giay,#fff)';
     oTim.addEventListener('input', veLaiDanhSach);
     oTim.addEventListener('keydown', (e) => { if (e.key === 'Enter') moDongDuyNhat(); });
     hop.append(oTim);
   }
 
   khoiDem = document.createElement('div');
-  khoiDem.style.cssText = 'font-size:12px;color:#8a8078;margin:8px 0 6px;flex:0 0 auto';
+  khoiDem.style.cssText = 'font-size:12px;color:var(--sd-chu-phu,#8a8078);margin:8px 0 6px;flex:0 0 auto';
 
   khoiDong = document.createElement('div');
   khoiDong.style.cssText =
     'flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;' +
-    'border-top:1px solid #f0ece5';
+    'border-top:1px solid var(--sd-vien-nhat,#f0ece5)';
 
   hop.append(khoiDem, khoiDong, veChan(laThungRac, laChonNguoi || laGiaDinh));
 
@@ -512,8 +512,8 @@ function nutChan(chu, chay, nguyHiem) {
     'max-width:' + RONG_NUT_TOI_DA + ';' +
     'border-radius:9px;cursor:pointer;touch-action:manipulation;' +
     (nguyHiem
-      ? 'color:#8a3a2a;background:#fbf0ec;border:1px solid #f0d8d0;font-weight:600'
-      : 'color:inherit;background:#faf8f5;border:1px solid #e6e0d8');
+      ? 'color:var(--sd-do,#8a3a2a);background:var(--sd-do-nen,#fbf0ec);border:1px solid var(--sd-do-vien,#f0d8d0);font-weight:600'
+      : 'color:inherit;background:var(--sd-nen,#faf8f5);border:1px solid var(--sd-vien,#e6e0d8)');
   nut.addEventListener('click', chay);
   return nut;
 }
@@ -592,7 +592,7 @@ function veLaiDanhSach() {
     const them = document.createElement('div');
     them.textContent =
       'Còn ' + kq.conThua + ' người nữa chưa hiện — gõ thêm chữ để thu hẹp.';
-    them.style.cssText = 'padding:10px 4px;font-size:12px;color:#8a8078';
+    them.style.cssText = 'padding:10px 4px;font-size:12px;color:var(--sd-chu-phu,#8a8078)';
     khoiDong.append(them);
   }
 
@@ -648,13 +648,13 @@ function veDongGiaDinh(u) {
   nut.setAttribute('data-ma', u.id);
   nut.style.cssText =
     'display:block;width:100%;text-align:left;padding:10px 8px;background:none;' +
-    'border:none;border-bottom:1px solid #f0ece5;font-family:inherit;color:inherit;' +
+    'border:none;border-bottom:1px solid var(--sd-vien-nhat,#f0ece5);font-family:inherit;color:inherit;' +
     'cursor:pointer;touch-action:manipulation';
 
   const hang1 = document.createElement('div');
   hang1.textContent = tenCap.length > 0 ? tenCap.join('  và  ') : '(gia đình chưa có ai)';
   hang1.style.cssText = 'font-size:15px;font-weight:600' +
-    (tenCap.length > 0 ? '' : ';color:#8a8078;font-style:italic');
+    (tenCap.length > 0 ? '' : ';color:var(--sd-chu-phu,#8a8078);font-style:italic');
   nut.append(hang1);
 
   const soCon = (Array.isArray(u.children) ? u.children : [])
@@ -671,7 +671,7 @@ function veDongGiaDinh(u) {
 
   const hang2 = document.createElement('div');
   hang2.textContent = phu;
-  hang2.style.cssText = 'font-size:13px;color:#8a8078;margin-top:2px';
+  hang2.style.cssText = 'font-size:13px;color:var(--sd-chu-phu,#8a8078);margin-top:2px';
   nut.append(hang2);
 
   nut.addEventListener('click', () => {
@@ -779,7 +779,7 @@ function veDongChonTatCa(tong) {
   nut.dataset.viec = 'chon-tat-ca';
   nut.style.cssText =
     'display:flex;align-items:center;gap:9px;width:100%;text-align:left;' +
-    'padding:10px 8px;background:none;border:none;border-bottom:1px solid #f0ece5;' +
+    'padding:10px 8px;background:none;border:none;border-bottom:1px solid var(--sd-vien-nhat,#f0ece5);' +
     'font-family:inherit;color:inherit;font-size:13px;cursor:pointer;' +
     'touch-action:manipulation';
   nut.append(oDanhDau(het), chuTrong(het ? 'Bỏ chọn tất cả' : 'Chọn tất cả'));
@@ -814,8 +814,8 @@ function oDanhDau(dangChon) {
     'flex:0 0 auto;width:20px;height:20px;line-height:19px;text-align:center;' +
     'font-size:13px;border-radius:5px;' +
     (dangChon
-      ? 'background:#2a2622;color:#fffdf9;border:1px solid #2a2622'
-      : 'background:#fff;border:1px solid #d8d2c8');
+      ? 'background:var(--sd-nut,#2a2622);color:var(--sd-nut-chu,#fffdf9);border:1px solid var(--sd-nut,#2a2622)'
+      : 'background:var(--sd-giay,#fff);border:1px solid var(--sd-vien,#d8d2c8)');
   return o;
 }
 
@@ -830,7 +830,7 @@ function nhanNhom(chu) {
   d.textContent = chu;
   d.style.cssText =
     'padding:12px 4px 6px;font-size:12px;font-weight:600;letter-spacing:.04em;' +
-    'color:#8a8078';
+    'color:var(--sd-chu-phu,#8a8078)';
   return d;
 }
 
@@ -901,9 +901,9 @@ function veDongTrong(ma, hangTren, hangDuoi, coTen) {
   nut.setAttribute('aria-pressed', dangChon ? 'true' : 'false');
   nut.style.cssText =
     'display:flex;align-items:center;gap:9px;width:100%;text-align:left;' +
-    'padding:10px 8px;border:none;border-bottom:1px solid #f0ece5;' +
+    'padding:10px 8px;border:none;border-bottom:1px solid var(--sd-vien-nhat,#f0ece5);' +
     'font-family:inherit;color:inherit;cursor:pointer;touch-action:manipulation;' +
-    'background:' + (dangChon ? '#f5f1ea' : 'none');
+    'background:' + (dangChon ? 'var(--sd-nen-nhat,#f5f1ea)' : 'none');
 
   const khoi = document.createElement('div');
   khoi.style.cssText = 'flex:1 1 auto;min-width:0';
@@ -911,11 +911,11 @@ function veDongTrong(ma, hangTren, hangDuoi, coTen) {
   const t = document.createElement('div');
   t.textContent = hangTren;
   t.style.cssText = 'font-size:15px;font-weight:600;' +
-    (coTen ? '' : 'color:#8a8078;font-style:italic');
+    (coTen ? '' : 'color:var(--sd-chu-phu,#8a8078);font-style:italic');
 
   const d = document.createElement('div');
   d.textContent = hangDuoi;
-  d.style.cssText = 'margin-top:2px;font-size:12px;color:#8a8078';
+  d.style.cssText = 'margin-top:2px;font-size:12px;color:var(--sd-chu-phu,#8a8078)';
 
   khoi.append(t, d);
   nut.append(oDanhDau(dangChon), khoi);
@@ -968,7 +968,7 @@ function veMotDong(muc) {
   nut.setAttribute('data-ma', muc.id);
   nut.style.cssText =
     'display:block;width:100%;text-align:left;padding:10px 8px;background:none;' +
-    'border:none;border-bottom:1px solid #f0ece5;font-family:inherit;color:inherit;' +
+    'border:none;border-bottom:1px solid var(--sd-vien-nhat,#f0ece5);font-family:inherit;color:inherit;' +
     'cursor:pointer;touch-action:manipulation';
 
   const hang1 = document.createElement('div');
@@ -979,14 +979,14 @@ function veMotDong(muc) {
   ten.textContent = coTen ? muc.ten : '(chưa có tên)';
   ten.style.cssText =
     'flex:1 1 auto;font-size:15px;font-weight:600;' +
-    (coTen ? '' : 'color:#8a8078;font-style:italic');
+    (coTen ? '' : 'color:var(--sd-chu-phu,#8a8078);font-style:italic');
   hang1.append(ten);
 
   // Trường trống thì KHÔNG vẽ hàng đó — không ghi "không rõ", không hiện "…".
   if (muc.doiSong !== '') {
     const doi = document.createElement('span');
     doi.textContent = muc.doiSong;
-    doi.style.cssText = 'flex:0 0 auto;font-size:13px;color:#8a8078';
+    doi.style.cssText = 'flex:0 0 auto;font-size:13px;color:var(--sd-chu-phu,#8a8078)';
     hang1.append(doi);
   }
 
@@ -996,7 +996,7 @@ function veMotDong(muc) {
 
   const hang2 = document.createElement('div');
   hang2.textContent = manh.join('  ·  ');
-  hang2.style.cssText = 'margin-top:2px;font-size:12px;color:#8a8078';
+  hang2.style.cssText = 'margin-top:2px;font-size:12px;color:var(--sd-chu-phu,#8a8078)';
 
   nut.append(hang1, hang2);
   nut.addEventListener('click', () => chonMotNguoi(muc.id));
@@ -1048,7 +1048,7 @@ function loiNhan(tieuDe, giaiThich) {
 
   const p = document.createElement('div');
   p.textContent = giaiThich;
-  p.style.cssText = 'font-size:13px;color:#8a8078';
+  p.style.cssText = 'font-size:13px;color:var(--sd-chu-phu,#8a8078)';
 
   hop.append(h, p);
   return hop;

@@ -40,8 +40,11 @@
        không thì trình duyệt/CDN có thể phục vụ bản cũ đã cache (b122d,
        chủ dự án báo "chưa thấy đổi gì" dù đã đẩy lên GitHub). -->
   <link rel="stylesheet" href="quan-tri.css?v=1.1.9">
-  <!-- Tông màu — KHÔNG có trong quantri3. Nạp SAU quan-tri.css để đè biến. -->
-  <link rel="stylesheet" href="phoi-mau.css?v=1.0.0">
+  <!-- Tông màu — KHÔNG có trong quantri3. Nạp SAU quan-tri.css để đè biến:
+       tong-mau.css = mười khối biến (dùng chung với trang sơ đồ),
+       phoi-mau.css = luật đè riêng trang này + nút chọn. -->
+  <link rel="stylesheet" href="tong-mau.css?v=1.0.0">
+  <link rel="stylesheet" href="phoi-mau.css?v=1.1.0">
   <!-- Đặt tông đã chọn TRƯỚC khi vẽ, để trang không loé màu mặc định rồi mới
        đổi. Chỉ nhận chữ thường + gạch nối; tên lạ vẫn vô hại (phoi-mau.css có
        giá trị dự phòng ở `:root`), và phoi-mau.js gỡ nó đi khi khung dựng xong. -->

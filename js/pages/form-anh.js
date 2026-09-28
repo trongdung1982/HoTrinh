@@ -5,8 +5,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: pages/person-edit.js (nền dùng chung), state, domains/{media,render},
 //            services/repo, utils/{date,image,avatar,id}, config
-// Phiên bản: 1.2.0 · Cập nhật: 28/09/2026 07:00 (b141) — tải ảnh qua
-//            `repo.taiAnh(blob)`, thôi qua giàn giáo `tuong-thich`
+// Phiên bản: 1.2.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 5 của
@@ -187,7 +186,7 @@ function veLaiKhoiAnh(nguoi) {
   if (khoAnh.length > 0) khoi.append(veDaiAnh(nguoi));
 
   const loi = document.createElement('div');
-  loi.style.cssText = 'font-size:12px;line-height:1.5;color:#8a8078;margin-top:8px';
+  loi.style.cssText = 'font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:8px';
   loi.textContent = moTaTrangThaiAnh(nguoi);
   khoi.append(loi);
 }
@@ -209,7 +208,7 @@ function veXemTruocAnh(nguoi) {
   const boc = document.createElement('div');
   boc.style.cssText =
     'flex:0 0 auto;width:' + co + 'px;height:' + co + 'px;border-radius:50%;' +
-    'overflow:hidden;box-shadow:0 0 0 1.5px #fff, 0 0 0 3px ' + mauVien(nguoi) + '55;' +
+    'overflow:hidden;box-shadow:0 0 0 1.5px var(--sd-giay,#fff), 0 0 0 3px ' + mauVien(nguoi) + '55;' +
     'opacity:' + (anhDangTai ? '0.5' : '1');
 
   const im = document.createElement('img');
@@ -252,7 +251,7 @@ function veDaiAnh(nguoi) {
 
   const nhan = document.createElement('div');
   nhan.textContent = 'Kho ảnh (' + khoAnh.filter((a) => !a.boDi).length + ')';
-  nhan.style.cssText = 'font-size:12px;font-weight:600;color:#8a8078;margin-bottom:6px';
+  nhan.style.cssText = 'font-size:12px;font-weight:600;color:var(--sd-chu-phu,#8a8078);margin-bottom:6px';
   boc.append(nhan);
 
   const dai = document.createElement('div');
@@ -279,8 +278,8 @@ function veTamAnh(muc, nguoi) {
   nut.style.cssText =
     'position:relative;width:' + co + 'px;height:' + co + 'px;padding:0;' +
     'border-radius:10px;overflow:hidden;cursor:pointer;touch-action:manipulation;' +
-    'background:#faf8f5;' +
-    'border:2px solid ' + (laDD ? mauVien(nguoi) : (laXet ? '#8a8078' : '#e6e0d8')) + ';' +
+    'background:var(--sd-nen,#faf8f5);' +
+    'border:2px solid ' + (laDD ? mauVien(nguoi) : (laXet ? 'var(--sd-vien-dam,#8a8078)' : 'var(--sd-vien,#e6e0d8)')) + ';' +
     'opacity:' + (muc.boDi ? '.35' : '1') + ';';
 
   const im = document.createElement('img');
@@ -293,7 +292,7 @@ function veTamAnh(muc, nguoi) {
   // Dấu hiệu đọc được KHÔNG CẦN MÀU: người phân biệt màu kém vẫn phải thấy tấm
   // nào đang làm mặt. Viền màu một mình thì không đủ.
   if (laDD) nut.append(dauGocAnh('✓', mauVien(nguoi)));
-  if (muc.boDi) nut.append(dauGocAnh('✕', '#8a3a2a'));
+  if (muc.boDi) nut.append(dauGocAnh('✕', 'var(--sd-do-dac,#8a3a2a)'));
 
   nut.addEventListener('click', () => {
     anhDangXet = (anhDangXet === muc.khoa) ? '' : muc.khoa;
@@ -308,7 +307,7 @@ function dauGocAnh(chu, mau) {
   d.style.cssText =
     'position:absolute;left:0;bottom:0;min-width:18px;height:18px;' +
     'display:flex;align-items:center;justify-content:center;font-size:12px;' +
-    'color:#fffdf9;background:' + mau + ';border-radius:0 8px 0 8px';
+    'color:var(--sd-nut-chu,#fffdf9);background:' + mau + ';border-radius:0 8px 0 8px';
   return d;
 }
 
@@ -324,7 +323,7 @@ function veHangNutAnh(muc, nguoi) {
   const hang = document.createElement('div');
   hang.style.cssText =
     'display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;padding:10px;' +
-    'background:#faf8f5;border-radius:10px';
+    'background:var(--sd-nen,#faf8f5);border-radius:10px';
 
   const batDuoc = suaDuoc() && !anhDangTai && !N.dangLuu;
 
@@ -366,8 +365,8 @@ function nutNhoAnh(chu, batDuoc, laDo, chay) {
   b.disabled = !batDuoc;
   b.style.cssText =
     'min-height:40px;padding:0 12px;font-size:13px;font-family:inherit;' +
-    'border-radius:9px;border:1px solid #e6e0d8;background:#fffdf9;' +
-    'color:' + (laDo ? '#8a3a2a' : '#2a2622') + ';' +
+    'border-radius:9px;border:1px solid var(--sd-vien,#e6e0d8);background:var(--sd-giay,#fffdf9);' +
+    'color:' + (laDo ? 'var(--sd-do,#8a3a2a)' : 'var(--sd-chu,#2a2622)') + ';' +
     'cursor:' + (batDuoc ? 'pointer' : 'not-allowed') + ';' +
     'opacity:' + (batDuoc ? '1' : '.45') + ';touch-action:manipulation';
   if (batDuoc) b.addEventListener('click', chay);
@@ -384,8 +383,8 @@ function nutChonAnh(nguoi) {
   const nhan = document.createElement('label');
   nhan.style.cssText =
     'display:block;min-height:40px;padding:10px 12px;box-sizing:border-box;' +
-    'font-size:14px;text-align:center;border-radius:9px;border:1px solid #e6e0d8;' +
-    'background:#faf8f5;line-height:1.3;max-width:' + RONG_NUT_TOI_DA + ';' +
+    'font-size:14px;text-align:center;border-radius:9px;border:1px solid var(--sd-vien,#e6e0d8);' +
+    'background:var(--sd-nen,#faf8f5);line-height:1.3;max-width:' + RONG_NUT_TOI_DA + ';' +
     'cursor:' + (batDuoc ? 'pointer' : 'not-allowed') + ';' +
     'opacity:' + (batDuoc ? '1' : '0.45');
   nhan.textContent = anhDangTai
@@ -413,7 +412,7 @@ function nutBoAnh(nguoi) {
   b.disabled = anhDangTai || N.dangLuu;
   b.style.cssText =
     'min-height:36px;padding:7px 12px;font-size:13px;font-family:inherit;' +
-    'border-radius:9px;border:1px solid #e6e0d8;background:#fffdf9;color:#8a3a2a;' +
+    'border-radius:9px;border:1px solid var(--sd-vien,#e6e0d8);background:var(--sd-giay,#fffdf9);color:var(--sd-do,#8a3a2a);' +
     'cursor:pointer;touch-action:manipulation;max-width:' + RONG_NUT_TOI_DA + ';';
   b.addEventListener('click', () => {
     anhDaiDienKhoa = '';

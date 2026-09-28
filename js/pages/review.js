@@ -4,7 +4,7 @@
 //            mỗi dòng dẫn thẳng tới việc sửa được nó
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, domains/validate, utils/text, config
-// Phiên bản: 1.3.0 · Cập nhật: 27/08/2026 23:30
+// Phiên bản: 1.3.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
 // ============================================================
 //
 // --- Vì sao màn hình này phải có, và vì sao nó KHÔNG quay lại Cài đặt ----
@@ -156,7 +156,7 @@ export function openReview(xuLy = {}) {
     'position:fixed;inset:0;background:rgba(42,38,34,.35);z-index:30;' +
     'display:flex;align-items:center;justify-content:center;' +
     'padding:' + leLopPhu() + ';' +
-    'font-family:system-ui,sans-serif;color:#2a2622';
+    'font-family:system-ui,sans-serif;color:var(--sd-chu,#2a2622)';
 
   // Cùng khuôn với Danh sách người: phần đầu đứng yên, chỉ phần danh sách
   // cuộn. `height` chốt cứng chứ không `max-height` — bấm "Rà lại" mà hộp cao
@@ -164,7 +164,7 @@ export function openReview(xuLy = {}) {
   const hop = document.createElement('div');
   hop.id = 'giapha-ra-soat';
   hop.style.cssText =
-    'background:#fffdf9;border-radius:14px;padding:18px;box-sizing:border-box;' +
+    'background:var(--sd-giay,#fffdf9);border-radius:14px;padding:18px;box-sizing:border-box;' +
     'width:100%;max-width:' + rongHop(420, 680) + ';' +
     'height:' + caoHop(82) + ';display:flex;flex-direction:column;' +
     'box-shadow:0 8px 32px rgba(42,38,34,.28)';
@@ -177,12 +177,12 @@ export function openReview(xuLy = {}) {
   nhac.id = 'giapha-ra-soat-nhac';
   nhac.textContent = LOI_NHAC_XEM;
   nhac.style.cssText =
-    'font-size:13px;line-height:1.5;color:#8a8078;margin-top:4px;flex:0 0 auto';
+    'font-size:13px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:4px;flex:0 0 auto';
 
   khoiTomTat = document.createElement('div');
   khoiTomTat.style.cssText =
-    'margin-top:12px;flex:0 0 auto;font-size:13px;line-height:1.6;color:#5a534c;' +
-    'background:#faf8f5;border:1px solid #e6e0d8;border-radius:9px;padding:10px 12px';
+    'margin-top:12px;flex:0 0 auto;font-size:13px;line-height:1.6;color:var(--sd-chu-vua,#5a534c);' +
+    'background:var(--sd-nen,#faf8f5);border:1px solid var(--sd-vien,#e6e0d8);border-radius:9px;padding:10px 12px';
 
   khoiDong = document.createElement('div');
   khoiDong.style.cssText = 'flex:1 1 auto;overflow-y:auto;margin-top:10px';
@@ -359,7 +359,7 @@ function veDongChonTatCa(rac) {
   nut.dataset.viec = 'chon-tat-ca';
   nut.style.cssText =
     'display:flex;align-items:center;gap:9px;width:100%;text-align:left;' +
-    'padding:10px 8px;background:none;border:none;border-bottom:1px solid #f0ece5;' +
+    'padding:10px 8px;background:none;border:none;border-bottom:1px solid var(--sd-vien-nhat,#f0ece5);' +
     'font-family:inherit;color:inherit;font-size:13px;cursor:pointer;' +
     'touch-action:manipulation';
   nut.append(oDanhDau(het), chuTrong(het ? 'Bỏ chọn tất cả' : 'Chọn tất cả'));
@@ -384,8 +384,8 @@ function oDanhDau(dangChon) {
     'flex:0 0 auto;width:20px;height:20px;line-height:19px;text-align:center;' +
     'font-size:13px;border-radius:5px;' +
     (dangChon
-      ? 'background:#2a2622;color:#fffdf9;border:1px solid #2a2622'
-      : 'background:#fff;border:1px solid #d8d2c8');
+      ? 'background:var(--sd-nut,#2a2622);color:var(--sd-nut-chu,#fffdf9);border:1px solid var(--sd-nut,#2a2622)'
+      : 'background:var(--sd-giay,#fff);border:1px solid var(--sd-vien,#d8d2c8)');
   return o;
 }
 
@@ -443,9 +443,9 @@ function veMotDong(muc, laCapTrung) {
   nut.type = 'button';
   nut.style.cssText =
     'display:flex;align-items:flex-start;gap:9px;width:100%;text-align:left;' +
-    'padding:10px 8px;border:none;border-bottom:1px solid #f0ece5;' +
+    'padding:10px 8px;border:none;border-bottom:1px solid var(--sd-vien-nhat,#f0ece5);' +
     'font-family:inherit;color:inherit;cursor:pointer;touch-action:manipulation;' +
-    'background:' + (chon ? '#f5f1ea' : 'none');
+    'background:' + (chon ? 'var(--sd-nen-nhat,#f5f1ea)' : 'none');
   if (ma) nut.setAttribute('data-ma', ma);
   nut.dataset.phep = muc.check || '';
   if (dangChonRac) nut.setAttribute('aria-pressed', chon ? 'true' : 'false');
@@ -461,11 +461,11 @@ function veMotDong(muc, laCapTrung) {
     : (coTen ? tenNguoi(muc.personId) : '(chưa có tên)') +
       (muc.personId ? '  ·  ' + muc.personId : '');
   t.style.cssText = 'font-size:15px;font-weight:600;' +
-    (laCap || coTen ? '' : 'color:#8a8078;font-style:italic');
+    (laCap || coTen ? '' : 'color:var(--sd-chu-phu,#8a8078);font-style:italic');
 
   const d = document.createElement('div');
   d.textContent = boTienToTen(muc.message, ma);
-  d.style.cssText = 'margin-top:2px;font-size:12px;line-height:1.5;color:#8a8078';
+  d.style.cssText = 'margin-top:2px;font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078)';
 
   khoi.append(t, d);
 
@@ -476,7 +476,7 @@ function veMotDong(muc, laCapTrung) {
     v.textContent = gopDuoc ? 'Bấm để gộp với cặp ' + ban
                   : laCap   ? 'Bấm để mở thẻ gia đình'
                             : 'Bấm để mở hồ sơ';
-    v.style.cssText = 'margin-top:4px;font-size:12px;color:#a89a86';
+    v.style.cssText = 'margin-top:4px;font-size:12px;color:var(--sd-chu-mo,#a89a86)';
     khoi.append(v);
   }
 
@@ -554,7 +554,7 @@ function nhanNhom(chu) {
   d.textContent = chu;
   d.style.cssText =
     'padding:12px 4px 6px;font-size:12px;font-weight:600;letter-spacing:.04em;' +
-    'color:#8a8078';
+    'color:var(--sd-chu-phu,#8a8078)';
   return d;
 }
 
@@ -563,7 +563,7 @@ function loiNhanNhom(chu) {
   const d = document.createElement('div');
   d.textContent = chu;
   d.style.cssText =
-    'padding:0 4px 8px;font-size:12px;line-height:1.5;color:#8a8078';
+    'padding:0 4px 8px;font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078)';
   return d;
 }
 
@@ -577,7 +577,7 @@ function loiNhan(dong1, dong2) {
 
   const b = document.createElement('div');
   b.textContent = dong2;
-  b.style.cssText = 'margin-top:6px;font-size:12px;line-height:1.6;color:#8a8078';
+  b.style.cssText = 'margin-top:6px;font-size:12px;line-height:1.6;color:var(--sd-chu-phu,#8a8078)';
 
   hop.append(a, b);
   return hop;
@@ -669,8 +669,8 @@ function nutChan(chu, chay, nhanManh) {
     'max-width:' + RONG_NUT_TOI_DA + ';' +
     'border-radius:9px;cursor:pointer;touch-action:manipulation;' +
     (nhanManh
-      ? 'color:#fffdf9;background:#2a2622;border:1px solid #2a2622;font-weight:600'
-      : 'color:inherit;background:#faf8f5;border:1px solid #e6e0d8');
+      ? 'color:var(--sd-nut-chu,#fffdf9);background:var(--sd-nut,#2a2622);border:1px solid var(--sd-nut,#2a2622);font-weight:600'
+      : 'color:inherit;background:var(--sd-nen,#faf8f5);border:1px solid var(--sd-vien,#e6e0d8)');
   nut.addEventListener('click', chay);
   return nut;
 }

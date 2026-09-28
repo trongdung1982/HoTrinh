@@ -5,7 +5,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: pages/person-edit.js (nền dùng chung), state,
 //            domains/{person,validate}, utils/{graph,date}
-// Phiên bản: 1.0.0 · Cập nhật: 27/08/2026 21:45
+// Phiên bản: 1.0.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 6 của
@@ -79,7 +79,7 @@ export function xoaNguoi(personId, xuLy = {}) {
 
   const ten = document.createElement('div');
   ten.textContent = tenNguoi(personId) + '  ·  ' + personId;
-  ten.style.cssText = 'font-size:12px;color:#b3aaa0;margin-top:3px;letter-spacing:.03em';
+  ten.style.cssText = 'font-size:12px;color:var(--sd-chu-mo,#b3aaa0);margin-top:3px;letter-spacing:.03em';
 
   hop.append(tieuDe, ten);
 

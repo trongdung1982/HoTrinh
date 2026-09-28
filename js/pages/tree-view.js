@@ -6,7 +6,7 @@
 //            utils/{text,glyph,graph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
 //            chon-gia-pha,import-export,export-image}
-// Phiên bản: 1.45.0 · Cập nhật: 28/09/2026 (b149) — nút Sao lưu sang QuanTri.html
+// Phiên bản: 1.45.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (nút Cũ/Mới · dâu/rể)
 // ============================================================
 //
@@ -152,7 +152,7 @@ export function mountTreeView(containerEl) {
   containerEl.innerHTML = '';
   containerEl.style.cssText =
     'position:absolute;inset:0;display:flex;flex-direction:column;' +
-    'background:#faf8f5;font-family:system-ui,sans-serif;color:#2a2622';
+    'background:var(--sd-nen,#faf8f5);font-family:system-ui,sans-serif;color:var(--sd-chu,#2a2622)';
 
   khungCuon = document.createElement('div');
   khungCuon.id = ID_KHUNG_IN;
@@ -824,8 +824,8 @@ function veHopNut() {
   nhanTyLe = document.createElement('div');
   nhanTyLe.textContent = Math.round(tyLe * 100) + '%';
   nhanTyLe.style.cssText =
-    'text-align:center;font-size:12px;color:#8a8078;background:#fffdf9;' +
-    'border:1px solid #e6e0d8;border-radius:8px;padding:3px 0;' +
+    'text-align:center;font-size:12px;color:var(--sd-chu-phu,#8a8078);background:var(--sd-giay,#fffdf9);' +
+    'border:1px solid var(--sd-vien,#e6e0d8);border-radius:8px;padding:3px 0;' +
     'font-family:system-ui,sans-serif;user-select:none';
 
   // Nút ⓘ là đường vào THỨ HAI của thẻ thông tin. Đường thứ nhất là chạm giữ
@@ -1366,8 +1366,8 @@ function nutTron(chu, nhan, chay) {
   nut.style.cssText =
     'width:' + CO_NUT_TRON + 'px;height:' + CO_NUT_TRON + 'px;' +
     'display:flex;align-items:center;justify-content:center;' +
-    'padding:0;box-sizing:border-box;color:#2a2622;' +
-    'border:1px solid #e6e0d8;border-radius:' + (CO_NUT_TRON / 2) + 'px;background:#fffdf9;' +
+    'padding:0;box-sizing:border-box;color:var(--sd-chu,#2a2622);' +
+    'border:1px solid var(--sd-vien,#e6e0d8);border-radius:' + (CO_NUT_TRON / 2) + 'px;background:var(--sd-giay,#fffdf9);' +
     'box-shadow:0 1px 4px rgba(42,38,34,.12);cursor:pointer;touch-action:manipulation';
 
   nut.append(veBieuTuongTron(chu));
@@ -1423,7 +1423,7 @@ function hienLoiNhan(tieuDe, giaiThich, nut) {
 
   const p = document.createElement('p');
   p.textContent = giaiThich;
-  p.style.cssText = 'margin:0;font-size:14px;color:#8a8078';
+  p.style.cssText = 'margin:0;font-size:14px;color:var(--sd-chu-phu,#8a8078)';
 
   hop.append(h, p);
 
@@ -1433,8 +1433,8 @@ function hienLoiNhan(tieuDe, giaiThich, nut) {
     b.textContent = nut.chu;
     b.style.cssText =
       'margin-top:18px;padding:10px 18px;font-size:15px;font-family:inherit;' +
-      'border:1px solid #2a2622;border-radius:8px;background:#2a2622;' +
-      'color:#fffdf9;font-weight:600;cursor:pointer';
+      'border:1px solid var(--sd-nut,#2a2622);border-radius:8px;background:var(--sd-nut,#2a2622);' +
+      'color:var(--sd-nut-chu,#fffdf9);font-weight:600;cursor:pointer';
     b.addEventListener('click', nut.bam);
     hop.append(b);
   }
@@ -1466,11 +1466,11 @@ function hienDanhSachChon(danhSachId) {
 
   const hop = document.createElement('div');
   hop.style.cssText =
-    'background:#fffdf9;border-radius:12px;padding:18px;box-sizing:border-box;' +
+    'background:var(--sd-giay,#fffdf9);border-radius:12px;padding:18px;box-sizing:border-box;' +
     'width:100%;max-width:' + rongHop(340, 520) + ';' +
     'max-height:' + caoHop(70, 24) + ';overflow:auto;' +
     'box-shadow:0 8px 32px rgba(42,38,34,.25);' +
-    'font-family:system-ui,sans-serif;color:#2a2622';
+    'font-family:system-ui,sans-serif;color:var(--sd-chu,#2a2622)';
 
   const h = document.createElement('div');
   h.textContent = 'Mở nhánh nào?';
@@ -1478,7 +1478,7 @@ function hienDanhSachChon(danhSachId) {
 
   const g = document.createElement('div');
   g.textContent = 'Chọn một người để đưa ra giữa sơ đồ.';
-  g.style.cssText = 'font-size:13px;color:#8a8078;margin-bottom:12px';
+  g.style.cssText = 'font-size:13px;color:var(--sd-chu-phu,#8a8078);margin-bottom:12px';
 
   hop.append(h, g);
 
@@ -1489,8 +1489,8 @@ function hienDanhSachChon(danhSachId) {
     nut.textContent = (p ? fullName(p) : id) + (doi ? '  ·  ' + doi : '');
     nut.style.cssText =
       'display:block;width:100%;text-align:left;margin-bottom:8px;padding:10px 12px;' +
-      'font-size:15px;font-family:inherit;border:1px solid #e6e0d8;border-radius:8px;' +
-      'background:#fff;cursor:pointer';
+      'font-size:15px;font-family:inherit;border:1px solid var(--sd-vien,#e6e0d8);border-radius:8px;' +
+      'background:var(--sd-giay,#fff);cursor:pointer';
     nut.addEventListener('click', () => { phu.remove(); setFocusPerson(id); });
     hop.append(nut);
   }
@@ -1499,7 +1499,7 @@ function hienDanhSachChon(danhSachId) {
   dong.textContent = 'Đóng';
   dong.style.cssText =
     'margin-top:4px;padding:8px 14px;font-size:14px;font-family:inherit;' +
-    'border:1px solid #e6e0d8;border-radius:8px;background:#faf8f5;cursor:pointer';
+    'border:1px solid var(--sd-vien,#e6e0d8);border-radius:8px;background:var(--sd-nen,#faf8f5);cursor:pointer';
   dong.addEventListener('click', () => phu.remove());
   hop.append(dong);
 
@@ -1777,13 +1777,13 @@ function veThanCot(tieuDe) {
   const than = document.createElement('div');
   than.style.cssText =
     'display:none;flex-direction:column;align-items:stretch;gap:6px;' +
-    'background:#fffdf9;border:1px solid #e6e0d8;border-radius:10px;padding:6px;' +
+    'background:var(--sd-giay,#fffdf9);border:1px solid var(--sd-vien,#e6e0d8);border-radius:10px;padding:6px;' +
     'box-shadow:0 2px 8px rgba(42,38,34,.16)';
 
   const nhan = document.createElement('div');
   nhan.textContent = tieuDe;
   nhan.style.cssText =
-    'font-size:11px;font-weight:600;letter-spacing:.04em;color:#8a8078;' +
+    'font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--sd-chu-phu,#8a8078);' +
     'text-align:center;user-select:none';
   than.append(nhan);
   return than;
@@ -1804,7 +1804,7 @@ function nutChu(chu, nhan, chay) {
   nut.style.cssText =
     'width:132px;height:36px;font-size:12.5px;line-height:1;' +
     'font-family:system-ui,sans-serif;' +
-    'border:1px solid #e6e0d8;border-radius:8px;' +
+    'border:1px solid var(--sd-vien,#e6e0d8);border-radius:8px;' +
     'box-shadow:0 1px 4px rgba(42,38,34,.12);cursor:pointer;' +
     'touch-action:manipulation;white-space:nowrap';
   datVeChon(nut, false);
@@ -1837,7 +1837,7 @@ function veHangNhapTay(nhan, apDung) {
   ghi.textContent = 'Hoặc nhập số đời';
   ghi.title = nhan;
   ghi.style.cssText =
-    'font-size:11px;color:#8a8078;text-align:center;user-select:none;margin-top:2px';
+    'font-size:11px;color:var(--sd-chu-phu,#8a8078);text-align:center;user-select:none;margin-top:2px';
 
   const hang = document.createElement('div');
   hang.style.cssText = 'display:flex;align-items:center;gap:6px;width:132px';
@@ -1852,7 +1852,7 @@ function veHangNhapTay(nhan, apDung) {
   o.style.cssText =
     'width:64px;height:36px;box-sizing:border-box;padding:0 6px;' +
     'font-size:12.5px;line-height:1;font-family:system-ui,sans-serif;text-align:center;' +
-    'border:1px solid #e6e0d8;border-radius:8px;background:#fffdf9;color:#2a2622';
+    'border:1px solid var(--sd-vien,#e6e0d8);border-radius:8px;background:var(--sd-giay,#fffdf9);color:var(--sd-chu,#2a2622)';
 
   const nut = nutChu('Vẽ', nhan, () => {
     const soDoi = docSoDoi(o);
@@ -1889,7 +1889,7 @@ function docSoDoi(o) {
 
 /** Nút đang chọn: đảo màu. Tương phản mạnh để đọc được cả trên ảnh chụp. */
 function datVeChon(nut, dangChon) {
-  nut.style.background = dangChon ? '#2a2622' : '#fffdf9';
-  nut.style.color      = dangChon ? '#fffdf9' : '#2a2622';
+  nut.style.background = dangChon ? 'var(--sd-nut,#2a2622)' : 'var(--sd-giay,#fffdf9)';
+  nut.style.color      = dangChon ? 'var(--sd-nut-chu,#fffdf9)' : 'var(--sd-chu,#2a2622)';
   nut.style.fontWeight = dangChon ? '600' : '400';
 }

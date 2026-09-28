@@ -4,7 +4,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, pages/form-ghep-doi, domains/{gedcom,excel}, services/{sb,repo},
 //            utils/{date,text}, config
-// Phiên bản: 1.9.0 · Cập nhật: 28/09/2026 22:23
+// Phiên bản: 1.9.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
 // Sổ tay   : so-tay/luu-du-lieu.md (Kho mã)
 // ============================================================
 //
@@ -60,12 +60,12 @@ export function openXuatGedcom() {
     'position:fixed;inset:0;background:rgba(42,38,34,.35);z-index:30;' +
     'display:flex;align-items:center;justify-content:center;' +
     'padding:' + leLopPhu() + ';' +
-    'font-family:system-ui,sans-serif;color:#2a2622';
+    'font-family:system-ui,sans-serif;color:var(--sd-chu,#2a2622)';
 
   const hop = document.createElement('div');
   hop.id = 'giapha-xuat-gedcom';
   hop.style.cssText =
-    'background:#fffdf9;border-radius:14px;padding:18px;box-sizing:border-box;' +
+    'background:var(--sd-giay,#fffdf9);border-radius:14px;padding:18px;box-sizing:border-box;' +
     'width:100%;max-width:' + rongHop(380, 600) + ';' +
     'max-height:' + caoHop(82) + ';overflow:auto;' +
     'box-shadow:0 8px 32px rgba(42,38,34,.28);' +
@@ -82,7 +82,7 @@ export function openXuatGedcom() {
     'Xuất ra một file .ged là để mang gia phả này sang nơi khác — hoặc ' +
     'giữ một bản ngoài Google Drive.';
   moDau.style.cssText =
-    'font-size:13px;line-height:1.55;color:#8a8078;margin-top:8px';
+    'font-size:13px;line-height:1.55;color:var(--sd-chu-phu,#8a8078);margin-top:8px';
   hop.append(moDau);
 
   // --- Cảnh báo: bản đang cầm trong tay đã bị máy chủ lược bớt -----------
@@ -101,14 +101,14 @@ export function openXuatGedcom() {
   const nhan = document.createElement('label');
   nhan.style.cssText =
     'display:flex;align-items:center;gap:9px;margin-top:16px;padding:9px 11px;' +
-    'border:1px solid #e6e0d8;border-radius:9px;background:#faf8f5;' +
+    'border:1px solid var(--sd-vien,#e6e0d8);border-radius:9px;background:var(--sd-nen,#faf8f5);' +
     'font-size:14px;cursor:pointer;touch-action:manipulation';
 
   const hopChon = document.createElement('input');
   hopChon.type = 'checkbox';
   hopChon.id = 'giapha-ct-an-con-song';
   hopChon.checked = true;
-  hopChon.style.cssText = 'width:18px;height:18px;accent-color:#2a2622';
+  hopChon.style.cssText = 'width:18px;height:18px;accent-color:var(--sd-chu,#2a2622)';
 
   const chu = document.createElement('span');
   chu.textContent = 'Ẩn chi tiết người còn sống';
@@ -117,14 +117,14 @@ export function openXuatGedcom() {
 
   const giaiThichAn = document.createElement('div');
   giaiThichAn.style.cssText =
-    'font-size:12px;line-height:1.5;color:#8a8078;margin-top:6px';
+    'font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:6px';
   hop.append(giaiThichAn);
 
   // --- Sẽ xuất bao nhiêu, nói TRƯỚC khi bấm -----------------------------
   const tomTat = document.createElement('div');
   tomTat.style.cssText =
-    'margin-top:12px;padding:10px 12px;border:1px solid #e6e0d8;' +
-    'border-radius:9px;background:#faf8f5;font-size:13px;line-height:1.6';
+    'margin-top:12px;padding:10px 12px;border:1px solid var(--sd-vien,#e6e0d8);' +
+    'border-radius:9px;background:var(--sd-nen,#faf8f5);font-size:13px;line-height:1.6';
   hop.append(tomTat);
 
   function veLaiTomTat() {
@@ -161,7 +161,7 @@ export function openXuatGedcom() {
   dong.style.cssText =
     'margin:18px auto 0;display:block;width:100%;height:42px;' +
     'max-width:' + RONG_NUT_TOI_DA + ';font-size:14px;font-family:inherit;' +
-    'border:1px solid #e6e0d8;border-radius:9px;background:#faf8f5;cursor:pointer;' +
+    'border:1px solid var(--sd-vien,#e6e0d8);border-radius:9px;background:var(--sd-nen,#faf8f5);cursor:pointer;' +
     'touch-action:manipulation';
   dong.addEventListener('click', () => closeXuatGedcom());
   hop.append(dong);
@@ -211,7 +211,7 @@ function taoFile(anNguoiConSong) {
                       Math.max(1, Math.round(blob.size / 1024)) + ' KB';
   doLon.style.cssText =
     'font-size:13px;line-height:1.6;word-break:break-all;' +
-    'padding:9px 11px;border:1px solid #e6e0d8;border-radius:8px;background:#faf8f5';
+    'padding:9px 11px;border:1px solid var(--sd-vien,#e6e0d8);border-radius:8px;background:var(--sd-nen,#faf8f5)';
   hopKetQua.append(doLon);
 
   // --- Đường 1: nút tải về ---
@@ -222,8 +222,8 @@ function taoFile(anNguoiConSong) {
   tai.style.cssText =
     'display:block;width:100%;min-height:42px;margin-top:10px;padding:11px 14px;' +
     'box-sizing:border-box;text-align:center;text-decoration:none;font-size:14px;' +
-    'font-weight:600;border-radius:9px;background:#2a2622;color:#fffdf9;' +
-    'border:1px solid #2a2622;touch-action:manipulation';
+    'font-weight:600;border-radius:9px;background:var(--sd-nut,#2a2622);color:var(--sd-nut-chu,#fffdf9);' +
+    'border:1px solid var(--sd-nut,#2a2622);touch-action:manipulation';
   hopKetQua.append(tai);
 
   // --- Đường 2: chép tay, LUÔN hiện, xem ghi chú đầu file ---
@@ -261,14 +261,14 @@ function veChepTay(chuoi, ten) {
   moRa.textContent = 'Không tải được file?';
   moRa.style.cssText =
     'display:block;width:100%;padding:9px 4px;font-size:13px;font-family:inherit;' +
-    'color:#8a8078;background:none;border:0;text-align:left;cursor:pointer;' +
+    'color:var(--sd-chu-phu,#8a8078);background:none;border:0;text-align:left;cursor:pointer;' +
     'text-decoration:underline;text-underline-offset:3px;touch-action:manipulation';
 
   const ruot = document.createElement('div');
   ruot.hidden = true;
 
   const buoc = document.createElement('div');
-  buoc.style.cssText = 'font-size:13px;line-height:1.7;color:#8a8078';
+  buoc.style.cssText = 'font-size:13px;line-height:1.7;color:var(--sd-chu-phu,#8a8078)';
   buoc.append(
     dongChu('1. Bấm nút "Chép toàn bộ nội dung" bên dưới.'),
     dongChu('2. Mở Notepad (bấm nút Start, gõ chữ notepad, bấm Enter).'),
@@ -285,12 +285,12 @@ function veChepTay(chuoi, ten) {
   o.style.cssText =
     'width:100%;height:120px;margin-top:10px;box-sizing:border-box;padding:8px;' +
     'font-family:ui-monospace,Consolas,monospace;font-size:11px;line-height:1.4;' +
-    'border:1px solid #e6e0d8;border-radius:8px;background:#faf8f5;color:#2a2622;' +
+    'border:1px solid var(--sd-vien,#e6e0d8);border-radius:8px;background:var(--sd-nen,#faf8f5);color:var(--sd-chu,#2a2622);' +
     'white-space:pre;resize:vertical';
   ruot.append(o);
 
   const bao = document.createElement('div');
-  bao.style.cssText = 'font-size:12px;line-height:1.5;color:#8a8078;margin-top:6px';
+  bao.style.cssText = 'font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:6px';
 
   const b = nut('Chép toàn bộ nội dung', false, async () => {
     o.focus();
@@ -404,12 +404,12 @@ export function openNhapGedcom() {
     'position:fixed;inset:0;background:rgba(42,38,34,.35);z-index:30;' +
     'display:flex;align-items:center;justify-content:center;' +
     'padding:' + leLopPhu() + ';' +
-    'font-family:system-ui,sans-serif;color:#2a2622';
+    'font-family:system-ui,sans-serif;color:var(--sd-chu,#2a2622)';
 
   const hop = document.createElement('div');
   hop.id = 'giapha-nhap-gedcom';
   hop.style.cssText =
-    'background:#fffdf9;border-radius:14px;padding:18px;box-sizing:border-box;' +
+    'background:var(--sd-giay,#fffdf9);border-radius:14px;padding:18px;box-sizing:border-box;' +
     'width:100%;max-width:' + rongHop(380, 600) + ';' +
     'max-height:' + caoHop(82) + ';overflow:auto;' +
     'box-shadow:0 8px 32px rgba(42,38,34,.28);' +
@@ -425,7 +425,7 @@ export function openNhapGedcom() {
     'Chọn một file .ged, hoặc một file Excel một bảng (.xlsx/.xlsb), để xem ' +
     'trước rồi lưu thành một gia phả mới.';
   moDau.style.cssText =
-    'font-size:13px;line-height:1.55;color:#8a8078;margin-top:8px';
+    'font-size:13px;line-height:1.55;color:var(--sd-chu-phu,#8a8078);margin-top:8px';
   hop.append(moDau);
 
   // --- Đường 1: chọn file -----------------------------------------------
@@ -441,8 +441,8 @@ export function openNhapGedcom() {
   oFile.id = 'giapha-o-chon-ged';
   oFile.style.cssText =
     'display:block;width:100%;margin-top:6px;padding:9px;box-sizing:border-box;' +
-    'font-size:13px;font-family:inherit;border:1px solid #e6e0d8;' +
-    'border-radius:9px;background:#faf8f5';
+    'font-size:13px;font-family:inherit;border:1px solid var(--sd-vien,#e6e0d8);' +
+    'border-radius:9px;background:var(--sd-nen,#faf8f5)';
   oFile.addEventListener('change', () => {
     const f = oFile.files && oFile.files[0];
     if (!f) return;
@@ -462,7 +462,7 @@ export function openNhapGedcom() {
   dong.style.cssText =
     'margin:18px auto 0;display:block;width:100%;height:42px;' +
     'max-width:' + RONG_NUT_TOI_DA + ';font-size:14px;font-family:inherit;' +
-    'border:1px solid #e6e0d8;border-radius:9px;background:#faf8f5;cursor:pointer;' +
+    'border:1px solid var(--sd-vien,#e6e0d8);border-radius:9px;background:var(--sd-nen,#faf8f5);cursor:pointer;' +
     'touch-action:manipulation';
   dong.addEventListener('click', () => closeNhapGedcom());
   hop.append(dong);
@@ -497,14 +497,14 @@ function veDanChu() {
   moRa.textContent = 'Không chọn được file?';
   moRa.style.cssText =
     'display:block;width:100%;padding:9px 4px;font-size:13px;font-family:inherit;' +
-    'color:#8a8078;background:none;border:0;text-align:left;cursor:pointer;' +
+    'color:var(--sd-chu-phu,#8a8078);background:none;border:0;text-align:left;cursor:pointer;' +
     'text-decoration:underline;text-underline-offset:3px;touch-action:manipulation';
 
   const ruot = document.createElement('div');
   ruot.hidden = true;
 
   const buoc = document.createElement('div');
-  buoc.style.cssText = 'font-size:13px;line-height:1.7;color:#8a8078';
+  buoc.style.cssText = 'font-size:13px;line-height:1.7;color:var(--sd-chu-phu,#8a8078)';
   buoc.append(
     dongChu('1. Mở file .ged bằng Notepad (bấm phải vào file, chọn Open with, ' +
             'chọn Notepad).'),
@@ -519,7 +519,7 @@ function veDanChu() {
   o.style.cssText =
     'width:100%;height:110px;margin-top:10px;box-sizing:border-box;padding:8px;' +
     'font-family:ui-monospace,Consolas,monospace;font-size:11px;line-height:1.4;' +
-    'border:1px solid #e6e0d8;border-radius:8px;background:#faf8f5;color:#2a2622;' +
+    'border:1px solid var(--sd-vien,#e6e0d8);border-radius:8px;background:var(--sd-nen,#faf8f5);color:var(--sd-chu,#2a2622);' +
     'white-space:pre;resize:vertical';
   ruot.append(o);
 
@@ -628,7 +628,7 @@ function hienThiXemTruoc(kq, tenNguon) {
   if (dsNguon.length > 0) {
     const kNguon = document.createElement('div');
     kNguon.style.cssText =
-      'font-size:12px;line-height:1.6;color:#8a8078;margin-bottom:8px';
+      'font-size:12px;line-height:1.6;color:var(--sd-chu-phu,#8a8078);margin-bottom:8px';
     for (const c of dsNguon) kNguon.append(dongChu(c));
     hopXemTruoc.append(kNguon);
   }
@@ -638,8 +638,8 @@ function hienThiXemTruoc(kq, tenNguon) {
   const so = document.createElement('div');
   so.dataset.viec = 'tom-tat-nhap';
   so.style.cssText =
-    'padding:10px 12px;border:1px solid #e6e0d8;border-radius:9px;' +
-    'background:#faf8f5;font-size:13px;line-height:1.6';
+    'padding:10px 12px;border:1px solid var(--sd-vien,#e6e0d8);border-radius:9px;' +
+    'background:var(--sd-nen,#faf8f5);font-size:13px;line-height:1.6';
   const cau = [t.soNguoi + ' người', t.soCap + ' gia đình'];
   if (t.soNguon > 0) cau.push(t.soNguon + ' nguồn dẫn');
   so.textContent = cau.join(' · ');
@@ -657,8 +657,8 @@ function hienThiXemTruoc(kq, tenNguon) {
   if (kq.theLa.length > 0) {
     const bang = document.createElement('div');
     bang.style.cssText =
-      'margin-top:10px;padding:9px 11px;border:1px solid #e6e0d8;border-radius:8px;' +
-      'background:#faf8f5;font-size:12px;line-height:1.7;color:#8a8078';
+      'margin-top:10px;padding:9px 11px;border:1px solid var(--sd-vien,#e6e0d8);border-radius:8px;' +
+      'background:var(--sd-nen,#faf8f5);font-size:12px;line-height:1.7;color:var(--sd-chu-phu,#8a8078)';
     bang.append(dongChu('Từng loại thẻ bị bỏ:'));
     for (const x of kq.theLa) bang.append(dongChu('· ' + x.the + ' — ' + x.so + ' dòng'));
     hopXemTruoc.append(bang);
@@ -674,12 +674,12 @@ function hienThiXemTruoc(kq, tenNguon) {
     const ds = document.createElement('div');
     ds.dataset.viec = 'xem-truoc-nguoi';
     ds.style.cssText =
-      'padding:9px 11px;border:1px solid #e6e0d8;border-radius:8px;' +
-      'background:#faf8f5;font-size:12px;line-height:1.7';
+      'padding:9px 11px;border:1px solid var(--sd-vien,#e6e0d8);border-radius:8px;' +
+      'background:var(--sd-nen,#faf8f5);font-size:12px;line-height:1.7';
     for (const p of kq.persons.slice(0, 10)) ds.append(dongChu(motDongNguoi(p)));
     if (kq.persons.length > 10) {
       const them = dongChu('… và ' + (kq.persons.length - 10) + ' người nữa.');
-      them.style.color = '#8a8078';
+      them.style.color = 'var(--sd-chu-phu,#8a8078)';
       ds.append(them);
     }
     hopXemTruoc.append(ds);
@@ -744,8 +744,8 @@ function veKhoiGhi(kq, tenNguon) {
 
   const nhac = document.createElement('div');
   nhac.style.cssText =
-    'padding:10px 12px;border:1px solid #f0d8d0;border-radius:9px;' +
-    'background:#fbf0ec;color:#8a3a2a;font-size:12px;line-height:1.6';
+    'padding:10px 12px;border:1px solid var(--sd-do-vien,#f0d8d0);border-radius:9px;' +
+    'background:var(--sd-do-nen,#fbf0ec);color:var(--sd-do,#8a3a2a);font-size:12px;line-height:1.6';
   const taiKhoan = (state.phien && state.phien.email) || 'tài khoản của bạn';
   nhac.append(
     // b104: đường dựng cây mới nay chạy thật, và nó ghi xuống Postgres chứ
@@ -769,8 +769,8 @@ function veKhoiGhi(kq, tenNguon) {
   o.placeholder = 'Ví dụ: Họ Nguyễn Trọng — chi Bắc';
   o.style.cssText =
     'display:block;width:100%;margin-top:6px;padding:10px;box-sizing:border-box;' +
-    'font-size:14px;font-family:inherit;border:1px solid #e6e0d8;' +
-    'border-radius:9px;background:#faf8f5';
+    'font-size:14px;font-family:inherit;border:1px solid var(--sd-vien,#e6e0d8);' +
+    'border-radius:9px;background:var(--sd-nen,#faf8f5)';
   khoi.append(o);
 
   const tin = document.createElement('div');
@@ -785,7 +785,7 @@ function veKhoiGhi(kq, tenNguon) {
     'display:block;width:100%;margin:14px auto 0;min-height:44px;padding:8px 14px;' +
     'max-width:' + RONG_NUT_TOI_DA + ';font-size:14px;font-family:inherit;' +
     'font-weight:600;line-height:1.35;border-radius:9px;cursor:pointer;' +
-    'background:#2a2622;color:#fffdf9;border:1px solid #2a2622;' +
+    'background:var(--sd-nut,#2a2622);color:var(--sd-nut-chu,#fffdf9);border:1px solid var(--sd-nut,#2a2622);' +
     'touch-action:manipulation';
   nutGhi.addEventListener('click', () => chayGhiVaoCayMoi(kq, o, nutGhi, tin, tenNguon));
   khoi.append(nutGhi);
@@ -797,7 +797,7 @@ function veKhoiGhi(kq, tenNguon) {
 
   const giaiThich = document.createElement('div');
   giaiThich.style.cssText =
-    'font-size:12px;line-height:1.6;color:#8a8078;margin-bottom:8px';
+    'font-size:12px;line-height:1.6;color:var(--sd-chu-phu,#8a8078);margin-bottom:8px';
   giaiThich.textContent = coCay
     ? 'Bạn sẽ tự chỉ ra ai trong file là ai trong cây, rồi mới ghi. Ghi xong ' +
       'KHÔNG có nút hoàn tác.'
@@ -843,7 +843,7 @@ async function chayGhiVaoCayMoi(kq, o, nutGhi, tin, tenNguon) {
     tin.innerHTML = '';
     const d = document.createElement('div');
     d.textContent = chu_;
-    d.style.cssText = 'margin-top:10px;font-size:13px;line-height:1.6;color:#8a8078';
+    d.style.cssText = 'margin-top:10px;font-size:13px;line-height:1.6;color:var(--sd-chu-phu,#8a8078)';
     tin.append(d);
   };
   const thua = (chu_) => {
@@ -1090,7 +1090,7 @@ function veHopDaTron(t, boQua, tenNguon, coDoi) {
     : 'KHÔNG thêm được ai — gia phả giữ nguyên';
   tieuDe.dataset.viec = coDoi ? 'da-tron-xong' : 'khong-doi-gi';
   tieuDe.style.cssText = 'font-size:19px;font-weight:600' +
-    (coDoi ? '' : ';color:#8a3a2a');
+    (coDoi ? '' : ';color:var(--sd-do,#8a3a2a)');
   hop.append(tieuDe);
 
   if (!coDoi) {
@@ -1104,8 +1104,8 @@ function veHopDaTron(t, boQua, tenNguon, coDoi) {
   const so = document.createElement('div');
   so.dataset.viec = 'tom-tat-da-tron';
   so.style.cssText =
-    'margin-top:10px;padding:10px 12px;border:1px solid #e6e0d8;border-radius:9px;' +
-    'background:#faf8f5;font-size:13px;line-height:1.7';
+    'margin-top:10px;padding:10px 12px;border:1px solid var(--sd-vien,#e6e0d8);border-radius:9px;' +
+    'background:var(--sd-nen,#faf8f5);font-size:13px;line-height:1.7';
   so.append(
     dongChu('· Thêm mới: ' + t.themNguoi + ' người · ' + t.themCap + ' gia đình'),
     dongChu('· Bổ sung chi tiết: ' + t.suaNguoi + ' người · ' + t.suaCap +
@@ -1125,8 +1125,8 @@ function veHopDaTron(t, boQua, tenNguon, coDoi) {
     const k = document.createElement('div');
     k.dataset.viec = 'bo-qua-khi-tron';
     k.style.cssText =
-      'padding:9px 11px;border:1px solid #e6e0d8;border-radius:8px;' +
-      'background:#faf8f5;font-size:12px;line-height:1.7;color:#6a4a40';
+      'padding:9px 11px;border:1px solid var(--sd-vien,#e6e0d8);border-radius:8px;' +
+      'background:var(--sd-nen,#faf8f5);font-size:12px;line-height:1.7;color:#6a4a40';
     for (const b of boQua.slice(0, 20)) {
       k.append(dongChu('· ' + b.id + ' — ' + b.nhan + ': ' + b.vi));
     }
@@ -1138,7 +1138,7 @@ function veHopDaTron(t, boQua, tenNguon, coDoi) {
 
   const nhac = document.createElement('div');
   nhac.style.cssText =
-    'margin-top:12px;font-size:12px;line-height:1.7;color:#8a8078';
+    'margin-top:12px;font-size:12px;line-height:1.7;color:var(--sd-chu-phu,#8a8078)';
   nhac.append(
     dongChu('· Ảnh không nằm trong file .ged nên lần hợp nhất này không mang ảnh nào sang.'),
     dongChu('· App đã ghi lại "dòng nào trong file là ai trong cây". Lần sau ' +
@@ -1155,7 +1155,7 @@ function veHopDaTron(t, boQua, tenNguon, coDoi) {
     'display:block;width:100%;margin:16px auto 0;height:44px;' +
     'max-width:' + RONG_NUT_TOI_DA + ';font-size:14px;font-family:inherit;' +
     'font-weight:600;border-radius:9px;cursor:pointer;' +
-    'background:#2a2622;color:#fffdf9;border:1px solid #2a2622;' +
+    'background:var(--sd-nut,#2a2622);color:var(--sd-nut-chu,#fffdf9);border:1px solid var(--sd-nut,#2a2622);' +
     'touch-action:manipulation';
   nutDong.addEventListener('click', () => closeNhapGedcom());
   hop.append(nutDong);
@@ -1184,15 +1184,15 @@ function veHopDaGhi(moi, tomTat) {
 
   const so = document.createElement('div');
   so.style.cssText =
-    'margin-top:10px;padding:10px 12px;border:1px solid #e6e0d8;border-radius:9px;' +
-    'background:#faf8f5;font-size:13px;line-height:1.6';
+    'margin-top:10px;padding:10px 12px;border:1px solid var(--sd-vien,#e6e0d8);border-radius:9px;' +
+    'background:var(--sd-nen,#faf8f5);font-size:13px;line-height:1.6';
   so.textContent = moi.ten + '  ·  ' + tomTat.soNguoi + ' người · ' +
                    tomTat.soCap + ' gia đình';
   hop.append(so);
 
   const nhac = document.createElement('div');
   nhac.style.cssText =
-    'margin-top:12px;font-size:12px;line-height:1.7;color:#8a8078';
+    'margin-top:12px;font-size:12px;line-height:1.7;color:var(--sd-chu-phu,#8a8078)';
   nhac.append(
     dongChu('· App nay mở gia phả mới này. Muốn quay về cây cũ thì vào Cài ' +
             'đặt → Chọn gia phả.'),
@@ -1212,7 +1212,7 @@ function veHopDaGhi(moi, tomTat) {
     'display:block;width:100%;margin:16px auto 0;height:44px;' +
     'max-width:' + RONG_NUT_TOI_DA + ';font-size:14px;font-family:inherit;' +
     'font-weight:600;border-radius:9px;cursor:pointer;' +
-    'background:#2a2622;color:#fffdf9;border:1px solid #2a2622;' +
+    'background:var(--sd-nut,#2a2622);color:var(--sd-nut-chu,#fffdf9);border:1px solid var(--sd-nut,#2a2622);' +
     'touch-action:manipulation';
   nutTai.addEventListener('click', () => location.reload());
   hop.append(nutTai);
@@ -1236,7 +1236,7 @@ function veNhanKhoi(chu_) {
   const n = document.createElement('div');
   n.textContent = chu_;
   n.style.cssText =
-    'font-size:12px;font-weight:600;letter-spacing:.04em;color:#8a8078;' +
+    'font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--sd-chu-phu,#8a8078);' +
     'margin:16px 0 6px';
   return n;
 }
@@ -1255,8 +1255,8 @@ function nut(chu_, chinh, chay) {
     'width:100%;min-height:42px;padding:8px 14px;font-size:14px;font-family:inherit;' +
     'border-radius:9px;touch-action:manipulation;line-height:1.35;cursor:pointer;' +
     (chinh
-      ? 'background:#2a2622;color:#fffdf9;border:1px solid #2a2622;font-weight:600'
-      : 'background:#faf8f5;color:#2a2622;border:1px solid #e6e0d8');
+      ? 'background:var(--sd-nut,#2a2622);color:var(--sd-nut-chu,#fffdf9);border:1px solid var(--sd-nut,#2a2622);font-weight:600'
+      : 'background:var(--sd-nen,#faf8f5);color:var(--sd-chu,#2a2622);border:1px solid var(--sd-vien,#e6e0d8)');
   b.addEventListener('click', chay);
   return b;
 }
@@ -1267,7 +1267,7 @@ function veLoiNhan(chu_, laLoi) {
   d.style.cssText =
     'margin-top:10px;padding:9px 11px;font-size:12px;line-height:1.5;border-radius:8px;' +
     (laLoi
-      ? 'color:#8a3a2a;background:#fbf0ec;border:1px solid #f0d8d0'
-      : 'color:#8a8078;background:#faf8f5;border:1px solid #f0ebe4');
+      ? 'color:var(--sd-do,#8a3a2a);background:var(--sd-do-nen,#fbf0ec);border:1px solid var(--sd-do-vien,#f0d8d0)'
+      : 'color:var(--sd-chu-phu,#8a8078);background:var(--sd-nen,#faf8f5);border:1px solid var(--sd-vien-nhat,#f0ebe4)');
   return d;
 }
