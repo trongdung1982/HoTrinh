@@ -3,7 +3,8 @@
 // Vai trò  : Xuất gia phả ra GEDCOM 5.5.1, và ĐỌC file .ged thành bản xem trước
 // Lớp      : domains — HÀM THUẦN, không chạm DOM, không gọi services
 // Phụ thuộc: utils/date, utils/text, utils/id, utils/graph, config, domains/union
-// Phiên bản: 1.14.0 · Cập nhật: 28/09/2026 05:57
+// Phiên bản: 1.15.0 · Cập nhật: 28/09/2026 22:23
+// Sổ tay   : so-tay/luu-du-lieu.md (Kho mã)
 // ============================================================
 //
 // XUẤT: GEDCOM 5.5.1. Cũ hơn 7.0 nhưng gần như mọi phần mềm gia phả đọc được.
@@ -1909,7 +1910,16 @@ export function mergeImported(tree, imported, tuyChon) {
     : tronBoSung(tree, imported, t, thua);
 }
 
-/** Chế độ `moi` — cây đích phải rỗng, nên không có gì để dò trùng. */
+/**
+ * Chế độ `moi` — cây đích phải rỗng, nên không có gì để dò trùng.
+ *
+ * ⚠ MỌI bản ghi được CẤP MÃ MỚI (b151a), không giữ mã của file. Từ b121 mã
+ * P/U là duy nhất TOÀN PHẦN MỀM, nên `P0001` của file gần như chắc chắn đã
+ * có người giữ ở cây khác → máy chủ từ chối cả lần ghi bằng `trungma`. Mã
+ * lấy từ kho (`capMaHangLoat`) — nơi gọi phải xin đủ TRƯỚC khi gọi; kho cạn
+ * thì rơi về tự đếm trong cây rỗng, tức `P0001`, và máy chủ từ chối to tiếng.
+ * `uid` của file giữ nguyên, y như chế độ `bosung`.
+ */
 function tronMoi(tree, imported, t, thua) {
   const dem = (x) => (Array.isArray(x) ? x.length : 0);
   const daCo = dem(tree.persons) + dem(tree.unions) + dem(tree.sources);
@@ -1925,24 +1935,90 @@ function tronMoi(tree, imported, t, thua) {
   const cay = JSON.parse(JSON.stringify(tree));
   const nhap = JSON.parse(JSON.stringify(imported));
 
+  const nguoiFile = mang(nhap.persons).filter((p) => p && chu(p.id));
+  const capFile = mang(nhap.unions).filter((u) => u && chu(u.id));
+  const nguonFile = mang(nhap.sources).filter((s) => s && chu(s.id));
+
+  // Bản đồ mã trong file → mã mới. Người cấp trước, theo đúng thứ tự file.
+  const banDo = new Map();
+  const capMa = capMaHangLoat(cay);
+  for (const p of nguoiFile) banDo.set(chu(p.id), capMa('P'));
+  for (const u of capFile) banDo.set(chu(u.id), capMa('U'));
+  for (const s of nguonFile) banDo.set(chu(s.id), capMa('S'));
+  const doiSang = (id) => banDo.get(chu(id)) || '';
+
+  const maCay = maCayCuaCay(cay);
   const luc = chu(t.luc);
   const boi = chu(t.nguoiGhi);
-  for (const p of nhap.persons) {
+  const lacKhiDich = [];
+
+  // Sổ nhập đọc `xrefGoc` + mã cũ từ `imported` (bản GỐC) — bản sao vừa bị
+  // xoá `xrefGoc`, cùng lý lẽ với `tronBoSung`. Từ b151a đây là chỗ DUY NHẤT
+  // còn nói được "dòng nào trong file thành mã nào trong cây".
+  const soNhap = [];
+  const ghiSo = (goc, trongCay) => {
+    const idFile = chu(goc && goc.id);
+    if (!idFile || !banDo.has(idFile)) return;
+    soNhap.push({
+      xref: chu(goc.xrefGoc), fileId: idFile,
+      uid: chu(trongCay && trongCay.uid), id: banDo.get(idFile), added: true,
+    });
+  };
+
+  for (const p of nguoiFile) {
+    p.id = banDo.get(chu(p.id));
+    if (!chu(p.uid)) p.uid = sinhUid(maCay, p.id);
     p.meta = { createdAt: luc, updatedAt: luc, updatedBy: boi };
     delete p.xrefGoc;
   }
-  for (const u of mang(nhap.unions)) delete u.xrefGoc;
+  for (const u of capFile) {
+    u.id = banDo.get(chu(u.id));
+    if (!chu(u.uid)) u.uid = sinhUid(maCay, u.id);
+    doiConTroCap(u, doiSang, lacKhiDich);
+    delete u.xrefGoc;
+  }
+  for (const s of nguonFile) s.id = banDo.get(chu(s.id));
 
-  cay.persons = nhap.persons;
-  cay.unions = Array.isArray(nhap.unions) ? nhap.unions : [];
-  cay.sources = Array.isArray(nhap.sources) ? nhap.sources : [];
+  if (lacKhiDich.length > 0) {
+    return thua('controlac',
+      'Có ' + lacKhiDich.length + ' con trỏ trong file trỏ vào bản ghi không ' +
+      'có trong file (' + lacKhiDich.slice(0, 3).join(' · ') + '). Đã dừng, ' +
+      'chưa ghi gì.');
+  }
+
+  const theoMaMoi = new Map(nguoiFile.concat(capFile).map((x) => [x.id, x]));
+  const moiCua = (goc) => theoMaMoi.get(banDo.get(chu(goc && goc.id)));
+  for (const p of mang(imported.persons)) ghiSo(p, moiCua(p));
+  for (const u of mang(imported.unions)) ghiSo(u, moiCua(u));
+
+  cay.persons = nguoiFile;
+  cay.unions = capFile;
+  cay.sources = nguonFile;
   cay.media = [];
+  if (!Array.isArray(cay.imports)) cay.imports = [];
+  cay.imports.push({
+    at: luc, by: boi,
+    file: chu(t.tenFile),
+    source: chu(imported.maNguon),
+    sourceName: chu(imported.tenCay),
+    exporter: chu(imported.nguonXuat),
+    counts: { matched: 0, added: nguoiFile.length + capFile.length + nguonFile.length },
+    map: soNhap,
+  });
 
   // Người đứng giữa sơ đồ lúc mở cây lần đầu. Lấy người ĐẦU TIÊN của file —
   // `repo.chonNguoiTrungTam` vẫn có đường lùi khi trường này rỗng, nhưng để
   // rỗng là bắt app tự đoán ở mỗi lần mở, mà thứ tự của một `Map` thì không
   // phải thứ ai cũng đoán giống nhau.
-  cay.tree.rootPersonId = chu(nhap.persons[0].id) || null;
+  cay.tree.rootPersonId = nguoiFile.length ? nguoiFile[0].id : null;
+
+  // Lưới an toàn cuối — phép đếm ĐỘC LẬP với `doiConTroCap`.
+  const lac = conTroLac(cay);
+  if (lac.length > 0) {
+    return thua('controtreo',
+      'Sau khi cấp mã mới thì có ' + lac.length + ' con trỏ trỏ vào bản ghi ' +
+      'không tồn tại (' + lac.slice(0, 3).join(' · ') + '). Đã dừng, chưa ghi gì.');
+  }
 
   return {
     ok: true, lyDo: '', loi: '', cay, boQua: [],

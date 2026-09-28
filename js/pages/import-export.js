@@ -4,8 +4,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, pages/form-ghep-doi, domains/{gedcom,excel}, services/{sb,repo},
 //            utils/{date,text}, config
-// Phiên bản: 1.8.0 · Cập nhật: 28/09/2026 06:10 (b139) — trộn bổ sung xin đủ
-//            mã máy chủ trước khi dựng (`xinMaChoLanNhap`)
+// Phiên bản: 1.9.0 · Cập nhật: 28/09/2026 22:23
+// Sổ tay   : so-tay/luu-du-lieu.md (Kho mã)
 // ============================================================
 //
 // Hai màn hình, hai chiều của cùng một cửa:
@@ -18,9 +18,9 @@
 //   *"Không tải được file?"*. ĐỪNG gỡ đường 2 — trình duyệt trong Zalo/
 //   Messenger chặn tải file IM LẶNG, không lỗi, không hộp thoại.
 //
-// ⚠ Trộn bổ sung: mã P/U duy nhất toàn phần mềm — phải `xinMa` đủ số bản ghi
-//   mới TRƯỚC `mergeImported` (b139, `so-tay/luu-du-lieu.md` *Kho mã*). Chế
-//   độ `moi` (dựng gia phả mới) vẫn giữ mã của file — màn ấy chưa mở được.
+// ⚠ Cả hai chế độ: mã P/U duy nhất toàn phần mềm — phải `xinMa` đủ số bản
+//   ghi mới TRƯỚC `mergeImported` (b139 bổ sung · b151a tạo mới, xin TRƯỚC
+//   cả lúc dựng cây; `so-tay/luu-du-lieu.md` *Kho mã*).
 
 import { state } from '../state.js';
 import { exportGedcom, tenFileGedcom, tomTatXuat, parseGedcom, mergeImported,
@@ -787,7 +787,7 @@ function veKhoiGhi(kq, tenNguon) {
     'font-weight:600;line-height:1.35;border-radius:9px;cursor:pointer;' +
     'background:#2a2622;color:#fffdf9;border:1px solid #2a2622;' +
     'touch-action:manipulation';
-  nutGhi.addEventListener('click', () => chayGhiVaoCayMoi(kq, o, nutGhi, tin));
+  nutGhi.addEventListener('click', () => chayGhiVaoCayMoi(kq, o, nutGhi, tin, tenNguon));
   khoi.append(nutGhi);
 
   khoi.append(veNhanKhoi('Hoặc bổ sung vào gia phả đang mở'));
@@ -823,7 +823,7 @@ function veKhoiGhi(kq, tenNguon) {
  * Dựng cây mới → chọn nó → nạp → ghi. Bốn bước, mỗi bước một cách hỏng riêng,
  * nên mỗi bước tự kể ra mình hỏng ở đâu.
  */
-async function chayGhiVaoCayMoi(kq, o, nutGhi, tin) {
+async function chayGhiVaoCayMoi(kq, o, nutGhi, tin, tenNguon) {
   if (dangGhi) return;
 
   const ten = String(o.value || '').trim();
@@ -855,6 +855,14 @@ async function chayGhiVaoCayMoi(kq, o, nutGhi, tin) {
     nutGhi.style.opacity = '1';
     o.disabled = false;
   };
+
+  // 0. Xin ĐỦ mã mới cho mọi bản ghi trong file, TRƯỚC khi dựng cây (b151a).
+  //    Xin hỏng ở đây thì chưa có gì trên máy chủ; xin sau khi dựng thì để
+  //    lại một gia phả rỗng mồ côi. Kho mã không bị xoá khi chuyển cây.
+  noi('Đang xin mã mới cho ' + kq.persons.length + ' người…');
+  const du = await xinMaChoCayMoi(kq);
+  if (!lopPhuNhap) { dangGhi = false; return; }
+  if (!du.ok) return thua(du.loi);
 
   // 1. Dựng cây mới trên máy chủ (b104 — `repo.taoGiaPhaMoi`).
   noi('Đang dựng "' + ten + '" trên máy chủ…');
@@ -903,6 +911,7 @@ async function chayGhiVaoCayMoi(kq, o, nutGhi, tin) {
     che: 'moi',
     luc: stampNow(),
     nguoiGhi: (state.phien && state.phien.email) || '',
+    tenFile: tenNguon || '',
   });
   if (!dung.ok) return thua(daChuyenRoi(dung.loi));
 
@@ -912,6 +921,7 @@ async function chayGhiVaoCayMoi(kq, o, nutGhi, tin) {
     banNhap.unions = dung.cay.unions;
     banNhap.sources = dung.cay.sources;
     banNhap.media = [];
+    banNhap.imports = dung.cay.imports;
     banNhap.tree.rootPersonId = dung.cay.tree.rootPersonId;
   }, {
     action: 'nhapGedcom',
@@ -940,7 +950,17 @@ async function xinMaChoLanNhap(kq, tuyChon) {
     khaiMoi: (tuyChon && tuyChon.khaiMoi) || [],
   });
   if (!d.ok || !d.duocTron) return { ok: true, loi: '' };
-  const can = { P: d.nguoiMoi.length, U: d.capMoi.length };
+  return xinDuMa({ P: d.nguoiMoi.length, U: d.capMoi.length });
+}
+
+/** Xin đủ mã cho chế độ tạo mới — MỌI bản ghi trong file đều mang mã mới. */
+function xinMaChoCayMoi(kq) {
+  const dem = (ds) => (Array.isArray(ds) ? ds.filter((x) => x && x.id).length : 0);
+  return xinDuMa({ P: dem(kq.persons), U: dem(kq.unions) });
+}
+
+/** Chỉ xin phần THIẾU so với kho — mã xin thừa là mất luôn. */
+async function xinDuMa(can) {
   for (const loai of Object.keys(can)) {
     const thieu = can[loai] - soMaTrongKho(loai);
     if (thieu <= 0) continue;

@@ -164,8 +164,15 @@ bằng `trungma` và tải lại trang (kho đầy lại) là làm được.
 
 ⚠ **Nhập bổ sung (b139):** kho hay là hai lô KHÔNG liền, nên
 `capMaHangLoat()` rút MỖI mã khỏi kho, cạn mới tự đếm; trang xin phần thiếu
-trước (`xinMaChoLanNhap`). Đo: `../kiem-thu/kiem-cap-ma-nhap.mjs`. ⚠ Chế độ
-`moi` (`tronMoi`) VẪN giữ mã của file → `trungma`; màn ấy chưa mở.
+trước (`xinMaChoLanNhap`). Đo: `../kiem-thu/kiem-cap-ma-nhap.mjs`.
+
+⚠ **Nhập tạo gia phả mới (b151a):** `tronMoi` từng GIỮ mã của file — `P0001`
+của file đụng `P0001` của cây NTB → `trungma` ngay lần ghi đầu, mà cây rỗng
+đã dựng xong trên máy chủ (mồ côi). Nay MỌI bản ghi mang mã mới từ kho, và
+trang xin đủ (`xinMaChoCayMoi`) **TRƯỚC cả lúc dựng cây** — kho không bị xoá
+khi chuyển cây. Mã file → mã cây chỉ còn nằm ở sổ nhập (`tree.imports`).
+Kho cạn thì đếm từ `P0001` trong cây rỗng = chắc chắn trùng — đừng bỏ bước
+xin. Đo: `../kiem-thu/kiem-nhap-cay-moi.mjs` (có cây 681 người).
 
 ## Đọc cây đi qua `doc_cay()`, không đọc thẳng bốn bảng (b122b)
 

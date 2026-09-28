@@ -1,9 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 · **b148 (giấu người còn sống) XONG — `50` ĐÃ DÁN ·
-b149 (nút Sao lưu) XONG · b150 + b150b (Thông tin công khai của tôi, 11 dòng +
-ô Liên hệ) XONG MÃ — `51` ĐÃ DÁN, `52` CHƯA DÁN.** Mười một điểm dừng dưới
-chưa bấm thử.*
+*Cập nhật 28/09/2026 22:40 · **b150 + b150b XONG MÃ — `51` ĐÃ DÁN, `52` CHƯA
+DÁN · b151a (nhập tạo gia phả mới cấp mã mới) XONG MÃ, không có SQL.** Mười
+hai điểm dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -28,6 +27,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b151a** Nhập tạo gia phả mới | ⚠ Bước này DỰNG một gia phả thật trên máy chủ — thử xong thì xoá nó. Cần tài khoản được phép tạo cây. Ctrl+F5 → ⚙ Cài đặt → *Nhập GEDCOM/Excel* → chọn `tai-lieu/My Family Tree.ged` → ô *Tên gia phả mới* gõ `Thu b151` → *Tạo gia phả mới và ghi vào đó*. Đạt khi: hộp báo ghi xong 6 người, KHÔNG báo "Mã mới vừa cấp đã có bản ghi khác giữ"; sơ đồ hiện đủ 6 người, 2 gia đình; *Danh sách người* cho thấy mã người là số lớn (không phải `P0001`…`P0006`). Xong: *Quản trị → Gia phả* → xoá `Thu b151` |
 | **b150 · b150b** Thông tin công khai của tôi + Liên hệ | ⚠ Dán `52` trước (`50`, `51` đã dán). Ctrl+F5. Sơ đồ → mở người của bạn → *Sửa* → khối *Cuộc đời* có ô **Liên hệ** → gõ số điện thoại → *Lưu* → trang chi tiết có hàng *Liên hệ* → *Danh sách người* → *Xuất Excel ▾* → file có cột *Liên hệ* sau *Dân tộc*. *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia*: cột *Thông tin công khai* ghi "11 thông tin →" → bấm ở dòng cây thử `TH957` → trang MƯỜI MỘT dòng, giá trị của người bạn được gắn → tắt *Ảnh* + *Quê quán* → *Lưu thiết lập công khai*. *Quản trị hệ thống → Cây mặc định*: đặt `TH957` (tạm). Tab ấy nay có 10 nhóm, *Số điện thoại & Email liên hệ* mặc định TẮT. Đăng nhập `khach@io.vn` (không có chân ở `TH957`) mở sơ đồ: người của bạn không ảnh, không quê quán, không liên hệ; người khác vẫn đủ (trừ liên hệ). ⚠ Người của bạn phải CÓ trong `TH957` thì mới thấy khác. Xong: bật lại hai trường, đặt lại cây mặc định như cũ |
 | **b149** Nút Sao lưu | Ctrl+F5. Sơ đồ → ⚙ Cài đặt: có khối *Sao lưu & khôi phục*, nút *Mở Sao lưu (trang Quản trị)* → bấm → sang trang Quản trị, đang đứng ở tab **Sao lưu**. Đăng nhập `khach@io.vn` → ⚙ Cài đặt: KHÔNG có khối ấy |
 | **b148** Giấu người còn sống | ✓ `50` đã dán. Ctrl+F5. *Quản trị → Gia phả →* cây thử `TH957` → *Mời gia nhập*: mời `khach@io.vn` với vai **Khách** (`xem`). Đăng nhập `khach@io.vn` → nhận lời mời → mở `TH957`: người còn sống (không ngày mất, sinh chưa quá 100 năm) chỉ còn tên, giới tính, năm sinh — không ảnh, không tiểu sử; trang chi tiết có dòng *"Người này còn sống nên máy chủ đã lược bớt…"*. Người đã mất vẫn đủ. Thêm: *Quản trị → Gia phả →* `TH957` → *Danh sách người* → bấm tên một người còn sống → trang hồ sơ MỞ ĐƯỢC (bản che), không báo "không có quyền xem". Đăng nhập lại tài khoản của bạn: thấy đủ cả. Xong nhớ gỡ vai của `khach@io.vn` |
@@ -162,8 +162,15 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 28/09 08:04 chỉ có cây NTB; file SQL khôi phục chứa cả gia phả, KHÔNG thả vào
 `supabase/`.
 
-**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử mười một
-điểm dừng ở trên trước.
+**Đang làm: nhập GEDCOM/Excel dựng gia phả mới chạy được cỡ thật** — ba
+bước, mỗi phiên một bước:
+
+- **b151b — kế tiếp** *(Opus)*: ghi một file 681 người vào **bàn thử SQL**
+  qua đúng `luu_cay()` — một lần gửi có quá cỡ / quá thời gian chờ không;
+  quá thì chia lô. Phía trình duyệt đã đo: dựng 681 người mất ~11 ms
+  (`../kiem-thu/kiem-nhap-cay-moi.mjs`).
+- **b151c** *(Sonnet đủ)*: đường Excel đi chung `veKhoiGhi` → `tronMoi` nên
+  b151a đã sửa luôn — chỉ còn bấm thử một file `.xlsx` và viết hướng dẫn.
 
 ⚠ **b150 mới che với KHÁCH** (người xem cây chỉ nhờ cây mặc định — cùng người
 `47` che). Thành viên vai `xem` vẫn theo luật người còn sống của `50`, KHÔNG
@@ -188,8 +195,7 @@ Sổ tay: `so-tay/luu-du-lieu.md` · kéo người + báo trùng/gộp:
 ở b143 bằng mật khẩu tạm — *gửi liên kết qua email* còn mờ, cần màn hình đặt
 mật khẩu + SMTP riêng, xem `so-tay/tao-tai-khoan.md` · công khai theo từng
 trường XONG ở b145 cho cây mặc định, theo từng tài khoản XONG ở b150 · sao lưu đêm báo vào
-nhật ký XONG ở b147)* ·
-nhập GEDCOM/Excel qua máy chủ · **tối ưu tốc độ đọc** khi mọi
+nhật ký XONG ở b147)* · **tối ưu tốc độ đọc** khi mọi
 chức năng đã chạy *(681 người: ~0,4s)*. *(Số mục = `THIET-KE-QUAN-TRI.md`.)*
 
 ⚠ **Cột *Nội dung thao tác* ở Kiểm duyệt co về một chữ mỗi dòng** (có từ
@@ -205,7 +211,6 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 
 | Việc | Ghi ở đâu |
 |---|---|
-| ⚠ **Nhập chế độ `moi` (dựng gia phả mới) vẫn giữ mã của file** → `trungma` ngay. Màn ấy chưa mở nên chưa ai vào; mở thì phải cấp mã mới cho mọi bản ghi (sửa `domains/gedcom.js` `tronMoi`, hỏi chủ dự án) | `so-tay/luu-du-lieu.md` *Kho mã* |
 | ⚠ **`di-doi/sinh-sql-di-doi.mjs` lạc hậu từ `26`** — SQL nó sinh còn gắn `tree_id` vào bốn bảng dùng chung. Ba cây đã di dời xong nên chưa có việc; chạy sẽ lỗi to tiếng | đầu chính file ấy |
 | Hai bảng nhật ký (`42`) cố ý CHƯA sao lưu — không cần để khôi phục app, tự có thùng rác 120 ngày. Sáu bảng hệ thống đã vào ở b137. **`bao_trung_nguoi` (`48`) cũng cố ý chưa** — con trỏ gộp đã nằm ở `persons.meta.gopVao` + `change_log.truoc`; mất bảng chỉ mất đơn đang chờ. Muốn vào thì sửa `sao_luu_bang_he_thong()` + `SaoLuu.gs` cùng lúc | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
 | ⚠ **Bảng/cột mới mang MÃ NGƯỜI phải vào `gop_hai_nguoi()` mục 5** (`48`) — sót thì gộp để lại mã thua ở đó, im lặng | `so-tay/luu-du-lieu.md` đầu file |
@@ -232,8 +237,9 @@ Bộ kiểm bảo vệ `domains/layout.js` `import` từ `../giapha/js/` — b�
 BĂNG — nên sửa `supabase/js/domains/` thì nó vẫn xanh vì đang đo file khác.
 Lý lẽ đầy đủ và ba đường chưa chọn: **`/kiem-tra` phép 9**. Đã thành sự thật ở
 `person.js` (b120, b122b — chủ dự án cho phép cả hai lần), **`layout.js`**
-(b128 — khác hẳn từ 25/09) và `gedcom.js` (b139, cho phép 28/09 —
-`capMaHangLoat()`; đo bằng `kiem-cap-ma-nhap.mjs`, nạp thẳng `supabase/js`). ⚠ Đo `layout.js` phải qua `--import ./sang-supabase.mjs`
+(b128 — khác hẳn từ 25/09) và `gedcom.js` (b139 + b151a, cho phép 28/09 —
+`capMaHangLoat()` · `tronMoi()`; đo bằng `kiem-cap-ma-nhap.mjs` +
+`kiem-nhap-cay-moi.mjs`, nạp thẳng `supabase/js`). ⚠ Đo `layout.js` phải qua `--import ./sang-supabase.mjs`
 hoặc `kiem-buoc-80-sb.mjs`; nhóm 9b (bắt khuỷu) ở đó đã lỗi thời — chủ dự án
 bác luật khuỷu 25/09. Đường chạy bằng đúng pipeline app (thêm/ẩn dâu/rể) chưa
 có trong bộ kiểm — `so-tay/ve-so-do.md`.
