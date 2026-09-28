@@ -29,9 +29,8 @@
 3. Ô tên hàm gõ đúng: `tao-tai-khoan`.
 4. Xoá hết mã mẫu trong khung soạn, dán **toàn bộ** nội dung file
    `ham-may-chu/tao-tai-khoan/index.ts`, bấm **Deploy function**.
-5. Vào hàm vừa tạo → thẻ **Details** (hoặc Settings) → tắt công tắc
-   **Enforce JWT verification** (tên có thể là *Verify JWT with legacy
-   secret*) → **Save**.
+5. Vào hàm vừa tạo → thẻ **Settings** → tắt công tắc **Verify JWT with
+   legacy secret** → **Save changes**.
 6. Tự kiểm: trang Quản trị → Quản trị hệ thống → **+ Tạo tài khoản mới** →
    điền tên + email thử → **+ Tạo tài khoản ngay**. Thấy hộp *Đã tạo tài
    khoản* kèm mật khẩu tạm là xong. Tài khoản thử xoá ở Sổ tài khoản.
