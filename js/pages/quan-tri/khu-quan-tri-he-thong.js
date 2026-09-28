@@ -8,8 +8,8 @@
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang ·
 //            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don · khu-nhat-ky ·
 //            khu-tao-tai-khoan · khu-bao-trung
-// Phiên bản: 1.12.0 · Cập nhật: 28/09/2026 (b147) — thẻ + bảng lịch sử sao
-//            lưu đọc từ nhật ký (`luoc-do/49`). Lịch sử: `git log -p`.
+// Phiên bản: 1.13.0 · Cập nhật: 28/09/2026 (b149) — `?tab=<tên>` trên địa chỉ
+//            mở thẳng một tab (lối vào từ Cài đặt sơ đồ). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -69,6 +69,15 @@ export function datTabQuanTriHeThong(ten) {
  */
 export async function mountKhuQuanTriHeThong(sec, phien) {
   const napLai = () => mountKhuQuanTriHeThong(sec, phien);
+
+  // Lối vào từ Cài đặt của sơ đồ (b149): `QuanTri.html?tab=sao-luu#quan-tri-he-thong`
+  // mở thẳng tab ấy. Đọc MỘT lần rồi xoá khỏi địa chỉ — để lại thì mọi lần nạp
+  // lại khu này đều nhảy về tab đó.
+  const tabUrl = new URLSearchParams(window.location.search).get('tab');
+  if (tabUrl) {
+    if (sec.querySelector('[data-sys-pane="' + CSS.escape(tabUrl) + '"]')) tabDangMo = tabUrl;
+    history.replaceState(null, '', window.location.pathname + window.location.hash);
+  }
 
   ganTab(sec);
   veChuaCo(sec);

@@ -5,7 +5,7 @@
 //            mà chưa phải sửa.
 // Lớp      : services — được gọi bởi: pages · gọi: services/sb
 // Phụ thuộc: services/sb.js
-// Phiên bản: 0.3.0 · Cập nhật: 28/09/2026 07:05 (b141) — còn 2 màn hình, gỡ nhóm ảnh
+// Phiên bản: 0.4.0 · Cập nhật: 28/09/2026 (b149) — còn 1 màn hình (`chon-gia-pha`)
 // ============================================================
 //
 // ═══ FILE NÀY LÀ GIÀN GIÁO, KHÔNG PHẢI KIẾN TRÚC ═══
@@ -54,26 +54,6 @@ export const chonGiaPha = sb.chonGiaPha;
 // ============================================================
 // ⛔ CHƯA LÀM
 // ============================================================
-
-// --- Sao lưu (`pages/backup.js`) ---
-//
-// Trên Drive, sao lưu là chép một file JSON sang thư mục khác. Ở đây không
-// còn "một file" nào để chép. `KE-HOACH-HA-TANG-Supabase_V01.md` bước **H8**
-// đã giao việc này cho Apps Script chạy nền: một trigger định kỳ đọc REST API
-// của Supabase rồi ghi file JSON ra Drive — tức bản sao lưu nằm NGOÀI
-// Supabase, đúng tinh thần "sao lưu độc lập".
-//
-// ⚠ Trigger ấy ĐÃ chạy (`sao-luu/SaoLuu.gs`, tab Sao lưu ở trang Quản trị) —
-//   chỉ màn hình cũ `backup.js` là chưa nối vào nó.
-
-const LY_DO_SAO_LUU =
-  'Sao lưu trên nền Supabase làm bằng một trigger Apps Script chạy nền ' +
-  '(bước H8 của kế hoạch hạ tầng), chưa viết.';
-
-export const layDanhSachSaoLuu = chuaLam('Danh sách bản sao lưu', LY_DO_SAO_LUU);
-export const saoLuuNgay        = chuaLam('Sao lưu ngay',          LY_DO_SAO_LUU);
-export const xemBanSaoLuu      = chuaLam('Xem bản sao lưu',       LY_DO_SAO_LUU);
-export const khoiPhucSaoLuu    = chuaLam('Khôi phục sao lưu',     LY_DO_SAO_LUU);
 
 // --- Dựng gia phả mới (`pages/chon-gia-pha.js`) ---
 export const taoFileDuLieuMoi = chuaLam('Dựng gia phả mới',

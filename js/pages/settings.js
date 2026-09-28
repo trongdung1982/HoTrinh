@@ -4,8 +4,8 @@
 //            đường sang Chọn gia phả · Sao lưu & khôi phục · Xuất/Nhập GEDCOM
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, services/sb, utils/text, pages/export-image
-// Phiên bản: 1.35.0 · Cập nhật: 28/09/2026 (b138) — thôi dùng giàn giáo
-//            `tuong-thich`, gọi thẳng `sb.js`.
+// Phiên bản: 1.36.0 · Cập nhật: 28/09/2026 (b149) — khối Sao lưu sang trang
+//            Quản trị, chỉ Quản trị hệ thống thấy.
 // ============================================================
 //
 // Màn hình này tồn tại vì MỘT việc: đặt và bỏ người trung tâm mặc định của
@@ -91,8 +91,8 @@ let khoiMacDinh = null;
  *        vòng tròn thì một trong hai sẽ thấy hàm của file kia là `undefined`.
  *        `onDoiHienThi` chạy sau khi đổi một công tắc trong khối Hiển thị —
  *        nơi gọi phải VẼ LẠI sơ đồ, vì công tắc ngày giỗ đổi cả chiều cao ô.
- *        `onMoChonGiaPha` mở màn hình Chọn gia phả, `onMoSaoLuu` mở màn hình
- *        Sao lưu & khôi phục, `onMoXuatGedcom` mở màn hình Xuất GEDCOM, hai
+ *        `onMoChonGiaPha` mở màn hình Chọn gia phả, `onMoSaoLuu` sang tab Sao
+ *        lưu của trang Quản trị (chỉ Quản trị hệ thống; `null` = ẩn khối), `onMoXuatGedcom` mở màn hình Xuất GEDCOM, hai
  *        `onDanhSach*` mở hai danh sách của khối Quản lý gia phả. `onXuatAnhPng`
  *        (việc 12) trả về `Promise<{blob, tenFile}>` — dựng ảnh PNG của sơ đồ
  *        đang hiện, KHÔNG tự tải về (xem `export-image.js`). `onInSoDo` mở
@@ -428,14 +428,9 @@ function veKhoiChonGiaPha(vao) {
 // Khối "Sao lưu & khôi phục" — việc 7
 // ============================================================
 //
-// Chỉ MỘT cái nút, mở sang màn hình riêng (`pages/backup.js`). Không nhúng
-// thẳng danh sách bản sao lưu vào đây, và có lý do: màn hình Cài đặt mở ra là
-// đọc ngay ba khối — nhúng vào nghĩa là MỖI LẦN mở Cài đặt lại gọi máy chủ
-// liệt kê cả thư mục Sao_luu, cho một việc mỗi tháng làm một lần.
-//
-// ⚠ Nút này KHÔNG mờ đi với người chỉ có quyền xem, và đó là chủ ý: bên trong
-// có nút *Sao lưu ngay* — cất một bản phòng hờ không phải là sửa gia phả. Thứ
-// chặn theo quyền nằm ở máy chủ, và câu từ chối của nó nói rõ vì sao.
+// Chỉ MỘT cái nút, sang tab Sao lưu của `QuanTri.html` (b149). Sao lưu chạy
+// nền mỗi đêm ngoài app; chỉ Quản trị hệ thống xem được lịch sử, nên người
+// khác KHÔNG thấy khối này — `tree-view.js` truyền `onMoSaoLuu = null`.
 
 function veKhoiSaoLuu(vao) {
   if (!xuLyNgoai.onMoSaoLuu) return null;
@@ -447,7 +442,7 @@ function veKhoiSaoLuu(vao) {
   // Không có dòng giải thích: tên nút đã nói đủ, và màn hình mở ra giải thích
   // lại lần nữa (chủ dự án bỏ 28/08/2026). `margin-top:4px` giữ đúng khoảng
   // cách nhãn–nút của mấy khối bên cạnh, chỗ dòng giải thích từng chiếm.
-  const b = nut('Mở Sao lưu & khôi phục', false, true,
+  const b = nut('Mở Sao lưu (trang Quản trị)', false, true,
                 () => xuLyNgoai.onMoSaoLuu());
   b.style.marginTop = '4px';
   khoi.append(b);

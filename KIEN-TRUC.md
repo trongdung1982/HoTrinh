@@ -193,12 +193,12 @@ thấy app gọi tới `di-doi/` là ranh giới đã vỡ.
 24/08/2026, trước khi có quyết định giữ bản Apps Script chạy tiếp cho người
 trong họ. **Gỡ deploy hôm nay là tắt app của cả họ.** Không làm.
 
-**Ba màn hình chưa mở được** — mọi hàm chúng gọi đều ném lỗi có câu chữ đàng
+**Hai màn hình chưa mở được** *(màn Sao lưu cũ đã xoá ở b149 — nút trong Cài
+đặt sang tab Sao lưu của `QuanTri.html`)* — mọi hàm chúng gọi đều ném lỗi có câu chữ đàng
 hoàng, **không giả vờ thành công**:
 
 | Màn hình | Vì sao |
 |---|---|
-| Sao lưu *(nút trong app)* | Sao lưu nay chạy nền ngoài app; nút này chưa nối lại vào đâu |
 | Bỏ chọn gia phả | Nền này **không có** "gia phả mặc định" để quay về |
 | Mở quyền xem ảnh | Không còn nỗi khổ ấy — kho Supabase một luật cho cả kho |
 

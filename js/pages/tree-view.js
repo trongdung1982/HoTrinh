@@ -5,8 +5,8 @@
 // Phụ thuộc: state, domains/{bloodline,layout,render,union},
 //            utils/{text,glyph,graph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
-//            backup,chon-gia-pha,import-export,export-image}
-// Phiên bản: 1.44.0 · Cập nhật: 25/09/2026 23:59
+//            chon-gia-pha,import-export,export-image}
+// Phiên bản: 1.45.0 · Cập nhật: 28/09/2026 (b149) — nút Sao lưu sang QuanTri.html
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (nút Cũ/Mới · dâu/rể)
 // ============================================================
 //
@@ -35,7 +35,6 @@ import { openPersonList, closePersonList, openThungRac,
          openDanhSachGiaDinh } from './person-list.js';
 import { openReview, closeReview } from './review.js';
 import { openSettings, closeSettings } from './settings.js';
-import { openBackup, closeBackup } from './backup.js';
 import { openChonGiaPha, closeChonGiaPha } from './chon-gia-pha.js';
 import { openXuatGedcom, closeXuatGedcom, openNhapGedcom, closeNhapGedcom }
   from './import-export.js';
@@ -147,7 +146,6 @@ export function mountTreeView(containerEl) {
   closePersonList();
   closeReview();
   closeSettings();
-  closeBackup();
   closeChonGiaPha();
   closeXuatGedcom();
   closeNhapGedcom();
@@ -864,10 +862,12 @@ function veHopNutTrenPhai() {
       // chồng nhau thì cái mở sau nằm dưới và người dùng bấm vào khoảng không.
       onDanhSachNguoi:   () => { closeSettings(); moDanhSachNguoi(); },
       onDanhSachGiaDinh: () => { closeSettings(); moDanhSachGiaDinh(); },
-      // Đóng Cài đặt TRƯỚC khi mở màn sao lưu: hai lớp phủ cùng z-index 30,
-      // chồng nhau thì cái mở sau nằm dưới và người dùng bấm vào khoảng không
-      // — đúng cái bẫy đã sập một lần ở bước 26.
-      onMoSaoLuu: () => { closeSettings(); openBackup(); },
+      // Sao lưu chạy nền ngoài app (Apps Script mỗi đêm); chỗ xem là tab Sao
+      // lưu của trang Quản trị, chỉ Quản trị hệ thống vào được. Người khác
+      // không có nút — `null` thì Cài đặt không vẽ khối ấy (chốt 28/09, b149).
+      onMoSaoLuu: (state.phien && state.phien.laQuanTriHeThong)
+        ? () => { window.location.href = 'QuanTri.html?tab=sao-luu#quan-tri-he-thong'; }
+        : null,
       // Việc 9b. Cùng lối: đóng Cài đặt TRƯỚC — và ở đây còn một lý do nữa,
       // đổi cây xong là `location.reload()`, nên đừng để lại lớp phủ nào.
       onMoChonGiaPha: () => { closeSettings(); openChonGiaPha(); },
