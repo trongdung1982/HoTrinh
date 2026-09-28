@@ -193,10 +193,6 @@ trường XONG ở b145 cho cây mặc định, theo từng tài khoản XONG �
 nhật ký XONG ở b147)* · **tối ưu tốc độ đọc** khi mọi
 chức năng đã chạy *(681 người: ~0,4s)*. *(Số mục = `THIET-KE-QUAN-TRI.md`.)*
 
-⚠ **Cột *Nội dung thao tác* ở Kiểm duyệt co về một chữ mỗi dòng** (có từ
-prototype; b140 thêm cột ô tích lấy thêm ~30px). Nới = đè `style=width` của
-quantri3 cho cột *Hành động* / *Người thực hiện* — chờ chủ dự án bảo.
-
 ---
 
 ## Còn treo — không chặn gì, nhưng đừng quên

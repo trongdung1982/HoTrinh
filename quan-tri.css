@@ -2,7 +2,7 @@
    giapha-supabase · quan-tri.css
    Vai trò  : Giao diện trang Quản trị — CHÉP NGUYÊN VĂN CSS của prototype
               `quantri3.html` chủ dự án đã chốt 13/09/2026.
-   Phiên bản: 1.1.6 · Cập nhật: 27/09/2026 (b129c) — ô Tài khoản gắn/gỡ.
+   Phiên bản: 1.1.9 · Cập nhật: 29/09/2026 — nới cột Nội dung thao tác (Kiểm duyệt).
               1.1.5 (26/09, b125c) ô nhập sửa tại chỗ +
               cột Ghi chú đổi từ `:last-child` sang `.col-ghi` ở bảng Danh
               sách người; nới ô "Họ và tên" (`o-sua-ten`) sau khi nhìn ảnh
@@ -153,5 +153,29 @@ td .link { text-align:left; }
 th.kd-chon, td.kd-chon{ width:30px; padding:0 0 0 14px; }
 .kd-chon input{ width:16px; height:16px; margin:0; cursor:pointer; }
 .modal-desc{ white-space:pre-line; }
+
+/* ── Nới cột Nội dung thao tác (29/09/2026, chủ dự án bảo) ─────────────────
+   quantri3 đặt `style=width` cứng cho sáu cột kia (~820px), nên ở khung
+   1280px cột Nội dung chỉ còn ~60px — mỗi dòng một chữ (ảnh `kq-kd-cho`).
+   Đè bớt các cột kia, cho cột Nội dung một độ rộng SÀN: màn hẹp hơn thì
+   bảng cuộn ngang trong `.panel`, không bóp chữ nữa. Thứ tự cột theo thẻ
+   `<th>` trong QuanTri.html — đổi cột ở đó thì đổi số ở đây. */
+[data-kd-pane="cho"] th:nth-child(2){ width:110px !important; }  /* Gia phả */
+[data-kd-pane="cho"] th:nth-child(3){ width:95px !important; }  /* Thời điểm */
+[data-kd-pane="cho"] th:nth-child(4){ width:160px !important; }  /* Người thực hiện */
+[data-kd-pane="cho"] th:nth-child(5){ width:250px; }             /* Nội dung thao tác */
+[data-kd-pane="cho"] th:nth-child(6){ width:95px !important; }   /* Đụng chạm */
+[data-kd-pane="cho"] th:nth-child(7){ width:170px !important; }  /* Hành động */
+[data-kd-pane="cho"] td:nth-child(4){ overflow-wrap:anywhere; }
+/* Hai tab lịch sử: cùng một bệnh ở cột cuối — email in đậm không gãy dòng
+   nên đẩy *Lý do từ chối* về một chữ mỗi dòng. Cho email gãy được, và cho
+   hai cột chữ dài một độ rộng sàn. Cột: 1 Gia phả · 2 Thời điểm lưu ·
+   3 Người sửa · 4 Nội dung · 5 Người duyệt/từ chối · 6 Thời điểm duyệt/Lý do. */
+:is([data-kd-pane="duyet"], [data-kd-pane="tu_choi"]) th:nth-child(1){ width:110px !important; }
+:is([data-kd-pane="duyet"], [data-kd-pane="tu_choi"]) th:nth-child(2){ width:90px; }
+:is([data-kd-pane="duyet"], [data-kd-pane="tu_choi"]) :is(th:nth-child(3), th:nth-child(5)){ width:150px; }
+:is([data-kd-pane="duyet"], [data-kd-pane="tu_choi"]) :is(td:nth-child(3), td:nth-child(5)){ overflow-wrap:anywhere; }
+[data-kd-pane="duyet"] th:nth-child(4){ width:250px; }
+[data-kd-pane="tu_choi"] th:nth-child(4), [data-kd-pane="tu_choi"] th:nth-child(6){ width:200px; }
 /* Hộp kết quả dài (nhiều lý do khác nhau) không được tràn mép trên màn hình. */
 .modal-box{ max-height:calc(100vh - 32px); overflow-y:auto; }

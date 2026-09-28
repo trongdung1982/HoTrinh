@@ -58,9 +58,10 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
 - **Dữ liệu thật dài hơn chữ mẫu** — nút trong ô gãy dòng và chữ `button` căn
   giữa; bảng đặt trong `.layout` đẩy cột phải tràn mép. Vá bằng CSS phần app:
   `td .link{text-align:left}` · `.action-menu > .btn{white-space:nowrap}` ·
-  `.layout > div{min-width:0}`. Chỉ ảnh chụp bắt được. ⚠ Cột *Nội dung thao tác*
-  (Kiểm duyệt) và Sổ tài khoản vẫn chật — độ rộng cột nằm trong `style=` của
-  prototype, và ảnh prototype gãy y hệt; muốn rộng ra thì sửa prototype.
+  `.layout > div{min-width:0}`. Chỉ ảnh chụp bắt được. Cột *Nội dung thao tác*
+  (ba tab Kiểm duyệt) đã nới 29/09/2026 theo lời chủ dự án — đè `style=width`
+  của quantri3 bằng `[data-kd-pane] th:nth-child(n)` ở `quan-tri.css`, đánh số
+  theo thứ tự `<th>`: thêm/bớt cột thì sửa số. ⚠ Sổ tài khoản vẫn chật.
 - **`ganGoiY` bắn `input` SAU `khiChon`** — bộ nghe *"gõ tay thì bỏ lựa chọn"*
   chạy ngay sau cú chọn và xoá luôn lựa chọn (hộp Bàn giao cũ dính). Cách tránh:
   lúc bấm nút, so `ô.value === lựaChọn.email`.
