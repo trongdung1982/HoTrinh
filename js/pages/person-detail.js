@@ -4,8 +4,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, domains/{person,union,render}, services/{repo,sb},
 //            utils/{text,date,image,avatar,glyph,id}, config
-// Phiên bản: 1.37.0 · Cập nhật: 27/09/2026 — nhóm quan hệ bỏ hộp nền trắng,
-//            đổi thành hàng nền đồng nhất như bảng thông tin (`veNhom`)
+// Phiên bản: 1.38.0 · Cập nhật: 28/09/2026 17:41 (b148b) — câu "đã lược bớt"
+//            hỏi `state.nguoiBiChe` (máy chủ nói), không đoán theo `living`
 // Sổ tay   : so-tay/the-thong-tin.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -869,7 +869,7 @@ function veHangThongTin(p) {
   // "Bị ẩn" KHÔNG phải "còn thiếu" — hai thứ trông giống hệt nhau trên màn
   // hình mà kết luận ngược nhau: một bên app chạy đúng, một bên gia phả cần bổ
   // sung. Câu này là chỗ duy nhất nói được sự khác biệt đó.
-  if (state.daLocNguoiConSong && p.living === true) {
+  if (state.daLocNguoiConSong && state.nguoiBiChe && state.nguoiBiChe.has(p.id)) {
     const nhac = document.createElement('div');
     nhac.textContent =
       'Người này còn sống nên máy chủ đã lược bớt chi tiết trước khi gửi về. ' +

@@ -4,7 +4,7 @@
 // Lớp      : services — được gọi bởi: pages · gọi: services/sb,
 //            services/hinh-dang, utils, state
 // Phụ thuộc: services/sb.js, services/hinh-dang.js, utils/graph.js, state.js
-// Phiên bản: 0.9.0 · Cập nhật: 28/09/2026 07:00 (b141) — `taiAnh(blob)` thay giàn giáo
+// Phiên bản: 0.10.0 · Cập nhật: 28/09/2026 17:41 (b148b) — cờ che người còn sống do máy chủ bật
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -85,11 +85,11 @@ export async function napCay() {
   state.revision = cay.tree.revision;
   state.doi      = rapDoi(kq.dong.doi);
 
-  // Bản Apps Script còn một cờ `daLocNguoiConSong` — máy chủ cắt chi tiết
-  // người còn sống trước khi trả cây cho người chỉ có quyền xem. Trên nền này
-  // **chưa làm**: `02-rls.sql` lọc theo DÒNG, còn việc ấy phải lọc theo CỘT.
-  // Đừng đặt lại cờ ấy về `true` cho tới khi có luật thật đứng sau nó.
-  state.daLocNguoiConSong = false;
+  // Máy chủ cắt chi tiết người còn sống khi người gọi chỉ có vai xem
+  // (`luoc-do/50`). Cờ và danh sách đều do MÁY CHỦ nói — không tự suy từ vai
+  // hay từ ô Còn sống, vì luật "còn sống" nằm ở `coi_con_song()`.
+  state.daLocNguoiConSong = kq.dong.cheConSong === true;
+  state.nguoiBiChe = new Set(kq.dong.biChe || []);
 
   console.log(
     '[repo] nạp cây: ' + state.index.personById.size + ' người, ' +

@@ -207,9 +207,10 @@ có tên: `tao_gia_pha_moi()` trong `luoc-do/12-tao-cay.sql`, và lối vào là
 *+ Dựng gia phả mới* ở khu Gia phả của trang Quản trị. `repo.taoGiaPhaMoi()`
 thôi trả `'chualam'`. ⚠ Còn chờ chủ dự án dán hai file SQL.
 
-**Giấu chi tiết người còn sống với người chỉ có quyền xem** — chưa làm. RLS lọc
-theo **dòng**; việc này phải lọc theo **cột**. `state.daLocNguoiConSong` giữ
-nguyên trong mã nhưng **luôn `false`**.
+**Giấu chi tiết người còn sống với người chỉ có quyền xem** — mã xong ở b148
+(`luoc-do/50`, bàn thử 40/40); trạng thái dán: `KE-HOACH.md`. Máy chủ che trong
+`doc_cay()` và bỏ dòng ở các bảng đọc thẳng; `state.daLocNguoiConSong` +
+`state.nguoiBiChe` do máy chủ bật. Luật + hệ quả: `so-tay/phan-quyen.md`.
 
 **Lỗi trên điện thoại đi theo.** `BAT-DAU.md` mục 5 việc 1: chọn số đời không
 tự vẽ lại sơ đồ trên điện thoại. `pages/tree-view.js` chép nguyên sang, nên lỗi

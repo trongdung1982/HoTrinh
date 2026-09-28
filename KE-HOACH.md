@@ -1,9 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 · **b146 (báo trùng người + QTHT duyệt gộp = b124b) ·
-b147 (sao lưu đêm báo vào nhật ký) XONG — `48` · `49` ĐÃ DÁN, `SaoLuu.gs`
-0.6.0 ĐÃ THAY, sao lưu chạy thành công** (chủ dự án báo 28/09 15:47); bảng Lịch sử
-sao lưu trên app thật hiện đúng dòng 15:42 · Đạt — b147 ĐÓNG. Tám điểm dừng dưới chưa bấm thử.*
+*Cập nhật 28/09/2026 17:45 · **b148 (giấu người còn sống với vai xem) XONG MÃ
+— `50` CHƯA DÁN.** b146 · b147 xong, `48` · `49` đã dán. Chín điểm dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -28,6 +26,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b148** Giấu người còn sống | ⚠ Dán `50` trước (xem mục SQL). Ctrl+F5. *Quản trị → Gia phả →* cây thử `TH957` → *Mời gia nhập*: mời `khach@io.vn` với vai **Khách** (`xem`). Đăng nhập `khach@io.vn` → nhận lời mời → mở `TH957`: người còn sống (không ngày mất, sinh chưa quá 100 năm) chỉ còn tên, giới tính, năm sinh — không ảnh, không tiểu sử; trang chi tiết có dòng *"Người này còn sống nên máy chủ đã lược bớt…"*. Người đã mất vẫn đủ. Đăng nhập lại tài khoản của bạn: thấy đủ cả. Xong nhớ gỡ vai của `khach@io.vn` |
 | **b146** Báo trùng + gộp | ✓ `48` đã dán. Ctrl+F5 → *Quản trị → Gia phả → chip Báo trùng người*: ô 1 gõ tên một người ở cây thử `TH957`, bấm chọn một dòng; ô 2 chọn một người trùng với họ ở `T388` (hoặc cùng cây); ghi lý do → *Gửi báo trùng* → hộp báo mã nào sẽ ở lại, bảng dưới có dòng "Chờ duyệt". Sang *Quản trị hệ thống → tab Báo trùng người* → *Duyệt (gộp)* → *Duyệt và gộp* → hộp "Đã gộp …". Mở sơ đồ cây của người bị gộp: chỉ còn một người, vợ/chồng + con của cả hai bản đều về người ấy. Tab *Nhật ký* có dòng "Gộp hai bản ghi người". ⚠ Chỉ thử trên hai cây thử — gộp KHÔNG hoàn tác được bằng nút |
 | **b145** Công khai theo trường | Ctrl+F5 → *Quản trị hệ thống → Cây mặc định*: bảng bảy dòng có ô tích. Đặt cây thử `TH957` làm mặc định, tắt *Ngày tháng sinh cụ thể* + *Ảnh* → *Lưu*. Đăng nhập `khach@io.vn` (không có chân ở `TH957`) mở sơ đồ: thẻ người chỉ còn năm sinh, không ảnh. Đăng nhập lại bằng tài khoản của bạn: vẫn thấy đủ. *Nhật ký* có dòng "Đổi trường công khai cho khách". ⚠ Xong nhớ đặt lại cây mặc định như cũ |
 | **b141** Tải ảnh | Ctrl+F5. Mở một người ở cây `TH957` → *Sửa* → khối Ảnh → thêm một tấm ảnh chụp điện thoại → *Lưu*. Đạt khi ảnh hiện trên ô sơ đồ, và bấm vào ảnh ở trang chi tiết thì ra bản lớn nét |
@@ -113,6 +112,14 @@ mới*). Dán `49` mà chưa thay mã thì không ai gọi; thay mã mà chưa d
 thì bản sao lưu vẫn ghi bình thường, chỉ không báo về. Bàn thử: `do-b147.mjs`
 22/22 · `kiem-sao-luu.mjs` 46/46.
 
+**`50` (b148) — CHƯA DÁN. ĐƯỢC dán, sau `49`.** Giấu chi tiết người còn sống
+với thành viên chỉ có vai `xem`. Bốn hàm mới (`coi_con_song` · `la_chi_xem_cay`
+· `ds_nguoi_xem_day_du` · `ds_cay_chi_xem`) · ⚠ bản ĐỨNG CUỐI của `doc_cay()`,
+`ds_nguoi_xem_duoc()` và luật đọc `doc_change_log` — dán lại `47` thì PHẢI dán
+lại `50` (`so-tay/phan-quyen.md`). Dán lại nhiều lần được. Tự kiểm 6/6 phải
+ĐẠT. Chưa dán thì app chạy như cũ (cờ che luôn tắt). Bàn thử: `do-b148a.mjs`
+40/40, cây 681 người đọc ~0,2s.
+
 ---
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
@@ -125,7 +132,7 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 28/09 08:04 chỉ có cây NTB; file SQL khôi phục chứa cả gia phả, KHÔNG thả vào
 `supabase/`.
 
-**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử tám điểm
+**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử chín điểm
 dừng ở trên trước.
 
 ### Trang Quản trị — đọc `so-tay/trang-quan-tri.md` trước khi đụng
@@ -179,7 +186,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Sao lưu KHÔNG chép ảnh** — chỉ liệt kê. Ảnh vẫn nằm đúng một chỗ | `KIEN-TRUC.md` mục 7 |
 | Repo vệ tinh `LeVanTrac` · `NguyenQuang` kẹt Pages từ 28/09 08:12 (push dồn → deploy giẫm nhau). Chủ dự án bảo **treo** — app chưa xong; lần push sau thường tự gỡ | `.github/workflows/dong-bo-sang-levantrac.yml` |
 | Bốn màn hình chưa mở được (sao lưu · dựng gia phả mới · bỏ chọn · quyền ảnh) | `KIEN-TRUC.md` mục 6 |
-| Giấu chi tiết người còn sống với người chỉ có quyền xem | `KIEN-TRUC.md` mục 6 |
+| Người chỉ xem mở trang hồ sơ (`#…/nguoi/<mã>`) của người còn sống → báo *không có quyền xem* (RLS bỏ dòng, không có bản che). Cần hàm máy chủ riêng nếu muốn hiện bản che · ngày cưới (`unions`) chưa che | `so-tay/phan-quyen.md` mục b148 |
 | Tháo giàn giáo `tuong-thich.js` — mốc **2 file** (b141: `backup` · `chon-gia-pha`, hai màn hình chưa làm), chỉ được giảm. Nối hai màn ấy (hoặc bỏ hẳn) là về 0, xoá file | `KIEN-TRUC.md` mục 4 |
 | Đổi tên ba vết sẹo (`driveFileId` · `driveThumbUrl` · `tuong-thich`) | `KIEN-TRUC.md` mục 4 |
 | Đợt 7 của phép tách `person-edit.js` — treo từ b48 | `BAT-DAU.md` mục 5 |

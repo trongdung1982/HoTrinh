@@ -40,8 +40,11 @@ Dán lại file bên trái thì phải dán tiếp các file bên phải, đúng
 - `03`/`06`/`08`/`13`→`25`→`27`→**`28`** — `28` giữ bản cuối của `luu_cay()` và
   `tu_choi_thay_doi()`, khác `27` chín chỗ. Dán lại `27` sau `28` là mất cả
   chín, **không một lời báo**.
-- `26`/`27`/`30`→**`47`** (bản cuối `doc_cay()` · `ds_nguoi_xem_duoc()`) —
-  quên là khách đọc lại MỌI trường, im lặng.
+- `26`/`27`/`30`→`47`→**`50`** (bản cuối `doc_cay()` · `ds_nguoi_xem_duoc()`
+  · luật `doc_change_log`) — quên `47` là khách đọc lại MỌI trường; quên `50`
+  là người chỉ xem đọc lại chi tiết người còn sống. Cả hai im lặng.
+- ⚠ **`02` định nghĩa `doc_change_log` bản rộng** — dán lại `02` (vốn đã cấm
+  sau `26`) là mở lại `change_log` cho người chỉ xem.
 - **Sau `26` KHÔNG dán lại `02`/`11`** — luật đọc trên bảng người của chúng hỏi
   `tree_id` đã bỏ; bản đứng cuối của bốn luật ấy ở `26` mục 5.
 - `34`→`35`→`36`→`37`→`38`→`39`. `36` giữ bản cuối của
@@ -90,6 +93,25 @@ cân: `THIET-KE-NHIEU-CAY.md` 11.10.
 - ⚠ **`21` không dán lại một mình được nữa** (đo 23/09): `ds_de_xuat_gan()` của
   nó còn nối `persons.tree_id`, cột `26` đã bỏ — lỗi to tiếng, `27` là chỗ vá.
   Bài đo dựng lại ĐÚNG MỘT hàm bản cũ thay vì dán lại cả file.
+
+## Giấu người còn sống với người chỉ xem — `50` (b148, 28/09/2026)
+
+Luật chốt: vai `xem` của cây ấy (không phải chủ cây, không phải QTHT) thấy
+người còn sống chỉ còn họ tên · giới tính · năm sinh. "Còn sống" =
+`coi_con_song()`: ô Còn sống bật + không dấu vết đã mất (ngày/nơi mất, an
+táng, giỗ) + sinh chưa quá 100 năm hoặc không rõ năm.
+
+- **Ba đường đọc phải khép CÙNG NHAU** — `doc_cay()` che, `ds_nguoi_xem_duoc()`
+  bỏ dòng (kéo theo `persons` · `media` · `unions`), `doc_change_log` bỏ cây
+  chỉ xem (`diff`/`truoc` chứa nguyên bản ghi). Thiếu một là tấm rèm.
+- **Được thấy đủ nếu có đường khác**: có vai khác `xem` ở một cây chứa người
+  ấy, hoặc là chính mình (`tai_khoan.person_id`) — `ds_nguoi_xem_day_du()`.
+- App hỏi `bi_che` (danh sách mã máy chủ đã che), KHÔNG hỏi `p.living`: cụ 1850
+  mang `living` bật mà không bị che.
+- ⚠ Hệ quả: người chỉ xem mở trang hồ sơ (`docGiaDinhNguoi`, đọc thẳng bảng)
+  của người còn sống thì báo *không có quyền xem* — dòng bị RLS bỏ, không có
+  bản che. Muốn hiện bản che ở đó thì cần hàm máy chủ riêng.
+- Chưa che (như `47`): `unions` (ngày cưới) · `sources`. Đo: `do-b148a.mjs`.
 
 ## Bài học
 

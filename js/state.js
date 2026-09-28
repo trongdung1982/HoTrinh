@@ -3,7 +3,7 @@
 // Vai trò  : Trạng thái dùng chung toàn app. CHỈ lớp pages được ghi.
 // Lớp      : (đặc biệt) — chỉ đọc/ghi dữ liệu, không chứa logic
 // Phụ thuộc: config
-// Phiên bản: 0.7.0 · Cập nhật: 27/09/2026 (b125g) — `doi`
+// Phiên bản: 0.8.0 · Cập nhật: 28/09/2026 17:41 (b148b) — `nguoiBiChe`
 // ============================================================
 import { DEFAULT_SCOPE } from './config.js';
 
@@ -47,12 +47,10 @@ const MAC_DINH = {
   // Máy chủ có cắt chi tiết người còn sống trước khi trả cây hay không.
   // Giữ riêng để không lẫn "bị ẩn" với "gia phả còn thiếu" — hai thứ trông
   // giống hệt nhau trên màn hình mà kết luận ngược nhau.
-  //
-  // ⚠ Trên nền Supabase cờ này LUÔN `false`, vì việc ấy **chưa làm**. RLS lọc
-  // theo DÒNG (ai thấy người nào), còn giấu ngày sinh của người còn sống là
-  // lọc theo CỘT — một cơ chế khác, chưa viết. Giữ nguyên cờ ở đây để
-  // `pages/` không phải đổi, nhưng đừng bật nó lên khi chưa có luật đứng sau.
+  // Máy chủ bật khi người gọi chỉ có vai xem (`luoc-do/50`, b148).
   daLocNguoiConSong: false,
+  // Mã những người máy chủ ĐÃ che — hỏi cái này, đừng hỏi `p.living`.
+  nguoiBiChe: new Set(),
 };
 
 export const state = { ...MAC_DINH, scope: { ...DEFAULT_SCOPE } };

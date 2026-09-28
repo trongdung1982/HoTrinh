@@ -5,7 +5,7 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.42.0 · Cập nhật: 28/09/2026 (b146) — sáu cửa báo trùng người
+// Phiên bản: 0.43.0 · Cập nhật: 28/09/2026 17:41 (b148b) — `layDong` đọc cờ che người còn sống
 //            (`luoc-do/48`); câu báo "chưa dán SQL". Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
@@ -629,6 +629,10 @@ export async function layDong(treeId) {
         imports:  imports.data  || [],
         maNhatKy: (maNhatKy.data || []).map((r) => r.ma),
         doi:      (!doi.error && doi.data) || [],   // `luoc-do/40` — Đời theo cây, máy chủ tính
+        // `luoc-do/50` — máy chủ đã che người còn sống (người gọi chỉ có vai xem),
+        // kèm ĐÚNG danh sách mã đã che. Máy chủ chưa dán `50` thì cả hai rỗng.
+        cheConSong: chung.data.che_con_song === true,
+        biChe:      Array.isArray(chung.data.bi_che) ? chung.data.bi_che : [],
       },
     };
   } catch (e) {
