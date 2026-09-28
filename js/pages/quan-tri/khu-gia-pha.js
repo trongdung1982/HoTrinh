@@ -6,8 +6,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, utils/id, quan-tri/trang-chi-tiet ·
 //            quan-tri/hop-thoai · quan-tri/o-bang · quan-tri/khu-bao-trung
-// Phiên bản: 1.4.0 · Cập nhật: 28/09/2026 (b146) — chip thứ năm *Báo trùng
-//            người* (`khu-bao-trung.js`). Lịch sử: `git log -p`.
+// Phiên bản: 1.5.0 · Cập nhật: 28/09/2026 (b150) — cột *Thông tin công khai*
+//            mở trang `#gia-pha/cong-khai/<mã>`. Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -17,28 +17,27 @@
 // ⚠ MÁY CHỦ QUYẾT, MÀN HÌNH CHỈ CHUYỂN LỜI: `ds_gia_pha()` trả `coTheXem` ·
 //   `toiLaChu` · `daNopDon` · `duocMoi`. Ẩn/mờ một nút ở đây KHÔNG phải hàng
 //   rào — chỉ để không mời người ta bấm thứ chắc chắn bị từ chối.
-// ⚠ **Chỗ khác prototype, vì máy chủ chưa làm được**: cột *Thông tin công
-//   khai* (nhóm E) · ô *Quyền đề nghị* trong đơn xin vào.
+// ⚠ **Chỗ khác prototype, vì máy chủ chưa làm được**: ô *Quyền đề nghị*
+//   trong đơn xin vào.
 
 import {
   layDanhSachGiaPha, datChoNguoiLaThayTen, chonGiaPha, xinVaoCay, taoGiaPhaMoi,
   nhanLoiMoi, tuChoiLoiMoi, rutDonXinVao, roiCay, dsThanhVien,
-  xinXoaCay, huyXinXoaCay, xinDoiVai, demChoKiemDuyet,
+  xinXoaCay, huyXinXoaCay, xinDoiVai, demChoKiemDuyet, dsCongKhaiTaiKhoan,
 } from '../../services/sb.js';
 import { sinhMaCay } from '../../utils/id.js';
 import { duongDan } from './trang-chi-tiet.js';
 import { veKhuBaoTrung } from './khu-bao-trung.js';
+import { lienKetCongKhai } from './trang-cong-khai.js';
 import { hoi, bao } from './hop-thoai.js';
 import {
-  TEN_VAI, td, span, tenVaPhu, huyHieu, nut, nutMo, lienKet, chuaCo, hangNut,
+  TEN_VAI, td, span, tenVaPhu, huyHieu, nut, nutMo, lienKet, hangNut,
   menuTuyChon, mucMenu, dongTrong, dongLoi,
 } from './o-bang.js';
 
 /** Số cột của từng bảng — phải khớp `<thead>` trong QuanTri.html. */
 const SO_COT = { manage: 9, member: 7, available: 6 };
 
-const LY_DO_CONG_KHAI =
-  'Công khai theo từng trường thông tin chưa có ở máy chủ — việc riêng, làm sau b120.';
 const LY_DO_QUYEN_DE_NGHI =
   'Máy chủ chưa ghi quyền đề nghị vào đơn — người duyệt chọn quyền lúc duyệt (đổi ở b118b).';
 
@@ -112,12 +111,14 @@ async function nap(sec, phien) {
   const dsThanhVien = ds.filter((c) => !dsQuanLy.includes(c) && (c.vaiCuaToi || c.duocMoi));
   const dsXinVao = ds.filter((c) => !c.vaiCuaToi && !c.duocMoi && !c.toiLaChu);
 
+  // Một lần gọi cho cả hai bảng — cột *Thông tin công khai* điền số khi về.
+  const huaCK = dsCongKhaiTaiKhoan();
   veBang(tb.manage, SO_COT.manage, dsQuanLy,
     'Bạn chưa quản lý gia phả nào — làm chủ hoặc được phong Quản trị gia phả thì cây ấy hiện ở đây.',
-    (c) => dongQuanLy(c, phien, napLai));
+    (c) => dongQuanLy(c, phien, napLai, huaCK));
   veBang(tb.member, SO_COT.member, dsThanhVien,
     'Bạn chưa là thành viên của gia phả nào khác.',
-    (c) => dongThanhVien(c, phien, napLai));
+    (c) => dongThanhVien(c, phien, napLai, huaCK));
   veBang(tb.available, SO_COT.available, dsXinVao,
     'Không có gia phả nào khác để xin vào lúc này.',
     (c) => dongXinVao(c, phien, napLai));
@@ -133,7 +134,7 @@ function veBang(tbody, soCot, ds, chuRong, veDong) {
 // Chip *Tôi quản lý* — 9 cột
 // ============================================================
 
-function dongQuanLy(c, phien, napLai) {
+function dongQuanLy(c, phien, napLai, huaCK) {
   const tr = document.createElement('tr');
   const duocDieuHanh = c.toiLaChu || phien.laQuanTriHeThong;
 
@@ -151,7 +152,7 @@ function dongQuanLy(c, phien, napLai) {
   const phuTV = span('sub', '');
   const oTV = td(lkTV, phuTV);
 
-  const oCongKhai = td(chuaCo('Chưa có', LY_DO_CONG_KHAI));
+  const oCongKhai = td(lienKetCongKhai(duongDan('gia-pha', 'cong-khai', c.treeCode), huaCK, c.fileId));
   const oLa = td(oCongTac(c, duocDieuHanh));
   const oHienThi = td(oCayHienThi(c, phien, 'Cây mặc định'));
 
@@ -326,7 +327,7 @@ function oXoaCay(c, duocDieuHanh, laQT, napLai) {
 // Chip *Tôi là thành viên* — 7 cột
 // ============================================================
 
-function dongThanhVien(c, phien, napLai) {
+function dongThanhVien(c, phien, napLai, huaCK) {
   const tr = document.createElement('tr');
 
   const oQuyen = td(c.duocMoi
@@ -342,7 +343,8 @@ function dongThanhVien(c, phien, napLai) {
     td(c.emailChu ? span('name', c.emailChu) : ''),
     td(c.treeCode),
     oQuyen,
-    td(chuaCo('Chưa có', LY_DO_CONG_KHAI)),
+    // Được mời chưa nhận thì chưa có chân trong cây — chưa có gì để đặt.
+    td(c.duocMoi ? '' : lienKetCongKhai(duongDan('gia-pha', 'cong-khai', c.treeCode), huaCK, c.fileId)),
     td(oCayHienThi(c, phien, 'Đặt mặc định')),
     td(c.duocMoi ? oNhanLoiMoi(c, napLai) : oTuyChonThanhVien(c, napLai)),
   );

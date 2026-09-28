@@ -118,10 +118,13 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   nơi bảng *Lời mời đã gửi* ở. Một bảng, một địa chỉ.
 - **Người duyệt · lúc duyệt · lý do từ chối** đến từ `43` (b136) — bản đứng
   cuối của `ds_kiem_duyet()`. Máy chủ chưa dán `43` thì ba ô trống, không bịa.
-- **`#account-detail` · `#public-info-detail` có trong HTML mà không có lối vào** —
-  cái sau chưa dựng. ⚠ Trong quantri3 nó là cài đặt theo NGƯỜI của từng tài
-  khoản ("Nhân vật của bạn"), KHÔNG phải bảng theo cây của `47` (tab Cây mặc
-  định) — đọc nhầm một lần 28/09. Chờ chốt: `KE-HOACH.md` b150.
+- **`#account-detail` có trong HTML mà không có lối vào.**
+- **`#public-info-detail` (b150, `trang-cong-khai.js`)** là cài đặt của MỘT
+  TÀI KHOẢN trong một cây ("Nhân vật của bạn"), KHÔNG phải bảng theo cây của
+  `47` (tab Cây mặc định) — đọc nhầm một lần 28/09. Ba lối vào là cột *Thông
+  tin công khai* ở ba bảng; QTHT đặt hộ qua `#quan-tri-he-thong/cong-khai/
+  <mã tài khoản>~<mã cây>`. Bảy dòng thay vì mười một: bốn dòng kia không có
+  cột nào để che. Nút *Xem chi tiết* ở tab Cây mặc định vẫn ẩn.
 - **`?tab=<tên>` trên địa chỉ QuanTri.html** mở thẳng một tab của khu QTHT
   (b149, lối vào từ Cài đặt sơ đồ) — đọc một lần rồi xoá khỏi địa chỉ.
 - **Duyệt *xin đổi quyền* nối vào bảng Thành viên & quyền sẵn có, KHÔNG ở

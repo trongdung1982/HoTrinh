@@ -6,8 +6,8 @@
 //            tin cậy · gỡ · duyệt đơn, cộng mời vào cây khác và đổi họ tên.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/hop-thoai · trang-cay · khu-quan-tri-he-thong · o-bang
-// Phiên bản: 1.1.0 · Cập nhật: 27/09/2026 (b133) — đầu trang thêm "gắn với
-//            ai" · dòng họ · số cây làm chủ; tên cây và tên người bấm được.
+// Phiên bản: 1.2.0 · Cập nhật: 28/09/2026 (b150) — cột *Thông tin công khai*
+//            mở trang đặt hộ `#quan-tri-he-thong/cong-khai/<tk>~<cây>`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -27,20 +27,19 @@
 
 import {
   dsTaiKhoanHeThong, dsCayCuaTaiKhoan, layDanhSachGiaPha, moiVaoCay, datHoTenTaiKhoan,
+  dsCongKhaiTaiKhoan,
 } from '../../services/sb.js';
 import { duongDan } from './trang-chi-tiet.js';
+import { lienKetCongKhai } from './trang-cong-khai.js';
 import { hoi } from './hop-thoai.js';
 import { datTabQuanTriHeThong } from './khu-quan-tri-he-thong.js';
 import {
   hoiDoiVai, hoiTinCay, hoiGo, hoiDuyetDon, hoiTuChoiDon, moSoDo, cumCay,
 } from './trang-cay.js';
 import {
-  TEN_VAI, CHON_VAI, td, span, huyHieu, nut, mucMenu, menuTuyChon, chuaCo, lienKet,
+  TEN_VAI, CHON_VAI, td, span, huyHieu, nut, mucMenu, menuTuyChon, lienKet,
   dongTrong, ngay,
 } from './o-bang.js';
-
-const LY_DO_CONG_KHAI =
-  'Công khai theo từng trường thông tin chưa có ở máy chủ — việc riêng, làm sau b120.';
 
 /**
  * @param {HTMLElement} sec  `section#sys-account-trees`
@@ -161,10 +160,11 @@ export async function mountTrangTaiKhoan(sec, ctx) {
   }
 
   tb.innerHTML = '';
-  for (const c of ds) tb.append(dongCay(c, tk, ctx.phien, napLai));
+  const huaCK = dsCongKhaiTaiKhoan(tk.userId);
+  for (const c of ds) tb.append(dongCay(c, tk, ctx.phien, napLai, huaCK));
 }
 
-function dongCay(c, tk, phien, napLai) {
+function dongCay(c, tk, phien, napLai, huaCK) {
   const tt = c.daDuyet ? 'thanhvien' : c.moiLuc ? 'duocmoi' : 'donxin';
   const cay = { treeId: c.treeId, ten: c.ten, maCay: c.maCay };
   // Hình dạng `t` mà các hộp hỏi chờ: quyền gắn vào TÀI KHOẢN, còn vai và mã
@@ -230,7 +230,9 @@ function dongCay(c, tk, phien, napLai) {
       ? [lienKet(c.tenNguoi || c.maNguoi, duongDan('quan-tri-he-thong', 'nguoi', c.maNguoi)),
         span('sub', 'ID: ' + c.maNguoi)]
       : [span('name', 'Chưa gắn')])),
-    td(chuaCo('Chưa có', LY_DO_CONG_KHAI)),
+    td(tt === 'thanhvien'
+      ? lienKetCongKhai(duongDan('quan-tri-he-thong', 'cong-khai', tk.maNgan + '~' + c.maCay), huaCK, c.treeId)
+      : ''),
     trang,
     td(menuTuyChon('Chọn ▾', ds)),
   );

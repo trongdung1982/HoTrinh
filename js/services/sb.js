@@ -5,8 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.43.0 · Cập nhật: 28/09/2026 17:41 (b148b) — `layDong` đọc cờ che người còn sống
-//            (`luoc-do/48`); câu báo "chưa dán SQL". Lịch sử: `git log -p`.
+// Phiên bản: 0.44.0 · Cập nhật: 28/09/2026 (b150) — ba cửa thông tin công khai
+//            của tài khoản (`luoc-do/51`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -861,6 +861,56 @@ export async function datTruongCongKhai(treeId, ds) {
   if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
   const { data, error } = await k.rpc('dat_truong_cong_khai', {
     p_tree: treeId, p_truong: ds || [],
+  });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  if (data && data.ok === false) {
+    return { ok: false, loi: data.lyDo || 'Không lưu được thiết lập công khai.' };
+  }
+  return { ok: true, loi: null };
+}
+
+/**
+ * Thông tin công khai CỦA MỘT TÀI KHOẢN ở mọi cây nó là thành viên (`luoc-do/51`,
+ * b150) — cho cột *"n thông tin →"*. `userId` bỏ trống = chính mình; người khác
+ * thì chỉ Quản trị hệ thống đọc được (máy chủ gác).
+ *
+ * @returns {Promise<{ok:boolean, theoCay:Map<string,string[]|null>, loi:string|null}>}
+ *   `null` trong Map = chưa đặt = theo cây.
+ */
+export async function dsCongKhaiTaiKhoan(userId) {
+  const k = layKhach();
+  if (!k) return { ok: false, theoCay: new Map(), loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('ds_cong_khai_tai_khoan', { p_user: userId || null });
+  if (error) return { ok: false, theoCay: new Map(), loi: cauLoi(error) };
+  return { ok: true, theoCay: new Map((data || []).map((d) => [d.tree_id, d.truong])), loi: null };
+}
+
+/**
+ * Một trang *Thông tin công khai* — cây · người được gắn (bản ĐỦ) · cài đặt.
+ *
+ * @returns {Promise<{ok:boolean, loi:string|null, ten?:string, maCay?:string,
+ *   truongCay?:string[], truong?:string[]|null, email?:string, nguoi?:object|null,
+ *   doi?:number|null}>}  `nguoi` là dòng thô của bảng `persons`.
+ */
+export async function docCongKhaiTaiKhoan(treeId, userId) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('doc_cong_khai_tai_khoan', {
+    p_tree: treeId, p_user: userId || null,
+  });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  if (!data || data.ok === false) {
+    return { ok: false, loi: (data && data.lyDo) || 'Không đọc được thiết lập công khai.' };
+  }
+  return { ...data, loi: null };
+}
+
+/** Lưu nhóm trường khách được thấy về người của tài khoản ở một cây. */
+export async function datCongKhaiTaiKhoan(treeId, userId, ds) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('dat_cong_khai_tai_khoan', {
+    p_tree: treeId, p_user: userId || null, p_truong: ds || [],
   });
   if (error) return { ok: false, loi: cauLoi(error) };
   if (data && data.ok === false) {

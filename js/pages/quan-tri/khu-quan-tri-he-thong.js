@@ -8,8 +8,8 @@
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang ·
 //            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don · khu-nhat-ky ·
 //            khu-tao-tai-khoan · khu-bao-trung
-// Phiên bản: 1.13.0 · Cập nhật: 28/09/2026 (b149) — `?tab=<tên>` trên địa chỉ
-//            mở thẳng một tab (lối vào từ Cài đặt sơ đồ). Lịch sử: `git log -p`.
+// Phiên bản: 1.13.1 · Cập nhật: 28/09/2026 (b150) — sửa ghi chú nút
+//            `#public-info-detail` (trang ấy theo tài khoản). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -470,8 +470,8 @@ function veCayMacDinh(sec, ds, cmd, napLai) {
       else oTV.closest('li').hidden = true;
     });
   }
-  // Nút sang `#public-info-detail` — trang ấy chưa dựng, và bảng ngay dưới đã
-  // là đủ nội dung của nó cho cây mặc định. Ẩn, không để chữ "Chưa có" gãy dòng.
+  // Nút sang `#public-info-detail` — trang ấy là cài đặt của MỘT TÀI KHOẢN
+  // (b150), không phải của cây; bảng ngay dưới đã là đủ phần của cây. Ẩn.
   sec.querySelector('#btn-view-default-tree-public-detail').hidden = true;
   veTruongCongKhai(sec, cay, napLai);
 

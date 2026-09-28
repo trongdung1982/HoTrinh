@@ -6,8 +6,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · quan-tri/hop-thoai · o-bang
 // Sổ tay   : so-tay/nhat-ky-he-thong.md · so-tay/trang-quan-tri.md
-// Phiên bản: 0.3.0 · Cập nhật: 28/09/2026 (b147) — tên việc `gop_nguoi` ·
-//            ba việc sao lưu đêm (`luoc-do/49`)
+// Phiên bản: 0.4.0 · Cập nhật: 28/09/2026 (b150) — tên việc
+//            `doi_cong_khai_ca_nhan` (`luoc-do/51`)
 // ============================================================
 //
 // ⚠ Máy chủ TỰ GHI (trigger của `luoc-do/42`), trang này chỉ đọc và dọn.
@@ -58,6 +58,7 @@ const TEN_VIEC = {
   doi_chu_cay: ['Bàn giao chủ gia phả', 'wait'],
   doi_cay_mac_dinh: ['Đổi cây mặc định', 'wait'],
   doi_truong_cong_khai: ['Đổi trường công khai cho khách', 'wait'],
+  doi_cong_khai_ca_nhan: ['Đổi thông tin công khai của một thành viên', 'wait'],
   gop_nguoi: ['Gộp hai bản ghi người', 'wait'],
   sao_luu_dem: ['Sao lưu đêm', ''],
   sao_luu_canh_bao: ['Sao lưu đêm — có cảnh báo', 'wait'],
@@ -86,7 +87,7 @@ function chiTiet(d) {
     phan[0] = d.doiTuong ? 'Nay: ' + d.doiTuong : 'Bỏ cây mặc định';
     if (c.cu) phan.push('trước: ' + c.cu);
   }
-  if (d.suKien === 'doi_truong_cong_khai' && Array.isArray(c.moi)) {
+  if (/^doi_(truong_cong_khai|cong_khai_ca_nhan)$/.test(d.suKien) && Array.isArray(c.moi)) {
     phan.push('nay bật: ' + (c.moi.map((m) => TEN_TRUONG[m] || m).join(', ') || 'không trường nào'));
   }
   if (/^sao_luu_/.test(d.suKien)) {

@@ -6,8 +6,8 @@
 //            mật khẩu).
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/hop-thoai · trang-cay · trang-chi-tiet · o-bang
-// Phiên bản: 1.5.0 · Cập nhật: 27/09/2026 (b133) — tên ở cột "gắn với ai trong
-//            sơ đồ?" mở trang Hồ sơ người. Lịch sử: `git log -p`.
+// Phiên bản: 1.6.0 · Cập nhật: 28/09/2026 (b150) — cột *Thông tin công khai*
+//            mở trang `#thanh-vien/cong-khai/<mã>`. Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -26,20 +26,19 @@ import {
   loiMoiQthtCuaToi, nhanQuyenQtht, tuChoiQuyenQtht,
   deXuatGanCuaToi, nopDeXuatGan, rutDeXuatGan, duyetDeXuatGan, goGanTaiKhoanCuaToi,
   deXuatDongHoCuaToi, nopDeXuatDongHo, rutDeXuatDongHo, datDongHoQtht, dsCayCoNguoi,
+  dsCongKhaiTaiKhoan,
 } from '../../services/sb.js';
 import { hoi, bao } from './hop-thoai.js';
 import { goiYNguoi, moSoDo } from './trang-cay.js';
 import { duongDan } from './trang-chi-tiet.js';
+import { lienKetCongKhai } from './trang-cong-khai.js';
 import {
-  TEN_VAI, td, span, huyHieu, datHuyHieu, nut, nutLink, lienKet, chuaCo,
+  TEN_VAI, td, span, huyHieu, datHuyHieu, nut, nutLink, lienKet,
   hangNut, dongTrong, chuDau, ngay, ngayGio,
 } from './o-bang.js';
 
 /** Bảng *Các gia phả tôi đang tham gia* hiện sẵn ngần này dòng (quantri3). */
 const SO_HIEN_TRUOC = 5;
-
-const LY_DO_CONG_KHAI =
-  'Công khai theo từng trường thông tin chưa có ở máy chủ — việc riêng, làm sau b120.';
 
 let moRong = false;
 
@@ -436,7 +435,8 @@ function veBangCay(sec, phien, kqCay, coMat, napLai) {
   }
 
   tbA.innerHTML = '';
-  ds.forEach((c, i) => (i < SO_HIEN_TRUOC ? tbA : tbB).append(dongCay(c, phien, coMat)));
+  const huaCK = dsCongKhaiTaiKhoan();
+  ds.forEach((c, i) => (i < SO_HIEN_TRUOC ? tbA : tbB).append(dongCay(c, phien, coMat, huaCK)));
 
   const them = ds.length - SO_HIEN_TRUOC;
   if (them <= 0) return;
@@ -467,7 +467,7 @@ function lienKetNguoi(ten, ma) {
  *   hiện người ở cả cây không có họ (b132). Sửa/nộp mã ở panel *Mã người &
  *   Dòng họ* phía trên, không có nút riêng trên từng dòng cây.
  */
-function dongCay(c, phien, coMat) {
+function dongCay(c, phien, coMat, huaCK) {
   const trangThai = trangThaiCuaToi(c);
   const cay = { treeId: c.fileId, ten: c.ten || '', maCay: c.treeCode };
 
@@ -498,7 +498,8 @@ function dongCay(c, phien, coMat) {
     td(c.treeCode),
     td(vai),
     td(gan),
-    td(chuaCo('Chưa có', LY_DO_CONG_KHAI)),
+    td(trangThai === 'thanhvien'
+      ? lienKetCongKhai(duongDan('thanh-vien', 'cong-khai', c.treeCode), huaCK, c.fileId) : ''),
     td(trang),
     td(viec.length > 1 ? hangNut(...viec) : (viec[0] || '')),
   );

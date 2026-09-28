@@ -4,10 +4,10 @@
 //            trong QuanTri.html, đọc `#`, hiện đúng MỘT `<section class="view">`
 //            và giao cho khu/trang ấy đổ dữ liệu.
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: services/sb, pages/dang-nhap, quan-tri/khu-kiem-duyet ·
-//            khu-gia-pha · khu-tai-khoan · khu-quan-tri-he-thong · trang-cay ·
-//            trang-tai-khoan · trang-moi · trang-ho-so-nguoi · trang-chi-tiet · o-bang
-// Phiên bản: 1.4.0 · Cập nhật: 28/09/2026 (b135 — số thanh trái cộng mọi cây)
+// Phụ thuộc: services/sb, pages/dang-nhap, quan-tri/khu-* (bốn khu) · trang-cay ·
+//            trang-tai-khoan · trang-moi · trang-ho-so-nguoi · trang-cong-khai ·
+//            trang-chi-tiet · o-bang
+// Phiên bản: 1.5.0 · Cập nhật: 28/09/2026 (b150 — trang Thông tin công khai)
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -39,6 +39,7 @@ import { mountTrangCay, MUC_TRANG_CAY } from './trang-cay.js';
 import { mountTrangTaiKhoan } from './trang-tai-khoan.js';
 import { mountTrangMoi } from './trang-moi.js';
 import { mountHoSoNguoi } from './trang-ho-so-nguoi.js';
+import { mountCongKhai } from './trang-cong-khai.js';
 import { duongDan } from './trang-chi-tiet.js';
 import { chuDau } from './o-bang.js';
 
@@ -81,6 +82,11 @@ const TRANG = [
   { khu: 'gia-pha', ma: 'nguoi', view: 'person-profile', mount: mountHoSoNguoi, muc: [] },
   { khu: 'thanh-vien', ma: 'nguoi', view: 'person-profile', mount: mountHoSoNguoi, muc: [] },
   { khu: 'quan-tri-he-thong', ma: 'nguoi', view: 'person-profile', mount: mountHoSoNguoi, muc: [] },
+  // quantri3 `#public-info-detail` (b150) — ba lối vào như prototype. Ở khu
+  // QTHT mã là `<mã tài khoản>~<mã cây>`: đặt hộ một tài khoản khác.
+  { khu: 'gia-pha', ma: 'cong-khai', view: 'public-info-detail', mount: mountCongKhai, muc: [] },
+  { khu: 'thanh-vien', ma: 'cong-khai', view: 'public-info-detail', mount: mountCongKhai, muc: [] },
+  { khu: 'quan-tri-he-thong', ma: 'cong-khai', view: 'public-info-detail', mount: mountCongKhai, muc: [] },
 ];
 
 // ============================================================

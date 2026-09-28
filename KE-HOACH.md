@@ -1,8 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 28/09/2026 · **b148 (giấu người còn sống + ngày cưới với vai xem)
-XONG MÃ — `50` CHƯA DÁN · b149 (nút Sao lưu sang QuanTri) XONG · b150 TẠM
-DỪNG chờ chủ dự án chọn (A)/(B).** Mười điểm dừng dưới chưa bấm thử.*
+*Cập nhật 28/09/2026 · **b148 (giấu người còn sống) XONG MÃ — `50` CHƯA DÁN ·
+b149 (nút Sao lưu) XONG · b150 (Thông tin công khai của tôi, đường A) XONG MÃ —
+`51` CHƯA DÁN, dán SAU `50`.** Mười một điểm dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -27,6 +27,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b150** Thông tin công khai của tôi | ⚠ Dán `50` rồi `51` trước. Ctrl+F5 → *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia*: cột *Thông tin công khai* ghi "7 thông tin →" → bấm ở dòng cây thử `TH957` → trang bảy dòng, giá trị của người bạn được gắn → tắt *Ảnh* + *Tiểu sử* → *Lưu thiết lập công khai*. *Quản trị hệ thống → Cây mặc định*: đặt `TH957` (tạm). Đăng nhập `khach@io.vn` (không có chân ở `TH957`) mở sơ đồ: người của bạn không ảnh, không tiểu sử; người khác vẫn đủ. ⚠ Người của bạn phải CÓ trong `TH957` thì mới thấy khác. Xong: bật lại hai trường, đặt lại cây mặc định như cũ |
 | **b149** Nút Sao lưu | Ctrl+F5. Sơ đồ → ⚙ Cài đặt: có khối *Sao lưu & khôi phục*, nút *Mở Sao lưu (trang Quản trị)* → bấm → sang trang Quản trị, đang đứng ở tab **Sao lưu**. Đăng nhập `khach@io.vn` → ⚙ Cài đặt: KHÔNG có khối ấy |
 | **b148** Giấu người còn sống | ⚠ Dán `50` trước (xem mục SQL). Ctrl+F5. *Quản trị → Gia phả →* cây thử `TH957` → *Mời gia nhập*: mời `khach@io.vn` với vai **Khách** (`xem`). Đăng nhập `khach@io.vn` → nhận lời mời → mở `TH957`: người còn sống (không ngày mất, sinh chưa quá 100 năm) chỉ còn tên, giới tính, năm sinh — không ảnh, không tiểu sử; trang chi tiết có dòng *"Người này còn sống nên máy chủ đã lược bớt…"*. Người đã mất vẫn đủ. Thêm: *Quản trị → Gia phả →* `TH957` → *Danh sách người* → bấm tên một người còn sống → trang hồ sơ MỞ ĐƯỢC (bản che), không báo "không có quyền xem". Đăng nhập lại tài khoản của bạn: thấy đủ cả. Xong nhớ gỡ vai của `khach@io.vn` |
 | **b146** Báo trùng + gộp | ✓ `48` đã dán. Ctrl+F5 → *Quản trị → Gia phả → chip Báo trùng người*: ô 1 gõ tên một người ở cây thử `TH957`, bấm chọn một dòng; ô 2 chọn một người trùng với họ ở `T388` (hoặc cùng cây); ghi lý do → *Gửi báo trùng* → hộp báo mã nào sẽ ở lại, bảng dưới có dòng "Chờ duyệt". Sang *Quản trị hệ thống → tab Báo trùng người* → *Duyệt (gộp)* → *Duyệt và gộp* → hộp "Đã gộp …". Mở sơ đồ cây của người bị gộp: chỉ còn một người, vợ/chồng + con của cả hai bản đều về người ấy. Tab *Nhật ký* có dòng "Gộp hai bản ghi người". ⚠ Chỉ thử trên hai cây thử — gộp KHÔNG hoàn tác được bằng nút |
@@ -125,6 +126,14 @@ lại `50` (`so-tay/phan-quyen.md`). Dán lại nhiều lần được. Tự ki�
 đọc thẳng bảng). Bàn thử: `do-b148a.mjs` 57/57; cây 681 người đọc nhanh
 ngang Quản trị hệ thống (không bị che).
 
+**`51` (b150) — CHƯA DÁN. ĐƯỢC dán, SAU `50`** (file tự dừng nếu thiếu `50`).
+Thêm cột `tree_members.truong_cong_khai` (trống = theo cây, y hệt hôm nay) ·
+`truong_rieng_nguoi` (khoá kín) · `giao_truong` · ba cửa `ds_/doc_/dat_cong_khai_
+tai_khoan` · ⚠ bản ĐỨNG CUỐI của `doc_cay()` — dán lại `47`/`50` thì PHẢI dán
+lại `51` (`so-tay/phan-quyen.md`). Dán lại nhiều lần được. Tự kiểm 5/5 phải
+ĐẠT. Chưa dán thì cột *Thông tin công khai* ghi "Xem →", bấm vào trang báo
+*"Máy chủ chưa có chức năng này"*. Bàn thử: `do-b150.mjs` 33/33.
+
 ---
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
@@ -137,24 +146,13 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 28/09 08:04 chỉ có cây NTB; file SQL khôi phục chứa cả gia phả, KHÔNG thả vào
 `supabase/`.
 
-**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử mười điểm
-dừng ở trên trước.
+**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử mười một
+điểm dừng ở trên trước.
 
-**Đang chặn — cần chủ dự án chọn:**
-- ⏸ **b150 TẠM DỪNG — chờ chủ dự án chọn lại.** Đề xuất đã được gật ("chủ
-   cây đặt cho cả cây") ĐỌC SAI prototype: trong `quantri3.html`,
-   `#public-info-detail` là *"Thông tin công khai CỦA TÔI trong cây X"* — mỗi
-   TÀI KHOẢN chọn trường nào về CHÍNH NGƯỜI MÌNH được gắn thì người ngoài thấy
-   (tiêu đề "Nhân vật của bạn: P0001", cột "Thông tin đã nhập" = giá trị của
-   người ấy, 11 trường, lối vào từ *Tài khoản của tôi* · *Gia phả* · QTHT →
-   *Các gia phả của tài khoản*). Hai đường:
-   **(A) theo prototype** — cài đặt theo NGƯỜI: cột mới (vd `persons.truong_an`
-   hay bảng riêng), `doc_cay()` che thêm theo từng người với khách; ai được
-   đặt: chính chủ tài khoản gắn với người ấy + QTHT.
-   **(B) theo đề xuất** — cài đặt theo CÂY như tab Cây mặc định (b145), chủ cây
-   đặt; trang không có cột "Thông tin đã nhập".
-   Claude nghiêng về (A) vì prototype đã duyệt — nhưng (A) là việc lớn hơn
-   (lược đồ mới), nên hỏi trước. Chưa viết dòng mã nào cho b150.
+⚠ **b150 mới che với KHÁCH** (người xem cây chỉ nhờ cây mặc định — cùng người
+`47` che). Thành viên vai `xem` vẫn theo luật người còn sống của `50`, KHÔNG
+theo cài đặt riêng. Muốn áp cả cho vai `xem` thì một dòng ở `doc_cay()` —
+chờ chủ dự án bảo.
 
 ### Trang Quản trị — đọc `so-tay/trang-quan-tri.md` trước khi đụng
 
@@ -173,8 +171,7 @@ Sổ tay: `so-tay/luu-du-lieu.md` · kéo người + báo trùng/gộp:
 **Nhóm E quantri3** *(9.5 — nhật ký hệ thống XONG ở b134; tạo tài khoản XONG
 ở b143 bằng mật khẩu tạm — *gửi liên kết qua email* còn mờ, cần màn hình đặt
 mật khẩu + SMTP riêng, xem `so-tay/tao-tai-khoan.md` · công khai theo từng
-trường XONG ở b145 cho cây mặc định — trang `#public-info-detail` chưa dựng,
-xem *Đang chặn* (b150 tạm dừng) · sao lưu đêm báo vào
+trường XONG ở b145 cho cây mặc định, theo từng tài khoản XONG ở b150 · sao lưu đêm báo vào
 nhật ký XONG ở b147)* ·
 nhập GEDCOM/Excel qua máy chủ · **tối ưu tốc độ đọc** khi mọi
 chức năng đã chạy *(681 người: ~0,4s)*. *(Số mục = `THIET-KE-QUAN-TRI.md`.)*

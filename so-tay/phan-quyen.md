@@ -40,9 +40,11 @@ Dán lại file bên trái thì phải dán tiếp các file bên phải, đúng
 - `03`/`06`/`08`/`13`→`25`→`27`→**`28`** — `28` giữ bản cuối của `luu_cay()` và
   `tu_choi_thay_doi()`, khác `27` chín chỗ. Dán lại `27` sau `28` là mất cả
   chín, **không một lời báo**.
-- `26`/`27`/`30`→`47`→**`50`** (bản cuối `doc_cay()` · `ds_nguoi_xem_duoc()`
-  · `ds_hon_nhan_xem_duoc()` · luật `doc_change_log`) — quên `47` là khách đọc lại MỌI trường; quên `50`
-  là người chỉ xem đọc lại chi tiết người còn sống. Cả hai im lặng.
+- `26`/`27`/`30`→`47`→`50`→**`51`** (`50` giữ bản cuối `ds_nguoi_xem_duoc()`
+  · `ds_hon_nhan_xem_duoc()` · luật `doc_change_log`; **`51` giữ bản cuối
+  `doc_cay()`**) — quên `47` là khách đọc lại MỌI trường; quên `50` là người
+  chỉ xem đọc lại chi tiết người còn sống; quên `51` là khách thấy lại trường
+  mà chính chủ đã tắt. Cả ba im lặng.
 - ⚠ **`02` định nghĩa `doc_change_log` bản rộng** — dán lại `02` (vốn đã cấm
   sau `26`) là mở lại `change_log` cho người chỉ xem.
 - **Sau `26` KHÔNG dán lại `02`/`11`** — luật đọc trên bảng người của chúng hỏi
@@ -119,6 +121,19 @@ táng, giỗ) + sinh chưa quá 100 năm hoặc không rõ năm.
   xem CÂY ẤY; che cho người sửa được là mời họ Lưu bản trắng đè dữ liệu thật.
   Trang hồ sơ chỉ đọc nên che theo `ds_nguoi_bi_che()` toàn phần mềm.
 - Chưa che: `sources`. Đo: `do-b148a.mjs` 57/57.
+
+## Thông tin công khai của tôi — `51` (b150, 28/09/2026)
+
+Mỗi tài khoản chọn nhóm trường về NGƯỜI MÌNH ĐƯỢC GẮN mà khách của một cây
+thấy. Khách thấy = nhóm cây bật (`47`) ∩ nhóm người bật. Chỉ che KHÁCH.
+
+- ⚠ **Cài đặt nằm trên `tree_members`, KHÔNG trên `tree_persons`/`persons`**:
+  `gop_hai_nguoi()` (`48` mục 5) xoá dòng `tree_persons` của mã thua rồi chèn
+  lại trần — cài đặt để ở đó là MẤT khi gộp, và mất theo hướng LỘ.
+- Người có mặt ở cây này mà tài khoản gắn với họ không ở cây này (xuyên cây,
+  vành đai): lấy phần GIAO mọi cài đặt đã đặt — chặt nhất.
+- `truong_rieng_nguoi()` khoá kín với `authenticated`; chỉ `doc_cay()` gọi.
+- Đo: `do-b150.mjs` 33/33.
 
 ## Bài học
 
