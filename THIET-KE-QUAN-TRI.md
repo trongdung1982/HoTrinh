@@ -653,7 +653,7 @@ sửa file `.mjs` ở b114.
 | Prototype | Hàm `sb.js` | Trạng thái |
 |---|---|---|
 | `#sys-account-trees` — các cây của MỘT tài khoản, đổi vai/gỡ | `dsCayCuaTaiKhoan(userId)`, `doiVaiThanhVien`, `goThanhVien` | ✓ đã có, đúng luật 5b② *"cột xuyên cây mở ra bảng theo từng cây"* |
-| `#public-info-detail` — bật/tắt từng trường công khai theo cây | *(mới)* | ✗ THIẾU HẲN — không có bảng cấu hình "trường nào công khai theo từng cây" trong lược đồ hiện có; đây là tính năng RIÊNG TƯ CẤP TRƯỜNG, khác hẳn cờ `cho_nguoi_la_thay_ten` (chỉ bật/tắt cả tên) |
+| `#public-info-detail` — bật/tắt từng trường công khai theo cây ⚠ *(đọc lại 28/09: prototype là theo NGƯỜI của từng tài khoản trong cây — "Nhân vật của bạn", xem `KE-HOACH.md` b150)* | *(mới)* | ✗ THIẾU HẲN — không có bảng cấu hình "trường nào công khai theo từng cây" trong lược đồ hiện có; đây là tính năng RIÊNG TƯ CẤP TRƯỜNG, khác hẳn cờ `cho_nguoi_la_thay_ten` (chỉ bật/tắt cả tên) |
 | `#sys-default-tree-selector` | `datCayMacDinh(treeId)` · danh sách cây từ `layDanhSachGiaPha()` | ✓ đã có — xem dòng *Cây mặc định* ở bảng trên |
 
 ### 9.4 Tính năng prototype có mà thiết kế cũ (mục 1-8) chưa nói tới
