@@ -308,13 +308,15 @@ Chạy hàm **`goLichSaoLuu`**. Lịch tự động tắt; sao lưu bấm tay v�
 
 ### Khi `SaoLuu.gs` có bản mới — thay mã, KHÔNG làm lại từ đầu
 
-*(Lần gần nhất: bản 0.5.0, 28/09/2026 — đối chiếu số dòng đọc được với số
-thật trên máy chủ; thiếu thì gửi thư ⛔. Kèm SQL `45`: cây mới tự có tài khoản
-sao lưu, và bù cho cây đang thiếu.)*
+*(Lần gần nhất: bản **0.6.0**, 28/09/2026 — mỗi lần chạy tự báo kết quả vào
+**Nhật ký hệ thống**, nên trang *Quản trị hệ thống → Sao lưu & khôi phục*
+hiện được bảng *Lịch sử sao lưu* và thẻ *Sao lưu* ở Tổng quan. Kèm SQL `49`.
+Bản trước: 0.5.0 — đối chiếu số dòng với máy chủ, kèm SQL `45`.)*
 
 1. **Dán SQL trước:** Supabase → SQL Editor → dán cả file
-   `luoc-do/45-sao-luu-du-cay.sql` → **Run**. Bảng cuối phải ra **ĐẠT** ở
-   bốn dòng. Dòng 3 kể tên cây còn thiếu — phải là *"không"*.
+   `luoc-do/49-nhat-ky-sao-luu.sql` → **Run**. Bảng cuối phải ra **ĐẠT** ở
+   ba dòng. *(Máy chủ chưa có `45` thì dán `45` trước — bảng cuối của nó phải
+   ĐẠT bốn dòng, dòng 3 là "không".)*
 2. `script.google.com` → mở dự án **Sao luu gia pha Supabase** → bấm vào ô
    soạn thảo → **Ctrl + A** → **Delete**.
 3. Chép lại mã mới đúng như **Bước 5** (Notepad hoặc GitHub) → **Ctrl + V** →
@@ -324,6 +326,11 @@ sao lưu, và bù cho cây đang thiếu.)*
    **`Đối chiếu với máy chủ: ĐỦ`**. Ra **`THIẾU`** kèm tên bảng thì còn cây
    chưa có tài khoản sao lưu — chạy lại bước 1. Ra **`LỖI`** thì bước 1 chưa
    chạy; bản sao lưu vẫn ghi bình thường, chỉ không tự đối chiếu được.
+5. Chọn hàm **`saoLuuNgay`** → **Run** (một lần, cho có dòng đầu tiên). Mở
+   app → *Quản trị hệ thống → Sao lưu & khôi phục*: bảng *Lịch sử sao lưu* có
+   một dòng **Đạt** mang đúng tên file vừa ghi. Bảng vẫn báo *"Chưa có lần
+   sao lưu nào báo về"* thì `49` chưa dán — bản sao lưu trên Drive vẫn ghi
+   bình thường, chỉ không báo về được.
 
 ---
 

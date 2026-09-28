@@ -6,7 +6,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · quan-tri/hop-thoai · o-bang
 // Sổ tay   : so-tay/nhat-ky-he-thong.md · so-tay/trang-quan-tri.md
-// Phiên bản: 0.2.0 · Cập nhật: 28/09/2026 (b146) — tên việc `gop_nguoi`
+// Phiên bản: 0.3.0 · Cập nhật: 28/09/2026 (b147) — tên việc `gop_nguoi` ·
+//            ba việc sao lưu đêm (`luoc-do/49`)
 // ============================================================
 //
 // ⚠ Máy chủ TỰ GHI (trigger của `luoc-do/42`), trang này chỉ đọc và dọn.
@@ -58,6 +59,9 @@ const TEN_VIEC = {
   doi_cay_mac_dinh: ['Đổi cây mặc định', 'wait'],
   doi_truong_cong_khai: ['Đổi trường công khai cho khách', 'wait'],
   gop_nguoi: ['Gộp hai bản ghi người', 'wait'],
+  sao_luu_dem: ['Sao lưu đêm', ''],
+  sao_luu_canh_bao: ['Sao lưu đêm — có cảnh báo', 'wait'],
+  sao_luu_hong: ['Sao lưu đêm HỎNG', 'red'],
   xoa_nhat_ky: ['Xoá nhật ký → thùng rác', 'red'],
   phuc_hoi_nhat_ky: ['Phục hồi nhật ký', 'wait'],
   don_nhat_ky_rac: ['Dọn thùng rác nhật ký', 'red'],
@@ -84,6 +88,12 @@ function chiTiet(d) {
   }
   if (d.suKien === 'doi_truong_cong_khai' && Array.isArray(c.moi)) {
     phan.push('nay bật: ' + (c.moi.map((m) => TEN_TRUONG[m] || m).join(', ') || 'không trường nào'));
+  }
+  if (/^sao_luu_/.test(d.suKien)) {
+    if (typeof c.so_byte === 'number') phan.push(Math.round(c.so_byte / 1024) + ' KB');
+    if (typeof c.da_xoa === 'number' && c.da_xoa) phan.push('dọn ' + c.da_xoa + ' bản cũ');
+    const loi = c.loi || c.thieu || c.canh_bao;
+    if (loi) phan.push(loi.length > 200 ? loi.slice(0, 200) + '…' : loi);
   }
   if (d.suKien === 'gop_nguoi') {
     phan.push('bỏ ' + (c.ten_thua || '') + ' (' + (c.ma_thua || '') + ')');

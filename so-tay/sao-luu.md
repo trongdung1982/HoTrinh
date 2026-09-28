@@ -7,7 +7,7 @@
 | Việc | File |
 |---|---|
 | Sao lưu đêm (Apps Script, chủ dự án dán tay) | `sao-luu/SaoLuu.gs` · hướng dẫn `sao-luu/HUONG-DAN-SAO-LUU.md` |
-| Vai `sao_luu` · bảng hệ thống · cây mới tự có máy sao lưu | `luoc-do/05` · `44` · `45` |
+| Vai `sao_luu` · bảng hệ thống · cây mới tự có máy sao lưu · báo kết quả vào nhật ký (b147) | `luoc-do/05` · `44` · `45` · `49` |
 | Bảng nào đã/chưa sao lưu | `kiem-thu/kiem-sao-luu.mjs` |
 | **Khôi phục**: JSON → một file SQL | `sao-luu/khoi-phuc.mjs` |
 | Đo khôi phục trọn vòng (36 phép) | `../kiem-thu/ban-thu-sql/do-b142b.mjs` *(ngoài repo)* |

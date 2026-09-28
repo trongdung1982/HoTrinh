@@ -29,8 +29,12 @@ Liên quan: `so-tay/trang-quan-tri.md` · bàn thử `../kiem-thu/ban-thu-sql/do
 - ⚠ **Trigger đăng nhập là trigger DUY NHẤT nuốt lỗi** — nó nằm trên đường
   đăng nhập của MỌI người. Bỏ khối `exception` là một lỗi nhật ký khoá cửa cả
   phần mềm. Bàn thử canh bằng D1.
-- **Loại `backup` hôm nay chỉ là việc với chính nhật ký.** Bản sao lưu đêm chỉ
-  ĐỌC nên không để dấu; muốn ghi thì `SaoLuu.gs` phải gọi một hàm mới.
+- **Loại `backup` gồm việc với chính nhật ký + bản sao lưu đêm (b147).**
+  `SaoLuu.gs` 0.6.0 gọi `ghi_sao_luu_dem()` (`luoc-do/49`, chỉ vai `sao_luu`
+  gọi được) cuối mỗi lần chạy: `sao_luu_dem` · `sao_luu_canh_bao` ·
+  `sao_luu_hong`. Bảng *Lịch sử sao lưu* + thẻ Tổng quan đọc ba mã ấy
+  (`khu-sao-luu.js` `veLichSuSaoLuu`). ⚠ Ghi nhật ký hỏng thì `SaoLuu.gs` bỏ
+  qua — không bao giờ để nó làm hỏng bản sao lưu (`kiem-sao-luu.mjs` 11b).
 - **Bộ kiểm sao lưu đếm MỌI `create table` trong `luoc-do/`** — thêm bảng mới
   là phải thêm vào `SaoLuu.gs` hoặc vào `CHUA_SAO_LUU` kèm một dòng ở
   `KE-HOACH.md`. b134 phát hiện `33`/`37` đã lọt từ lúc ra đời: bộ kiểm báo

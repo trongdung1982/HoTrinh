@@ -61,7 +61,7 @@ function dungMoiTruong(kichBan = {}) {
   const khoAnh = kichBan.khoAnh || {};
   const maLoi = kichBan.maLoi || 0;
 
-  const nhatKy = { goi: [], thu: [], log: [] };
+  const nhatKy = { goi: [], thu: [], log: [], baoCao: [] };
 
   // ---- Supabase giả -------------------------------------------------
   const UrlFetchApp = {
@@ -117,8 +117,18 @@ function dungMoiTruong(kichBan = {}) {
         return traLoi(200, JSON.stringify({ ok: true, dem: { ...d, ...(kichBan.demThat || {}) } }));
       }
 
+      // Báo kết quả vào Nhật ký hệ thống (`luoc-do/49`, b147). `nhatKyHong` =
+      // máy chủ chưa dán `49` → 404; bản sao lưu vẫn phải đi tiếp y như cũ.
+      if (duong === '/rest/v1/rpc/ghi_sao_luu_dem') {
+        nhatKy.baoCao.push(JSON.parse(opt.payload).p_ket_qua);
+        if (kichBan.nhatKyHong) return traLoi(404, '{"message":"function not found"}');
+        return traLoi(200, '{"ok":true,"suKien":"sao_luu_dem"}');
+      }
+
       if (duong.startsWith('/rest/v1/')) {
         const bang = duong.slice('/rest/v1/'.length);
+        // `hongBang` = đọc đúng một bảng thì máy chủ trả 500 (hỏng SAU đăng nhập).
+        if (kichBan.hongBang === bang) return traLoi(500, '{"message":"gia vo hong bang"}');
         const hang = duLieu[bang] || [];
         if (opt.headers.Prefer === 'count=exact') {
           return traLoi(200, JSON.stringify(hang.slice(0, 1)),
@@ -624,6 +634,40 @@ const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac', 'bao_trung_nguoi'];
        /THIẾU/.test(ket) && /persons: máy chủ có 740/.test(ket), ket.split('\n').slice(-6).join(' / '));
   const kt2 = dungMoiTruong({ duLieu: cayGia({ soNguoi: 59 }) });
   kiem('kiemTraKetNoi nói ĐỦ khi khớp', /ĐỦ/.test(kt2.api.kiemTraKetNoi()), '');
+}
+
+// ---- 11b. Báo kết quả vào Nhật ký hệ thống (b147, `luoc-do/49`) -------
+{
+  const a = dungMoiTruong({ duLieu: cayGia({ soNguoi: 5 }) });
+  a.api.saoLuuNgay();
+  const f = [...duyet(a.thuMuc)][0];
+  const b0 = a.nhatKy.baoCao[0] || {};
+  kiem('lần chạy đạt: báo đúng MỘT dòng, ok, tên file, số byte, số đếm',
+       a.nhatKy.baoCao.length === 1 && b0.ok === true && b0.tenFile === f.getName() &&
+       b0.soByte === f.getSize() && b0.dem && b0.dem.persons === 5 && !b0.thieu && !b0.canhBao,
+       JSON.stringify(b0).slice(0, 160));
+
+  const t = dungMoiTruong({ duLieu: cayGia({ soNguoi: 5 }), demThat: { persons: 740 } });
+  t.api.saoLuuNgay();
+  kiem('bản thiếu so với máy chủ: báo kèm câu thiếu',
+       /persons: máy chủ có 740/.test((t.nhatKy.baoCao[0] || {}).thieu || ''),
+       JSON.stringify(t.nhatKy.baoCao[0] || {}).slice(0, 160));
+
+  const c = dungMoiTruong({ duLieu: cayGia({ soNguoi: 5 }), nhatKyHong: true });
+  let nem = false;
+  try { c.api.saoLuuNgay(); } catch (e) { nem = true; }
+  kiem('chưa dán 49: vẫn ghi file, không ném, không thư',
+       !nem && [...duyet(c.thuMuc)].length === 1 && c.nhatKy.thu.length === 0,
+       `nem=${nem} · ${[...duyet(c.thuMuc)].length} file · ${c.nhatKy.thu.length} thư`);
+
+  const h = dungMoiTruong({ duLieu: cayGia({ soNguoi: 5 }), hongBang: 'persons' });
+  let nemH = false;
+  try { h.api.saoLuuNgay(); } catch (e) { nemH = true; }
+  const bh = h.nhatKy.baoCao[0] || {};
+  kiem('hỏng sau đăng nhập: báo ok:false kèm lỗi, VẪN ném + gửi thư như cũ',
+       nemH && h.nhatKy.baoCao.length === 1 && bh.ok === false && /500/.test(bh.loi || '') &&
+       h.nhatKy.thu.length === 1,
+       `nem=${nemH} · ${JSON.stringify(bh).slice(0, 120)} · ${h.nhatKy.thu.length} thư`);
 }
 
 // ---- 12. Đặt lịch hai lần vẫn chỉ một lịch ---------------------------

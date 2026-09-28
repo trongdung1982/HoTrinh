@@ -10,9 +10,9 @@
 //            EMAIL_SAO_LUU · MAT_KHAU_SAO_LUU (bắt buộc),
 //            THU_MUC_DRIVE · SO_BAN_GIU (tuỳ chọn)
 //            SQL — luoc-do/05-sao-luu.sql phải chạy trước
-// Phiên bản: 0.5.0 · Cập nhật: 28/09/2026 (b142a) — so số dòng đọc được với
-//            số THẬT trên máy chủ (`sao_luu_dem_that()`, `luoc-do/45`); thiếu
-//            thì gửi thư ⛔ và không dọn bản cũ
+// Phiên bản: 0.6.0 · Cập nhật: 28/09/2026 (b147) — báo kết quả mỗi lần chạy
+//            vào Nhật ký hệ thống (`ghi_sao_luu_dem()`, `luoc-do/49`); hỏng
+//            ở bước ấy thì bỏ qua, không làm hỏng bản sao lưu
 // ============================================================
 //
 // ⚠ ĐÂY KHÔNG PHẢI dự án Apps Script cũ. Dự án cũ (`giapha/gas/`) vẫn đang
@@ -186,12 +186,19 @@ function saoLuuNgay() {
 
     var ketQua = 'Đã ghi ' + ten + ' (' + file.getSize() + ' byte). ' +
                  'Xoá ' + daXoa + ' bản cũ.';
+    baoNhatKy_(cauHinh, {
+      ok: true, tenFile: ten, soByte: file.getSize(), daXoa: daXoa,
+      canhBao: loiCanhBao || '', thieu: banSao.thieuSoVoiMayChu || '', dem: banSao.dem
+    });
     Logger.log(ketQua);
     return ketQua;
 
   } catch (loi) {
     // Trigger chạy nền: hỏng mà không ai biết là kiểu hỏng tệ nhất của cả cơ
     // chế này — người ta chỉ phát hiện vào đúng ngày cần khôi phục.
+    if (cauHinh) {
+      baoNhatKy_(cauHinh, { ok: false, loi: loi && loi.message ? loi.message : String(loi) });
+    }
     guiThu_('[Gia phả] ⛔ SAO LƯU HỎNG',
             'Bản sao lưu hằng ngày không chạy được.\n\n' +
             'Lỗi: ' + (loi && loi.message ? loi.message : String(loi)) + '\n\n' +
@@ -332,6 +339,25 @@ function soVoiMayChu_(demDoc, demThat) {
          loi.join('\n') + '\n\n' +
          'Thường do một cây chưa có tài khoản sao lưu. Dán lại luoc-do/45-sao-luu-du-cay.sql ' +
          '(nó bù cho mọi cây) rồi chạy lại saoLuuNgay.';
+}
+
+/**
+ * Báo kết quả lần chạy này vào Nhật ký hệ thống (`ghi_sao_luu_dem()`,
+ * `luoc-do/49`) — trang Quản trị đọc nó cho bảng *Lịch sử sao lưu* và thẻ
+ * *Sao lưu* ở Tổng quan, vì trình duyệt không tự đọc được Drive.
+ *
+ * ⚠ KHÔNG BAO GIỜ ném lỗi, và KHÔNG gửi thư khi hỏng: nhật ký là phần phụ.
+ *   Chưa dán `49`, mạng chập, hay chính lần đăng nhập vừa hỏng — bản sao lưu
+ *   (hoặc thư báo hỏng) vẫn phải đi tiếp như chưa có hàm này.
+ */
+function baoNhatKy_(cauHinh, ketQua) {
+  try {
+    goi_(cauHinh, cauHinh.url + '/rest/v1/rpc/ghi_sao_luu_dem', 'ghi nhật ký sao lưu',
+         { p_ket_qua: ketQua });
+  } catch (e) {
+    Logger.log('Không ghi được nhật ký sao lưu (bỏ qua): ' +
+               String(e && e.message ? e.message : e).slice(0, 300));
+  }
 }
 
 /**
