@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 30/09/2026 · Hai mươi sáu điểm dừng chưa bấm thử · ba file SQL chờ dán (`59` `60` `61`).*
+*Cập nhật 30/09/2026 06:33 · Hai mươi sáu điểm dừng chưa bấm thử · SQL đã dán hết tới `61`.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -62,18 +62,10 @@ File thêm gì: đầu chính file ấy. Ngày dán: `git log`. Luật dán lạ
 kéo theo file nào, bản nào đứng cuối): **`so-tay/phan-quyen.md`** mục *Chuỗi
 dán lại* — đọc TRƯỚC khi dán lại bất cứ file nào.
 
-**`01` → `58` — ĐÃ DÁN lên THẬT cả** (`57`, `58` ngày 29/09/2026, chủ dự án báo).
+**`01` → `61` — ĐÃ DÁN lên THẬT cả** (`59` · `60` · `61` ngày 30/09/2026, chủ dự án báo).
 
-**`59-kho-anh-kin.sql` — CHƯA DÁN.** ĐƯỢC dán ngay, không kéo file nào theo
-(mã JS đã đẩy trước, chạy được cả hai phía). Dán xong thì Ctrl+F5 mọi tab đang
-mở app, không thì ảnh hiện bóng người tới khi tải lại.
-
-**`60-doi-ten-ham-xoa-cay.sql` — CHƯA DÁN. ĐƯỢC dán ngay**, độc lập với `59`
-(thứ tự giữa hai file không quan trọng). ⚠ Mã JS đã gọi tên MỚI: chưa dán
-`60` thì hai nút *Xoá gia phả* / *Trả lại cho chủ* báo "chưa dán luoc-do/60".
-
-**`61-mo-coi-ca-cap.sql` — CHƯA DÁN. ĐƯỢC dán ngay**, sau `58` (đã dán),
-độc lập với `59`/`60`. Chưa dán thì tab *Dữ liệu mồ côi* chạy như cũ.
+⚠ Bản cuối mới: `xoa_cay()` · `tra_lai_cay()` ở `60` (tên cũ đã xoá); `don_mo_coi_he_thong()`
+· `ds_nguoi_mo_coi()` · luật `xoa_anh` ở `61`; luật `xem_anh` + kho kín ở `59`.
 
 ---
 
@@ -83,8 +75,8 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-**Dán `59` → `60` → `61`** (thứ tự nào cũng được — mỗi file tự kiểm), rồi bấm
-thử các điểm dừng ở trên (ba điểm b151 và b161a–e trước tiên). Việc mã còn lại
+Bấm thử các điểm dừng ở trên (ba điểm b151 và b161a–e trước tiên — `59`/`60`/`61`
+đã dán 30/09). Việc mã còn lại
 ở *Còn treo* đều cần chủ dự án quyết trước. ⚠ b145 và phần khách của
 b150 Claude KHÔNG đo REST được: cần đặt cây mặc định = cờ Quản trị hệ thống,
 hai tài khoản thử không có — phải bấm tay bằng tài khoản của bạn.
