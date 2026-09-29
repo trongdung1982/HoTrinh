@@ -23,7 +23,7 @@
   `DEM_LAN_TRUOC` để so sụt giảm, "chưa chép" giảm là tin tốt.
 - Khôi phục cần tài khoản GHI (`ghi_anh` = `co_the_sua()`), vai `sao_luu`
   không ghi được: chủ dự án điền tạm `EMAIL_/MAT_KHAU_KHOI_PHUC` rồi xoá.
-  ⚠ Chưa chạy thật trên Supabase — cửa `/object/authenticated/` và tải lên
+  `saoLuuNgay` 0.7.0 ĐẠT trên máy thật 29/09. ⚠ `khoiPhucAnh` (tải lên)
   mới đo bằng máy chủ giả.
 | Đo khôi phục trọn vòng (36 phép) | `../kiem-thu/ban-thu-sql/do-b142b.mjs` *(ngoài repo)* |
 

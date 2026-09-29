@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 29/09/2026 · **b154 (sao lưu ảnh sang Drive + khôi phục) XONG MÃ —
-thay `SaoLuu.gs` 0.7.0, không SQL.** **b153a (trang sơ đồ theo tông màu) XONG MÃ ·
+*Cập nhật 29/09/2026 · **b154 (sao lưu ảnh sang Drive + khôi phục) — `SaoLuu.gs`
+0.7.0 đã thay, sao lưu ĐẠT; khôi phục ảnh chưa chạy thật.** **b153a (trang sơ đồ theo tông màu) XONG MÃ ·
 b152 (công khai theo từng người áp cả cho vai `xem`) XONG MÃ, `53` đã dán
 29/09.** Mười tám điểm dừng dưới chưa bấm thử.*
 
@@ -28,7 +28,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b154** Sao lưu ảnh sang Drive | Thay mã `SaoLuu.gs` 0.7.0 (`sao-luu/HUONG-DAN-SAO-LUU.md` mục *Khi SaoLuu.gs có bản mới* — KHÔNG có SQL). Chạy `saoLuuNgay` → nhật ký ra *"Ảnh: chép thêm N, còn 0 tấm chưa chép"* → Drive → *Sao luu gia pha (Supabase)* → **Anh** có thư mục cây, trong có ảnh. *Quản trị hệ thống → Sao lưu*: dòng mới ghi *"Ảnh: đủ trên Drive"*. Khôi phục (tuỳ, trên cây thử): xoá một ảnh của `TH957` trong app, dọn thùng rác → làm mục *Khôi phục ảnh* của hướng dẫn → ảnh hiện lại. ⚠ Chưa chạy trên Supabase thật: phải đo cửa `/object/authenticated/` và tải lên |
+| **b154** Khôi phục ảnh *(phần sao lưu: `SaoLuu.gs` 0.7.0 đã thay, `saoLuuNgay` ĐẠT trên máy thật 29/09 — chủ dự án báo)* | Chưa chạy thật. Trên cây thử `TH957`: gắn một ảnh cho một người → đêm sau (hoặc bấm `saoLuuNgay`) để ảnh lên Drive → Supabase → *Storage* → kho `anh` → xoá tệp ấy (ảnh trên app mất, dòng dữ liệu còn) → làm mục *Khôi phục ảnh* của hướng dẫn → nhật ký *"tải lên 1 tấm"* → Ctrl+F5, ảnh hiện lại. Nhớ xoá `EMAIL_/MAT_KHAU_KHOI_PHUC` |
 | **b152** Công khai theo từng người — cả vai Xem | ✓ `53` đã dán. Ctrl+F5. Cần một người CÓ tài khoản gắn, ở cây thử `TH957` (ví dụ người của bạn): *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia* → dòng `TH957` → cột *Thông tin công khai* → tắt *Quê quán* + *Tiểu sử* → *Lưu*. Mời `khach@io.vn` vào `TH957` vai **Khách** (`xem`), đăng nhập `khach@io.vn` → mở `TH957` → bấm người của bạn: KHÔNG thấy quê quán, tiểu sử. Người khác vẫn đủ như cũ (người còn sống vẫn bị lược như b148). Đăng nhập lại tài khoản của bạn: thấy đủ. Xong: bật lại hai trường, gỡ vai của `khach@io.vn` |
 | **Tông màu** (trang Quản trị) | Ctrl+F5 → *Quản trị* → thanh trái có nút **🎨 Tông màu** ngay trên *← Về trang sơ đồ* → bấm → bảng 10 tông mở sang phải nút → chọn *Đêm hoài cổ* → cả trang tối lại, chữ đọc được → tải lại trang (F5) → vẫn tông ấy. Chọn *Kem tối giản (mặc định)* → về y như cũ. Điện thoại: ☰ → *Tông màu* → bảng đứng giữa màn hình. **b153a — trang sơ đồ**: để tông *Đêm hoài cổ* → *← Về trang sơ đồ* → nền, nút tròn, Cài đặt, thẻ chi tiết, form Sửa, Danh sách người đều tối theo; ô người trên sơ đồ vẫn sáng (cố ý — không đổi `render.js`). Chọn lại *Kem tối giản* → trang sơ đồ y hệt trước |
 | **Cột Nội dung thao tác** (Kiểm duyệt) | Ctrl+F5 → *Quản trị → Kiểm duyệt*: cột *Nội dung thao tác* đọc thành câu, không còn một chữ mỗi dòng. Tab *Đã từ chối & hoàn tác*: cột *Lý do từ chối* cũng vậy |
