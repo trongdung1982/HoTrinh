@@ -156,6 +156,11 @@ thấy. Khách thấy = nhóm cây bật (`47`) ∩ nhóm người bật. Chỉ 
   sống (app nói "còn sống nên lược bớt"). ⚠ **Khe còn mở**: vai `xem` đọc
   thẳng `tree_persons.doi` — Đời của người tắt nhóm ấy lộ qua REST (app không
   đi đường ấy). Đo: `do-b152.mjs` 29/29.
+- **Đo trên máy THẬT bằng REST (b156, 29/09)**: b148 7/7 (`khach` vai `xem` ở
+  cây 681 · 374 người bị che) · b152 9/9 (`thu-h9` tắt nhóm giới tính ở
+  `TH957`). Hai bẫy khi tự viết phép đo: tắt `gioi_tinh` cho `sex='U'`, KHÔNG
+  rỗng · `dat_cong_khai_tai_khoan(p_truong null)` = TẮT HẾT, không phải "về
+  chưa đặt" — hoàn tác thì gửi đủ mười nhóm.
 
 ## Bài học
 
