@@ -26,7 +26,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b157** Mở app nhanh gấp đôi | Ctrl+F5 trên trang sơ đồ. Đạt khi: sơ đồ hiện ra nhanh hơn trước thấy rõ (Claude đo bằng Chrome, máy chủ thật: cây 681 người 1,56 s → 0,78 s; cây 15 người 1,42 s → 0,62 s), đúng cây đang mở lần trước, đúng người trung tâm, nút *Sửa* vẫn có. Bấm *Quản trị*: dòng *"Cây đang hiển thị tại trang Sơ đồ"* vẫn đúng tên cây. Thêm một người mới rồi *Lưu*: không báo lỗi mã |
+| **b157 · b157b** Mở app nhanh gấp ba | Ctrl+F5 trên trang sơ đồ. Đạt khi: sơ đồ hiện ra nhanh hơn trước thấy rõ (Claude đo bằng Chrome, máy chủ thật, sau khi dán `55`: cây 681 người 2,1 s → 0,62 s; cây 15 người 1,7 s → 0,42 s — một lượt mạng `mo_phien` thay 21 câu), đúng cây đang mở lần trước, đúng người trung tâm, nút *Sửa* vẫn có. Bấm *Quản trị*: dòng *"Cây đang hiển thị tại trang Sơ đồ"* vẫn đúng tên cây. Thêm một người mới rồi *Lưu*: không báo lỗi mã |
 | **b152** Công khai theo từng người — cả vai Xem *(hàng rào máy chủ đã đo REST 29/09, 9/9 — chỉ còn phần màn hình)* | Ctrl+F5 → *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia* → một dòng cây → cột *Thông tin công khai* → trang mười dòng mở ra, tắt/bật rồi *Lưu* không báo lỗi, tải lại thì còn đúng như vừa lưu |
 | **Tông màu** (trang Quản trị) | Ctrl+F5 → *Quản trị* → thanh trái có nút **🎨 Tông màu** ngay trên *← Về trang sơ đồ* → bấm → bảng 10 tông mở sang phải nút → chọn *Đêm hoài cổ* → cả trang tối lại, chữ đọc được → tải lại trang (F5) → vẫn tông ấy. Chọn *Kem tối giản (mặc định)* → về y như cũ. Điện thoại: ☰ → *Tông màu* → bảng đứng giữa màn hình. **b153a — trang sơ đồ**: để tông *Đêm hoài cổ* → *← Về trang sơ đồ* → nền, nút tròn, Cài đặt, thẻ chi tiết, form Sửa, Danh sách người đều tối theo; ô người trên sơ đồ vẫn sáng (cố ý — không đổi `render.js`). Chọn lại *Kem tối giản* → trang sơ đồ y hệt trước |
 | **Cột Nội dung thao tác** (Kiểm duyệt) | Ctrl+F5 → *Quản trị → Kiểm duyệt*: cột *Nội dung thao tác* đọc thành câu, không còn một chữ mỗi dòng. Tab *Đã từ chối & hoàn tác*: cột *Lý do từ chối* cũng vậy |
@@ -54,11 +54,8 @@ File thêm gì: đầu chính file ấy. Ngày dán: `git log`. Luật dán lạ
 kéo theo file nào, bản nào đứng cuối): **`so-tay/phan-quyen.md`** mục *Chuỗi
 dán lại* — đọc TRƯỚC khi dán lại bất cứ file nào.
 
-**`01` → `54` — ĐÃ DÁN lên THẬT cả, tự kiểm ĐẠT cả** (`54` ngày 29/09/2026).
-
-⚠ **`55-mo-phien.sql` — CHỜ DÁN** (b157b). ĐƯỢC dán ngay, dán sau `53` (đã
-có). Bàn thử `do-b157b.mjs` 20/20. Chưa dán thì app vẫn chạy (đường cũ) nhưng
-mỗi lần mở tốn thêm một câu hỏi hụt.
+**`01` → `55` — ĐÃ DÁN lên THẬT cả, tự kiểm ĐẠT cả** (`55` ngày 29/09/2026).
+Không còn file nào chờ dán.
 
 ---
 
