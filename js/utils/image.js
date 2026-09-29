@@ -3,8 +3,8 @@
 // Vai trò  : Nén ảnh phía trình duyệt, đường dẫn kho ảnh, bóng người mặc định
 // Lớp      : utils — được gọi bởi: domains, pages · được phép gọi: config
 // Phụ thuộc: config (PHOTO), cau-hinh (SUPABASE_URL, KHO_ANH)
-// Phiên bản: 2.1.0 · Cập nhật: 28/09/2026 07:00 (b141) — `compressImage`
-//            trả thêm `blob` để gửi thẳng lên kho
+// Phiên bản: 2.2.0 · Cập nhật: 30/09/2026 (b161a) — kho ảnh KÍN: đường dẫn
+//            lấy từ bảng chữ ký `ghiChuKy()`, không tự dựng nữa
 // ============================================================
 //
 // 1. NÉN Ở TRÌNH DUYỆT. Ảnh điện thoại 3–8 MB, ô sơ đồ rộng 120px, một sơ đồ
@@ -96,9 +96,11 @@ export async function compressImage(file, tuyChon = {}) {
  * `driveFileIdLon` khi cần bản lớn), không phải việc của hàm này.
  * Giữ tham số lại chỉ để tám chỗ gọi khỏi phải sửa.
  *
- * ⚠ Kho `anh` để công khai, nên đường dẫn này ai có cũng mở được. Đó là một
- * quyết định về riêng tư, chưa được chủ dự án chốt — xem `KIEN-TRUC.md`
- * mục *"Ảnh: kho công khai hay kho kín"*.
+ * ⚠ **Kho `anh` KÍN từ `luoc-do/59`** (chủ dự án chốt 30/09/2026). Đường dẫn
+ * phải có chữ ký của máy chủ; `services/repo.js` xin cả lô lúc nạp cây rồi đổ
+ * vào `ghiChuKy()`. Hàm này vẫn ĐỒNG BỘ — `domains/render.js` gọi giữa lúc vẽ,
+ * không chờ mạng được. File chưa có chữ ký thì rơi về đường công khai cũ:
+ * trước khi dán `59` nó vẫn chạy, sau đó nó hỏng → nơi gọi giữ bóng người.
  *
  * @param {string} duongDan  giá trị của `media.driveFileId`, nay là đường dẫn
  *                           trong kho: `<tree_id>/<media_id>-nho.jpg`
@@ -106,9 +108,27 @@ export async function compressImage(file, tuyChon = {}) {
  */
 export function driveThumbUrl(duongDan, size = PHOTO.thumbSize) {
   if (!duongDan) return '';
+  const ky = CHU_KY.get(String(duongDan));
+  if (ky) return ky;
   return SUPABASE_URL.replace(/\/$/, '') +
     '/storage/v1/object/public/' + KHO_ANH + '/' +
     String(duongDan).split('/').map(encodeURIComponent).join('/');
+}
+
+// Bảng `đường dẫn trong kho → URL có chữ ký`. Trạng thái DUY NHẤT của file
+// này, và là cố ý: nếu không, `render.js` (domains) phải chờ mạng. Chỉ
+// `services/repo.js` ghi vào; mọi nơi khác chỉ đọc qua `driveThumbUrl()`.
+const CHU_KY = new Map();
+
+/** Đổ chữ ký mới vào bảng (ghi đè chữ ký cũ cùng đường dẫn). */
+export function ghiChuKy(bang) {
+  if (!bang) return;
+  for (const [duong, url] of bang) if (duong && url) CHU_KY.set(duong, url);
+}
+
+/** Những đường dẫn trong danh sách CHƯA có chữ ký. */
+export function thieuChuKy(dsDuongDan) {
+  return (dsDuongDan || []).filter((d) => d && !CHU_KY.has(String(d)));
 }
 
 /**

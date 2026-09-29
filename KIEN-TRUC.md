@@ -227,25 +227,27 @@ tới 02/12/2026, GitHub tự gia hạn.
 
 ---
 
-## 7. ⚠ CHƯA CHỐT — Ảnh: kho công khai hay kho kín
+## 7. Ảnh: kho KÍN (chủ dự án chốt 30/09/2026, b161a)
 
-`01-bang.sql` hiện dựng kho ảnh `public = true`. **Đây là quyết định về riêng
-tư mà chủ dự án chưa được hỏi**, nên nó phải nằm ở đây chứ không nằm im trong
-một dòng SQL.
+`luoc-do/59` tắt `public` của kho `anh` và thêm luật đọc `xem_anh` →
+`co_the_xem_anh(ten)`: QTHT · xem được cây mang tên thư mục đầu · xem được
+một cây chứa người/cặp mà ảnh thuộc về (người xuyên cây).
 
-| | Kho công khai *(đang chọn)* | Kho kín |
-|---|---|---|
-| Ai xem được | Ai có đường dẫn | Chỉ người đã đăng nhập, và chỉ trong một giờ |
-| Đường dẫn | Đoán trước được → `utils/image.js` dựng thẳng | Phải **xin chữ ký** cho từng tấm |
-| Sơ đồ 661 ô | Vẽ xong là xong | Một vòng mạng nữa xin 661 chữ ký, và xin lại khi hết hạn |
-| Mã phải sửa | Không | `utils/image.js` phải chạm `state` → phá một luật phân lớp |
+Đường đi của một tấm ảnh trên màn hình:
 
-Đường dẫn mang uuid nên không đoán mò ra được. Nhưng **"khó đoán" không phải
-"được bảo vệ"**, và phải nói thẳng như thế: dữ liệu gia phả thì RLS canh thật,
-còn ảnh thì không.
+1. `repo.napCay()` gom mọi đường dẫn ảnh của cây → `sb.kyAnh()` xin chữ ký
+   một lượt (lô 300, hạn 6 giờ, 3 giờ ký lại ngầm) → `utils/image.js`
+   `ghiChuKy()`.
+2. `driveThumbUrl()` vẫn **đồng bộ** — tra bảng chữ ký; chưa có thì rơi về
+   đường công khai cũ (hỏng sau khi dán `59` → nơi gọi giữ bóng người).
+   Bảng chữ ký là trạng thái duy nhất của `utils/image.js`, chỉ `repo.js` ghi
+   — cái giá để `domains/render.js` không phải chờ mạng.
+3. Ảnh vừa tải lên: `repo.taiAnh()` ký luôn. Người cây khác chọn ở ô gợi ý:
+   `repo.docNguoiTheoMa()` ký luôn.
 
-Câu hỏi cho chủ dự án: *ảnh chân dung trong họ có cần kín bằng dữ liệu không,
-hay để công khai theo đường dẫn khó đoán là chấp nhận được?*
+⚠ Chưa kín bằng dữ liệu ở MỘT chỗ: nhóm *Ảnh* tắt cho khách/vai xem chỉ bỏ
+đường dẫn khỏi `doc_cay()`; ai đã biết sẵn đường dẫn mà xem được cây thì vẫn
+xin được chữ ký. Chữ ký lọt ra ngoài sống tối đa 6 giờ.
 
 ### Sao lưu ảnh — đã vá ở b154
 

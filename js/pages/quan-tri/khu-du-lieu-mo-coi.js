@@ -5,7 +5,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · services/repo · domains/{validate,person,union,purge}
 //            · utils/{graph,date} · quan-tri/{hop-thoai,o-bang,khu-nguoi-da-xoa}
-// Phiên bản: 0.1.0 · Cập nhật: 29/09/2026 23:10 (b159c)
+// Phiên bản: 0.1.1 · Cập nhật: 30/09/2026 (b161a) — xem trước ảnh bằng URL có chữ ký
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -214,7 +214,7 @@ function veDongAnh(r) {
   img.className = 'mc-anh';
   img.alt = '';
   img.loading = 'lazy';
-  img.src = duongDanAnh(r.duongDan);
+  duongDanAnh(r.duongDan).then((u) => { if (u) img.src = u; });   // kho kín: xin chữ ký
   return [td(img), td(span('', r.loai === 'matChu' ? 'Ảnh mất chủ' : 'File thừa trong kho')),
     td(span('sub', r.duongDan)), td(r.tenCay ? span('', r.tenCay) : span('sub', '—')),
     td(span('sub', r.ghiChu))];

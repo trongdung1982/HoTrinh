@@ -1,10 +1,9 @@
 {
-  "capNhat": "29/09/2026 22:53",
+  "capNhat": "30/09/2026 01:32",
   "ghiChu": "Hạ bằng --ha-moc.",
   "no": {
     "dau-file:js/domains/so-sanh.js": 36,
     "dau-file:js/pages/chon-gia-pha.js": 82,
-    "dau-file:js/pages/export-image.js": 140,
     "dau-file:js/pages/form-ghep-doi.js": 85,
     "dau-file:js/pages/khoi-dong.js": 34,
     "dau-file:js/pages/review.js": 99,

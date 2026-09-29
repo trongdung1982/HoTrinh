@@ -27,7 +27,7 @@ file. ⚠ `KE-HOACH.md` **hết trần** (b131) — gọn bằng kỷ luật "xo
 | Đụng cách VẼ sơ đồ, dâu/rể | ⚠⚠ **`so-tay/ve-so-do.md`** (đè `QUY-TAC-VE`) · vẽ `chiMucVe()`, thẻ/form `state.index` · `../tai-lieu/QUY-TAC-VE_V14.md` |
 | Đụng thẻ người · thẻ gia đình · menu vòng tròn | `so-tay/the-thong-tin.md` |
 | **Lúc mở app** · `layPhien` · `mo_phien` | ⚠ `so-tay/mo-app.md` (hai đường phải đồng bộ) |
-| Đụng ảnh | `KIEN-TRUC.md` mục 7 ⚠ có câu chưa chốt |
+| Đụng ảnh | `KIEN-TRUC.md` mục 7 (kho KÍN, `59`) |
 | Đụng sao lưu, **khôi phục** | ⚠ `so-tay/sao-luu.md` *(bản đồ file)* |
 | Đụng di dời dữ liệu vào bảng | `di-doi/HUONG-DAN-DI-DOI.md` · `di-doi/sinh-sql-di-doi.mjs` |
 | Thêm/nâng cấp thư viện | `js/vendor/DOC-VENDOR.md` — và **hỏi chủ dự án trước** |

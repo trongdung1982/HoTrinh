@@ -6,142 +6,22 @@
 // Phụ thuộc: domains/gedcom.js (boDauChoTenFile — tái dùng luật đặt tên file),
 //            domains/render.js (VE.chuTen — cỡ chữ, để tính ngược khổ giấy),
 //            config.js (PHOTO — cỡ hai bản ảnh nhỏ/lớn)
-// Phiên bản: 0.8.2 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
+// Phiên bản: 0.8.3 · Cập nhật: 30/09/2026 (b161a) — đổi bản nhỏ→lớn theo URL đã ký (kho ảnh kín)
+// Sổ tay   : so-tay/xuat-anh.md (ba đường xuất · sự cố novaPDF · trần canvas)
 // ============================================================
 //
-// VIỆC 12 của kế hoạch. Nguồn gốc: mã nháp Antigravity
-// (`tai-lieu/antigravity/export-image.js`, 29/08/2026) — đã RÀ LẠI VÀ VIẾT
-// LẠI, không chép nguyên. Khác nháp ở đúng phần khó nhất: cách IN.
-//
-// Cách làm — theo đúng thứ tự `KE-HOACH_V53` dặn, dừng ngay khi đủ dùng:
-//   PNG: clone <svg> → canvas → toBlob()   — thuần trình duyệt, 0 thư viện.
-//   PDF: window.print() + @media print      — trình duyệt tự có "Lưu PDF".
-//   Chưa cần jsPDF (và thêm thư viện là việc PHẢI HỎI — CLAUDE.md mục 9).
-//
-// ⚠ **Khác NGAY một điều với Xuất GEDCOM**: ảnh này chỉ chụp đúng PHẦN SƠ ĐỒ
-// ĐANG HIỆN trên màn hình (đã lọc theo phạm vi đời/huyết thống đang chọn),
-// KHÔNG phải toàn bộ gia phả. Chữ trên nút ở `settings.js` phải nói rõ điều
-// này — cùng bài học với cặp "Sao lưu" / "Xuất GEDCOM" ở đó.
-//
-// --- Quyết định 31/08/2026 (chủ dự án chọn, có HỎI trước — đúng câu
-// `KE-HOACH_V53` dặn "quyết định phải hỏi chứ không tự chọn") ---------------
-//
-// Khi in PDF mà sơ đồ lớn hơn một trang: LUÔN THU NHỎ để vừa đúng MỘT trang
-// A4 ngang, không cho tràn sang nhiều trang. Cây càng lớn thì chữ càng nhỏ,
-// nhưng không ai bị cắt đôi người giữa hai trang giấy.
-//
-// ⚠ **CÁCH THI HÀNH BAN ĐẦU ĐÃ SAI VÀ ĐÃ SỬA 01/09/2026** — xem khối "SỰ CỐ
-// novaPDF" ngay dưới. Bản đầu tính sẵn số pixel rồi ÉP vào `<svg>`; nay để
-// `width/height:100%` và cho `preserveAspectRatio` của SVG tự co vừa trang.
-//
-// --- SỰ CỐ novaPDF, 31/08/2026 — hai lỗi làm bản xuất KHÔNG DÙNG ĐƯỢC ------
-//
-// Chủ dự án xuất thử trên app thật rồi báo *"ảnh xuất ra chất lượng quá kém,
-// dùng không được"*, kèm ba file ở `tai-lieu/anh/`. Soi ra HAI lỗi riêng biệt,
-// cả hai đều do mã này, và cả hai đều là **một con số ĐOÁN chưa từng đo**:
-//
-// **Lỗi 1 — nút "Chụp ảnh sơ đồ" bóp ảnh xuống 13%.** `XuatAnh2.png` ra
-// 4096×304 cho gia phả 681 người: cả cây chỉ còn một hàng chấm màu. Thủ phạm
-// là kẹp `CANH_TOI_DA = 4096` chép từ mã nháp. Xem `tinhTyLePng()`.
-//
-// **Lỗi 2 — in qua MÁY IN PDF ẢO ra khổ Letter, sơ đồ bé xíu giữa trang.**
-// `XuatAnh3.pdf` do **novaPDF** sinh: `MediaBox` = 612×792pt = Letter, KHÔNG
-// phải khổ app đặt; nét vẽ chỉ còn 0,24pt. Nguyên nhân là một điều tôi đã
-// **đo đúng nhưng suy rộng sai**:
-//
-//   · `do-khong-lon.mjs` đo `Page.printToPDF` — tức **"Lưu thành PDF" của
-//     chính Chrome** — và `@page size` chạy tới 8×12m. ĐÚNG, nhưng chỉ đúng
-//     cho đường đó.
-//   · Khi đích đến là một **TRÌNH ĐIỀU KHIỂN máy in** (novaPDF, Microsoft
-//     Print to PDF, máy in giấy thật), khổ giấy do **trình điều khiển** quyết
-//     định; `@page size` bị bỏ qua. Mà mã lại ép `<svg>` bằng pixel tính theo
-//     khổ MONG MUỐN — nên khi khổ thật khác đi, hình không co theo.
-//
-//   `do-in-vua-trang.mjs` đo lại đúng ca ấy (giả lập khổ giấy áp từ ngoài):
-//   ép pixel cứng → hình **tràn 359% ngang / 154% dọc** trên khổ Letter, rồi
-//   bị thu nhỏ thành chấm; `width/height:100%` → **99%/100%**, co vừa đúng.
-//
-// **Nếp rút ra:** một phép đo chỉ nói về ĐÚNG con đường nó đã đi. `@page size`
-// hoạt động ≠ "mọi máy in đều nghe `@page size`". Muốn chắc thì phải đo cả
-// con đường mà NGƯỜI DÙNG thật sự đi.
-//
-// --- Mở rộng CÙNG NGÀY, sau khi chủ dự án đối chiếu MapInfo/MicroStation ---
-//
-// Hai phần mềm ấy xuất được bản vẽ khổ NHIỀU MÉT (MapInfo: ghép nhiều tờ A0;
-// MicroStation: một khung ảnh độ phân giải rất cao, hoặc máy in PDF ảo khổ
-// giấy tự đặt). Hỏi *"app này làm được không"* dẫn tới một phép đo thật
-// trước khi trả lời (`kiem-thu/do-khong-lon.mjs`):
-//
-//   · `chrome.exe --headless --print-to-pdf` (dòng lệnh trần) BỎ QUA
-//     `@page size`, luôn ra Letter — tưởng nhầm là "trần" của Chrome.
-//   · Nhưng đi đúng đường `Page.printToPDF` qua CDP — CHÍNH LÀ cỗ máy đứng
-//     sau nút "Lưu thành PDF" trong hộp thoại in thật — thì `@page size`
-//     tự đặt chạy tới ÍT NHẤT 8000×12000mm (8×12 mét) mà không cắt xén.
-//
-// Kết luận: sơ đồ là SVG (vector), không phải bitmap, nên không có trần độ
-// phân giải như đường PNG — đường ĐÚNG cho khổ lớn là IN (PDF vector), không
-// phải CHỤP ẢNH (canvas). `inSoDo()` vì vậy nhận thêm một số TUỲ CHỌN — bề
-// ngang khổ giấy — xem JSDoc của hàm.
-//
-// ⚠ **Chưa xử lý ảnh Drive thật ở khổ lớn**: ảnh là raster cỡ nhỏ cố định
-// (`PHOTO.thumbSize` ~200px), phóng lên khổ nhiều mét thì mờ hẳn dù chữ và
-// đường kẻ vẫn nét — chưa có công tắc "bỏ ảnh khi in khổ lớn". Việc sau.
-//
-// --- ĐƯỜNG THỨ BA: ảnh RASTER theo khổ giấy + DPI (thêm 31/08/2026) --------
-//
-// Chủ dự án đối chiếu tiếp MicroStation: *"xuất bản vẽ thành ẢNH trong khung
-// khổ A0 nhưng đẩy độ phân giải lên 600, 900, 1200 DPI"*, và muốn một đường
-// xuất cho phép chọn **máy in PDF trên máy tính** + **khổ giấy máy in ấy cho
-// phép** + **độ phân giải 75–1200 DPI**, sơ đồ co vừa khổ.
-//
-// DPI chỉ có nghĩa với ẢNH RASTER. `inSoDo()` ở trên in thẳng SVG SỐNG — máy
-// in tự rasterize ở độ phân giải của chính nó, không có con số nào cho người
-// dùng chọn. Nên đây là một NHÁNH RIÊNG, không phải một tham số thêm của
-// `inSoDo()`: `xuatAnhDoPhanGiaiCao()` dựng ảnh raster đúng số pixel yêu cầu,
-// rồi `inAnhRaster()` đem chính tấm ảnh ấy đi in full khổ giấy.
-//
-// ⚠ **Trần canvas — ĐÃ ĐO, không đoán** (`kiem-thu/do-canvas-lon.mjs`, Chrome
-// thật, 31/08/2026): canvas dựng được tối đa **268.435.456 điểm ảnh
-// (= 16384×16384 chẵn, tức 2^28)** và **mỗi cạnh tối đa 65535**; quá một
-// trong hai là hỏng. Vài mốc thật đo được: A4@1200dpi ĐƯỢC (139 Mpx) ·
-// A2@600dpi ĐƯỢC (139 Mpx) · A0@300dpi ĐƯỢC (139,5 Mpx) · A0@600dpi HỎNG
-// (558 Mpx) · A1@600dpi HỎNG (279 Mpx) · A3@1200dpi HỎNG (278 Mpx).
-//
-// ⚠ **Và cách nó hỏng mới là điều đáng sợ**: trình duyệt KHÔNG ném lỗi. Canvas
-// vẫn nhận đúng `width`/`height`, `fillRect` vẫn chạy, chỉ có điều mọi điểm
-// ảnh đọc lại đều là `0,0,0,0` và `toBlob()` trả về `null`. Đúng loại lỗi im
-// lặng dự án này đã ăn đủ. Vì vậy `kiemTranCanvas()` phải CHẶN TRƯỚC bằng
-// đúng hai con số đo được, và ném một câu tiếng Việt nói rõ phải giảm gì —
-// chứ không để người dùng bấm rồi nhìn một ảnh đen thui hoặc không có gì.
-//
-// ⚠ Trần này là trần của MÃ BLINK nên không đổi theo card màn hình, nhưng máy
-// ít RAM vẫn có thể hỏng SỚM HƠN. `xuatAnhDoPhanGiaiCao()` vì thế còn kiểm
-// `toBlob()` trả null một lần nữa sau khi vẽ.
-//
-// --- Vì sao nút tải PNG KHÔNG tự bấm hộ (`a.click()`) ----------------------
-//
-// `pages/import-export.js` (Xuất GEDCOM, bước 55) đã cân nhắc đúng câu này
-// và chọn: dựng xong file thì HIỆN một link thật, người dùng tự bấm — không
-// tự kích hoạt tải bằng mã. Lý do ghi ở đó vẫn đúng ở đây, và còn thêm một lý
-// do riêng của PNG: `xuatAnhPNG()` là hàm `async` (đợi tải ảnh, đợi
-// `canvas.toBlob()`), nên lúc file xong thì cú bấm gốc của người dùng đã lùi
-// lại vài trăm mili-giây — nhiều trình duyệt coi một `a.click()` KHÔNG còn
-// nằm trong "cử chỉ người dùng" nữa và ÂM THẦM chặn tải, đúng loại lỗi im
-// lặng dự án này đã ăn đủ (xem b66: "báo thành công mà không có gì xảy ra").
-// Một link thật, người dùng tự bấm lần hai, luôn nằm trong cử chỉ của họ.
-//
-// ⚠ **CHƯA THỬ TRÊN APP THẬT** — đặc biệt phần chuyển ảnh Drive sang Data URI
-// (`thayAnhBangDataUri`) có thể vướng CORS: `fetch()` một ảnh riêng tư trên
-// `drive.google.com` từ trong iframe Apps Script chưa ai đo. Nếu fetch hỏng,
-// mã KHÔNG vỡ cả ảnh xuất ra — nó gỡ `href` của lớp ảnh thật, để lộ đúng lớp
-// bóng người mặc định nằm sẵn NGAY DƯỚI (`renderAnhTrongO` ở
-// `domains/render.js` đã vẽ hai lớp chồng nhau từ bước 28, không phải mã mới
-// viết thêm gì cho ca hỏng). Xem `NK-B72` để biết chỗ cần đo tiếp.
+// ⚠ Ảnh chỉ chụp PHẦN SƠ ĐỒ ĐANG HIỆN, không phải cả gia phả.
+// ⚠ In PDF: `<svg>` để `width/height:100%`, KHÔNG ép pixel — máy in ảo tự
+//   quyết khổ giấy và bỏ qua `@page size`.
+// ⚠ Canvas quá 2^28 điểm ảnh hoặc cạnh > 65535 hỏng IM LẶNG — `kiemTranCanvas()`
+//   chặn trước, đừng nới.
+// ⚠ Tải PNG bằng link thật, KHÔNG `a.click()` sau `await` (bị chặn âm thầm).
 // ============================================================
 
 import { boDauChoTenFile } from '../domains/gedcom.js';
 import { VE } from '../domains/render.js';
 import { PHOTO } from '../config.js';
+import { driveThumbUrl } from '../utils/image.js';
 
 // ============================================================
 // XUẤT THEO CHIỀU CAO CHỮ — lối MicroStation (chốt 01/09/2026)
@@ -1136,8 +1016,13 @@ function xinBanToHon(href, coAnhCanPx, banDoLon) {
   //
   // Bản đồ nhỏ→lớn dựng từ `tree.media`, xem `banDoAnhLon()`. Ảnh tải lên
   // trước ngày có bản lớn thì không có trong bản đồ — giữ nguyên bản nhỏ.
+  // Khoá của bản đồ là CẢ đường dẫn màn hình (b161a — kho kín, mỗi tấm một
+  // chữ ký riêng, không thay được một đoạn mã file trong URL như thời Drive).
   let ra = href;
-  if (banDoLon) {
+  if (banDoLon && banDoLon.has(href)) {
+    ra = banDoLon.get(href);
+  } else if (banDoLon) {
+    // Đường dẫn kiểu Drive (bài kiểm dùng chung với bản Apps Script): thay mã file.
     const m = href.match(/[?&]id=([^&]+)/) || href.match(/\/d\/([^=/?]+)/);
     const lon = m && banDoLon.get(decodeURIComponent(m[1]));
     if (lon) ra = ra.replace(m[1], encodeURIComponent(lon));
@@ -1151,7 +1036,7 @@ function xinBanToHon(href, coAnhCanPx, banDoLon) {
 }
 
 /**
- * Bản đồ `mã ảnh nhỏ → mã ảnh lớn`, dựng từ kho ảnh của cây.
+ * Bản đồ `URL ảnh nhỏ → URL ảnh lớn` (đều đã ký), dựng từ kho ảnh của cây.
  *
  * Tách ra đây thay vì thêm một trường `photoFileIdLon` vào từng NGƯỜI: mã bản
  * lớn đã nằm sẵn trong bản ghi ảnh (`tree.media`), chép thêm một bản thứ hai
@@ -1163,6 +1048,7 @@ function banDoAnhLon(tree) {
   const ds = tree && Array.isArray(tree.media) ? tree.media : [];
   for (const m of ds) {
     if (m && !m.deleted && m.driveFileId && m.driveFileIdLon) {
+      bang.set(driveThumbUrl(m.driveFileId), driveThumbUrl(m.driveFileIdLon));
       bang.set(String(m.driveFileId), String(m.driveFileIdLon));
     }
   }

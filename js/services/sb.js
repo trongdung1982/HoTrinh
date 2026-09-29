@@ -5,8 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.51.0 · Cập nhật: 29/09/2026 (b159c) — bốn cửa Dữ liệu mồ côi (luoc-do/58)
-//            (`doc_cay().doi` · `doc_doi_cay()`, `56`). Lịch sử: `git log -p`.
+// Phiên bản: 0.52.0 · Cập nhật: 30/09/2026 (b161a) — kho ảnh kín: `kyAnh()` xin
+//            chữ ký (luoc-do/59). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/mo-app.md (layPhien — HAI đường phải đồng bộ)
 // ============================================================
 //
@@ -880,11 +880,11 @@ export function dsFileThua() {
   }));
 }
 
-/** Đường dẫn công khai của một file kho `anh` — để xem trước ảnh thừa. */
-export function duongDanAnh(duongDan) {
-  const k = layKhach();
-  if (!k || !duongDan) return '';
-  return k.storage.from(KHO_ANH).getPublicUrl(duongDan).data.publicUrl || '';
+/** Đường dẫn có chữ ký của một file kho `anh` — để xem trước ảnh thừa (b161a). */
+export async function duongDanAnh(duongDan) {
+  if (!duongDan) return '';
+  const kq = await kyAnh([duongDan], 3600);
+  return kq.ok ? (kq.bang.get(duongDan) || '') : '';
 }
 
 /**
@@ -1251,6 +1251,34 @@ export async function taiAnh(treeId, blob, tenFile) {
     .upload(duongDan, blob, { contentType: blob.type || 'image/jpeg', upsert: true });
   if (error) return { ok: false, loi: cauLoi(error), duongDan: '' };
   return { ok: true, loi: null, duongDan };
+}
+
+/**
+ * Xin CHỮ KÝ cho nhiều ảnh một lượt — kho `anh` kín từ `luoc-do/59` (b161a).
+ * Máy chủ chỉ ký file người gọi được xem (`co_the_xem_anh`); file bị từ chối
+ * đơn giản là vắng mặt trong `bang`, không làm hỏng cả lượt.
+ *
+ * Chia lô 300: một lần gửi 681 đường dẫn là một thân JSON ~60 KB, lô nhỏ hơn
+ * cho máy chủ trả sớm và một lô hỏng không kéo cả sơ đồ theo.
+ *
+ * @param {string[]} dsDuongDan
+ * @param {number} giay  hạn của chữ ký
+ * @returns {Promise<{ok:boolean, loi:string|null, bang:Map<string,string>}>}
+ */
+export async function kyAnh(dsDuongDan, giay) {
+  const bang = new Map();
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', bang };
+  const ds = Array.from(new Set((dsDuongDan || []).filter(Boolean)));
+  let loi = null;
+  for (let i = 0; i < ds.length; i += 300) {
+    const { data, error } = await k.storage.from(KHO_ANH).createSignedUrls(ds.slice(i, i + 300), giay);
+    if (error) { loi = cauLoi(error); continue; }
+    for (const d of data || []) {
+      if (d && d.signedUrl && !d.error) bang.set(d.path, d.signedUrl);
+    }
+  }
+  return { ok: !loi || bang.size > 0, loi, bang };
 }
 
 /**

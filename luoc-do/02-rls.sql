@@ -235,8 +235,8 @@ create policy rieng_user_settings on public.user_settings
 -- ============================================================
 -- 5. KHO ẢNH
 -- ============================================================
--- Đọc: kho `anh` để `public = true` ở `01-bang.sql` nên ai có đường dẫn thì
--- xem được — không cần `policy` đọc. Xem cảnh báo riêng tư ở file ấy.
+-- Đọc: ⚠ ĐÃ ĐỔI ở `59-kho-anh-kin.sql` — kho kín, luật đọc `xem_anh`.
+-- (Câu cũ: kho `public = true`, ai có đường dẫn thì xem được.)
 --
 -- Ghi: chỉ người sửa được cây, và chỉ vào đúng thư mục của cây ấy. Đường dẫn
 -- quy ước `<tree_id>/<media_id>-nho.jpg`, nên đoạn đầu chính là mã cây.

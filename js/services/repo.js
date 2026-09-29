@@ -4,7 +4,7 @@
 // Lớp      : services — được gọi bởi: pages · gọi: services/sb,
 //            services/hinh-dang, utils, state
 // Phụ thuộc: services/sb.js, services/hinh-dang.js, utils/graph.js, state.js
-// Phiên bản: 0.12.0 · Cập nhật: 29/09/2026 (b159b) — napCayRieng/luuCayRieng cho trang Quản trị
+// Phiên bản: 0.13.0 · Cập nhật: 30/09/2026 (b161a) — ký ảnh sau khi nạp cây (kho kín)
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/mo-app.md (khoiTao · napCay)
 // ============================================================
 //
@@ -31,6 +31,7 @@ import { rapCay, rapMotNguoi, rapDoi, soSanh, coGiDeGhi, tangSoSauKhiLuu } from 
 import { state, notify } from '../state.js';
 import { buildIndex } from '../utils/graph.js';
 import { sinhMaCay, napKho, soMaTrongKho } from '../utils/id.js';
+import { ghiChuKy, thieuChuKy } from '../utils/image.js';
 import { DATA_VERSION } from '../config.js';
 
 /**
@@ -100,8 +101,59 @@ export async function napCay() {
     '[repo] nạp cây: ' + state.index.personById.size + ' người, ' +
     state.index.unionById.size + ' hôn nhân, revision ' + state.revision);
 
+  // Chờ chữ ký TRƯỚC khi trả cây: sơ đồ vẽ ngay sau, và `render.js` đọc
+  // đường dẫn đồng bộ. Một vòng mạng, kể cả cây 681 người (b161a).
+  await kyAnhCuaCay(cay, true);
+
   canhBaoThieuUid(cay);
   return cay;
+}
+
+// ============================================================
+// CHỮ KÝ ẢNH — kho `anh` kín từ `luoc-do/59` (b161a)
+// ============================================================
+//
+// Chữ ký hạn 6 giờ; cứ 3 giờ ký lại cả cây một lần, lặng lẽ. Ảnh đã hiện
+// trên màn hình không mất khi chữ ký cũ hết hạn — chỉ lần vẽ sau dùng chữ ký
+// mới. Hạn dài hơn là đường dẫn lọt ra ngoài sống lâu hơn; ngắn hơn là thêm
+// vòng mạng. 6 giờ phủ một buổi ngồi làm.
+const HAN_CHU_KY = 6 * 3600;
+let henKyLai = null;
+
+/** Mọi đường dẫn ảnh cây đang dùng: ảnh đại diện + bản nhỏ/lớn trong kho. */
+function duongAnhCuaCay(cay) {
+  const ds = [];
+  for (const p of (cay && cay.persons) || []) if (p && p.photoFileId) ds.push(p.photoFileId);
+  for (const p of (cay && cay.vanhDai) || []) if (p && p.photoFileId) ds.push(p.photoFileId);
+  for (const m of (cay && cay.media) || []) {
+    if (!m || m.deleted) continue;
+    if (m.driveFileId) ds.push(m.driveFileId);
+    if (m.driveFileIdLon) ds.push(m.driveFileIdLon);
+  }
+  return ds;
+}
+
+/**
+ * Xin chữ ký cho ảnh của cây. `tatCa = false` chỉ xin những tấm chưa có
+ * (sau khi Lưu thêm ảnh). Không bao giờ ném lỗi: hỏng thì ảnh rơi về bóng
+ * người, không được chặn việc mở gia phả.
+ */
+async function kyAnhCuaCay(cay, tatCa) {
+  const ds = duongAnhCuaCay(cay);
+  const can = tatCa ? ds : thieuChuKy(ds);
+  if (can.length) {
+    try {
+      const kq = await sb.kyAnh(can, HAN_CHU_KY);
+      ghiChuKy(kq.bang);
+      if (kq.loi) console.warn('[repo] chưa ký được một phần ảnh: ' + kq.loi);
+    } catch (e) {
+      console.warn('[repo] chưa ký được ảnh: ' + (e && e.message ? e.message : e));
+    }
+  }
+  if (tatCa) {
+    clearTimeout(henKyLai);
+    henKyLai = setTimeout(() => { kyAnhCuaCay(state.tree, true); }, HAN_CHU_KY * 500);
+  }
 }
 
 // ============================================================
@@ -169,6 +221,8 @@ export async function xinMa(loai, so) {
 export async function taiAnh(blob, tenFile) {
   if (!state.treeId) return { ok: false, fileId: '', loi: 'Chưa mở gia phả nào nên chưa tải ảnh được.' };
   const kq = await sb.taiAnh(state.treeId, blob, tenFile);
+  // Ký ngay tấm vừa tải — sơ đồ vẽ lại sau lần Lưu sẽ cần nó (kho kín, b161a).
+  if (kq.ok && kq.duongDan) await kyAnhCuaCay({ persons: [{ photoFileId: kq.duongDan }] }, false);
   return { ok: kq.ok, fileId: kq.duongDan || '', loi: kq.loi };
 }
 
@@ -198,7 +252,9 @@ export async function timNguoiMoiCay(chuoi) {
 export async function docNguoiTheoMa(ma) {
   const kq = await sb.docNguoiTheoMa(ma);
   if (!kq.ok) return { ok: false, loi: kq.loi, nguoi: null };
-  return { ok: true, loi: null, nguoi: rapMotNguoi(kq.dong) };
+  const nguoi = rapMotNguoi(kq.dong);
+  if (nguoi && nguoi.photoFileId) await kyAnhCuaCay({ persons: [nguoi] }, false);
+  return { ok: true, loi: null, nguoi };
 }
 
 /**
