@@ -3,7 +3,7 @@
 // Vai trò  : Rà soát dữ liệu gia phả — chặn cái sai chắc chắn, cảnh báo cái đáng ngờ
 // Lớp      : domains — được gọi bởi: pages · được phép gọi: utils, config
 // Phụ thuộc: utils/date.js, utils/graph.js, utils/text.js, domains/union.js
-// Phiên bản: 1.5.0 · Cập nhật: 26/08/2026 21:30
+// Phiên bản: 1.6.0 · Cập nhật: 29/09/2026 (b159c) — coNoiVanhDai()
 // ============================================================
 //
 // HÀM THUẦN. Không gọi services, không chạm DOM, không đọc state.
@@ -324,6 +324,31 @@ export function checkOrphanNode(index, personId) {
 
   return canhBao(moTaNguoi(nguoi) +
                  ' chưa nối với ai — không có cha mẹ, không có vợ/chồng, không có con.');
+}
+
+/**
+ * Người này có nối với ai ở VÀNH ĐAI không — người cây khác, `index.vanhDaiById`
+ * (`luoc-do/30`). `checkOrphanNode` chỉ nhìn người TRONG cây, nên con dâu mà
+ * chồng thuộc cây khác bị nó gọi là "chưa nối với ai" — đúng với sơ đồ cây
+ * này, SAI khi hỏi "có phải rác không" (b159c, tab Dữ liệu mồ côi).
+ *
+ * @param {object} index  `buildIndex(tree)`
+ * @param {string} personId
+ * @returns {boolean}
+ */
+export function coNoiVanhDai(index, personId) {
+  const vd = index && index.vanhDaiById;
+  if (!vd || vd.size === 0) return false;
+  const cacUnion = (index.unionsAsPartner.get(personId) || [])
+    .concat(index.unionsAsChild.get(personId) || []);
+  for (const unionId of cacUnion) {
+    const u = index.unionById.get(unionId);
+    if (!u) continue;
+    if ((Array.isArray(u.partners) ? u.partners : []).some((p) => p !== personId && vd.has(p))) return true;
+    if ((Array.isArray(u.children) ? u.children : [])
+      .some((c) => c && c.personId !== personId && vd.has(c.personId))) return true;
+  }
+  return false;
 }
 
 /**

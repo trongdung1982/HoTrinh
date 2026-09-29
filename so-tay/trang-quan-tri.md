@@ -45,7 +45,12 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   → sửa bằng hàm `domains/` → `repo.luuCayRieng(treeId, cay, apDung, moTa)`. Đi
   đúng `luu_cay()` như trang sơ đồ, KHÔNG đụng `state` (trang này không có cây
   đang mở). Đừng viết hàm SQL ghi riêng cho QTHT — cửa ghi chỉ có một. Mẫu:
-  `khu-nguoi-da-xoa.js` (Thùng rác → Người đã xoá).
+  `khu-nguoi-da-xoa.js` (Thùng rác → Người đã xoá). Thứ KHÔNG cây nào giữ
+  (người ngoài mọi cây · ảnh mất chủ · file thừa kho) thì `luu_cay()` không với
+  tới — đi `luoc-do/58`, file kho xoá bằng Storage API sau (`khu-du-lieu-mo-coi.js`).
+- **Dò mồ côi trong cây phải trừ vành đai** — `validate.coNoiVanhDai()`:
+  `checkOrphanNode` chỉ nhìn người trong cây, nên con dâu có chồng ở cây khác
+  bị gọi là "chưa nối với ai" (b159c).
 - **Thêm cửa vào `sb.js` thì thêm ở `sb-gia.mjs`** — thiếu một tên là `SyntaxError`
   lúc nạp, cả bộ ảnh ra nền trơn (đã xảy ra b110b, b111). Tham số của bản giả
   phải cùng NGHĨA với máy chủ.

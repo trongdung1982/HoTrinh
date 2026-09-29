@@ -39,7 +39,7 @@
   <!-- `?v=` = khớp Phiên bản đầu quan-tri.css — đổi CSS thì đổi cả số này,
        không thì trình duyệt/CDN có thể phục vụ bản cũ đã cache (b122d,
        chủ dự án báo "chưa thấy đổi gì" dù đã đẩy lên GitHub). -->
-  <link rel="stylesheet" href="quan-tri.css?v=1.2.0">
+  <link rel="stylesheet" href="quan-tri.css?v=1.2.1">
   <!-- Tông màu — KHÔNG có trong quantri3. Nạp SAU quan-tri.css để đè biến:
        tong-mau.css = mười khối biến (dùng chung với trang sơ đồ),
        phoi-mau.css = luật đè riêng trang này + nút chọn. -->
@@ -284,7 +284,7 @@
 
 <section id="quan-tri-he-thong" class="view" hidden data-system-view>
 <div class="head"><div><h1>Quản trị hệ thống</h1><p class="lead">Chỉ dành cho tài khoản có cờ Quản trị hệ thống. Các chức năng ở đây áp dụng toàn ứng dụng.</p></div><span class="badge">Toàn hệ thống</span></div>
-<div class="tabs"><button class="chip active" data-sys-tab="tong-quan">Tổng quan</button><button class="chip" data-sys-tab="so-tai-khoan">Sổ tài khoản</button><button class="chip" data-sys-tab="tao-tai-khoan">+ Tạo tài khoản mới</button><button class="chip" data-sys-tab="cay-mac-dinh">Cây mặc định</button><button class="chip" data-sys-tab="sao-luu">Sao lưu &amp; khôi phục</button><button class="chip" data-sys-tab="thung-rac">Thùng rác</button><button class="chip" data-sys-tab="de-nghi-quan-he">Đề nghị sửa quan hệ</button><button class="chip" data-sys-tab="bao-trung">Báo trùng người</button><button class="chip" data-sys-tab="ho-so-don">Đơn Hồ sơ cá nhân</button><button class="chip" data-sys-tab="nhat-ky">Nhật ký</button></div>
+<div class="tabs"><button class="chip active" data-sys-tab="tong-quan">Tổng quan</button><button class="chip" data-sys-tab="so-tai-khoan">Sổ tài khoản</button><button class="chip" data-sys-tab="tao-tai-khoan">+ Tạo tài khoản mới</button><button class="chip" data-sys-tab="cay-mac-dinh">Cây mặc định</button><button class="chip" data-sys-tab="sao-luu">Sao lưu &amp; khôi phục</button><button class="chip" data-sys-tab="thung-rac">Thùng rác</button><button class="chip" data-sys-tab="mo-coi">Dữ liệu mồ côi</button><button class="chip" data-sys-tab="de-nghi-quan-he">Đề nghị sửa quan hệ</button><button class="chip" data-sys-tab="bao-trung">Báo trùng người</button><button class="chip" data-sys-tab="ho-so-don">Đơn Hồ sơ cá nhân</button><button class="chip" data-sys-tab="nhat-ky">Nhật ký</button></div>
 <div data-sys-pane="tong-quan">
 <div class="cards" style="gap:14px;margin-bottom:20px">
 <div class="card" style="margin-bottom:0;padding:16px 18px">
@@ -566,6 +566,35 @@
   </thead>
   <tbody id="trash-logs-tbody"></tbody>
 </table>
+</div>
+</div>
+
+<div data-sys-pane="mo-coi" hidden>
+<!-- Không có trong quantri3 — thêm ở b159c. Dọn rác = tìm và xoá dữ liệu mồ côi (chuyển về từ Rà soát của trang sơ đồ). -->
+<div class="notice" style="margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span id="mc-trang-thai" style="flex:1;min-width:220px">Bấm Quét để dò mọi gia phả. Quét đọc cả cây — cây lớn mất vài giây.</span><button class="btn warm" id="btn-mc-quet">Quét dữ liệu mồ côi</button></div>
+
+<div class="panel" style="margin-bottom:16px">
+<div class="panel-head">
+<div><h3>Người mồ côi</h3><span id="mc-nguoi-dem">Người không nối với ai — thường là người thật vừa thêm mà quên nối</span></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="btn-mc-nguoi-rac" disabled style="font-size:12px;padding:6px 12px">Cho vào thùng rác (0)</button><button class="btn danger" id="btn-mc-nguoi-xoa" disabled style="font-size:12px;padding:6px 12px">Xoá vĩnh viễn (0)</button></div>
+</div>
+<table><thead><tr><th style="width:40px;text-align:center"><input type="checkbox" id="mc-nguoi-chon-het" title="Chọn mọi dòng" aria-label="Chọn mọi người mồ côi"></th><th>Họ tên</th><th>Mã người</th><th>Gia phả</th><th>Năm sinh – mất</th><th>Tình trạng</th></tr></thead><tbody id="mc-nguoi-tbody"></tbody></table>
+</div>
+
+<div class="panel" style="margin-bottom:16px">
+<div class="panel-head">
+<div><h3>Gia đình mồ côi</h3><span id="mc-cap-dem">Cặp không còn khẳng định điều gì — xoá đi không mất mối nối nào</span></div>
+<button class="btn danger" id="btn-mc-cap-xoa" disabled style="font-size:12px;padding:6px 12px">Xoá vĩnh viễn (0)</button>
+</div>
+<table><thead><tr><th style="width:40px;text-align:center"><input type="checkbox" id="mc-cap-chon-het" title="Chọn mọi dòng" aria-label="Chọn mọi gia đình mồ côi"></th><th>Mã cặp</th><th>Người trong cặp</th><th>Gia phả</th><th>Vì sao thừa</th></tr></thead><tbody id="mc-cap-tbody"></tbody></table>
+</div>
+
+<div class="panel">
+<div class="panel-head">
+<div><h3>Ảnh mồ côi</h3><span id="mc-anh-dem">Ảnh mất chủ · file thừa trong kho (bỏ file mới tải dưới 1 ngày)</span></div>
+<button class="btn danger" id="btn-mc-anh-xoa" disabled style="font-size:12px;padding:6px 12px">Xoá vĩnh viễn (0)</button>
+</div>
+<table><thead><tr><th style="width:40px;text-align:center"><input type="checkbox" id="mc-anh-chon-het" title="Chọn mọi dòng" aria-label="Chọn mọi ảnh mồ côi"></th><th style="width:72px">Ảnh</th><th>Loại</th><th>Tệp</th><th>Gia phả</th><th>Ghi chú</th></tr></thead><tbody id="mc-anh-tbody"></tbody></table>
 </div>
 </div>
 

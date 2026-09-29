@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 29/09/2026 · Hai mươi điểm dừng chưa bấm thử.*
+*Cập nhật 29/09/2026 · Hai mươi mốt điểm dừng chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -26,6 +26,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b159c Dữ liệu mồ côi** (sau khi dán `58`) | Ctrl+F5. Cây thử `TH957`: thêm một người mới KHÔNG nối với ai. → *Quản trị → Quản trị hệ thống → Dữ liệu mồ côi* → *Quét dữ liệu mồ côi*: dòng trạng thái kể số gia phả đã quét; người ấy hiện ở bảng *Người mồ côi* ("Chưa nối với ai trong cây"). Tích → *Cho vào thùng rác (1)* → xác nhận → sang tab *Thùng rác*: người ấy nằm ở bảng *Người đã xoá*. Bảng *Ảnh mồ côi* có ảnh thì ô xem trước hiện ảnh. ⚠ Cây 681 và `TH957` đo tại chỗ ra 0 người mồ côi, 0 cặp thừa — thấy dài dòng người thì báo tôi, đừng bấm xoá cả loạt |
 | **b159b Người đã xoá** (sau khi dán `57`) | Ctrl+F5. Trang sơ đồ, cây thử `TH957`: xoá hai người. → *Quản trị → Quản trị hệ thống → Thùng rác*: bảng *Người đã xoá* có hai người ấy, đúng cây, có ngày và người xoá; ô lọc cây chọn được. Tích một người → *Khôi phục (1)* → *Khôi phục 1 người* → báo "Đã khôi phục", bảng còn một → về trang sơ đồ, người ấy hiện lại đúng chỗ. Tích người còn lại → *Xoá vĩnh viễn (1)* → hộp kể tên → *Xoá vĩnh viễn* → bảng trống; trang sơ đồ *Danh sách người → Thùng rác* cũng không còn người ấy |
 | **Bảng tài khoản chờ xóa đã chuyển chỗ** | Ctrl+F5 → *Quản trị → Quản trị hệ thống → Sổ tài khoản*: bảng cuối trang không còn. Sang tab *Thùng rác*: bảng *Danh sách tài khoản chờ xóa (Lưu giữ 60 ngày)* nằm trên cùng, ghi "Chưa có ở máy chủ" (xoá mềm 60 ngày chưa làm — việc cũ b118b) |
 | **Câu chữ Dọn thùng rác** | Ctrl+F5. Cây thử `TH957`: xoá một người có ảnh → *Danh sách người* → Thùng rác → tích người ấy → *Xoá vĩnh viễn…*: hộp nói *"… file ảnh bị xoá khỏi kho — chỉ còn ở bản sao lưu đêm"* và *"Không có bản sao lưu riêng cho lần dọn này…"* — KHÔNG còn chữ "thùng rác Drive 30 ngày" |
@@ -63,6 +64,10 @@ dán lại* — đọc TRƯỚC khi dán lại bất cứ file nào.
 chạy được cả trước khi dán (bảng *Người đã xoá* ghi "chưa dán luoc-do/57").
 Dán một mình nó; bảng tự kiểm cuối ra ĐẠT cả hai dòng.
 
+**`58-du-lieu-mo-coi.sql` — CHỜ DÁN, ĐƯỢC dán** (b159c, bàn thử
+`do-b159c.mjs` 21/21). Ba hàm đọc + một hàm dọn chỉ QTHT; không đổi bảng.
+Không phụ thuộc `57` — dán `57` rồi `58`, cùng buổi. Tự kiểm cuối ĐẠT hai dòng.
+
 ---
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
@@ -82,7 +87,6 @@ mồ côi, KHÔNG phải nút dọn cây > N ngày. Chốt: **chỉ QTHT** dùng
 
 | Phiên | Việc |
 |---|---|
-| C | Tab mới **Dữ liệu mồ côi**: người · gia đình · ảnh (mất chủ + file thừa kho) → tích nhiều → thùng rác |
 | D | Gỡ ba nút ở trang sơ đồ + sửa bài kiểm, SAU khi B–C bấm thử đạt |
 
 Bấm thử các điểm dừng ở trên (ba điểm b151 trước tiên). Việc mã lớn còn lại nằm
@@ -116,6 +120,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **b127b chưa bấm thật**: thẻ người kéo sang `T388` phải đủ vợ/con | — |
 | ⚠ **Ô gợi ý trên điện thoại thật chưa ai bấm lại** | `so-tay/o-goi-y.md` |
+| **Dữ liệu mồ côi — hai chỗ chưa dọn được**: ① người ngoài mọi cây mà còn đứng trong cặp (ô tích khoá, `58` không xoá); ② file thừa trong thư mục của cây đang ẩn/thùng rác (luật `xoa_anh` từ chối, báo "không xoá được"). Cần thì làm SQL riêng | `pages/quan-tri/khu-du-lieu-mo-coi.js` |
 | ⚠ **Dọn thùng rác có hoàn tác được qua Kiểm duyệt không?** `luu_cay()` CHỤP dữ liệu cũ kể cả lần xoá thật (`03` khối *CHỤP ẢNH*, ý 3 nói thẳng "hoàn tác một lần Dọn thùng rác"), nhưng hộp xác nhận vẫn nói "KHÔNG hoàn tác được". Chưa ai đo; đo xong thì sửa câu ấy trong `cauKeKhiDonRac()` | `pages/form-thung-rac.js` |
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |
 | Nợ ghi chú đầu file còn 14 khoản (nặng nhất `export-image.js` 140 dòng · `review.js` 99) — trả khi chạm tới file ấy, không đi rà riêng | `do-gon.mjs --tat-ca` · `QUY-TAC-GON.md` D1 |

@@ -1,15 +1,12 @@
 // ============================================================
 // giapha-supabase · js/pages/quan-tri/khu-quan-tri-he-thong.js
 // Vai trò  : Khu QUẢN TRỊ HỆ THỐNG — đổ dữ liệu vào section
-//            `#quan-tri-he-thong` của prototype quantri3 (7 tab; hai tab cuối
-//            *Đề nghị sửa quan hệ* và *Đơn Hồ sơ cá nhân* không có trong
-//            prototype) và trang `#sys-default-tree-selector`.
+//            `#quan-tri-he-thong` của prototype quantri3 và trang
+//            `#sys-default-tree-selector`. Tab không có trong quantri3: Đề nghị
+//            sửa quan hệ · Đơn Hồ sơ cá nhân · Dữ liệu mồ côi.
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang ·
-//            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don · khu-nhat-ky ·
-//            khu-tao-tai-khoan · khu-bao-trung · khu-nguoi-da-xoa
-// Phiên bản: 1.17.0 · Cập nhật: 29/09/2026 (b159b) — tab Thùng rác có bảng
-//            Người đã xoá mọi cây (`khu-nguoi-da-xoa.js`). Lịch sử: `git log -p`.
+// Phụ thuộc: services/sb · quan-tri/trang-chi-tiet, hop-thoai, o-bang, khu-*
+// Phiên bản: 1.18.0 · Cập nhật: 29/09/2026 (b159c) — tab Dữ liệu mồ côi.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -45,6 +42,7 @@ import { veKhuHoSoDon } from './khu-ho-so-don.js';
 import { veKhuNhatKy } from './khu-nhat-ky.js';
 import { veKhuTaoTaiKhoan } from './khu-tao-tai-khoan.js';
 import { veKhuNguoiDaXoa } from './khu-nguoi-da-xoa.js';
+import { veKhuDuLieuMoCoi } from './khu-du-lieu-mo-coi.js';
 import {
   td, span, huyHieu, nut, nutNho, nutMo, lienKet, hangNut, dongTrong,
   chepKieu, ngay, ngayGio,
@@ -98,6 +96,7 @@ export async function mountKhuQuanTriHeThong(sec, phien) {
   veCayMacDinh(sec, dsSong, cmd, napLai);
   veThungRac(sec, kq, napLai);
   veKhuNguoiDaXoa(sec, phien);
+  veKhuDuLieuMoCoi(sec, phien);
   veKhuSaoLuu(sec, dsSong);
   veLichSuSaoLuu(sec);
   ganNutKhoiPhuc(sec);

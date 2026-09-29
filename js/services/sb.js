@@ -5,7 +5,7 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.50.0 · Cập nhật: 29/09/2026 (b159b) — dsNguoiDaXoa() (luoc-do/57)
+// Phiên bản: 0.51.0 · Cập nhật: 29/09/2026 (b159c) — bốn cửa Dữ liệu mồ côi (luoc-do/58)
 //            (`doc_cay().doi` · `doc_doi_cay()`, `56`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/mo-app.md (layPhien — HAI đường phải đồng bộ)
 // ============================================================
@@ -849,6 +849,59 @@ export async function dsNguoiDaXoa() {
     xoaBoi: r.xoa_boi || '',
   }));
   return { ok: true, loi: null, ds };
+}
+
+/** Lời gọi RPC chỉ-đọc của `luoc-do/58` — chưa dán thì `chuaDan = true`. */
+async function docMoCoi(ham, rap) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', ds: [] };
+  const { data, error } = await k.rpc(ham);
+  if (error) {
+    const chuaDan = /Could not find the function/i.test(error.message || '');
+    return { ok: false, chuaDan, ds: [],
+             loi: chuaDan ? 'Máy chủ chưa có hàm này — chưa dán luoc-do/58.' : cauLoi(error) };
+  }
+  return { ok: true, loi: null, ds: (data || []).map(rap) };
+}
+
+/** Bản ghi ảnh trỏ vào người/cặp không còn — `ds_anh_mat_chu()` (`58`, b159c). */
+export function dsAnhMatChu() {
+  return docMoCoi('ds_anh_mat_chu', (r) => ({
+    maAnh: r.media_id, maChu: r.subject_id, duongDan: r.duong_dan || '',
+    duongDanLon: r.duong_dan_lon || '', chuThich: r.chu_thich || '',
+    treeId: r.cay_id || null, tenCay: r.ten_cay || '',
+  }));
+}
+
+/** File trong kho không bản ghi nào trỏ tới (bỏ file mới tải dưới 1 ngày). */
+export function dsFileThua() {
+  return docMoCoi('ds_file_thua', (r) => ({
+    duongDan: r.duong_dan, taoLuc: r.tao_luc || '', treeId: r.cay_id || null, tenCay: r.ten_cay || '',
+  }));
+}
+
+/** Đường dẫn công khai của một file kho `anh` — để xem trước ảnh thừa. */
+export function duongDanAnh(duongDan) {
+  const k = layKhach();
+  if (!k || !duongDan) return '';
+  return k.storage.from(KHO_ANH).getPublicUrl(duongDan).data.publicUrl || '';
+}
+
+/**
+ * Xoá hẳn người KHÔNG thuộc cây nào + ảnh mất chủ — `don_mo_coi_he_thong()`
+ * (`58`). Máy chủ kiểm lại từng mã; mã không đủ điều kiện nằm trong `boQua`.
+ * File kho KHÔNG xoá ở máy chủ — trả về `file` cho nơi gọi đưa `xoaAnhThat()`.
+ */
+export async function donMoCoiHeThong(dsNguoi, dsAnh) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('don_mo_coi_he_thong', {
+    p_nguoi: dsNguoi || [], p_anh: dsAnh || [],
+  });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  if (!data || data.ok !== true) return { ok: false, loi: (data && data.loi) || 'Máy chủ từ chối.' };
+  return { ok: true, loi: null, nguoi: data.nguoi || [], anh: data.anh || [],
+           file: data.file || [], boQua: data.boQua || [] };
 }
 
 // ============================================================

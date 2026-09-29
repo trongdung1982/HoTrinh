@@ -60,6 +60,7 @@ const TEN_VIEC = {
   doi_truong_cong_khai: ['Đổi trường công khai cho khách', 'wait'],
   doi_cong_khai_ca_nhan: ['Đổi thông tin công khai của một thành viên', 'wait'],
   gop_nguoi: ['Gộp hai bản ghi người', 'wait'],
+  don_mo_coi: ['Dọn dữ liệu mồ côi', 'red'],   // luoc-do/58, b159c
   sao_luu_dem: ['Sao lưu đêm', ''],
   sao_luu_canh_bao: ['Sao lưu đêm — có cảnh báo', 'wait'],
   sao_luu_hong: ['Sao lưu đêm HỎNG', 'red'],

@@ -2,7 +2,7 @@
    giapha-supabase · quan-tri.css
    Vai trò  : Giao diện trang Quản trị — CHÉP NGUYÊN VĂN CSS của prototype
               `quantri3.html` chủ dự án đã chốt 13/09/2026.
-   Phiên bản: 1.1.9 · Cập nhật: 29/09/2026 — nới cột Nội dung thao tác (Kiểm duyệt).
+   Phiên bản: 1.2.1 · Cập nhật: 29/09/2026 (b159c) — .mc-anh (tab Dữ liệu mồ côi).
               1.1.5 (26/09, b125c) ô nhập sửa tại chỗ +
               cột Ghi chú đổi từ `:last-child` sang `.col-ghi` ở bảng Danh
               sách người; nới ô "Họ và tên" (`o-sua-ten`) sau khi nhìn ảnh
@@ -54,6 +54,8 @@
 .qt-canh-bao a { color:var(--muted); }
 .loi-dong { display:block; margin-top:6px; color:var(--danger); font-size:12px; line-height:1.4; }
 .dong-trong td { color:var(--muted); text-align:center; padding:22px 16px; }
+/* b159c — ô xem trước ở bảng Ảnh mồ côi (tab Dữ liệu mồ côi). */
+.mc-anh { width:56px; height:56px; object-fit:cover; border-radius:6px; border:1px solid var(--line); display:block; }
 /* Ô nhập trong hộp hỏi — từ b118d mọi ô đổi vai, gắn mã người, lý do… mở ra
    trong hộp `#custom-modal`, vì bảng quantri3 không có chỗ đứng cho chúng. */
 .modal-box textarea, .modal-box input[type="text"], .modal-box select {

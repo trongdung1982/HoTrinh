@@ -125,12 +125,16 @@ export async function veKhuNguoiDaXoa(sec, phien) {
   ve();
 }
 
-/** Gom dòng đã chọn theo cây: Map(treeId → {ten, dong[]}). */
-function theoCay(dong) {
+/**
+ * Gom dòng đã chọn theo cây: Map(treeId → {ten, dong[], ma[]}). `layMa` đọc
+ * mã bản ghi của một dòng — người (`maNguoi`) hay cặp (`khu-du-lieu-mo-coi.js`).
+ */
+export function theoCay(dong, layMa = (r) => r.maNguoi) {
   const m = new Map();
   for (const r of dong) {
-    if (!m.has(r.treeId)) m.set(r.treeId, { ten: r.tenCay || r.maCay, dong: [] });
+    if (!m.has(r.treeId)) m.set(r.treeId, { ten: r.tenCay || r.maCay, dong: [], ma: [] });
     m.get(r.treeId).dong.push(r);
+    m.get(r.treeId).ma.push(layMa(r));
   }
   return m;
 }
@@ -181,7 +185,7 @@ async function hoiXoaVinhVien(dong, napLai) {
   for (const [treeId, n] of nhom) {
     const nap = await napCayRieng(treeId);
     if (!nap.ok) { bao('Không đọc được gia phả', n.ten + ': ' + nap.loi); return; }
-    ke.push(planPurge(nap.cay, n.dong.map((r) => r.maNguoi)));
+    ke.push(planPurge(nap.cay, n.ma));
   }
   const tong = {
     personIds: ke.flatMap((k) => k.personIds), unionIds: ke.flatMap((k) => k.unionIds),
@@ -220,11 +224,11 @@ async function hoiXoaVinhVien(dong, napLai) {
  * cây khác hỏng theo; cây nào cũng hỏng thì trả `ok:false` để hộp giữ nguyên.
  * `donAnh`: sau khi cây ấy lưu xong mới xoá file ảnh (như `form-thung-rac.js`).
  */
-async function chayTheoCay(nhom, apDung, moTa, donAnh = false) {
+export async function chayTheoCay(nhom, apDung, moTa, donAnh = false, donVi = 'người') {
   const xong = [], hong = [];
   let anhXoa = 0, anhHong = 0;
   for (const [treeId, n] of nhom) {
-    const ma = n.dong.map((r) => r.maNguoi);
+    const ma = n.ma;
     const nap = await napCayRieng(treeId);
     if (!nap.ok) { hong.push(n.ten + ': ' + nap.loi); continue; }
     const sauLuu = {};
@@ -237,7 +241,7 @@ async function chayTheoCay(nhom, apDung, moTa, donAnh = false) {
       kq = { ok: false, loi: e && e.message ? e.message : String(e) };
     }
     if (!kq || !kq.ok) { hong.push(n.ten + ': ' + ((kq && kq.loi) || 'máy chủ từ chối.')); continue; }
-    xong.push(n.ten + ' (' + ma.length + ' người)');
+    xong.push(n.ten + ' (' + ma.length + ' ' + donVi + ')');
     if (donAnh && sauLuu.fileIds && sauLuu.fileIds.length) {
       try {
         const a = await xoaAnhThat(sauLuu.fileIds);
@@ -249,7 +253,7 @@ async function chayTheoCay(nhom, apDung, moTa, donAnh = false) {
   return { ok: true, xong, hong, anhXoa, anhHong };
 }
 
-function baoKetQua(tua, kq) {
+export function baoKetQua(tua, kq) {
   if (!kq) return;
   const cau = ['Xong: ' + kq.xong.join(', ') + '.'];
   if (kq.anhXoa) cau.push(kq.anhXoa + ' file ảnh đã xoá khỏi kho.');
