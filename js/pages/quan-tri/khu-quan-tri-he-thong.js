@@ -143,8 +143,8 @@ function veChuaCo(sec) {
   const LY_SL = 'Lịch sử dưới đây là những gì máy sao lưu đêm (Apps Script) tự báo về Nhật ký hệ thống — ' +
     'trình duyệt không đọc thẳng được Google Drive. File sao lưu nằm trong thư mục "Sao lưu gia phả ' +
     '(Supabase)" trên Drive. Bảng Đối chiếu dữ liệu bên dưới đọc SỐNG từ cơ sở dữ liệu — cột "Bản sao lưu" ' +
-    'phải tự mở file sao lưu mới nhất ra so bằng mắt. Muốn quay về một bản sao lưu: tải file ấy từ ' +
-    'Drive về máy rồi bấm nút khôi phục ở cuối trang.';
+    'phải tự mở file sao lưu mới nhất ra so bằng mắt. Muốn quay về một bản sao lưu: bấm nút khôi ' +
+    'phục ở cuối trang rồi chọn file ngay trong ổ Google Drive của máy.';
   dat('sl-chua-co', LY_SL);
   mo('#btn-sao-luu-ngay', 'Nút này cần gọi Apps Script từ trình duyệt, mà dự án sao lưu không có địa ' +
     'chỉ web để gọi tới — chạy hàm saoLuuNgay tại script.google.com.');

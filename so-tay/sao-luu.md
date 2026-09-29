@@ -13,6 +13,14 @@
 | **Khôi phục từ nút** (b155a): chỉ QTHT, chỉ file có dấu vân tay máy sao lưu báo | `luoc-do/54` · đo `../kiem-thu/ban-thu-sql/do-b155a.mjs` (33 phép) |
 | **Ảnh** (b154): chép sang Drive `Anh/<mã cây>/` mỗi đêm · tải ngược lên `khoiPhucAnh` | `SaoLuu.gs` mục ẢNH · phép 14–16 của `kiem-sao-luu.mjs` |
 
+## Khôi phục từ nút — chọn file thế nào (chốt 29/09/2026)
+
+Chủ dự án chọn: **cài Google Drive for desktop, chọn file thẳng trong ổ Drive**
+ở hộp chọn file thường. Đã cân và bỏ hai đường: web app Apps Script liệt kê
+bản sao lưu (cần triển khai + hàng rào vé Supabase), kho phụ `sao-luu` trên
+Supabase (bản sao lưu nằm hai nơi, máy sao lưu phải được ghi một khe vào kho
+ảnh). Đừng đề xuất lại nếu chủ dự án không nêu. Ảnh vẫn về bằng `khoiPhucAnh`.
+
 ## Khôi phục từ nút — vì sao có dấu vân tay
 
 File do người bấm đưa lên. Không kiểm thì QTHT sửa tay `tai_khoan` /
