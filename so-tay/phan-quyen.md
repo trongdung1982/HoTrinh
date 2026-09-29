@@ -37,9 +37,10 @@ Dán lại file bên trái thì phải dán tiếp các file bên phải, đúng
   · `08`/`10`→**`43`** (bản cuối `ds_kiem_duyet()`)
 - `21`/`13`/`18`/`27`→**`29`** — `29` giữ bản cuối của `duyet_de_xuat_gan()` và
   `gan_nguoi_cho_thanh_vien()`.
-- `03`/`06`/`08`/`13`→`25`→`27`→**`28`** — `28` giữ bản cuối của `luu_cay()` và
-  `tu_choi_thay_doi()`, khác `27` chín chỗ. Dán lại `27` sau `28` là mất cả
-  chín, **không một lời báo**.
+- `03`/`06`/`08`/`13`→`25`→`27`→`28`→**`32`** — `28` giữ bản cuối của
+  `tu_choi_thay_doi()` (khác `27` chín chỗ: dán lại `27` sau `28` là mất cả
+  chín, **không một lời báo**); ⚠ **`32` giữ bản cuối của `luu_cay()`** (rào
+  cây thép) — dán lại `27`/`28` sau `32` là mở lại lỗ, im lặng.
 - `26`/`27`/`30`→`47`→`50`→`51`→`52`→**`53`** (`50` giữ bản cuối
   `ds_hon_nhan_xem_duoc()` · luật `doc_change_log`; `52` giữ bản cuối
   `che_nguoi()` · luật `doc_tree_persons`; **`53` giữ bản cuối `doc_cay()` ·

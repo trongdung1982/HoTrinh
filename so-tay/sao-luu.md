@@ -42,6 +42,9 @@ vòng qua mọi luật hai chữ ký. Nên `SaoLuu.gs` 0.8.0 báo SHA-256 của 
 file vào `ban_sao_luu_da_ghi` (chỉ vai `sao_luu` ghi), và `54` chỉ nhận file
 khớp. Hệ quả: file ghi trước 0.8.0 phải đi đường `khoi-phuc.mjs`.
 
+- ⚠ **Thân khôi phục có HAI bản**: `luoc-do/54` (`khoi_phuc_ban_sao`) và
+  `sao-luu/khoi-phuc.mjs` — cùng luật, cùng mảng 19 bảng. Sửa một thì sửa cả hai.
+
 - ⚠ Hàm gọi từ trình duyệt bị cắt ở ~8 s; đặt `statement_timeout` trong hàm
   vô tác dụng. Bàn thử: 0,5 s cho 782 người / 1,2 MB. Dữ liệu lớn gấp chục thì
   đo lại trước.

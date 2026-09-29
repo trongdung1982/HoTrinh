@@ -27,6 +27,9 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   sửa prototype trước rồi dựng lại. **Thêm hành vi mới mà prototype không có**
   (khay điều hướng điện thoại…) thì làm thẳng ở đây, ghi rõ "không có trong
   quantri3" ngay tại chỗ thêm.
+- ⚠ Nói *"hàm máy chủ này thiếu"* thì grep `luoc-do/` trước — `export` của
+  `sb.js` không phải danh sách hàm máy chủ (`THIET-KE-QUAN-TRI.md` 9.5).
+- ⚠ Khung KHÔNG đổi sang tab ngang: thanh trái, dưới 850px mới thành hàng thẻ.
 - **Mỗi khu/trang vẽ vào section của nó** — `view` trong `KHU`/`TRANG` của
   `khung.js`; mục nào khác section của trang thì khai `view` trên mục
   (`MUC_TRANG_CAY`). Không có chỗ vẽ tạm.
