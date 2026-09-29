@@ -64,11 +64,21 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-**Ứng viên kế tiếp (chủ dự án yêu cầu 29/09, CHƯA chốt phạm vi):** tab
-*Quản trị hệ thống → Thùng rác* thêm hai thứ quantri3 KHÔNG có — ① bảng
-**người đã xoá của mọi cây** (hiện chỉ xem được trong từng cây: trang sơ đồ →
-*Danh sách người* → *Thùng rác*); ② **dữ liệu mồ côi**: người không nối ai,
-gia đình không còn thành viên, ảnh không còn chủ. Chưa có ở đâu cả.
+**Bước kế tiếp — chuyển DỌN KHO sang trang Quản trị** (chủ dự án chốt
+29/09/2026). *Chọn nhiều để xoá · Thùng rác · Rà soát* đặt ở chân *Danh sách
+người* (`person-list.js`, `form-thung-rac.js`, `review.js`) chỉ vì hồi đó chưa
+có trang Quản trị — nay về đúng chỗ. "Dọn rác" = TÌM VÀ XOÁ người/gia đình/ảnh
+mồ côi, KHÔNG phải nút dọn cây > N ngày. Chốt: **chỉ QTHT** dùng, thấy mọi cây
+(cột Cây để lọc); nút cũ trên trang sơ đồ **giữ tới khi bản mới bấm thử đạt**;
+ảnh mồ côi = **ảnh mất chủ + file thừa trong kho**. Dùng lại `domains/purge.js`,
+`validate.checkOrphanNode/checkUnionPointless` — không viết lại.
+
+| Phiên | Việc |
+|---|---|
+| A | Bảng *Tài khoản chờ xóa* từ tab *Sổ tài khoản* sang tab *Thùng rác* (đứng nhầm chỗ) |
+| B | Tab *Thùng rác* thêm bảng **Người đã xoá** mọi cây: khôi phục · xoá vĩnh viễn · chọn nhiều |
+| C | Tab mới **Dữ liệu mồ côi**: người · gia đình · ảnh (mất chủ + file thừa kho) → tích nhiều → thùng rác |
+| D | Gỡ ba nút ở trang sơ đồ + sửa bài kiểm, SAU khi B–C bấm thử đạt |
 
 Bấm thử các điểm dừng ở trên (ba điểm b151 trước tiên). Việc mã lớn còn lại nằm
 ở *Còn treo*. ⚠ b145 và phần khách của
