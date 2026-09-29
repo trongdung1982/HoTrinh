@@ -308,14 +308,15 @@ Chạy hàm **`goLichSaoLuu`**. Lịch tự động tắt; sao lưu bấm tay v�
 
 ### Khi `SaoLuu.gs` có bản mới — thay mã, KHÔNG làm lại từ đầu
 
-*(Lần gần nhất: bản **0.7.0**, 29/09/2026 — **chép ảnh sang Drive**, xem
-mục *Ảnh* ngay dưới. **Không có SQL nào phải dán**: bỏ qua bước 1, làm bước
-2 → 5. Bản trước: 0.6.0 — báo kết quả vào Nhật ký hệ thống, kèm SQL `49`.)*
+*(Lần gần nhất: bản **0.8.0**, 29/09/2026 — mỗi file ghi ra kèm **dấu vân
+tay**, để nút *Khôi phục* trên trang Quản trị nhận nó. **Kèm SQL `54`**: bước
+1 dán `luoc-do/54-khoi-phuc-tu-nut.sql`, bảng cuối **ĐẠT cả 4 dòng**. Bản
+trước: 0.7.0 — chép ảnh sang Drive, mục *Ảnh* ngay dưới.)*
 
-1. **Dán SQL trước** *(chỉ khi bản mới kèm SQL — 0.7.0 thì KHÔNG)*: Supabase → SQL Editor → dán cả file
-   `luoc-do/49-nhat-ky-sao-luu.sql` → **Run**. Bảng cuối phải ra **ĐẠT** ở
-   ba dòng. *(Máy chủ chưa có `45` thì dán `45` trước — bảng cuối của nó phải
-   ĐẠT bốn dòng, dòng 3 là "không".)*
+1. **Dán SQL trước** *(chỉ khi bản mới kèm SQL — 0.8.0 kèm `54`)*: Supabase →
+   SQL Editor → **New query** → dán cả file
+   `luoc-do/54-khoi-phuc-tu-nut.sql` → **Run**. Bảng cuối phải ra **ĐẠT** cả
+   bốn dòng.
 2. `script.google.com` → mở dự án **Sao luu gia pha Supabase** → bấm vào ô
    soạn thảo → **Ctrl + A** → **Delete**.
 3. Chép lại mã mới đúng như **Bước 5** (Notepad hoặc GitHub) → **Ctrl + V** →

@@ -24,6 +24,7 @@
 // Bài kiểm KHÔNG cần mạng, KHÔNG cần Supabase, KHÔNG cần tài khoản Google.
 
 import { readFileSync, readdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
@@ -149,6 +150,13 @@ function dungMoiTruong(kichBan = {}) {
         return traLoi(200, '{"ok":true,"suKien":"sao_luu_dem"}');
       }
 
+      // Dấu vân tay file vừa ghi (`luoc-do/54`, b155a). `dauHong` = chưa dán `54`.
+      if (duong === '/rest/v1/rpc/ghi_bam_sao_luu') {
+        nhatKy.dau.push(JSON.parse(opt.payload));
+        if (kichBan.dauHong) return traLoi(404, '{"message":"function not found"}');
+        return traLoi(200, '{"ok":true}');
+      }
+
       if (duong.startsWith('/rest/v1/')) {
         const bang = duong.slice('/rest/v1/'.length);
         // `hongBang` = đọc đúng một bảng thì máy chủ trả 500 (hỏng SAU đăng nhập).
@@ -198,6 +206,7 @@ function dungMoiTruong(kichBan = {}) {
   const khoAnhThat = Object.assign({}, kichBan.khoAnhThat || {});
   nhatKy.taiVe = [];
   nhatKy.taiLen = [];
+  nhatKy.dau = [];
   function lietKeTuKhoThat(tienTo) {
     const ds = Object.keys(khoAnhThat).sort();
     if (tienTo === '') {
@@ -301,6 +310,12 @@ function dungMoiTruong(kichBan = {}) {
   };
 
   const Utilities = {
+    // Như Apps Script thật: mảng byte CÓ DẤU (-128…127).
+    DigestAlgorithm: { SHA_256: 'sha256' },
+    Charset: { UTF_8: 'utf8' },
+    computeDigest(alg, chu, cs) {
+      return [...createHash(alg).update(Buffer.from(chu, cs)).digest()].map((b) => (b > 127 ? b - 256 : b));
+    },
     formatDate(d, _tz, khuon) {
       // Giờ Việt Nam = UTC+7. Đủ dùng cho bài kiểm; Apps Script làm thật.
       const v = new Date(d.getTime() + 7 * 3600 * 1000);
@@ -381,7 +396,10 @@ console.log('KIỂM SAO LƯU — chạy thẳng sao-luu/SaoLuu.gs trong Node\n')
 // b137: sáu bảng hệ thống đã vào (`BANG_HE_THONG` của SaoLuu.gs, qua hàm `44`).
 // b146: `bao_trung_nguoi` — con trỏ gộp đã nằm ở `persons.meta.gopVao` +
 //   `change_log.truoc`; mất bảng chỉ mất đơn đang chờ (báo lại được).
-const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac', 'bao_trung_nguoi'];
+// b155a: `ban_sao_luu_da_ghi` (`54`) — sổ dấu vân tay; khôi phục về hôm qua
+//   KHÔNG được xoá dấu của các bản ghi sau hôm qua, nên nó đứng ngoài cả sao
+//   lưu lẫn 19 bảng khôi phục.
+const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac', 'bao_trung_nguoi', 'ban_sao_luu_da_ghi'];
 {
   const thuMuc = dirname(FILE_SQL);
   const trongSql = [];
@@ -397,7 +415,7 @@ const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac', 'bao_trung_nguoi'];
   const thieu = trongSql.filter((t) => !trongGs.includes(t) && !CHUA_SAO_LUU.includes(t));
   const thua = trongGs.filter((t) => !trongSql.includes(t));
   kiem('mọi bảng của luoc-do/ đều được sao lưu, không thừa bảng nào',
-       thieu.length === 0 && thua.length === 0 && trongSql.length === 22,
+       thieu.length === 0 && thua.length === 0 && trongSql.length === 23,
        `sql=${trongSql.length} gs=${trongGs.length}` +
        (thieu.length ? ' · THIẾU: ' + thieu.join(',') : '') +
        (thua.length ? ' · THỪA: ' + thua.join(',') : ''));
@@ -939,6 +957,32 @@ const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac', 'bao_trung_nguoi'];
   try { trong.api.khoiPhucAnh(); } catch (e) { loiTrong = e.message; }
   kiem('Drive chưa có ảnh nào: nói thẳng, không tạo thư mục',
        /chưa có thư mục/.test(loiTrong) && !trong.thuMuc._con.length, loiTrong.slice(0, 80));
+}
+
+// ---- 17. Dấu vân tay file sao lưu (b155a, `luoc-do/54`) -----------------
+//
+// ⚠ Nút Khôi phục chỉ nhận file khớp dấu này. Tính sai (khác chuỗi đã ghi,
+//   byte có dấu đổi hex sai) thì mọi bản sao lưu đều bị nút từ chối — và chỉ
+//   lộ ra đúng ngày cần khôi phục.
+{
+  const a = dungMoiTruong({ duLieu: cayGia() });
+  a.api.saoLuuNgay();
+  const f = [...duyet(a.thuMuc)][0];
+  const mong = createHash('sha256').update(Buffer.from(f._noiDung, 'utf8')).digest('hex');
+  const d = a.nhatKy.dau[0] || {};
+  kiem('báo đúng MỘT dấu, = SHA-256 hex của nguyên văn file đã ghi, kèm tên file',
+       a.nhatKy.dau.length === 1 && d.p_bam === mong && d.p_ten_file === f.getName() &&
+       /^[0-9a-f]{64}$/.test(d.p_bam), JSON.stringify(d).slice(0, 140));
+  kiem('dấu đạt: không cảnh báo', !(a.nhatKy.baoCao[0] || {}).canhBao, '');
+
+  const h = dungMoiTruong({ duLieu: cayGia(), dauHong: true });
+  let nem = false;
+  try { h.api.saoLuuNgay(); } catch (e) { nem = true; }
+  const bh = h.nhatKy.baoCao[0] || {};
+  kiem('chưa dán 54: vẫn ghi file, không ném, cảnh báo nói nút Khôi phục sẽ không nhận',
+       !nem && [...duyet(h.thuMuc)].length === 1 && bh.ok === true &&
+       /dấu vân tay/.test(bh.canhBao || '') && /54/.test(bh.canhBao || ''),
+       `nem=${nem} · ${String(bh.canhBao).slice(0, 120)}`);
 }
 
 // ------------------------------------------------------------

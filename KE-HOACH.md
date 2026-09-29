@@ -164,6 +164,17 @@ Không đổi cột, không đổi tên/tham số hàm app gọi (`doc_cay` ·
 thì PHẢI dán lại `53` (`so-tay/phan-quyen.md`). Dán lại nhiều lần được.
 Bàn thử: `do-b152.mjs` 29/29.
 
+**`54` (b155a) — ⚠ CHƯA DÁN · ĐƯỢC DÁN NGAY** (đứng sau `42`/`45`/`49`, đã dán).
+Supabase → *SQL Editor* → *New query* → dán NGUYÊN file
+`luoc-do/54-khoi-phuc-tu-nut.sql` → *Run* → bảng cuối **ĐẠT cả 4 dòng**. Rồi
+thay `SaoLuu.gs` **0.8.0** cùng buổi (báo dấu vân tay) và chạy `saoLuuNgay`
+một lần — từ file ấy trở đi nút Khôi phục mới nhận. Bảng mới
+`ban_sao_luu_da_ghi` + bốn hàm (`ghi_bam_sao_luu` · `xem_truoc_khoi_phuc` ·
+`khoi_phuc_ban_sao` · `kiem_file_sao_luu_` khoá kín). Không định nghĩa lại hàm
+nào của file khác → không kéo chuỗi dán lại. ⚠ Thân khôi phục là BẢN THỨ HAI
+của `sao-luu/khoi-phuc.mjs` — sửa một thì sửa cả hai. Bàn thử: `do-b155a.mjs`
+33/33 (khôi phục 0,5 s dưới trần 8 s).
+
 ---
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC

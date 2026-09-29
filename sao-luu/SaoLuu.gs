@@ -12,9 +12,10 @@
 //            EMAIL_KHOI_PHUC · MAT_KHAU_KHOI_PHUC · KHOI_PHUC_CAY (chỉ điền
 //            tạm khi chạy `khoiPhucAnh`, xong thì xoá)
 //            SQL — luoc-do/05-sao-luu.sql phải chạy trước
-// Phiên bản: 0.7.0 · Cập nhật: 29/09/2026 (b154) — chép ẢNH sang Drive
-//            (thư mục con `Anh/<mã cây>/`), mỗi đêm một ít; `khoiPhucAnh`
-//            tải ngược lên. Ảnh trên Drive KHÔNG xoá theo app.
+// Phiên bản: 0.8.0 · Cập nhật: 29/09/2026 (b155a) — báo dấu vân tay SHA-256
+//            mỗi file ghi (`luoc-do/54`), để nút Khôi phục chỉ nhận file thật.
+//            Ảnh (b154): chép sang Drive `Anh/<mã cây>/`, `khoiPhucAnh` tải
+//            ngược lên. Ảnh trên Drive KHÔNG xoá theo app.
 // Sổ tay   : so-tay/sao-luu.md
 // ============================================================
 //
@@ -176,8 +177,11 @@ function saoLuuNgay() {
 
     var thuMuc = layThuMuc_(cauHinh);
     var ten = KHUON_TEN_FILE + cauHinh.dauThoiGian + '.json';
-    var file = thuMuc.createFile(ten, JSON.stringify(banSao, null, 1),
-                                 'application/json');
+    var noiDung = JSON.stringify(banSao, null, 1);
+    var file = thuMuc.createFile(ten, noiDung, 'application/json');
+    // Dấu vân tay tính trên ĐÚNG chuỗi vừa ghi — nút Khôi phục (`luoc-do/54`)
+    // chỉ nhận file khớp dấu này.
+    var loiDau = baoDauVanTay_(cauHinh, noiDung, ten);
 
     nhoDemLanNay_(banSao.dem);
 
@@ -213,7 +217,7 @@ function saoLuuNgay() {
     demBao.anh_chua_chep = anh.chuaChep;
     baoNhatKy_(cauHinh, {
       ok: true, tenFile: ten, soByte: file.getSize(), daXoa: daXoa,
-      canhBao: [loiCanhBao || '', anh.loi ? 'Chép ảnh: ' + anh.loi : '']
+      canhBao: [loiCanhBao || '', anh.loi ? 'Chép ảnh: ' + anh.loi : '', loiDau]
         .filter(Boolean).join('\n'),
       thieu: banSao.thieuSoVoiMayChu || '', dem: demBao
     });
@@ -385,6 +389,27 @@ function baoNhatKy_(cauHinh, ketQua) {
   } catch (e) {
     Logger.log('Không ghi được nhật ký sao lưu (bỏ qua): ' +
                String(e && e.message ? e.message : e).slice(0, 300));
+  }
+}
+
+/**
+ * Báo dấu vân tay SHA-256 của file vừa ghi (`ghi_bam_sao_luu()`, `luoc-do/54`).
+ * Trả '' nếu được, không thì câu cảnh báo — KHÔNG ném: hỏng ở đây thì bản sao
+ * lưu vẫn còn nguyên, chỉ là nút Khôi phục trên trang Quản trị sẽ không nhận
+ * file này (vẫn khôi phục được bằng `khoi-phuc.mjs`).
+ */
+function baoDauVanTay_(cauHinh, noiDung, ten) {
+  try {
+    var byte = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, noiDung,
+                                       Utilities.Charset.UTF_8);
+    var hex = byte.map(function (b) { return ('0' + ((b + 256) % 256).toString(16)).slice(-2); }).join('');
+    var kq = goi_(cauHinh, cauHinh.url + '/rest/v1/rpc/ghi_bam_sao_luu', 'ghi dấu vân tay',
+                  { p_bam: hex, p_ten_file: ten, p_tao_luc_vn: cauHinh.taoLucVn });
+    if (!kq || kq.ok !== true) throw new Error((kq && kq.loi) || 'máy chủ không nhận');
+    return '';
+  } catch (e) {
+    return 'Chưa ghi được dấu vân tay (đã dán luoc-do/54 chưa?) — nút Khôi phục sẽ ' +
+           'không nhận file này. ' + String(e && e.message ? e.message : e).slice(0, 200);
   }
 }
 

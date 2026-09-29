@@ -23,6 +23,10 @@
 //
 // ⚠ Thêm bảng mới vào sao lưu thì phải thêm vào THU_TU dưới (cha trước con).
 //   Bảng lạ không có trong THU_TU → script từ chối, không đoán chỗ đứng.
+// ⚠ Bản THỨ HAI của cùng thân khôi phục nằm ở `luoc-do/54` (`khoi_phuc_ban_sao`,
+//   nút trên trang Quản trị, b155a) — mảng `c_thu_tu` hai chỗ ở đó. Sửa luật
+//   hay THU_TU ở đây thì sửa cả bên ấy. File này còn dùng cho bản ghi TRƯỚC
+//   `SaoLuu.gs` 0.8.0 (chưa có dấu vân tay nên nút không nhận).
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { basename, dirname, resolve, sep } from 'node:path';

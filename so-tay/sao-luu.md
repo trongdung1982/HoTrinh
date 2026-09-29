@@ -10,7 +10,22 @@
 | Vai `sao_luu` · bảng hệ thống · cây mới tự có máy sao lưu · báo kết quả vào nhật ký (b147) | `luoc-do/05` · `44` · `45` · `49` |
 | Bảng nào đã/chưa sao lưu | `kiem-thu/kiem-sao-luu.mjs` |
 | **Khôi phục**: JSON → một file SQL | `sao-luu/khoi-phuc.mjs` |
+| **Khôi phục từ nút** (b155a): chỉ QTHT, chỉ file có dấu vân tay máy sao lưu báo | `luoc-do/54` · đo `../kiem-thu/ban-thu-sql/do-b155a.mjs` (33 phép) |
 | **Ảnh** (b154): chép sang Drive `Anh/<mã cây>/` mỗi đêm · tải ngược lên `khoiPhucAnh` | `SaoLuu.gs` mục ẢNH · phép 14–16 của `kiem-sao-luu.mjs` |
+
+## Khôi phục từ nút — vì sao có dấu vân tay
+
+File do người bấm đưa lên. Không kiểm thì QTHT sửa tay `tai_khoan` /
+`tree_members` trong file rồi "khôi phục" = tự phong QTHT, cho người vào cây —
+vòng qua mọi luật hai chữ ký. Nên `SaoLuu.gs` 0.8.0 báo SHA-256 của NGUYÊN VĂN
+file vào `ban_sao_luu_da_ghi` (chỉ vai `sao_luu` ghi), và `54` chỉ nhận file
+khớp. Hệ quả: file ghi trước 0.8.0 phải đi đường `khoi-phuc.mjs`.
+
+- ⚠ Hàm gọi từ trình duyệt bị cắt ở ~8 s; đặt `statement_timeout` trong hàm
+  vô tác dụng. Bàn thử: 0,5 s cho 782 người / 1,2 MB. Dữ liệu lớn gấp chục thì
+  đo lại trước.
+- ⚠ Bàn thử so cả dòng sẽ báo lệch oan khi bản chụp cũ hơn lược đồ (cột mới
+  nhận mặc định) — chỉ so cột FILE có, như bước 3c.
 
 ## Ảnh — ba điều cố ý
 
