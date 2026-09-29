@@ -3,24 +3,22 @@
 // Vai trò  : FORM SỬA CẶP — ngày cưới · nơi cưới · cặp này bây giờ · thứ bậc ·
 //            chỗ đứng trái phải · ghi chú · ảnh của cặp
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: pages/person-edit.js (nền dùng chung + kho ảnh), state,
+// Phụ thuộc: pages/form-nen.js (nền dùng chung + kho ảnh), state,
 //            domains/{union,validate}, utils/{graph,date,text}, config
-// Phiên bản: 1.1.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
+// Phiên bản: 1.1.2 · Cập nhật: 29/09/2026 (b158) — nhập nền từ `form-nen.js` (đợt 7)
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 5 của
 // `tai-lieu/BAN-DO-TACH_V01.md`). Mã bên trong KHÔNG đổi một dòng nào.
 //
-// ⚠ **Vòng nhập với `person-edit.js` ở đây là HAI CHIỀU thật sự**, không chỉ vì
-// việc xuất lại: `veChan()` bên nền tự quyết gọi hàm lưu nào theo `N.cheDo`,
-// nên nó gọi `handleSaveUnion()` của file này. Đợt 7 của bản đồ tách gỡ nút ấy
-// bằng cách đổi chữ ký thành `veChan(chayLuu, …)` — nơi gọi truyền hàm lưu vào,
-// và nền thôi phải biết tên bốn hàm lưu của bốn cụm.
+// Đợt 7 (b158) gỡ vòng nhập với `person-edit.js`: nền nay ở `form-nen.js`, và
+// `veChan(chayLuu, …)` nhận `handleSaveUnion` qua tham số — nền thôi phải biết
+// tên hàm lưu của từng cụm.
 
 import { N, o, KIEU_O, KIEU_NUT_CHON, KIEU_LOP_PHU, KIEU_HOP, closePersonForm,
          canTroLuu, ghiBanGhi, hienNhan, hienLoiGhi, keTenPartner, tenNguoi,
          moTaCap, moHopChon, moHopBao, veNhan, veChan, oChu, oNhieuDong, docO,
-         mayDocDuocGi } from './person-edit.js';
+         mayDocDuocGi, dangKyDonDep } from './form-nen.js';
 import { veKhoiAnh, apThayDoiAnh, keThayDoiAnh } from './form-anh.js';
 import { state } from '../state.js';
 import { updateUnion, swapPartnerOrder, getPartnerUnions,
@@ -30,6 +28,9 @@ import { buildIndex } from '../utils/graph.js';
 import { stampNow } from '../utils/date.js';
 import { coGiaTri } from '../utils/text.js';
 import { TRANG_THAI_CAP } from '../config.js';
+
+// Trạng thái riêng của màn hình này — `closePersonForm()` (nền) dọn nó.
+dangKyDonDep(donDepCap);
 
 let capDangSua = null;   // mã cặp đang mở trong form
 let mocDangSua = null;   // NGƯỜI LÀM MỐC cho thứ bậc — luôn là người đã mở form
@@ -161,7 +162,7 @@ function moFormCap(unionId, xuLy, mocId) {
   const canTro = canTroLuu();
   if (canTro) hienNhan(canTro, true);
 
-  hop.append(veChan(null, !canTro));
+  hop.append(veChan(handleSaveUnion, !canTro));
 
   // Bấm ra ngoài KHÔNG đóng — cùng lý do với form hồ sơ: nó đang giữ những gì
   // người ta vừa gõ.

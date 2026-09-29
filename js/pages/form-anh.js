@@ -3,9 +3,9 @@
 // Vai trò  : KHO ẢNH của một NGƯỜI hoặc một CẶP — dải ảnh, thêm tấm mới, đặt
 //            và bỏ ảnh đại diện, và phép áp mọi thay đổi ấy lên cây lúc lưu
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: pages/person-edit.js (nền dùng chung), state, domains/{media,render},
+// Phụ thuộc: pages/form-nen.js (nền dùng chung), state, domains/{media,render},
 //            services/repo, utils/{date,image,avatar,id}, config
-// Phiên bản: 1.2.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
+// Phiên bản: 1.2.2 · Cập nhật: 29/09/2026 (b158) — nhập nền từ `form-nen.js` (đợt 7)
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 5 của
@@ -16,7 +16,7 @@
 // bên. Ba cửa nó mở ra: `veKhoiAnh()` để vẽ, `apThayDoiAnh()` để áp lên cây lúc
 // lưu, `keThayDoiAnh()` để kể vào `changeLog`.
 
-import { N, hienNhan } from './person-edit.js';
+import { N, hienNhan, dangKyDonDep } from './form-nen.js';
 import { state } from '../state.js';
 import { attachMedia, detachMedia, setPortrait, clearPortrait,
          getMediaFor, getPortrait } from '../domains/media.js';
@@ -27,6 +27,9 @@ import { stampNow } from '../utils/date.js';
 import { compressImage, driveThumbUrl, dataUri } from '../utils/image.js';
 import { anhMacDinhUri } from '../utils/avatar.js';
 import { RONG_NUT_TOI_DA, PHOTO } from '../config.js';
+
+// Trạng thái riêng của màn hình này — `closePersonForm()` (nền) dọn nó.
+dangKyDonDep(donDepAnh);
 
 // KHO ẢNH (việc 5, nửa A). Cùng lối với `tenPhu` và `quanHe` bên form hồ sơ:
 // giữ RIÊNG một bản làm việc, không đọc ngược từ DOM và không đụng `state.tree`

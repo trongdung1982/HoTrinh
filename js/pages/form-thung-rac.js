@@ -3,9 +3,9 @@
 // Vai trò  : Thùng rác — đưa một người / một cặp trở lại, khôi phục và cho
 //            vào thùng rác CẢ LOẠT, và XOÁ THẬT (gom rác)
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: pages/person-edit.js (nền dùng chung), state,
+// Phụ thuộc: pages/form-nen.js (nền dùng chung), state,
 //            domains/{person,union,purge}, services/{repo,sb}, utils/date
-// Phiên bản: 1.0.1 · Cập nhật: 28/09/2026 (b138) — `xoaAnhThat` gọi thẳng sb.js
+// Phiên bản: 1.0.2 · Cập nhật: 29/09/2026 (b158) — nhập nền từ `form-nen.js` (đợt 7)
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 2 của
@@ -17,13 +17,12 @@
 // được vì mọi lời gọi nằm trong thân hàm. **Không được gọi hàm nhập vào ở
 // top-level** — làm thế là lỗi TDZ ngay lúc nạp trang.
 //
-// ⚠ **Nền dùng chung nay còn nằm trong `person-edit.js`** — object trạng thái
-// `N`, `closePersonForm`, `moHopTrang`, `hienNhan`… Đợt 7 của bản đồ tách sẽ
-// dời chúng sang `pages/form-nen.js`; lúc ấy file này chỉ đổi một dòng nhập.
+// Nền dùng chung (`N`, `closePersonForm`, `moHopTrang`, `hienNhan`…) ở
+// `pages/form-nen.js` từ đợt 7 (b158).
 
 import { N, closePersonForm, moHopTrang, moHopBao, hienNhan, hienLoiGhi,
          nutChon, nutChanXoa, nutChanDam, ghiBanGhi, ghiMotNguoi,
-         tenTrongCay, timNguoiTrongCay, timCapTrongCay } from './person-edit.js';
+         tenTrongCay, timNguoiTrongCay, timCapTrongCay } from './form-nen.js';
 import { state } from '../state.js';
 import { restorePerson, softDeletePerson } from '../domains/person.js';
 import { restoreUnion, softDeleteUnion } from '../domains/union.js';

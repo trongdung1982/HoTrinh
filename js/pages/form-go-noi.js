@@ -3,9 +3,9 @@
 // Vai trò  : GỠ NỐI một mối quan hệ — luật 9 và luật 10, kèm hộp kể hậu quả
 //            và đường nối lại như cũ
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: pages/person-edit.js (nền dùng chung), state,
+// Phụ thuộc: pages/form-nen.js (nền dùng chung), state,
 //            domains/{union,validate}, utils/graph, config
-// Phiên bản: 1.0.0 · Cập nhật: 27/08/2026 20:00
+// Phiên bản: 1.0.1 · Cập nhật: 29/09/2026 (b158) — nhập nền từ `form-nen.js` (đợt 7)
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 4 của
@@ -20,13 +20,16 @@
 
 import { N, TEN_QUAN_HE, closePersonForm, canTroLuu, ghiBanGhi, hienNhan, hienLoiGhi,
          keTenPartner, tenNguoi, moTaCap, moHopTrang, moHopChon, moHopBao,
-         nutChon, nutChanXoa } from './person-edit.js';
+         nutChon, nutChanXoa, dangKyDonDep } from './form-nen.js';
 import { state } from '../state.js';
 import { removeChild, removePartner, softDeleteUnion, conLyDoTonTai,
          getParentUnions, getSpouses, getChildren } from '../domains/union.js';
 import { checkOrphanNode } from '../domains/validate.js';
 import { buildIndex } from '../utils/graph.js';
 import { chuThichQuanHe } from '../config.js';
+
+// Trạng thái riêng của màn hình này — `closePersonForm()` (nền) dọn nó.
+dangKyDonDep(donDepGoNoi);
 
 let goHT = null;   // chế độ go : kết quả doHauQuaGoNoi() của lần mở này
 

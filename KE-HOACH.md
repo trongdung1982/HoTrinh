@@ -108,6 +108,5 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | Hai màn hình chưa mở được (bỏ chọn gia phả · quyền ảnh) | `KIEN-TRUC.md` mục 6 |
 | Tháo giàn giáo `tuong-thich.js` — mốc **1 file** (`chon-gia-pha`), chỉ được giảm. Nối màn ấy (hoặc bỏ hẳn nút *Bỏ chọn*) là về 0, xoá file | `KIEN-TRUC.md` mục 4 |
 | Đổi tên ba vết sẹo (`driveFileId` · `driveThumbUrl` · `tuong-thich`) | `KIEN-TRUC.md` mục 4 |
-| Đợt 7 của phép tách `person-edit.js` — treo từ b48 | `BAT-DAU.md` mục 5 |
 | **Ảnh: kho công khai hay kho kín?** Hiện công khai — đường dẫn khó đoán, nhưng *"khó đoán"* không phải *"được bảo vệ"*. Sao lưu ảnh không phụ thuộc câu trả lời | `KIEN-TRUC.md` mục 7 |
 | **`branches` / `branch_access` dựng từ `01-bang.sql` nay KHÔNG dùng** — luật đi theo trực hệ, không chia chi *(chốt 04/09/2026)* | `06-quyen-truc-he.sql` mục 2 |

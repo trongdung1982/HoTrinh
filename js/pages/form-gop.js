@@ -3,9 +3,9 @@
 // Vai trò  : FORM GỘP HAI CẶP TRÙNG — hỏi tay đúng những trường vênh nhau,
 //            hỏi một câu về ảnh cưới, rồi gộp và ghi xuống trong MỘT lần lưu
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: pages/person-edit.js (nền dùng chung), state,
+// Phụ thuộc: pages/form-nen.js (nền dùng chung), state,
 //            domains/{union,validate,media}, utils/{graph,text}, config
-// Phiên bản: 1.0.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
+// Phiên bản: 1.0.2 · Cập nhật: 29/09/2026 (b158) — nhập nền từ `form-nen.js` (đợt 7)
 // ============================================================
 //
 // Mảnh CUỐI của việc 8 (`tai-lieu/DAC-TA-GOP_V02.md` mục 5). Ba hàm thuần
@@ -38,7 +38,7 @@
 
 import { N, KIEU_NUT_CHON, KIEU_NUT_CHAN, KIEU_LOP_PHU, KIEU_HOP,
          closePersonForm, canTroLuu, ghiBanGhi, hienNhan, hienLoiGhi,
-         keTenPartner, tenNguoi, veNhan, moHopBao } from './person-edit.js';
+         keTenPartner, tenNguoi, veNhan, moHopBao, dangKyDonDep } from './form-nen.js';
 import { state } from '../state.js';
 import { timCapTrung, timXungDotGop, mergeUnions, rankCua } from '../domains/union.js';
 import { validateAll } from '../domains/validate.js';
@@ -46,6 +46,9 @@ import { getMediaFor } from '../domains/media.js';
 import { buildIndex } from '../utils/graph.js';
 import { coGiaTri } from '../utils/text.js';
 import { nhanTrangThaiCap, RONG_NUT_TOI_DA } from '../config.js';
+
+// Trạng thái riêng của màn hình này — `closePersonForm()` (nền) dọn nó.
+dangKyDonDep(donDepGop);
 
 let gopCtx = null;   // { giu, boDi, loai, chon:{}, dsAnh:[] }
 

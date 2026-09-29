@@ -3,9 +3,9 @@
 // Vai trò  : XOÁ MỘT NGƯỜI — luật 8: hộp xác nhận KỂ TÊN hậu quả, đường giữ
 //            mắt xích, và đường hoàn tác ngay sau khi xoá
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: pages/person-edit.js (nền dùng chung), state,
+// Phụ thuộc: pages/form-nen.js (nền dùng chung), state,
 //            domains/{person,validate}, utils/{graph,date}
-// Phiên bản: 1.0.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
+// Phiên bản: 1.0.2 · Cập nhật: 29/09/2026 (b158) — nhập nền từ `form-nen.js` (đợt 7)
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 6 của
@@ -13,12 +13,15 @@
 
 import { N, KIEU_LOP_PHU, KIEU_HOP, closePersonForm, canTroLuu, ghiMotNguoi,
          hienNhan, hienLoiGhi, nutChon, nutChanXoa, tenNguoi,
-         tenTrongCay } from './person-edit.js';
+         tenTrongCay, dangKyDonDep } from './form-nen.js';
 import { state } from '../state.js';
 import { updatePerson, softDeletePerson, restorePerson } from '../domains/person.js';
 import { checkOrphanNode } from '../domains/validate.js';
 import { buildIndex } from '../utils/graph.js';
 import { stampNow } from '../utils/date.js';
+
+// Trạng thái riêng của màn hình này — `closePersonForm()` (nền) dọn nó.
+dangKyDonDep(donDepXoa);
 
 let xoaHT = null;   // chế độ xoa: kết quả doHauQuaXoa() của lần mở này
 

@@ -3,9 +3,9 @@
 // Vai trò  : MÀN HÌNH SỬA THÔNG TIN GIA ĐÌNH — mọi quan hệ của một người trên
 //            MỘT màn, kèm đổi người trong cặp và trạng thái *"cặp này bây giờ"*
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: pages/{person-edit,form-sua-con,form-go-noi}.js, state,
+// Phụ thuộc: pages/{form-nen,form-sua-con,form-go-noi}.js, state,
 //            domains/{union,validate}, services/repo, utils/{graph,text}, config
-// Phiên bản: 1.1.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
+// Phiên bản: 1.1.2 · Cập nhật: 29/09/2026 (b158) — nhập nền từ `form-nen.js` (đợt 7)
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 4 của
@@ -18,7 +18,7 @@ import { N, KIEU_O, KIEU_LOP_PHU, KIEU_HOP, closePersonForm, canTroLuu,
          ghiBanGhi, hienNhan, hienLoiGhi, keTenPartner, tenNguoi, thuTuCon,
          maTrangThaiCap, moHopTrang, moHopChon, moHopBao, gaiTruocChan,
          nutChon, nutChanXoa, gopRaSoat, khoiHoiThuBac, docThuBacNhap,
-         loiThuBacGoSai } from './person-edit.js';
+         loiThuBacGoSai, dangKyDonDep } from './form-nen.js';
 import { moHopViecCon } from './form-sua-con.js';
 import { unlink } from './form-go-noi.js';
 import { state } from '../state.js';
@@ -31,6 +31,9 @@ import { buildIndex } from '../utils/graph.js';
 import { fullName, coGiaTri, removeDiacritics, doiSongNguoi } from '../utils/text.js';
 import { nhanQuanHeCon, chuThichQuanHe, TRANG_THAI_CAP,
          nhanTrangThaiCap } from '../config.js';
+
+// Trạng thái riêng của màn hình này — `closePersonForm()` (nền) dọn nó.
+dangKyDonDep(donDepGiaDinh);
 
 let giaDinhCua = null;   // chế độ giaDinh  : màn hình đang mở của AI
 let doiHT      = null;   // chế độ doiNguoi : kết quả doHauQuaDoiNguoi() của lần mở này

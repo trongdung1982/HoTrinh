@@ -3,9 +3,9 @@
 // Vai trò  : Màn hình SẮP THỨ TỰ ANH CHỊ EM — kéo thả, dịch từng bước, hoặc
 //            sắp lại theo tuổi
 // Lớp      : pages — được phép gọi mọi lớp dưới
-// Phụ thuộc: pages/person-edit.js (nền dùng chung), state,
+// Phụ thuộc: pages/form-nen.js (nền dùng chung), state,
 //            domains/{union,render}, utils/{text,date,image,avatar}
-// Phiên bản: 1.2.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
+// Phiên bản: 1.2.2 · Cập nhật: 29/09/2026 (b158) — nhập nền từ `form-nen.js` (đợt 7)
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
@@ -17,16 +17,16 @@
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 3 của
 // `tai-lieu/BAN-DO-TACH_V01.md`). Mã bên trong KHÔNG đổi một dòng nào.
 //
-// ⚠ **Ba biến trạng thái của màn hình này đi theo nó**, và vì thế file này phải
-// xuất ra `donDepSapThuTu()`: `closePersonForm()` bên `person-edit.js` không
-// với tới biến `let` của file khác được, nên nó GỌI hàm dọn này. Thêm một màn
-// hình tách ra là thêm đúng một dòng gọi ở đó — quên dòng ấy thì thứ tự đang
-// sắp dở sống sót qua lần đóng hộp và hiện lại ở lần mở sau.
+// ⚠ **Ba biến trạng thái của màn hình này đi theo nó**, và vì thế file này
+// đăng ký `donDepSapThuTu()` với nền (`dangKyDonDep`, `form-nen.js`):
+// `closePersonForm()` không với tới biến `let` của file khác được. Màn hình
+// mới tách ra cũng phải đăng ký hàm dọn của nó — quên thì thứ tự đang sắp dở
+// sống sót qua lần đóng hộp và hiện lại ở lần mở sau.
 
 import { N, KIEU_LOP_PHU, KIEU_HOP, closePersonForm, canTroLuu, ghiBanGhi,
          hienNhan, hienLoiGhi, moHopBao, moHopChon, nutChon, nutChanXoa,
-         nutChanDam, tenNguoi, keTenPartner, timNguoiTrongCay, timCapTrongCay }
-  from './person-edit.js';
+         nutChanDam, tenNguoi, keTenPartner, timNguoiTrongCay, timCapTrongCay, dangKyDonDep }
+  from './form-nen.js';
 import { state } from '../state.js';
 import { reorderChildren, thuTuConTheoTuoi, getParentUnions,
          getPartnerUnions } from '../domains/union.js';
@@ -35,6 +35,9 @@ import { fullName, coGiaTri } from '../utils/text.js';
 import { mocNgay } from '../utils/date.js';
 import { driveThumbUrl } from '../utils/image.js';
 import { anhMacDinhUri } from '../utils/avatar.js';
+
+// Trạng thái riêng của màn hình này — `closePersonForm()` (nền) dọn nó.
+dangKyDonDep(donDepSapThuTu);
 
 let sapCtx = null;   // { unionId, mocId, laCon, thuTu[] } — thứ tự đang sắp DỞ
 let sapDay = null;   // khối chứa dãy thẻ, để vẽ lại một mình nó
