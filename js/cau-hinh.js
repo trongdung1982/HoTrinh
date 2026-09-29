@@ -3,8 +3,8 @@
 // Vai trò  : FILE DUY NHẤT chủ dự án sửa tay. Thay cho gas/Config.gs.
 // Lớp      : config — không gọi file nào khác
 // Phụ thuộc: (không)
-// Phiên bản: 0.2.0 · Cập nhật: 26/09/2026 — bỏ `TEN_HO` (b126d, dòng họ nay
-//            tự chọn theo tài khoản ở Hồ sơ cá nhân, không còn cố định)
+// Phiên bản: 0.3.0 · Cập nhật: 29/09/2026 — thêm `SAO_LUU_WEB_APP` (b155d,
+//            địa chỉ web app máy sao lưu; để trống vẫn chạy)
 // ============================================================
 //
 // ⚠ **Chỉ sửa những dòng có chữ ĐIỀN VÀO ĐÂY.** Mọi thứ khác trong thư mục
@@ -57,6 +57,18 @@ export const NGUOI_QUAN_LY = 'trongdung1982@gmail.com';
 // Tên kho (bucket) trong Supabase Storage. `01-bang.sql` dựng sẵn kho tên
 // `anh`; đổi tên ở đây thì phải đổi cả trong file SQL ấy.
 export const KHO_ANH = 'anh';
+
+// ------------------------------------------------------------
+// 4. MÁY SAO LƯU (web app Apps Script) — tuỳ chọn
+// ------------------------------------------------------------
+// Có địa chỉ này thì nút Khôi phục ở trang Quản trị liệt kê được các bản sao
+// lưu trên Drive và tự khôi phục ảnh. Để trống '' thì nút chỉ chọn file trong
+// máy (ổ Google Drive) — vẫn khôi phục được dữ liệu.
+// Lấy ở: script.google.com → dự án sao lưu → Deploy → Manage deployments →
+//        dòng Web app → chép "Web app URL" (dạng https://script.google.com/macros/s/…/exec).
+// Địa chỉ này để lộ cũng không sao: máy sao lưu chỉ làm việc cho người đăng
+// nhập app bằng tài khoản Quản trị hệ thống (`sao-luu/SaoLuu.gs` mục WEB APP).
+export const SAO_LUU_WEB_APP = '';
 
 // ------------------------------------------------------------
 // Kiểm nhanh — để lỗi hiện ra bằng tiếng người, ngay lúc mở app

@@ -7,9 +7,10 @@
 //            lưu ở Tổng quan, đọc từ Nhật ký hệ thống (`luoc-do/49`).
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb (demDuLieu · dsNhatKyHeThong · xemTruocKhoiPhuc ·
-//            khoiPhucBanSao) · o-bang · hop-thoai
+//            khoiPhucBanSao · máy sao lưu) · o-bang · hop-thoai
 // Sổ tay   : so-tay/trang-quan-tri.md · so-tay/sao-luu.md
-// Phiên bản: 0.4.0 · Cập nhật: 29/09/2026 (b155) — nút Khôi phục chạy thật
+// Phiên bản: 0.5.0 · Cập nhật: 29/09/2026 (b155d) — hai đường khôi phục:
+//            file trong máy · danh sách từ máy sao lưu (web app) + ảnh
 // ============================================================
 //
 // ⚠ Nút Khôi phục (b155) mở từ khi máy chủ khôi phục được (`luoc-do/54`) —
@@ -25,7 +26,10 @@
 //   THÔ, không lọc `deleted`/`trang_thai`. Đổi một bên mà quên bên kia thì
 //   phép so bằng mắt hai cột luôn lệch dù dữ liệu giống hệt nhau.
 
-import { demDuLieu, dsNhatKyHeThong, xemTruocKhoiPhuc, khoiPhucBanSao } from '../../services/sb.js';
+import {
+  demDuLieu, dsNhatKyHeThong, xemTruocKhoiPhuc, khoiPhucBanSao,
+  coMaySaoLuu, dsBanSaoLuuDrive, taiBanSaoLuuDrive, khoiPhucAnhDrive,
+} from '../../services/sb.js';
 import { td, span, huyHieu, datHuyHieu, dongTrong, ngayGio } from './o-bang.js';
 import { hoi, bao } from './hop-thoai.js';
 
@@ -136,7 +140,8 @@ function veTheTongQuan(sec, kq, gan) {
 // → gõ KHÔI PHỤC → máy chủ đổ lại, một giao dịch.
 // ⚠ Gửi NGUYÊN VĂN file (`f.text()`), không parse/stringify lại — máy chủ so
 //   dấu vân tay từng byte (`sb.js` `xemTruocKhoiPhuc`).
-// ⚠ Ảnh KHÔNG nằm trong file: nhắc `khoiPhucAnh` (Apps Script) ở cả hai hộp.
+// ⚠ Ảnh KHÔNG nằm trong file: có máy sao lưu (web app) thì bấm "Khôi phục
+//   ảnh" ngay sau; không có thì nhắc chạy `khoiPhucAnh` trong Apps Script.
 
 /** Sáu bảng người đọc hiểu được, đặt cạnh nhau trong hộp xác nhận. */
 const BANG_XAC_NHAN = [
@@ -148,47 +153,104 @@ const CHU_XAC_NHAN = 'KHÔI PHỤC';
 const NHAC_ANH = 'Ảnh không nằm trong file sao lưu. Khôi phục xong thì chạy hàm khoiPhucAnh ' +
   'trong dự án Apps Script sao lưu (hướng dẫn: mục "Khôi phục ảnh").';
 
-/** @param {HTMLElement} sec  `section#quan-tri-he-thong` */
+const NHAC_ANH_WEB = 'Ảnh không nằm trong file sao lưu: đổ dữ liệu xong, bấm "Khôi phục ảnh" ' +
+  'để máy sao lưu lấy lại ảnh thiếu từ Drive.';
+
+/**
+ * Hai đường (chủ dự án chốt 29/09/2026):
+ *   1. Chọn file trong máy (ổ Google Drive) — luôn có.
+ *   2. Có `SAO_LUU_WEB_APP` → hỏi máy sao lưu danh sách bản trên Drive, chọn
+ *      một bản; hỏng thì lùi về đường 1. Khôi phục xong còn lấy lại ảnh.
+ * @param {HTMLElement} sec  `section#quan-tri-he-thong`
+ */
 export function ganNutKhoiPhuc(sec) {
   const nut = sec.querySelector('#btn-khoi-phuc');
   const chon = sec.querySelector('#kp-chon-file');
   if (!nut || !chon) return;
-  // Gán bằng `on…=` — `napLai()` gọi lại hàm này, không được chồng bộ nghe.
-  nut.onclick = () => { chon.value = ''; chon.click(); };
-  chon.onchange = async () => {
-    const f = chon.files && chon.files[0];
-    if (!f) return;
-    const chuNut = nut.textContent;
-    nut.disabled = true;
-    nut.textContent = 'Đang kiểm file…';
-    let xt;
-    try {
-      xt = await xemTruocKhoiPhuc(await f.text());
-    } finally {
-      nut.disabled = false;
-      nut.textContent = chuNut;
-    }
-    if (!xt.ok) { await bao('Không khôi phục được từ file này', xt.loi); return; }
+  const moChonFile = () => { chon.value = ''; chon.click(); };
 
-    const noiDung = await f.text();
+  // Gán bằng `on…=` — `napLai()` gọi lại hàm này, không được chồng bộ nghe.
+  nut.onclick = async () => {
+    if (!coMaySaoLuu()) { moChonFile(); return; }
+    const ds = await banRon(nut, 'Đang hỏi máy sao lưu…', dsBanSaoLuuDrive);
+    if (!ds.ok || !(ds.ds || []).length) {
+      const k = await hoi({
+        tua: 'Không lấy được danh sách trên Drive',
+        chu: (ds.loi || 'Thư mục sao lưu trên Drive chưa có bản nào.') +
+          '\n\nVẫn chọn được file trong máy (ổ Google Drive).',
+        nutOk: 'Chọn file trong máy…', kieuOk: 'primary',
+      });
+      if (k) moChonFile();
+      return;
+    }
     const kq = await hoi({
-      tua: 'Khôi phục toàn bộ về lúc ' + (xt.taoLucVn || '?') + '?',
-      chu: cauXacNhan(xt),
-      nutOk: 'Khôi phục', kieuOk: 'danger',
-      truong: [{ ma: 'go', nhan: 'Gõ chữ ' + CHU_XAC_NHAN + ' để xác nhận', goiY: CHU_XAC_NHAN }],
-      lam: async (v) => {
-        const go = String(v.go || '').normalize('NFC').trim().toUpperCase();
-        if (go !== CHU_XAC_NHAN.normalize('NFC')) {
-          return { ok: false, loi: 'Gõ đúng chữ ' + CHU_XAC_NHAN + ' (có dấu) rồi bấm lại.' };
-        }
-        return khoiPhucBanSao(noiDung);
-      },
+      tua: 'Chọn bản sao lưu',
+      chu: 'Mọi bản đang có trên Drive (30 bản gần nhất và mỗi tháng một bản), mới nhất trước.',
+      truong: [{ ma: 'id', chon: ds.ds.map((f) => [f.id, tenDeDoc(f)]) }],
+      nutOk: 'Tiếp', kieuOk: 'warm',
+      nutThem: { chu: 'Chọn file trong máy…', lam: null },
+      lam: (v) => taiBanSaoLuuDrive(v.id),
     });
     if (!kq) return;
-    await bao('Đã khôi phục', cauKetQua(kq.kq));
-    // Mọi bảng vừa đổi — nạp lại cả trang, kể cả quyền của chính người bấm.
-    window.location.reload();
+    if (kq.nut === 'them') { moChonFile(); return; }
+    await quyTrinh(nut, kq.kq.noiDung);
   };
+  chon.onchange = async () => {
+    const f = chon.files && chon.files[0];
+    if (f) await quyTrinh(nut, await f.text());
+  };
+}
+
+/** `giapha-sao-luu-2026-09-29-0200.json` → `29/09/2026 02:00 · 1,3 MB`. */
+function tenDeDoc(f) {
+  const m = /(\d{4})-(\d{2})-(\d{2})-(\d{2})(\d{2})/.exec(f.ten || '');
+  return (m ? m[3] + '/' + m[2] + '/' + m[1] + ' ' + m[4] + ':' + m[5] : f.ten) +
+    (typeof f.byte === 'number' ? ' · ' + kichCo(f.byte) : '');
+}
+
+/** Chạy `viec` trong lúc nút mờ + đổi chữ; trả kết quả của nó. */
+async function banRon(nut, chu, viec) {
+  const chuNut = nut.textContent;
+  nut.disabled = true;
+  nut.textContent = chu;
+  try { return await viec(); } finally { nut.disabled = false; nut.textContent = chuNut; }
+}
+
+/** Từ nguyên văn một file: xem trước → gõ KHÔI PHỤC → đổ lại → (ảnh) → nạp lại. */
+async function quyTrinh(nut, noiDung) {
+  const xt = await banRon(nut, 'Đang kiểm file…', () => xemTruocKhoiPhuc(noiDung));
+  if (!xt.ok) { await bao('Không khôi phục được từ file này', xt.loi); return; }
+
+  const kq = await hoi({
+    tua: 'Khôi phục toàn bộ về lúc ' + (xt.taoLucVn || '?') + '?',
+    chu: cauXacNhan(xt),
+    nutOk: 'Khôi phục', kieuOk: 'danger',
+    truong: [{ ma: 'go', nhan: 'Gõ chữ ' + CHU_XAC_NHAN + ' để xác nhận', goiY: CHU_XAC_NHAN }],
+    lam: async (v) => {
+      const go = String(v.go || '').normalize('NFC').trim().toUpperCase();
+      if (go !== CHU_XAC_NHAN.normalize('NFC')) {
+        return { ok: false, loi: 'Gõ đúng chữ ' + CHU_XAC_NHAN + ' (có dấu) rồi bấm lại.' };
+      }
+      return khoiPhucBanSao(noiDung);
+    },
+  });
+  if (!kq) return;
+
+  if (coMaySaoLuu()) {
+    // Ảnh: gọi tới khi hết tấm thiếu — mỗi lần máy sao lưu làm được ~4,5 phút.
+    let chu = cauKetQua(kq.kq) + '\n\nBước cuối: lấy lại ảnh thiếu từ Drive (có thể mất vài phút).';
+    for (;;) {
+      const a = await hoi({ tua: 'Khôi phục ảnh', chu, nutOk: 'Khôi phục ảnh', kieuOk: 'warm',
+                            nutHuy: 'Để sau', lam: () => khoiPhucAnhDrive() });
+      if (!a) break;
+      if (!a.kq.conLai) { await bao('Xong', a.kq.cau + '\n\nBấm Đóng để nạp lại trang.'); break; }
+      chu = a.kq.cau + '\n\nCòn ảnh chưa tải vì hết giờ một lượt — bấm tiếp.';
+    }
+  } else {
+    await bao('Đã khôi phục', cauKetQua(kq.kq) + '\n\n' + NHAC_ANH + '\n\nBấm Đóng để nạp lại trang.');
+  }
+  // Mọi bảng vừa đổi — nạp lại cả trang, kể cả quyền của chính người bấm.
+  window.location.reload();
 }
 
 function cauXacNhan(xt) {
@@ -196,7 +258,8 @@ function cauXacNhan(xt) {
     '· ' + ten + ': trong file ' + (xt.dem[ma] ?? '?') + ' · hiện nay ' + (xt.demHienTai[ma] ?? '?'));
   return 'File: ' + xt.tenFile + '\n' + dong.join('\n') + '\n\n' +
     '⚠ Mọi gia phả, mọi tài khoản sẽ quay về đúng lúc chụp. Mọi thay đổi SAU lúc ấy sẽ MẤT ' +
-    'và không lấy lại được bằng nút nào. Hỏng giữa chừng thì không gì bị đổi.\n\n' + NHAC_ANH;
+    'và không lấy lại được bằng nút nào. Hỏng giữa chừng thì không gì bị đổi.\n\n' +
+    (coMaySaoLuu() ? NHAC_ANH_WEB : NHAC_ANH);
 }
 
 function cauKetQua(kq) {
@@ -204,8 +267,7 @@ function cauKetQua(kq) {
   const dat = bc.filter((d) => d.ket_qua === 'ĐẠT' && d.muc !== 'trigger').length;
   const luuY = bc.filter((d) => d.ket_qua === 'LƯU Ý').map((d) => '· ' + d.muc + ' — ' + d.chi_tiet);
   return 'Đã đổ lại từ ' + kq.tenFile + ' (chụp lúc ' + (kq.taoLucVn || '?') + '): ' + dat +
-    ' bảng, so từng dòng đều khớp.' + (luuY.length ? '\n\nLưu ý:\n' + luuY.join('\n') : '') +
-    '\n\n' + NHAC_ANH + '\n\nBấm Đóng để nạp lại trang.';
+    ' bảng, so từng dòng đều khớp.' + (luuY.length ? '\n\nLưu ý:\n' + luuY.join('\n') : '');
 }
 
 const TEN_BANG = [

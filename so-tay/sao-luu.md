@@ -13,13 +13,23 @@
 | **Khôi phục từ nút** (b155a): chỉ QTHT, chỉ file có dấu vân tay máy sao lưu báo | `luoc-do/54` · đo `../kiem-thu/ban-thu-sql/do-b155a.mjs` (33 phép) |
 | **Ảnh** (b154): chép sang Drive `Anh/<mã cây>/` mỗi đêm · tải ngược lên `khoiPhucAnh` | `SaoLuu.gs` mục ẢNH · phép 14–16 của `kiem-sao-luu.mjs` |
 
-## Khôi phục từ nút — chọn file thế nào (chốt 29/09/2026)
+## Khôi phục từ nút — HAI đường (chủ dự án chốt 29/09/2026)
 
-Chủ dự án chọn: **cài Google Drive for desktop, chọn file thẳng trong ổ Drive**
-ở hộp chọn file thường. Đã cân và bỏ hai đường: web app Apps Script liệt kê
-bản sao lưu (cần triển khai + hàng rào vé Supabase), kho phụ `sao-luu` trên
-Supabase (bản sao lưu nằm hai nơi, máy sao lưu phải được ghi một khe vào kho
-ảnh). Đừng đề xuất lại nếu chủ dự án không nêu. Ảnh vẫn về bằng `khoiPhucAnh`.
+1. **Chọn file trong máy** (ổ Google Drive for desktop) — luôn có.
+2. **Máy sao lưu làm web app** (`SaoLuu.gs` `doPost`, địa chỉ ở `cau-hinh.js`
+   `SAO_LUU_WEB_APP`): liệt kê bản trên Drive → tải nguyên văn → khôi phục →
+   *Khôi phục ảnh* bằng VÉ NGƯỜI BẤM (QTHT qua luật `ghi_anh`, không mật khẩu
+   điền tạm). Hỏng/để trống → lùi về đường 1.
+
+- ⚠⚠ Web app "Anyone" + chạy bằng quyền Drive chủ dự án. Hàng rào DUY NHẤT:
+  `xacMinhQtht_` hỏi Supabase `/auth/v1/user` + `la_quan_tri_he_thong()` bằng
+  vé người gửi. `tai` chỉ đưa file TRONG thư mục sao lưu, đúng khuôn tên.
+  Phép canh: `kiem-sao-luu.mjs` phần 18 (14 phép).
+- ⚠ Sửa `SaoLuu.gs` thì web app cần *Manage deployments → New version*; lịch
+  đêm thì không. Lệch nhau = web app chạy mã cũ, im lặng.
+- ⚠ Bản giả `sb-gia.mjs` coi như ĐÃ có web app (ảnh `kq-kp-danh-sach*`).
+- Đã cân và bỏ: kho phụ `sao-luu` trên Supabase (bản sao lưu nằm hai nơi, máy
+  sao lưu phải được ghi một khe vào kho ảnh).
 
 ## Khôi phục từ nút — vì sao có dấu vân tay
 

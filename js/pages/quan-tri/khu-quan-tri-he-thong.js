@@ -146,8 +146,7 @@ function veChuaCo(sec) {
     'phải tự mở file sao lưu mới nhất ra so bằng mắt. Muốn quay về một bản sao lưu: bấm nút khôi ' +
     'phục ở cuối trang rồi chọn file ngay trong ổ Google Drive của máy.';
   dat('sl-chua-co', LY_SL);
-  mo('#btn-sao-luu-ngay', 'Nút này cần gọi Apps Script từ trình duyệt, mà dự án sao lưu không có địa ' +
-    'chỉ web để gọi tới — chạy hàm saoLuuNgay tại script.google.com.');
+  mo('#btn-sao-luu-ngay', 'Chưa nối — chạy hàm saoLuuNgay tại script.google.com.');
 
   // b134: nhật ký hệ thống đã có (`khu-nhat-ky.js`) — ô `notice` chỉ còn nói
   // nó ghi gì và KHÔNG ghi gì.

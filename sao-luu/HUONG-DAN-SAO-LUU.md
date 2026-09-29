@@ -308,12 +308,13 @@ Chạy hàm **`goLichSaoLuu`**. Lịch tự động tắt; sao lưu bấm tay v�
 
 ### Khi `SaoLuu.gs` có bản mới — thay mã, KHÔNG làm lại từ đầu
 
-*(Lần gần nhất: bản **0.8.0**, 29/09/2026 — mỗi file ghi ra kèm **dấu vân
-tay**, để nút *Khôi phục* trên trang Quản trị nhận nó. **Kèm SQL `54`**: bước
-1 dán `luoc-do/54-khoi-phuc-tu-nut.sql`, bảng cuối **ĐẠT cả 4 dòng**. Bản
-trước: 0.7.0 — chép ảnh sang Drive, mục *Ảnh* ngay dưới.)*
+*(Lần gần nhất: bản **0.9.0**, 29/09/2026 — mỗi file ghi ra kèm **dấu vân
+tay** để nút *Khôi phục* trên trang Quản trị nhận nó, và chạy được làm **web
+app** (mục *Máy sao lưu làm web app*, tuỳ chọn). **Kèm SQL `54`**: bước 1 dán
+`luoc-do/54-khoi-phuc-tu-nut.sql`, bảng cuối **ĐẠT cả 4 dòng**. Bản trước:
+0.7.0 — chép ảnh sang Drive, mục *Ảnh*.)*
 
-1. **Dán SQL trước** *(chỉ khi bản mới kèm SQL — 0.8.0 kèm `54`)*: Supabase →
+1. **Dán SQL trước** *(chỉ khi bản mới kèm SQL — 0.9.0 kèm `54`)*: Supabase →
    SQL Editor → **New query** → dán cả file
    `luoc-do/54-khoi-phuc-tu-nut.sql` → **Run**. Bảng cuối phải ra **ĐẠT** cả
    bốn dòng.
@@ -333,6 +334,39 @@ trước: 0.7.0 — chép ảnh sang Drive, mục *Ảnh* ngay dưới.)*
    bình thường, chỉ không báo về được.
 
 ---
+
+## Máy sao lưu làm web app (từ bản 0.9.0) — tuỳ chọn
+
+Làm bước này thì nút *Khởi tạo quy trình khôi phục dữ liệu…* ở trang Quản trị
+**hiện danh sách các bản sao lưu trên Drive** để chọn, và khôi phục xong có
+nút **Khôi phục ảnh**. Không làm thì nút vẫn chạy, anh chọn file trong ổ
+Google Drive của máy, còn ảnh thì chạy `khoiPhucAnh` bằng tay (mục *Ảnh*).
+
+**Triển khai một lần:**
+
+1. `script.google.com` → mở dự án sao lưu → góc trên phải **Deploy** →
+   **New deployment**.
+2. Bánh răng cạnh *Select type* → **Web app**.
+3. *Description*: `may sao luu`. *Execute as*: **Me**. *Who has access*:
+   **Anyone** (đúng chữ *Anyone*, KHÔNG chọn *Anyone with Google account* —
+   chọn nhầm thì trang Quản trị không gọi được).
+4. **Deploy** → Google hỏi quyền thì **Authorize access** → chọn tài khoản →
+   *Advanced* → *Go to … (unsafe)* → **Allow**.
+5. Chép dòng **Web app URL** (dạng `https://script.google.com/macros/s/…/exec`).
+6. Mở `supabase/js/cau-hinh.js`, dòng `export const SAO_LUU_WEB_APP = '';` →
+   dán địa chỉ vào giữa hai dấu nháy → lưu. *(Hoặc gửi địa chỉ cho Claude Code
+   dán hộ.)*
+
+**Tự kiểm:** dán địa chỉ ấy vào trình duyệt → phải ra đúng một dòng
+`{"ok":true,"may":"giapha-sao-luu",…}`, không có dữ liệu gì khác.
+
+**Ai có địa chỉ cũng lấy được dữ liệu không?** Không. Mọi yêu cầu phải kèm vé
+đăng nhập app của một **Quản trị hệ thống**; máy sao lưu hỏi Supabase xác nhận
+vé trước khi đụng tới Drive, và chỉ đưa ra file trong thư mục sao lưu.
+
+⚠ **Mỗi lần thay mã `SaoLuu.gs` sau này:** *Deploy* → **Manage deployments** →
+bút chì → *Version*: **New version** → *Deploy*. Chỉ bấm Save thì web app vẫn
+chạy mã cũ (lịch sao lưu đêm thì chạy mã mới ngay). Địa chỉ không đổi.
 
 ## Ảnh (từ bản 0.7.0)
 

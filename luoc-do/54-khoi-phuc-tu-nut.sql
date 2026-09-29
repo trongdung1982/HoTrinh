@@ -6,7 +6,7 @@
 -- Chạy ở   : Supabase → SQL Editor. Dán SAU `42`, `45`, `49`. Dán lại nhiều
 --            lần được. Không định nghĩa lại hàm nào của file khác → không kéo
 --            chuỗi dán lại.
---            ⚠ Đi cặp `sao-luu/SaoLuu.gs` 0.8.0 — bản ấy báo dấu vân tay mỗi
+--            ⚠ Đi cặp `sao-luu/SaoLuu.gs` 0.8.0 trở lên — báo dấu vân tay mỗi
 --            file nó ghi. File ghi TRƯỚC khi thay mã thì nút không nhận.
 -- Sổ tay   : so-tay/sao-luu.md
 -- Đo       : ../kiem-thu/ban-thu-sql/do-b155a.mjs

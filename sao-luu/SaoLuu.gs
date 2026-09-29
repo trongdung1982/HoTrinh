@@ -12,8 +12,9 @@
 //            EMAIL_KHOI_PHUC · MAT_KHAU_KHOI_PHUC · KHOI_PHUC_CAY (chỉ điền
 //            tạm khi chạy `khoiPhucAnh`, xong thì xoá)
 //            SQL — luoc-do/05-sao-luu.sql phải chạy trước
-// Phiên bản: 0.8.0 · Cập nhật: 29/09/2026 (b155a) — báo dấu vân tay SHA-256
-//            mỗi file ghi (`luoc-do/54`), để nút Khôi phục chỉ nhận file thật.
+// Phiên bản: 0.9.0 · Cập nhật: 29/09/2026 (b155d) — WEB APP (`doPost`): trang
+//            Quản trị liệt kê/tải bản sao lưu + khôi phục ảnh, chỉ QTHT.
+//            0.8.0: báo dấu vân tay SHA-256 mỗi file ghi (`luoc-do/54`).
 //            Ảnh (b154): chép sang Drive `Anh/<mã cây>/`, `khoiPhucAnh` tải
 //            ngược lên. Ảnh trên Drive KHÔNG xoá theo app.
 // Sổ tay   : so-tay/sao-luu.md
@@ -827,12 +828,42 @@ function khoiPhucAnh() {
   if (!email || !matKhau) {
     throw new Error('Chưa điền tài khoản khôi phục. Mở Project Settings → ' +
       'Script Properties, thêm EMAIL_KHOI_PHUC và MAT_KHAU_KHOI_PHUC của một ' +
-      'tài khoản Quản trị hệ thống. Chạy xong thì xoá hai dòng ấy.');
+      'tài khoản Quản trị hệ thống. Chạy xong thì xoá hai dòng ấy. ' +
+      '(Có web app rồi thì khỏi: trang Quản trị tự khôi phục ảnh.)');
   }
+  // Kiểm Drive TRƯỚC khi đăng nhập — không có gì để làm thì khỏi gọi mạng.
+  if (!thuMucCon_(layThuMuc_(cauHinh), TEN_THU_MUC_ANH, false)) {
+    throw new Error('Trên Drive chưa có thư mục "' + TEN_THU_MUC_ANH +
+      '" — sao lưu đêm chưa chép tấm ảnh nào, không có gì để khôi phục.');
+  }
+  var phieuGhi = xinPhieu_(cauHinh, email, matKhau,
+    'Không đăng nhập được tài khoản khôi phục. Kiểm EMAIL_KHOI_PHUC và ' +
+    'MAT_KHAU_KHOI_PHUC trong Script Properties.');
+  var kq = khoiPhucAnhBang_(cauHinh, phieuGhi, chiCay);
+  var ket = cauKhoiPhucAnh_(kq) +
+            (kq.conLai ? '\nBấm chạy lại khoiPhucAnh để làm tiếp.'
+                       : '\nXONG. Nhớ xoá EMAIL_KHOI_PHUC và MAT_KHAU_KHOI_PHUC.');
+  Logger.log(ket);
+  return ket;
+}
 
+function cauKhoiPhucAnh_(kq) {
+  return 'Khôi phục ảnh: tải lên ' + kq.taiLen + ' tấm, ' + kq.daCo +
+         ' tấm kho đã có sẵn, bỏ qua ' + kq.moCoi + ' tấm không còn ai dùng' +
+         ', còn ' + kq.conLai + ' tấm chưa tải.' +
+         (kq.loi ? '\nLỗi đầu tiên: ' + kq.loi : '');
+}
+
+/**
+ * Lõi khôi phục ảnh, dùng chung cho `khoiPhucAnh` (tài khoản điền tạm) và web
+ * app (vé của chính người bấm trên trang Quản trị). `phieuGhi` = phiếu của tài
+ * khoản GHI ảnh; liệt kê kho + đọc `media` vẫn đi bằng tài khoản sao lưu.
+ * Trả `{ taiLen, daCo, moCoi, conLai, loi }`.
+ */
+function khoiPhucAnhBang_(cauHinh, phieuGhi, chiCay) {
   var goc = thuMucCon_(layThuMuc_(cauHinh), TEN_THU_MUC_ANH, false);
-  if (!goc) throw new Error('Trên Drive chưa có thư mục "' + TEN_THU_MUC_ANH +
-    '" — sao lưu đêm chưa chép tấm ảnh nào, không có gì để khôi phục.');
+  if (!goc) return { taiLen: 0, daCo: 0, moCoi: 0, conLai: 0,
+                     loi: 'Trên Drive chưa có thư mục "' + TEN_THU_MUC_ANH + '".' };
 
   // Tấm nào kho đang có: hỏi bằng tài khoản SAO LƯU (luật `liet_ke_anh` chỉ
   // cho vai ấy và Quản trị hệ thống liệt kê).
@@ -847,10 +878,6 @@ function khoiPhucAnh() {
       if (d && String(d).indexOf('/') > 0) canDung[d] = true;
     });
   });
-
-  var phieuGhi = xinPhieu_(cauHinh, email, matKhau,
-    'Không đăng nhập được tài khoản khôi phục. Kiểm EMAIL_KHOI_PHUC và ' +
-    'MAT_KHAU_KHOI_PHUC trong Script Properties.');
 
   var kq = { taiLen: 0, daCo: 0, moCoi: 0, conLai: 0, loi: '' };
   var loiLienTiep = 0;
@@ -873,15 +900,107 @@ function khoiPhucAnh() {
       if (!kq.loi) kq.loi = duong + ': ' + loi;
     });
   }
+  return kq;
+}
 
-  var ket = 'Khôi phục ảnh: tải lên ' + kq.taiLen + ' tấm, ' + kq.daCo +
-            ' tấm kho đã có sẵn, bỏ qua ' + kq.moCoi + ' tấm không còn ai dùng' +
-            ', còn ' + kq.conLai + ' tấm chưa tải.' +
-            (kq.loi ? '\nLỗi đầu tiên: ' + kq.loi : '') +
-            (kq.conLai ? '\nBấm chạy lại khoiPhucAnh để làm tiếp.'
-                       : '\nXONG. Nhớ xoá EMAIL_KHOI_PHUC và MAT_KHAU_KHOI_PHUC.');
-  Logger.log(ket);
-  return ket;
+// ============================================================
+// WEB APP — trang Quản trị gọi thẳng (b155d)
+// ============================================================
+// Triển khai: Deploy → New deployment → Web app · Execute as: **Me** · Who has
+// access: **Anyone**. Địa chỉ dán vào `js/cau-hinh.js` `SAO_LUU_WEB_APP`.
+//
+// ⚠⚠ "Anyone" nghĩa là ai có địa chỉ cũng gọi được, và web app chạy bằng
+//   quyền Drive CỦA CHỦ DỰ ÁN. Hàng rào duy nhất là `xacMinhQtht_`: mỗi yêu
+//   cầu mang vé đăng nhập Supabase của người bấm; Supabase xác nhận vé thật
+//   VÀ người ấy là Quản trị hệ thống, không thì không làm gì cả.
+// ⚠ `tai` chỉ đưa ra file NẰM TRONG thư mục sao lưu và đúng khuôn tên — không
+//   thành cửa đọc file bất kỳ trên Drive bằng mã file.
+// ⚠ Sửa mã này xong phải **Manage deployments → Edit → Version: New version**,
+//   không thì web app vẫn chạy mã cũ (Save không đủ).
+// ⚠ Gửi vé trong THÂN yêu cầu (POST `text/plain`), không trên địa chỉ — địa
+//   chỉ nằm lại trong nhật ký. `text/plain` để trình duyệt không hỏi CORS trước.
+
+/** Chỉ để thử địa chỉ có sống không — không trả dữ liệu nào. */
+function doGet() {
+  return traJson_({ ok: true, may: 'giapha-sao-luu', phienBan: '0.9.0' });
+}
+
+function doPost(e) {
+  var ra;
+  try {
+    var yc = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    var cauHinh = docCauHinh_();
+    xacMinhQtht_(cauHinh, yc.ve);
+    if (yc.viec === 'danh-sach') {
+      ra = { ok: true, ds: dsBanSaoLuu_(cauHinh) };
+    } else if (yc.viec === 'tai') {
+      ra = taiBanSaoLuu_(cauHinh, yc.id);
+    } else if (yc.viec === 'khoi-phuc-anh') {
+      var kq = khoiPhucAnhBang_(cauHinh, yc.ve, '');
+      ra = { ok: true, taiLen: kq.taiLen, daCo: kq.daCo, moCoi: kq.moCoi, conLai: kq.conLai,
+             loi: kq.loi, cau: cauKhoiPhucAnh_(kq) };
+    } else {
+      ra = { ok: false, loi: 'Máy sao lưu không biết việc "' + String(yc.viec).slice(0, 40) + '".' };
+    }
+  } catch (err) {
+    ra = { ok: false, loi: String(err && err.message ? err.message : err).slice(0, 500) };
+  }
+  return traJson_(ra);
+}
+
+function traJson_(o) {
+  return ContentService.createTextOutput(JSON.stringify(o))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/** Vé Supabase phải thật VÀ của một Quản trị hệ thống. Không thì ném. */
+function xacMinhQtht_(cauHinh, ve) {
+  if (!ve || typeof ve !== 'string') throw new Error('Thiếu vé đăng nhập — hãy đăng nhập lại app.');
+  var dau = { apikey: cauHinh.khoaCongKhai, Authorization: 'Bearer ' + ve };
+  var ai = UrlFetchApp.fetch(cauHinh.url + '/auth/v1/user',
+                             { method: 'get', headers: dau, muteHttpExceptions: true });
+  if (ai.getResponseCode() !== 200) {
+    throw new Error('Vé đăng nhập không hợp lệ hoặc đã hết hạn — đăng xuất rồi đăng nhập lại app.');
+  }
+  var la = UrlFetchApp.fetch(cauHinh.url + '/rest/v1/rpc/la_quan_tri_he_thong', {
+    method: 'post', headers: dau, contentType: 'application/json', payload: '{}',
+    muteHttpExceptions: true });
+  if (la.getResponseCode() !== 200 || la.getContentText().trim() !== 'true') {
+    throw new Error('Chỉ Quản trị hệ thống mới dùng được máy sao lưu.');
+  }
+}
+
+/** Các file sao lưu trong thư mục, mới nhất trước. Không kèm nội dung. */
+function dsBanSaoLuu_(cauHinh) {
+  var ds = [];
+  var it = layThuMuc_(cauHinh).getFiles();
+  while (it.hasNext()) {
+    var f = it.next();
+    if (f.isTrashed() || !laTenBanSaoLuu_(f.getName())) continue;
+    ds.push({ id: f.getId(), ten: f.getName(), byte: f.getSize() });
+  }
+  ds.sort(function (a, b) { return a.ten < b.ten ? 1 : a.ten > b.ten ? -1 : 0; });
+  return ds.slice(0, 400);
+}
+
+function laTenBanSaoLuu_(ten) {
+  return /^giapha-sao-luu-\d{4}-\d{2}-\d{2}-\d{4}\.json$/.test(ten);
+}
+
+/** Nguyên văn một file sao lưu — CHỈ file trong thư mục sao lưu, đúng khuôn tên. */
+function taiBanSaoLuu_(cauHinh, id) {
+  var f;
+  try { f = DriveApp.getFileById(String(id || '')); } catch (e) { f = null; }
+  if (!f || f.isTrashed() || !laTenBanSaoLuu_(f.getName())) {
+    return { ok: false, loi: 'Không có bản sao lưu này.' };
+  }
+  var thuMucId = layThuMuc_(cauHinh).getId();
+  var trong = false;
+  var cha = f.getParents();
+  while (cha.hasNext()) { if (cha.next().getId() === thuMucId) { trong = true; break; } }
+  if (!trong) return { ok: false, loi: 'Không có bản sao lưu này.' };
+  // Nguyên văn UTF-8 — máy chủ so dấu vân tay trên từng byte (`luoc-do/54`).
+  return { ok: true, ten: f.getName(), noiDung: f.getBlob().getDataAsString('UTF-8') };
 }
 
 /** Tải một tấm lên kho. Trả '' nếu được, 'da_co' nếu kho đã có tấm cùng tên, còn lại là câu lỗi. */

@@ -24,7 +24,7 @@
 
 import {
   SUPABASE_URL, SUPABASE_KHOA_CONG_KHAI, KHO_ANH,
-  NGUOI_QUAN_LY, thieuCauHinh,
+  NGUOI_QUAN_LY, thieuCauHinh, SAO_LUU_WEB_APP,
 } from '../cau-hinh.js';
 import { fullName } from '../utils/text.js';
 
@@ -1451,6 +1451,47 @@ export async function khoiPhucBanSao(noiDung) {
   if (!data || !data.ok) return { ok: false, loi: (data && data.loi) || 'Máy chủ từ chối khôi phục.' };
   return { ok: true, tenFile: data.ten_file, taoLucVn: data.tao_luc_vn, baoCao: data.bao_cao || [] };
 }
+
+// ------------------------------------------------------------
+// MÁY SAO LƯU — web app Apps Script (b155d, `sao-luu/SaoLuu.gs` mục WEB APP)
+// ------------------------------------------------------------
+// ⚠ Máy chủ THỨ HAI mà app nói chuyện — vẫn chỉ trong file này (`CLAUDE.md`
+//   mục 5 luật 2). Nó chạy bằng quyền Drive của chủ dự án; hàng rào là vé
+//   Supabase của người bấm, máy sao lưu tự hỏi Supabase xem vé ấy có phải QTHT.
+// ⚠ POST `text/plain` — kiểu "đơn giản", trình duyệt không hỏi CORS trước;
+//   `application/json` thì Apps Script không trả lời được câu hỏi ấy.
+
+/** Đã điền địa chỉ máy sao lưu ở `cau-hinh.js` chưa. */
+export function coMaySaoLuu() { return !!SAO_LUU_WEB_APP; }
+
+async function goiMaySaoLuu(viec, them = {}) {
+  if (!SAO_LUU_WEB_APP) return { ok: false, loi: 'Chưa điền địa chỉ máy sao lưu (SAO_LUU_WEB_APP trong js/cau-hinh.js).' };
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data: { session } } = await k.auth.getSession();
+  if (!session) return { ok: false, loi: 'Chưa đăng nhập.' };
+  try {
+    const r = await fetch(SAO_LUU_WEB_APP, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ viec, ve: session.access_token, ...them }),
+    });
+    const j = await r.json();
+    return j && typeof j === 'object' ? j : { ok: false, loi: 'Máy sao lưu trả về thứ lạ.' };
+  } catch (e) {
+    return { ok: false, loi: 'Không gọi được máy sao lưu (Apps Script). Kiểm địa chỉ trong cau-hinh.js và ' +
+      'lúc triển khai đã chọn "Who has access: Anyone" chưa. (' + ((e && e.message) || e) + ')' };
+  }
+}
+
+/** Các bản sao lưu trên Drive, mới nhất trước: `{ ok, ds:[{id, ten, byte}] }`. */
+export function dsBanSaoLuuDrive() { return goiMaySaoLuu('danh-sach'); }
+
+/** Nguyên văn một bản: `{ ok, ten, noiDung }` — đưa thẳng cho `xemTruocKhoiPhuc`. */
+export function taiBanSaoLuuDrive(id) { return goiMaySaoLuu('tai', { id }); }
+
+/** Tải lên kho những ảnh dữ liệu còn trỏ tới mà kho thiếu: `{ ok, taiLen, conLai, cau }`. */
+export function khoiPhucAnhDrive() { return goiMaySaoLuu('khoi-phuc-anh'); }
 
 /**
  * Nhận một lần Lưu làm chính thức. Không đụng một dòng dữ liệu nào — dữ liệu

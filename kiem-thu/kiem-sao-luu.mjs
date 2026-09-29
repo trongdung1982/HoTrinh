@@ -51,10 +51,19 @@ const URL_THU = 'https://thunghiem.supabase.co';
 const EMAIL_KP = 'khoi-phuc@thunghiem.test';
 const MAT_KHAU_KP = 'mat-khau-khoi-phuc-gia-9876543210';
 const PHIEU_KP = 'eyJhbGciOiJIUzI1NiJ9.PHIEU_KHOI_PHUC_GIA.chu-ky-gia';
+// Vé người bấm trên trang Quản trị (web app, b155d). QTHT ghi được ảnh như
+// tài khoản khôi phục, nên dùng chung một phiếu với nó.
+const VE_QT = PHIEU_KP;
+const VE_THUONG = 'eyJhbGciOiJIUzI1NiJ9.VE_NGUOI_THUONG.chu-ky-gia';
 const LUC_THU = new Date('2026-09-03T10:30:00Z');   // 17:30 giờ Việt Nam
 
 let dat = 0;
 let hong = 0;
+// Mã file/thư mục Drive giả — DÙNG CHUNG cả bài: nhiều môi trường giả chia một
+// thư mục (đêm hai, web app), đếm riêng thì mã trùng nhau và phép "ngoài thư
+// mục" đạt/hỏng oan.
+let soId = 0;
+const moiFile = {};            // mã file → file, cho DriveApp.getFileById
 
 // ============================================================
 // GIẢ LẬP BẢY ĐỐI TƯỢNG CỦA GOOGLE
@@ -92,6 +101,19 @@ function dungMoiTruong(kichBan = {}) {
           return traLoi(400, '{"error":"invalid_grant"}');
         }
         return traLoi(200, JSON.stringify({ access_token: PHIEU_THU }));
+      }
+
+      // ---- Web app (b155d): Supabase xác nhận vé của NGƯỜI BẤM ----
+      // VE_QT = vé của một Quản trị hệ thống (cũng là phiếu ghi được ảnh —
+      // như máy thật, QTHT qua luật `ghi_anh`); VE_THUONG = vé thật, không QTHT.
+      if (duong === '/auth/v1/user') {
+        const ve = String(opt.headers.Authorization || '').replace('Bearer ', '');
+        return [VE_QT, VE_THUONG].includes(ve) ? traLoi(200, '{"id":"u"}') : traLoi(401, '{"msg":"invalid JWT"}');
+      }
+      if (duong === '/rest/v1/rpc/la_quan_tri_he_thong' &&
+          opt.headers.Authorization !== 'Bearer ' + PHIEU_THU) {
+        nhatKy.hoiQtht.push(opt.headers.Authorization);
+        return traLoi(200, opt.headers.Authorization === 'Bearer ' + VE_QT ? 'true' : 'false');
       }
 
       // ---- Tải ảnh LÊN kho (khoiPhucAnh, b154) ----
@@ -207,6 +229,7 @@ function dungMoiTruong(kichBan = {}) {
   nhatKy.taiVe = [];
   nhatKy.taiLen = [];
   nhatKy.dau = [];
+  nhatKy.hoiQtht = [];
   function lietKeTuKhoThat(tienTo) {
     const ds = Object.keys(khoAnhThat).sort();
     if (tienTo === '') {
@@ -221,20 +244,29 @@ function dungMoiTruong(kichBan = {}) {
       _noiDung: noiDung, _ten: ten,
       setName(t) { this._ten = t; return this; },
       getContentType: () => 'image/jpeg',
-      getBytes() { return [...Buffer.from(this._noiDung)]; }
+      getBytes() { return [...Buffer.from(this._noiDung)]; },
+      getDataAsString() { return String(this._noiDung); }
     };
   }
 
   // ---- Google Drive giả ---------------------------------------------
-  function taoFile(ten, noiDung) {
-    return {
-      _ten: ten, _noiDung: noiDung, _thungRac: false,
+  function taoFile(ten, noiDung, cha = null) {
+    const f = {
+      _ten: ten, _noiDung: noiDung, _thungRac: false, _id: 'f' + (++soId), _cha: cha,
+      getId() { return this._id; },
+      getParents() {
+        const ds = this._cha ? [this._cha] : [];
+        let i = 0;
+        return { hasNext: () => i < ds.length, next: () => ds[i++] };
+      },
       getName() { return this._ten; },
       getSize() { return this._noiDung.length; },
       setTrashed(v) { this._thungRac = v; },
       isTrashed() { return this._thungRac; },
       getBlob() { return taoBlob(this._noiDung, this._ten); }
     };
+    moiFile[f._id] = f;
+    return f;
   }
   // ⚠ `getFiles()` của Drive thật trả CẢ tệp trong thùng rác — nên bản giả
   //   cũng trả, và mã phải tự hỏi `isTrashed()`. Riêng hàm `duyet()` cuối bài
@@ -242,11 +274,12 @@ function dungMoiTruong(kichBan = {}) {
   function taoThuMuc(ten) {
     const tep = [];
     const con = [];
-    return {
-      _ten: ten, _tep: tep, _con: con,
+    const tm = {
+      _ten: ten, _tep: tep, _con: con, _id: 'd' + (++soId),
+      getId() { return this._id; },
       getName() { return ten; },
       createFile(t, n) {
-        const f = typeof t === 'string' ? taoFile(t, n) : taoFile(t._ten, t._noiDung);
+        const f = typeof t === 'string' ? taoFile(t, n, tm) : taoFile(t._ten, t._noiDung, tm);
         tep.push(f); return f;
       },
       getFiles() {
@@ -264,6 +297,7 @@ function dungMoiTruong(kichBan = {}) {
       },
       createFolder(t) { const c = taoThuMuc(t); con.push(c); return c; }
     };
+    return tm;
   }
   const thuMucCo = kichBan.thuMuc || taoThuMuc('Sao luu gia pha (Supabase)');
   const DriveApp = {
@@ -272,7 +306,16 @@ function dungMoiTruong(kichBan = {}) {
       return { hasNext: () => !xong, next: () => { xong = true; return thuMucCo; } };
     },
     createFolder(t) { return taoThuMuc(t); },
-    getFolderById() { return thuMucCo; }
+    getFolderById() { return thuMucCo; },
+    getFileById(id) {
+      if (!moiFile[id]) throw new Error('No item with the given ID could be found');
+      return moiFile[id];
+    }
+  };
+  // Web app (b155d): trả chữ JSON như ContentService thật.
+  const ContentService = {
+    MimeType: { JSON: 'json' },
+    createTextOutput(chu) { return { _chu: chu, setMimeType() { return this; } }; }
   };
 
   // ---- Script Properties giả -----------------------------------------
@@ -335,12 +378,12 @@ function dungMoiTruong(kichBan = {}) {
   NgayGia.now = kichBan.dongHo || (() => LUC_THU.getTime());
 
   const ten = ['UrlFetchApp', 'DriveApp', 'PropertiesService', 'MailApp',
-               'Session', 'Logger', 'ScriptApp', 'Utilities', 'Date'];
+               'Session', 'Logger', 'ScriptApp', 'Utilities', 'Date', 'ContentService'];
   const gia = [UrlFetchApp, DriveApp, PropertiesService, MailApp,
-               Session, Logger, ScriptApp, Utilities, NgayGia];
+               Session, Logger, ScriptApp, Utilities, NgayGia, ContentService];
 
   const nap = new Function(...ten, NGUON_GS + `
-    return { kiemTraKetNoi, saoLuuNgay, datLichSaoLuu, goLichSaoLuu, khoiPhucAnh,
+    return { kiemTraKetNoi, saoLuuNgay, datLichSaoLuu, goLichSaoLuu, khoiPhucAnh, doGet, doPost,
              gomSaoLuu_, docBang_, docKhoAnh_, donBanCu_, docCauHinh_,
              THU_TU_DOC, BANG_HE_THONG, KHUON_TEN_FILE };
   `);
@@ -983,6 +1026,74 @@ const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac', 'bao_trung_nguoi', '
        !nem && [...duyet(h.thuMuc)].length === 1 && bh.ok === true &&
        /dấu vân tay/.test(bh.canhBao || '') && /54/.test(bh.canhBao || ''),
        `nem=${nem} · ${String(bh.canhBao).slice(0, 120)}`);
+}
+
+// ---- 18. Web app (b155d) — trang Quản trị gọi thẳng máy sao lưu ---------
+//
+// ⚠⚠ Web app để "Anyone" và chạy bằng quyền Drive của chủ dự án. Hàng rào DUY
+//   NHẤT là vé Supabase của người bấm phải là QTHT. Các phép dưới canh nó.
+{
+  const C = '00000000-0000-4000-8000-0000000000d1';
+  const kho = { [C + '/p.jpg']: 'P', [C + '/q.jpg']: 'Q' };
+  const cayGiaAnh = () => Object.assign(cayGia(), { media: [
+    { id: 'M1', drive_file_id: C + '/p.jpg', drive_file_id_lon: C + '/q.jpg', deleted: false }] });
+  // Hai đêm sao lưu → hai file + ảnh trên Drive; thêm một file LẠ cùng thư mục.
+  const a = dungMoiTruong({ duLieu: cayGiaAnh(), khoAnhThat: kho });
+  a.api.saoLuuNgay();
+  const b = dungMoiTruong({ duLieu: cayGiaAnh(), khoAnhThat: kho, thuMuc: a.thuMuc,
+                            dongHo: () => LUC_THU.getTime() });
+  a.thuMuc.createFile('giapha-sao-luu-2026-09-02-0200.json', '{"cu":1}');
+  const la = a.thuMuc.createFile('so-tay-rieng.txt', 'bí mật riêng của chủ dự án');
+  const ngoai = b.taoThuMuc('thu-muc-khac').createFile('giapha-sao-luu-2026-09-01-0200.json', '{"ngoai":1}');
+
+  const goi = (env, yc) => JSON.parse(env.api.doPost({ postData: { contents: JSON.stringify(yc) } })._chu);
+
+  const khongVe = goi(b, { viec: 'danh-sach' });
+  kiem('không vé → từ chối, không đọc Drive', khongVe.ok === false && /vé/.test(khongVe.loi) && !khongVe.ds,
+       JSON.stringify(khongVe).slice(0, 100));
+  const veGia = goi(b, { viec: 'danh-sach', ve: 'eyJ.gia.mao' });
+  kiem('vé giả → từ chối', veGia.ok === false && /không hợp lệ/.test(veGia.loi) && !veGia.ds,
+       JSON.stringify(veGia).slice(0, 100));
+  const thuong = goi(b, { viec: 'danh-sach', ve: VE_THUONG });
+  kiem('vé thật nhưng KHÔNG phải QTHT → từ chối', thuong.ok === false && /Quản trị hệ thống/.test(thuong.loi) && !thuong.ds,
+       JSON.stringify(thuong).slice(0, 100));
+  const taiThuong = goi(b, { viec: 'tai', ve: VE_THUONG, id: [...duyet(a.thuMuc)][0].getId() });
+  kiem('người thường cũng KHÔNG tải được file', taiThuong.ok === false && !taiThuong.noiDung, '');
+
+  const ds = goi(b, { viec: 'danh-sach', ve: VE_QT });
+  kiem('QTHT: danh sách chỉ file sao lưu đúng khuôn, mới nhất trước, không kèm nội dung',
+       ds.ok === true && ds.ds.length === 2 && ds.ds[0].ten === 'giapha-sao-luu-2026-09-03-1730.json' &&
+       ds.ds[1].ten === 'giapha-sao-luu-2026-09-02-0200.json' && !('noiDung' in ds.ds[0]) &&
+       !JSON.stringify(ds).includes('so-tay-rieng'),
+       JSON.stringify(ds).slice(0, 200));
+
+  const goc = [...duyet(a.thuMuc)].find((f) => f.getName() === 'giapha-sao-luu-2026-09-03-1730.json');
+  const tai = goi(b, { viec: 'tai', ve: VE_QT, id: ds.ds[0].id });
+  kiem('QTHT tải: đúng NGUYÊN VĂN file (dấu vân tay sẽ khớp)',
+       tai.ok === true && tai.noiDung === goc._noiDung && tai.ten === goc.getName(), tai.loi || '');
+  const taiLa = goi(b, { viec: 'tai', ve: VE_QT, id: la.getId() });
+  kiem('mã file KHÁC trong cùng thư mục (không đúng khuôn) → từ chối', taiLa.ok === false && !taiLa.noiDung, '');
+  const taiNgoai = goi(b, { viec: 'tai', ve: VE_QT, id: ngoai.getId() });
+  kiem('file đúng khuôn tên nhưng NGOÀI thư mục sao lưu → từ chối', taiNgoai.ok === false && !taiNgoai.noiDung, '');
+  const taiBay = goi(b, { viec: 'tai', ve: VE_QT, id: 'khong-co' });
+  kiem('mã file không có → từ chối gọn, không ném', taiBay.ok === false, '');
+
+  // Kho mất cả hai ảnh → khôi phục ảnh bằng VÉ NGƯỜI BẤM, không cần mật khẩu điền tạm.
+  const c = dungMoiTruong({ duLieu: cayGiaAnh(), khoAnhThat: {}, thuMuc: a.thuMuc });
+  const anh = goi(c, { viec: 'khoi-phuc-anh', ve: VE_QT });
+  kiem('khôi phục ảnh qua web app: tải lên đủ 2 tấm bằng vé người bấm',
+       anh.ok === true && anh.taiLen === 2 && c.khoAnhThat[C + '/p.jpg'] === 'P' && /tải lên 2 tấm/.test(anh.cau),
+       JSON.stringify(anh).slice(0, 160));
+  const anhThuong = goi(c, { viec: 'khoi-phuc-anh', ve: VE_THUONG });
+  kiem('người thường gọi khôi phục ảnh → từ chối', anhThuong.ok === false && anhThuong.taiLen === undefined, '');
+
+  const lan = goi(b, { viec: 'xoa-het', ve: VE_QT });
+  kiem('việc lạ → từ chối', lan.ok === false && /không biết việc/.test(lan.loi), '');
+  const toan = JSON.stringify([khongVe, veGia, thuong, ds, tai, anh]);
+  kiem('không phản hồi nào lộ mật khẩu / phiếu của tài khoản sao lưu',
+       !toan.includes(MAT_KHAU_THU) && !toan.includes(PHIEU_THU), '');
+  kiem('doGet chỉ báo sống, không dữ liệu', JSON.parse(b.api.doGet()._chu).ok === true &&
+       !('ds' in JSON.parse(b.api.doGet()._chu)), '');
 }
 
 // ------------------------------------------------------------
