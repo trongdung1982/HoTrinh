@@ -6,7 +6,7 @@
 // Phụ thuộc: pages/form-nen.js (nền dùng chung), pages/form-{go-noi,xoa,anh}.js,
 //            pages/quan-tri/o-goi-y.js, state, domains/{person,union,validate},
 //            services/repo, utils/{graph,text,date}, config
-// Phiên bản: 1.54.1 · Cập nhật: 29/09/2026 (b158) — ghi chú đầu file 210 → 21 dòng
+// Phiên bản: 1.55.0 · Cập nhật: 29/09/2026 23:00 — bỏ ô "Đời thứ mấy" (b160)
 // Sổ tay   : so-tay/form-nguoi.md (13 luật của form) · so-tay/luu-du-lieu.md ·
 //            so-tay/o-goi-y.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
@@ -487,8 +487,9 @@ function veCacO(nguoi) {
   // — và ép vào danh sách là bắt người nhập chọn cái gần đúng rồi quên mất chữ
   // gốc. Cái giá: *"Phật giáo"* và *"đạo Phật"* máy không biết là một. Chấp
   // nhận, vì app này không thống kê theo tôn giáo.
-  ra.push(veNhan('Đời và chi'));
-  ra.push(oChu('doi', 'Đời thứ mấy', doiHienTai(nguoi), '5'));
+  // Không có ô Đời (b160, chủ dự án): Đời do máy chủ tính theo dòng cha
+  // (`tree_persons.doi`), số ghi tay `vn.generation` không còn tác dụng.
+  ra.push(veNhan('Chi'));
   ra.push(oChu('chi', 'Chi / nhánh',
                (nguoi.vn && nguoi.vn.branch) || '', 'Chi Giáp'));
 
@@ -727,7 +728,6 @@ function dienTuNguoiCoSan(nguoi) {
   datO('deathPlace', mat.place);
   datO('burialPlace', nguoi.burialPlace);
   datO('gio', nguoi.vn && nguoi.vn.gio);
-  datO('doi', doiHienTai(nguoi));
   datO('chi', nguoi.vn && nguoi.vn.branch);
 
   datO('title',       nguoi.title);
@@ -1645,14 +1645,6 @@ async function handleSave(nguoi) {
   const luc = stampNow();
   const boi = (state.phien && state.phien.email) || '';
 
-  // ⚠ Ô ĐỜI phải chặn Ở ĐÂY, không chặn trong `domains/person.js`.
-  // `datDoi()` cố ý KHÔNG ĐỘNG VÀO khi đọc không ra số — lặng lẽ xoá mất số 5
-  // đang có vì một lỗi gõ phím là mất dữ liệu. Nhưng "không động vào" mà không
-  // ai nói gì thì người dùng bấm Lưu, thấy báo thành công, và tin rằng mình vừa
-  // ghi được Đời. Đây là chỗ nói ra.
-  const loiDoi = viSaoDoiSai(docO('doi'));
-  if (loiDoi) { hienNhan(loiDoi, true); return; }
-
   const thayDoi = gomThayDoi();
 
   // Bản ghi mới tính đúng MỘT lần, dùng cho cả phép rà lẫn lần ghi — luật 1
@@ -2319,9 +2311,9 @@ function gomThayDoi() {
     gio:         docO('gio'),
     note:        docO('note'),
 
-    // Bộ thông dụng (V03). `doi` và `chi` đi vào `vn.generation`/`vn.branch`;
-    // sáu cái còn lại nằm phẳng trên `person`. Việc ánh xạ ấy là của
-    // `domains/person.updatePerson`, không phải của form.
+    // Bộ thông dụng (V03). `chi` đi vào `vn.branch`; phần còn lại nằm phẳng
+    // trên `person`. Việc ánh xạ ấy là của `domains/person.updatePerson`.
+    // KHÔNG gửi `doi`: vắng khoá thì `datDoi()` để nguyên `vn.generation` cũ.
     title:       docO('title'),
     occupation:  docO('occupation'),
     education:   docO('education'),
@@ -2329,7 +2321,6 @@ function gomThayDoi() {
     residence:   docO('residence'),
     nationality: docO('nationality'),
     contact:     docO('contact'),
-    doi:         docO('doi'),
     chi:         docO('chi'),
     birth: { raw: docO('birth'), place: docO('birthPlace') },
     death: { raw: docO('death'), place: docO('deathPlace') },
@@ -2349,36 +2340,6 @@ function mucTenChinh(nguoi) {
   return { surname: muc.surname || '', middle: muc.middle || '', given: muc.given || '' };
 }
 
-/**
- * Đời đang lưu, đọc ra CHỮ để điền vào ô. Không có thì ô trống — không điền
- * số 0, vì đời 0 không có nghĩa gì và người dùng sẽ tưởng gia phả đã ghi vậy.
- */
-function doiHienTai(nguoi) {
-  const n = nguoi && nguoi.vn ? Number(nguoi.vn.generation) : NaN;
-  return (Number.isFinite(n) && n > 0) ? String(n) : '';
-}
-
-/**
- * Lý do ô Đời không dùng được, hoặc null nếu dùng được. Ô TRỐNG là hợp lệ —
- * phần lớn bản ghi trong một cuốn gia phả cũ không ai đánh số đời.
- */
-function viSaoDoiSai(chu) {
-  const t = String(chu || '').trim();
-  if (t === '') return null;
-
-  const n = Number(t);
-  if (!Number.isFinite(n)) {
-    return 'Ô "Đời thứ mấy" chỉ nhận một con số — bạn đang gõ "' + t + '". ' +
-           'Chưa biết đời thứ mấy thì để trống ô ấy.';
-  }
-  if (Math.floor(n) !== n) {
-    return 'Đời phải là số nguyên, không có đời ' + t + '.';
-  }
-  if (n <= 0) {
-    return 'Đời phải lớn hơn 0. Đời đầu tiên của một dòng họ là đời 1.';
-  }
-  return null;
-}
 
 
 

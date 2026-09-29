@@ -12,7 +12,8 @@ Liên quan: đường NHẬP Excel là `domains/excel.js` (sheet `DuLieu`) — k
 - **Hai khuôn, bấm là tải**: *Xuất Excel ▾* mở menu (`.action-menu` của
   quantri3) — *Bảng phẳng* hoặc *Hai sheet (Người + Gia đình)*. Không có ô chọn
   riêng cạnh nút.
-- **Cả hai KHÔNG nạp lại được** qua màn Nhập — chỉ để xem, sửa tay, báo cáo.
+- **Bảng phẳng NẠP LẠI được** qua màn Nhập (chủ dự án 29/09/2026, b160 —
+  `so-tay/nhap-xuat.md`); khuôn hai sheet thì chưa, chỉ để xem, báo cáo.
   Không có cột "Mã số" (mã Excel thời trước app); `ID` là `p.id` thật.
 - **Bảng phẳng**: một dòng một người. Sau cột thông tin: `ID cha`/`ID mẹ` (thêm
   `ID cha nuôi`, `ID mẹ kế`… theo loại quan hệ có trong cây) · `ID phối ngẫu 1…N`

@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 29/09/2026 · Hai mươi điểm dừng chưa bấm thử.*
+*Cập nhật 29/09/2026 · Hai mươi mốt điểm dừng chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -26,6 +26,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b160** Bỏ ô Đời · nhập lại Bảng phẳng · Liên hệ qua GEDCOM | ⚠ Bước 3 DỰNG một gia phả thật — thử xong thì xoá. Ctrl+F5. ① Sơ đồ → mở một người → *Sửa*: KHÔNG còn ô *Đời thứ mấy*, khối ấy chỉ còn *Chi / nhánh*; sửa gì đó → *Lưu* → trang chi tiết vẫn hiện Đời như cũ. ② Cây thử `TH957` → *Danh sách người* → *Xuất Excel ▾* → *Bảng phẳng* → tải file. ③ ⚙ Cài đặt → *Nhập GEDCOM/Excel* → chọn file vừa tải → bản xem trước ghi đúng số người, có dòng "Đọc theo khuôn Bảng phẳng…" → tên `Thu b160` → *Tạo gia phả mới và ghi vào đó*. Đạt khi sơ đồ `Thu b160` giống `TH957` (vợ chồng, con, thứ tự con). Xong: *Quản trị → Gia phả* → xoá `Thu b160`. ④ ⚙ Cài đặt → *Xuất GEDCOM* → bỏ dấu *Ẩn chi tiết người còn sống* → tải → mở bằng Notepad: người có số điện thoại có dòng `1 _LIENHE …` |
 | **b159d Gỡ Chọn nhiều để xoá** | Ctrl+F5. Trang sơ đồ → *Danh sách người*: chân chỉ còn *Thùng rác (n)*, *Rà soát*, *Đóng* — KHÔNG còn *Chọn nhiều để xoá*. Cùng thế ở *Các gia đình* (Cài đặt). Bấm một dòng vẫn mở hồ sơ; *Thùng rác* vẫn chọn/khôi phục/xoá hẳn được như cũ |
 | **Bảng tài khoản chờ xóa đã chuyển chỗ** | Ctrl+F5 → *Quản trị → Quản trị hệ thống → Sổ tài khoản*: bảng cuối trang không còn. Sang tab *Thùng rác*: bảng *Danh sách tài khoản chờ xóa (Lưu giữ 60 ngày)* nằm trên cùng, ghi "Chưa có ở máy chủ" (xoá mềm 60 ngày chưa làm — việc cũ b118b) |
 | **Câu chữ Dọn thùng rác** | Ctrl+F5. Cây thử `TH957`: xoá một người có ảnh → *Danh sách người* → Thùng rác → tích người ấy → *Xoá vĩnh viễn…*: hộp nói *"… file ảnh bị xoá khỏi kho — chỉ còn ở bản sao lưu đêm"* và *"Không có bản sao lưu riêng cho lần dọn này…"* — KHÔNG còn chữ "thùng rác Drive 30 ngày" |

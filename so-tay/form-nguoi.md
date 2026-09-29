@@ -80,7 +80,8 @@ có quyền sửa gọi thẳng máy chủ (không qua app) vẫn qua mặt đư
       tiếp; cùng con số, hai nghĩa, chỉ chứa nổi khi con số gắn với NGƯỜI.
       Bài nghiệm thu: ví dụ A–B–C–D (`kiem-thu-bac-nhap.mjs`).
     - ⚠ Gõ sai thì không đoán hộ: ghi thứ 1 và kể ra trong khối cảnh báo
-      (`loiThuBacGoSai`), cùng luật ô Đời.
+      (`loiThuBacGoSai`). *(Ô "Đời thứ mấy" đã bỏ khỏi form, b160 — Đời do
+      máy chủ tính; `vn.generation` cũ vẫn nằm trong dữ liệu, form không đụng.)*
 
 ## Ba hộp thoại kiểu My Family Tree (luật 13)
 

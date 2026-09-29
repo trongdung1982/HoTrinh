@@ -4,7 +4,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, pages/form-ghep-doi, domains/{gedcom,excel}, services/{sb,repo},
 //            utils/{date,text}, config
-// Phiên bản: 1.9.2 · Cập nhật: 29/09/2026 23:15
+// Phiên bản: 1.9.3 · Cập nhật: 29/09/2026 23:10 — nhập được Bảng phẳng (b160)
 // Sổ tay   : so-tay/luu-du-lieu.md (Kho mã) · so-tay/nhap-xuat.md
 // ============================================================
 //
@@ -422,8 +422,8 @@ export function openNhapGedcom() {
 
   const moDau = document.createElement('div');
   moDau.textContent =
-    'Chọn một file .ged, hoặc một file Excel một bảng (.xlsx/.xlsb), để xem ' +
-    'trước rồi lưu thành một gia phả mới.';
+    'Chọn một file .ged, hoặc một file Excel (.xlsx/.xlsb) — khuôn nhập mẫu, ' +
+    'hoặc file Xuất Excel dạng Bảng phẳng — để xem trước rồi lưu thành một gia phả mới.';
   moDau.style.cssText =
     'font-size:13px;line-height:1.55;color:var(--sd-chu-phu,#8a8078);margin-top:8px';
   hop.append(moDau);

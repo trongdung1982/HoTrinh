@@ -3,10 +3,11 @@
 // Vai trò  : Đọc file Excel "một bảng" (đặc tả DAC-TA-LOI, sheet `DuLieu`
 //            kiểu phần mềm gia phả trên nền Excel) thành bản XEM TRƯỚC —
 //            CÙNG KHUÔN với `parseGedcom()` để đi chung đường "tạo gia phả
-//            mới" đã có (`mergeImported(tree, kq, {che:'moi'})`).
+//            mới" đã có (`mergeImported(tree, kq, {che:'moi'})`). Không có
+//            `DuLieu` mà có `BangPhang` thì đọc khuôn Xuất Excel (b160).
 // Lớp      : domains — được gọi bởi: pages · được phép gọi: utils, config
-// Phụ thuộc: utils/date · vendor/xlsx.mjs (SheetJS), đọc `.xlsb`/`.xlsx`
-// Phiên bản: 0.4.0 · Cập nhật: 29/09/2026 23:10
+// Phụ thuộc: utils/date · config · vendor/xlsx.mjs (SheetJS), đọc `.xlsb`/`.xlsx`
+// Phiên bản: 0.5.0 · Cập nhật: 29/09/2026 23:10
 // Sổ tay   : so-tay/nhap-xuat.md
 // ============================================================
 //
@@ -47,8 +48,11 @@
 // 1..9 liên tục — không cần tự đếm lại.
 
 import { parseLooseDate } from '../utils/date.js';
+import { nhanQuanHeCon } from '../config.js';
 
 const TEN_SHEET = 'DuLieu';
+// Khuôn thứ hai (b160): BẢNG PHẲNG của bản Xuất Excel — xem `docBangPhang()`.
+const TEN_SHEET_PHANG = 'BangPhang';
 
 const COT = {
   doi: 'Đời', maSoCu: 'Mã số', tenHuy: 'Tên húy', bietDanh: 'Biệt danh',
@@ -118,9 +122,11 @@ export async function parseExcel(arrayBuffer) {
   }
 
   const sheet = wb.Sheets[TEN_SHEET];
+  if (!sheet && wb.Sheets[TEN_SHEET_PHANG]) return docBangPhang(XLSX, wb.Sheets[TEN_SHEET_PHANG]);
   if (!sheet) {
-    return ketQuaLoi('File không có sheet "' + TEN_SHEET + '" — đây có phải ' +
-      'đúng file gia phả một bảng không?');
+    return ketQuaLoi('File không có sheet "' + TEN_SHEET + '" (khuôn nhập mẫu) hay "' +
+      TEN_SHEET_PHANG + '" (bản Xuất Excel dạng bảng phẳng). Khuôn hai sheet ' +
+      '"Nguoi" + "GiaDinh" chưa nhập được.');
   }
 
   const hang = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: true });
@@ -152,19 +158,6 @@ export async function parseExcel(arrayBuffer) {
   // --- Union: suy từ ID cha/mẹ/phối ngẫu -----------------------------------
   const { unionsTho, soCaMoHoMe } = xepUnion(nguoiTho);
 
-  // --- Cấp mã P/U theo thứ tự Đời rồi thứ tự trong file --------------------
-  const thuTuNguoi = [...nguoiTho.values()].sort((a, b) => {
-    const d = (a.doi || 9999) - (b.doi || 9999);
-    return d !== 0 ? d : a.thuTuDong - b.thuTuDong;
-  });
-  const maNguoi = new Map();
-  thuTuNguoi.forEach((p, i) => maNguoi.set(p.rawId, 'P' + String(i + 1).padStart(4, '0')));
-  const maUnion = new Map();
-  unionsTho.forEach((u, i) => maUnion.set(u.key, 'U' + String(i + 1).padStart(4, '0')));
-
-  const persons = thuTuNguoi.map((p) => dungNguoi(p, maNguoi.get(p.rawId)));
-  const unions = unionsTho.map((u) => dungUnion(u, maUnion, maNguoi));
-
   if (soCaMoHoMe > 0) {
     canhBao.push({
       muc: 'nhe',
@@ -185,6 +178,21 @@ export async function parseExcel(arrayBuffer) {
     });
   }
 
+  return ketQuaTuTho(nguoiTho, unionsTho, canhBao);
+}
+
+/** Cấp mã P/U (theo Đời rồi thứ tự trong file) và dựng kết quả — chung hai khuôn. */
+function ketQuaTuTho(nguoiTho, unionsTho, canhBao) {
+  // Sắp ỔN ĐỊNH: cùng Đời thì giữ thứ tự dòng trong file.
+  const thuTuNguoi = [...nguoiTho.values()].sort((a, b) => (a.doi || 9999) - (b.doi || 9999));
+  const maNguoi = new Map();
+  thuTuNguoi.forEach((p, i) => maNguoi.set(p.rawId, 'P' + String(i + 1).padStart(4, '0')));
+  const maUnion = new Map();
+  unionsTho.forEach((u, i) => maUnion.set(u.key, 'U' + String(i + 1).padStart(4, '0')));
+
+  const persons = thuTuNguoi.map((p) => dungNguoi(p, maNguoi.get(p.rawId)));
+  const unions = unionsTho.map((u) => dungUnion(u, maUnion, maNguoi));
+
   return {
     persons, unions, sources: [],
     tenCay: '', nguonXuat: '', maNguon: 'EXCEL',
@@ -194,6 +202,161 @@ export async function parseExcel(arrayBuffer) {
     },
     theLa: [], doiMa: [], anhBoQua: [], canhBao,
   };
+}
+
+// ============================================================
+// Khuôn BẢNG PHẲNG — chính file "Xuất Excel ▾ → Bảng phẳng" (b160)
+// ============================================================
+//
+// Tên cột phải khớp TỪNG CHỮ `pages/quan-tri/xuat-excel.js` (bảng `CHA_ME`
+// và `chuCon()` ở đó) — đổi tên cột bên xuất thì đổi cả ở đây.
+//
+// Khác khuôn `DuLieu`: cha/mẹ theo NĂM loại quan hệ (`ID cha nuôi`, `ID mẹ
+// kế`…, có thể đánh số khi một người có hai cặp cùng loại) · phối ngẫu 1…N
+// không giới hạn · KHÔNG có cột số thứ tự: thứ tự con lấy từ vị trí trong
+// `ID con 1…N` của cha/mẹ; phối ngẫu thứ k (k ≥ 2) mang thứ bậc k — chủ dự
+// án: *"id phối ngẫu 1 hiển nhiên là hôn nhân 1"* (b125f).
+// Khuôn này KHÔNG mang: ngày/nơi cưới, tình trạng hôn nhân, nơi mất, tên
+// phụ ngoài biệt danh — nhập vào thì các trường ấy trống.
+
+const THU_TU_QUAN_HE = ['birth', 'adopted', 'step', 'foster', 'thua_tu'];
+const CHA_ME_PHANG = {
+  birth: ['cha', 'mẹ'], adopted: ['cha nuôi', 'mẹ nuôi'], step: ['cha dượng', 'mẹ kế'],
+  foster: ['cha nuôi dưỡng', 'mẹ nuôi dưỡng'], thua_tu: ['cha thừa tự', 'mẹ thừa tự'],
+};
+function tenConPhang(loai) {
+  return loai === 'birth' ? 'con' : nhanQuanHeCon(loai, 'con').toLowerCase();
+}
+
+/** Phân loại các cột quan hệ của bảng phẳng theo tiêu đề. */
+function docCotQuanHe(tieuDe) {
+  const chaMe = [];     // {i, loai, vai: 0 cha | 1 mẹ, nhom}
+  const phoiNgau = [];  // {i, so}
+  const con = [];       // {i, loai, so}
+  tieuDe.forEach((t, i) => {
+    let m = t.match(/^ID phối ngẫu (\d+)$/);
+    if (m) { phoiNgau.push({ i, so: Number(m[1]) }); return; }
+    for (const loai of THU_TU_QUAN_HE) {
+      for (let vai = 0; vai < 2; vai++) {
+        m = t.match(new RegExp('^ID ' + CHA_ME_PHANG[loai][vai] + '(?: (\\d+))?$'));
+        if (m) { chaMe.push({ i, loai, vai, nhom: m[1] ? Number(m[1]) : 1 }); return; }
+      }
+      m = t.match(new RegExp('^ID ' + tenConPhang(loai) + ' (\\d+)$'));
+      if (m) { con.push({ i, loai, so: Number(m[1]) }); return; }
+    }
+  });
+  phoiNgau.sort((a, b) => a.so - b.so);
+  con.sort((a, b) => a.so - b.so);
+  return { chaMe, phoiNgau, con };
+}
+
+function docBangPhang(XLSX, sheet) {
+  const hang = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: true });
+  if (hang.length < 2) return ketQuaLoi('Sheet "' + TEN_SHEET_PHANG + '" không có dòng dữ liệu nào.');
+
+  const tieuDe = hang[0].map((c) => chu(c));
+  const idx = {};
+  for (const [k, ten] of Object.entries(COT)) idx[k] = tieuDe.indexOf(ten);
+  idx.idMoi = tieuDe.indexOf('ID');
+  if (idx.idMoi === -1) {
+    return ketQuaLoi('Sheet "' + TEN_SHEET_PHANG + '" không có cột "ID" — đây có phải ' +
+      'file do nút Xuất Excel (Bảng phẳng) tạo ra không?');
+  }
+  // Cột quan hệ của khuôn `DuLieu` không dùng ở đây — `ID cha` đọc lại bên dưới.
+  for (const k of ['idCha', 'idMe', 'ps1', 'ps2', 'soThuTuHonNhan', 'soThuTuCon']) idx[k] = -1;
+  const cot = docCotQuanHe(tieuDe);
+
+  const nguoiTho = new Map();
+  for (const r of hang.slice(1)) {
+    const rawId = chu(layO(r, idx.idMoi));
+    if (!rawId || nguoiTho.has(rawId)) continue;
+    const p = docDongNguoi(r, idx, rawId);
+    // Cột Đời của bản xuất là số máy chủ TÍNH (`tree_persons.doi`), không phải
+    // số ghi tay — không cất vào `vn.generation`; chỉ dùng để xếp mã.
+    if (p.vn) { delete p.vn.generation; if (Object.keys(p.vn).length === 0) p.vn = undefined; }
+    // Ô tên TRỐNG là người chưa có tên trong app — không phải "tên lạ cần
+    // ghi lại", nên bỏ dòng "Tên húy trong Excel: (trống)" khỏi ghi chú.
+    if (chu(layO(r, idx.tenHuy)) === '') {
+      p.note = p.note.split('\n').filter((l) => l !== 'Tên húy trong Excel: (trống)').join('\n');
+    }
+    p.chaMe = cot.chaMe.map((c) => ({ ...c, id: chu(layO(r, c.i)) })).filter((c) => c.id);
+    p.phoiNgau = cot.phoiNgau.map((c) => chu(layO(r, c.i))).filter(Boolean);
+    p.con = cot.con.map((c) => ({ loai: c.loai, id: chu(layO(r, c.i)) })).filter((c) => c.id);
+    nguoiTho.set(rawId, p);
+  }
+
+  const unionsTho = xepUnionPhang(nguoiTho);
+  return ketQuaTuTho(nguoiTho, unionsTho, [{
+    muc: 'nhe',
+    chu: 'Đọc theo khuôn Bảng phẳng (bản Xuất Excel). Khuôn này không có ngày ' +
+         'cưới, tình trạng hôn nhân, nơi mất — các trường ấy sẽ trống. Thứ tự ' +
+         'vợ/chồng lấy theo cột "ID phối ngẫu 1, 2…".',
+  }]);
+}
+
+function xepUnionPhang(nguoiTho) {
+  const co = (id) => id && nguoiTho.has(id);
+  const unionMap = new Map();
+  const layHoacTao = (ids) => {
+    const key = ids.length === 2 ? [...ids].sort().join('|') : 'MOT:' + ids[0];
+    let u = unionMap.get(key);
+    if (!u) {
+      // Nam đứng trước, như khuôn `DuLieu`.
+      const ps = ids.length === 2 && nguoiTho.get(ids[1]).sex === 'M' &&
+        nguoiTho.get(ids[0]).sex !== 'M' ? [ids[1], ids[0]] : ids.slice();
+      u = { key, partners: ps, children: [] };
+      unionMap.set(key, u);
+    }
+    return u;
+  };
+
+  // 1. Vợ chồng từ `ID phối ngẫu 1…N`, theo thứ tự cột.
+  for (const p of nguoiTho.values()) {
+    for (const sp of p.phoiNgau) if (co(sp) && sp !== p.rawId) layHoacTao([p.rawId, sp]);
+  }
+
+  // 2. Con — mỗi (loại, nhóm) cha/mẹ trên dòng người con là MỘT cặp sinh ra/nuôi họ.
+  for (const p of nguoiTho.values()) {
+    const nhom = new Map();
+    for (const c of p.chaMe) {
+      const k = c.loai + '#' + c.nhom;
+      if (!nhom.has(k)) nhom.set(k, { loai: c.loai, ids: [null, null] });
+      nhom.get(k).ids[c.vai] = c.id;
+    }
+    for (const g of nhom.values()) {
+      const ids = g.ids.filter((id) => co(id) && id !== p.rawId);
+      if (ids.length === 0) continue;
+      const u = layHoacTao(ids);
+      if (!u.children.some((c) => c.rawId === p.rawId)) u.children.push({ rawId: p.rawId, loai: g.loai });
+    }
+  }
+
+  // 3. Thứ tự con: vị trí trong `ID <loại con> 1…N` của cha/mẹ, loại trước.
+  for (const u of unionMap.values()) {
+    const viTri = (c) => {
+      let tot = Infinity;
+      for (const id of u.partners) {
+        const ds = nguoiTho.get(id).con.filter((x) => x.loai === c.loai).map((x) => x.id);
+        const i = ds.indexOf(c.rawId);
+        if (i >= 0 && i < tot) tot = i;
+      }
+      return THU_TU_QUAN_HE.indexOf(c.loai) * 100000 + (tot === Infinity ? 99999 : tot);
+    };
+    u.children.sort((a, b) => viTri(a) - viTri(b));
+  }
+
+  // 4. Thứ bậc: người đứng ở `ID phối ngẫu k` (k ≥ 2) của ai thì mang bậc k
+  //    trong cặp ấy — cùng nghĩa `union.ranks[personId]` của khuôn `DuLieu`.
+  for (const p of nguoiTho.values()) {
+    p.phoiNgau.filter((sp) => co(sp) && sp !== p.rawId).forEach((sp, i) => {
+      if (i === 0) return;
+      const u = unionMap.get([p.rawId, sp].sort().join('|'));
+      if (!u.ranks) u.ranks = {};
+      u.ranks[sp] = i + 1;
+    });
+  }
+
+  return [...unionMap.values()];
 }
 
 function ketQuaLoi(loi) {
@@ -258,7 +421,9 @@ function docNgay(raw) {
   const s = chu(raw);
   if (laNgayTrong(s)) return { iso: '', raw: '', place: '' };
   const d = parseLooseDate(s);
-  return { iso: d.iso || '', raw: d.iso ? '' : s, place: '' };
+  // Đọc ra số nhưng KHÔNG chắc ("khoảng 1890") thì giữ nguyên văn ở `raw` —
+  // bỏ đi là mất chữ "khoảng" (CLAUDE.md mục 7: không ghi đè `raw`).
+  return { iso: d.iso || '', raw: d.iso && d.confident ? '' : s, place: '' };
 }
 
 function docDongNguoi(r, idx, rawId) {
@@ -405,7 +570,7 @@ function xepUnion(nguoiTho) {
 function dungUnion(u, maUnion, maNguoi) {
   const partners = u.partners.map((rawId) => maNguoi.get(rawId));
   const children = u.children.map((p, i) => ({
-    personId: maNguoi.get(p.rawId), relation: 'birth', order: i + 1,
+    personId: maNguoi.get(p.rawId), relation: p.loai || 'birth', order: i + 1,
   }));
   const ranks = {};
   if (u.ranks) {

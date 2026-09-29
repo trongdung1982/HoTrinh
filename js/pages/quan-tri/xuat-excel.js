@@ -6,15 +6,16 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: utils/{text,date} · config (nhãn quan hệ, trạng thái cặp) ·
 //            vendor/xlsx.mjs (nạp bằng import() động)
-// Phiên bản: 0.5.0 · Cập nhật: 28/09/2026 (b150b) — cột *Liên hệ* (`contact`, `luoc-do/52`)
+// Phiên bản: 0.5.1 · Cập nhật: 29/09/2026 23:10 — Bảng phẳng nạp lại được (b160)
 // Sổ tay   : so-tay/xuat-excel.md
 // ============================================================
 //
 // ⚠ KHÔNG đặt các hàm này trong `domains/`: mười file `domains/` phải giống
 //   hệt bit-với-bit giữa hai nhánh (`/kiem-tra` phép 9).
 //
-// ⚠ CẢ HAI khuôn KHÔNG nạp lại được qua màn Nhập GEDCOM/Excel — chỉ để xem,
-//   sửa tay, báo cáo. Khuôn nạp được là `domains/excel.js` (sheet `DuLieu`).
+// ⚠ BẢNG PHẲNG nạp lại được (b160, `domains/excel.js` `docBangPhang()`) —
+//   đổi TÊN CỘT hay TÊN SHEET ở đây thì đổi cả bên ấy, chạy
+//   `kiem-thu/kiem-nhap-bang-phang.mjs`. Khuôn hai sheet chưa nạp được.
 //
 // ⚠ ĐỜI là số ĐÃ LƯU ở Supabase (`tree_persons.doi`, `luoc-do/40`), nơi gọi
 //   đọc rồi đưa vào dạng `Map` mã → số — file này không tính, không đọc

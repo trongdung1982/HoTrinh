@@ -31,11 +31,25 @@ bảy bài có sẵn (`kiem-gedcom` · `kiem-nhap-gedcom` · `kiem-nhap-bo-sung`
   "ID mẹ" có dấu bị bỏ qua cả cột; "Nam/Nữ", "Còn sống/Đã mất", chuỗi
   "TRUE" trong ô định dạng chữ thành "chưa rõ"/"còn sống"; bảy cột thông tin
   (Chức tước … Liên hệ, cùng tên bản Xuất Excel) nay đọc nếu file có.
-- **Còn lệch, CỐ Ý hoặc chưa chốt**:
+- **Còn lệch, CỐ Ý**:
   - `partnerOrder` không đi qua GEDCOM — `HUSB`/`WIFE` chia theo giới tính.
-  - `_DOI` xuất số ghi tay `vn.generation`, KHÔNG phải Đời app hiện
-    (`tree_persons.doi`, `so-tay/xuat-excel.md`). Ô *Đời thứ mấy* ở form Sửa
-    vẫn ghi vào `vn.generation` dù số ấy không còn tác dụng — chờ chủ dự án.
-  - Hai khuôn Xuất Excel vẫn không nạp lại được (chốt b125f).
-  - Khuôn nhập Excel chỉ hai phối ngẫu, chỉ con đẻ; không có ngày cưới,
-    tình trạng hôn nhân.
+  - `_DOI` xuất số ghi tay `vn.generation` cũ, KHÔNG phải Đời app hiện
+    (`tree_persons.doi`). Ô *Đời thứ mấy* đã bỏ khỏi form Sửa (chủ dự án
+    29/09, b160); số cũ nằm yên trong dữ liệu, không ai ghi thêm.
+  - Khuôn `DuLieu` chỉ hai phối ngẫu, chỉ con đẻ, không ngày cưới.
+- Ngày Excel đọc được số nhưng KHÔNG chắc ("khoảng 1890") nay giữ nguyên văn
+  ở `raw` (trước b160 mất chữ "khoảng") — cả hai khuôn.
+
+## Nhập lại BẢNG PHẲNG (b160, chủ dự án 29/09/2026)
+
+- File không có sheet `DuLieu` mà có `BangPhang` → `docBangPhang()`. Tên cột
+  khớp TỪNG CHỮ `pages/quan-tri/xuat-excel.js` — đổi bên này phải đổi bên kia.
+- Cha/mẹ theo năm loại (+ số khi có hai cặp cùng loại) → mỗi nhóm một cặp;
+  phối ngẫu k ≥ 2 mang thứ bậc k; thứ tự con = vị trí trong `ID con …` của
+  cha/mẹ. Cột Đời (số máy chủ tính) KHÔNG vào `vn.generation`.
+- Khuôn không mang: ngày/nơi cưới, tình trạng hôn nhân, nơi mất, tên phụ
+  ngoài biệt danh → trống sau khi nhập (bản xem trước nói điều này).
+- Đo: `kiem-thu/kiem-nhap-bang-phang.mjs` — vòng xuất → nhập trên cây giả
+  (năm loại quan hệ, ba vợ, hai cặp cha mẹ, con một bên, người đã xoá) và
+  cây 681: mọi gia đình, thứ tự con, loại quan hệ, thứ bậc khớp.
+- Khuôn hai sheet (`Nguoi` + `GiaDinh`) CHƯA nhập được.
