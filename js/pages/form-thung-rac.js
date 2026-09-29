@@ -5,7 +5,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: pages/form-nen.js (nền dùng chung), state,
 //            domains/{person,union,purge}, services/{repo,sb}, utils/date
-// Phiên bản: 1.0.2 · Cập nhật: 29/09/2026 (b158) — nhập nền từ `form-nen.js` (đợt 7)
+// Phiên bản: 1.0.3 · Cập nhật: 29/09/2026 20:25 — câu Dọn thùng rác nói đúng nhánh Supabase
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 2 của
@@ -336,13 +336,15 @@ function cauKeKhiDonRac(ke) {
   }
 
   if (ke.fileIds.length > 0) {
-    ra.push(ke.fileIds.length + ' file ảnh vào thùng rác Drive, nằm đó thêm 30 ngày.' +
+    ra.push(ke.fileIds.length + ' file ảnh bị xoá khỏi kho — chỉ còn ở bản sao lưu đêm.' +
             (ke.anhLacChu.length > 0
               ? ' ' + ke.anhLacChu.length + ' tấm mất theo chủ, dù chưa ai gỡ.'
               : ''));
   }
 
-  ra.push('Máy chủ tự cất bản sao lưu trước khi xoá. Không cất được thì không dọn.');
+  // ⚠ Nhánh Supabase KHÔNG cất bản sao lưu riêng cho lần dọn (câu cũ của bản
+  //   Apps Script hứa thế — sai ở đây). Đường lùi là bản sao lưu đêm.
+  ra.push('Không có bản sao lưu riêng cho lần dọn này; đường lùi là bản sao lưu đêm gần nhất (Quản trị → Sao lưu).');
   return ra;
 }
 
@@ -435,11 +437,11 @@ function cauKetQuaDonRac(ketQua, ke, anh) {
   if (anh === null) {
     // Không có ảnh nào: không kể ra hàng đó. Trường trống thì không vẽ.
   } else if (anh && anh.soHong === 0) {
-    ra.push(anh.soXoa + ' file ảnh đã vào thùng rác Drive, giữ thêm 30 ngày.');
+    ra.push(anh.soXoa + ' file ảnh đã xoá khỏi kho.');
   } else if (anh) {
-    ra.push(anh.soXoa + ' file ảnh đã vào thùng rác Drive; ' + anh.soHong +
+    ra.push(anh.soXoa + ' file ảnh đã xoá khỏi kho; ' + anh.soHong +
             ' file không xoá được (có thể đã bị xoá tay từ trước). Bản ghi ' +
-            'trong gia phả thì đã sạch — chỗ này chỉ còn là file thừa trên Drive.');
+            'trong gia phả thì đã sạch — chỗ này chỉ còn là file thừa trong kho.');
   }
 
   if (ke.capHetLyDo.length > 0) {

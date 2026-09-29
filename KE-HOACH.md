@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 29/09/2026 · Mười bảy điểm dừng chưa bấm thử.*
+*Cập nhật 29/09/2026 · Mười tám điểm dừng chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -26,6 +26,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **Câu chữ Dọn thùng rác** | Ctrl+F5. Cây thử `TH957`: xoá một người có ảnh → *Danh sách người* → Thùng rác → tích người ấy → *Xoá vĩnh viễn…*: hộp nói *"… file ảnh bị xoá khỏi kho — chỉ còn ở bản sao lưu đêm"* và *"Không có bản sao lưu riêng cho lần dọn này…"* — KHÔNG còn chữ "thùng rác Drive 30 ngày" |
 | **b152** Công khai theo từng người — cả vai Xem *(hàng rào máy chủ đã đo REST 29/09, 9/9 — chỉ còn phần màn hình)* | Ctrl+F5 → *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia* → một dòng cây → cột *Thông tin công khai* → trang mười dòng mở ra, tắt/bật rồi *Lưu* không báo lỗi, tải lại thì còn đúng như vừa lưu |
 | **Tông màu** (trang Quản trị) | Ctrl+F5 → *Quản trị* → thanh trái có nút **🎨 Tông màu** ngay trên *← Về trang sơ đồ* → bấm → bảng 10 tông mở sang phải nút → chọn *Đêm hoài cổ* → cả trang tối lại, chữ đọc được → tải lại trang (F5) → vẫn tông ấy. Chọn *Kem tối giản (mặc định)* → về y như cũ. Điện thoại: ☰ → *Tông màu* → bảng đứng giữa màn hình. **b153a — trang sơ đồ**: để tông *Đêm hoài cổ* → *← Về trang sơ đồ* → nền, nút tròn, Cài đặt, thẻ chi tiết, form Sửa, Danh sách người đều tối theo; ô người trên sơ đồ vẫn sáng (cố ý — không đổi `render.js`). Chọn lại *Kem tối giản* → trang sơ đồ y hệt trước |
 | **Cột Nội dung thao tác** (Kiểm duyệt) | Ctrl+F5 → *Quản trị → Kiểm duyệt*: cột *Nội dung thao tác* đọc thành câu, không còn một chữ mỗi dòng. Tab *Đã từ chối & hoàn tác*: cột *Lý do từ chối* cũng vậy |
@@ -69,9 +70,8 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
 **Chưa đặt bước kế tiếp.** Trước hết: dán `56` (mục SQL trên). Rồi bấm thử
-mười bảy điểm dừng ở trên (ba điểm b151 trước tiên). Việc mã lớn còn lại nằm
-ở *Còn treo* — ứng viên nặng nhất: bản giả `sb.js` cho 12 bài Chrome đường
-LƯU (để bộ kiểm gác được đường ghi của nhánh này). ⚠ b145 và phần khách của
+các điểm dừng ở trên (ba điểm b151 trước tiên). Việc mã lớn còn lại nằm
+ở *Còn treo*. ⚠ b145 và phần khách của
 b150 Claude KHÔNG đo REST được: cần đặt cây mặc định = cờ Quản trị hệ thống,
 hai tài khoản thử không có — phải bấm tay bằng tài khoản của bạn.
 
@@ -101,7 +101,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **b127b chưa bấm thật**: thẻ người kéo sang `T388` phải đủ vợ/con | — |
 | ⚠ **Ô gợi ý trên điện thoại thật chưa ai bấm lại** | `so-tay/o-goi-y.md` |
-| ⚠ **12 bài Chrome đường LƯU chưa gác nhánh này** — chúng giả `google.script.run`, nhánh Supabase lưu qua `sb.js` (`luuCay` · `cap_ma`). `chay-supabase.mjs` (b158, 50/50 đạt) bỏ chúng ra kèm lý do. Gác lại được = viết bản giả `sb.js` cho máy chủ thử của bài Chrome — một bước riêng | `kiem-thu/chay-tat-ca.mjs` `BO_O_SUPABASE` · `/kiem-tra` phép 9 |
+| ⚠ **Dọn thùng rác có hoàn tác được qua Kiểm duyệt không?** `luu_cay()` CHỤP dữ liệu cũ kể cả lần xoá thật (`03` khối *CHỤP ẢNH*, ý 3 nói thẳng "hoàn tác một lần Dọn thùng rác"), nhưng hộp xác nhận vẫn nói "KHÔNG hoàn tác được". Chưa ai đo; đo xong thì sửa câu ấy trong `cauKeKhiDonRac()` | `pages/form-thung-rac.js` |
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |
 | Nợ ghi chú đầu file còn 14 khoản (nặng nhất `export-image.js` 140 dòng · `review.js` 99) — trả khi chạm tới file ấy, không đi rà riêng | `do-gon.mjs --tat-ca` · `QUY-TAC-GON.md` D1 |
 | Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
