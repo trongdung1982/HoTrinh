@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 29/09/2026 · Hai mươi mốt điểm dừng chưa bấm thử.*
+*Cập nhật 29/09/2026 · Hai mươi hai điểm dừng chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -26,6 +26,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b159d Gỡ Chọn nhiều để xoá** | Ctrl+F5. Trang sơ đồ → *Danh sách người*: chân chỉ còn *Thùng rác (n)*, *Rà soát*, *Đóng* — KHÔNG còn *Chọn nhiều để xoá*. Cùng thế ở *Các gia đình* (Cài đặt). Bấm một dòng vẫn mở hồ sơ; *Thùng rác* vẫn chọn/khôi phục/xoá hẳn được như cũ |
 | **b159c Dữ liệu mồ côi** (sau khi dán `58`) | Ctrl+F5. Cây thử `TH957`: thêm một người mới KHÔNG nối với ai. → *Quản trị → Quản trị hệ thống → Dữ liệu mồ côi* → *Quét dữ liệu mồ côi*: dòng trạng thái kể số gia phả đã quét; người ấy hiện ở bảng *Người mồ côi* ("Chưa nối với ai trong cây"). Tích → *Cho vào thùng rác (1)* → xác nhận → sang tab *Thùng rác*: người ấy nằm ở bảng *Người đã xoá*. Bảng *Ảnh mồ côi* có ảnh thì ô xem trước hiện ảnh. ⚠ Cây 681 và `TH957` đo tại chỗ ra 0 người mồ côi, 0 cặp thừa — thấy dài dòng người thì báo tôi, đừng bấm xoá cả loạt |
 | **b159b Người đã xoá** (sau khi dán `57`) | Ctrl+F5. Trang sơ đồ, cây thử `TH957`: xoá hai người. → *Quản trị → Quản trị hệ thống → Thùng rác*: bảng *Người đã xoá* có hai người ấy, đúng cây, có ngày và người xoá; ô lọc cây chọn được. Tích một người → *Khôi phục (1)* → *Khôi phục 1 người* → báo "Đã khôi phục", bảng còn một → về trang sơ đồ, người ấy hiện lại đúng chỗ. Tích người còn lại → *Xoá vĩnh viễn (1)* → hộp kể tên → *Xoá vĩnh viễn* → bảng trống; trang sơ đồ *Danh sách người → Thùng rác* cũng không còn người ấy |
 | **Bảng tài khoản chờ xóa đã chuyển chỗ** | Ctrl+F5 → *Quản trị → Quản trị hệ thống → Sổ tài khoản*: bảng cuối trang không còn. Sang tab *Thùng rác*: bảng *Danh sách tài khoản chờ xóa (Lưu giữ 60 ngày)* nằm trên cùng, ghi "Chưa có ở máy chủ" (xoá mềm 60 ngày chưa làm — việc cũ b118b) |
@@ -76,19 +77,6 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-**Bước kế tiếp — chuyển DỌN KHO sang trang Quản trị** (chủ dự án chốt
-29/09/2026). *Chọn nhiều để xoá · Thùng rác · Rà soát* đặt ở chân *Danh sách
-người* (`person-list.js`, `form-thung-rac.js`, `review.js`) chỉ vì hồi đó chưa
-có trang Quản trị — nay về đúng chỗ. "Dọn rác" = TÌM VÀ XOÁ người/gia đình/ảnh
-mồ côi, KHÔNG phải nút dọn cây > N ngày. Chốt: **chỉ QTHT** dùng, thấy mọi cây
-(cột Cây để lọc); nút cũ trên trang sơ đồ **giữ tới khi bản mới bấm thử đạt**;
-ảnh mồ côi = **ảnh mất chủ + file thừa trong kho**. Dùng lại `domains/purge.js`,
-`validate.checkOrphanNode/checkUnionPointless` — không viết lại.
-
-| Phiên | Việc |
-|---|---|
-| D | Gỡ ba nút ở trang sơ đồ + sửa bài kiểm, SAU khi B–C bấm thử đạt |
-
 Bấm thử các điểm dừng ở trên (ba điểm b151 trước tiên). Việc mã lớn còn lại nằm
 ở *Còn treo*. ⚠ b145 và phần khách của
 b150 Claude KHÔNG đo REST được: cần đặt cây mặc định = cờ Quản trị hệ thống,
@@ -120,6 +108,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **b127b chưa bấm thật**: thẻ người kéo sang `T388` phải đủ vợ/con | — |
 | ⚠ **Ô gợi ý trên điện thoại thật chưa ai bấm lại** | `so-tay/o-goi-y.md` |
+| **Thùng rác + Rà soát VẪN ở chân *Danh sách người* của trang sơ đồ** (chủ dự án chọn giữ 29/09, chỉ gỡ *Chọn nhiều để xoá*). Gỡ nốt cần làm TRƯỚC: ① Thùng rác của cây cho chủ cây / quản trị cây (không phải QTHT) khôi phục người xoá nhầm — tab Quản trị mới chỉ QTHT; ② cảnh báo niên đại + GỘP cặp trùng của Rà soát — tab Dữ liệu mồ côi không có | `pages/person-list.js` · `pages/review.js` · `pages/form-thung-rac.js` |
 | **Dữ liệu mồ côi — hai chỗ chưa dọn được**: ① người ngoài mọi cây mà còn đứng trong cặp (ô tích khoá, `58` không xoá); ② file thừa trong thư mục của cây đang ẩn/thùng rác (luật `xoa_anh` từ chối, báo "không xoá được"). Cần thì làm SQL riêng | `pages/quan-tri/khu-du-lieu-mo-coi.js` |
 | ⚠ **Dọn thùng rác có hoàn tác được qua Kiểm duyệt không?** `luu_cay()` CHỤP dữ liệu cũ kể cả lần xoá thật (`03` khối *CHỤP ẢNH*, ý 3 nói thẳng "hoàn tác một lần Dọn thùng rác"), nhưng hộp xác nhận vẫn nói "KHÔNG hoàn tác được". Chưa ai đo; đo xong thì sửa câu ấy trong `cauKeKhiDonRac()` | `pages/form-thung-rac.js` |
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |

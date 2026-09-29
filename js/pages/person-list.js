@@ -5,81 +5,9 @@
 //            + MÀN HÌNH THÙNG RÁC — đường quay lại của người và cặp đã xoá
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, domains/person, domains/union, utils/text, config
-// Phiên bản: 1.7.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
+// Phiên bản: 1.8.0 · Cập nhật: 29/09/2026 (b159d) — gỡ nút Chọn nhiều để xoá (dời sang Quản trị)
+// Sổ tay   : so-tay/danh-sach-nguoi.md
 // ============================================================
-//
-// --- Vì sao màn hình này phải có (bước 24) ------------------------------
-//
-// App đang coi *"được vẽ"* là *"tồn tại"*. Sơ đồ vẽ quanh MỘT người trung tâm,
-// nên ai không nối với ai thì không cửa nào tới được — kể cả khi bản ghi của
-// họ vẫn nằm nguyên trong file. Ca thật ở bước 21: xoá P0060 làm P0061 chỉ
-// còn MỘT trên 63 người trung tâm nhìn thấy được. Thêm nhầm một người rồi
-// quên nối cũng cho đúng kết quả ấy, nên chỗ hỏng này không do việc xoá sinh
-// ra.
-//
-// Không phần mềm gia phả nào để sơ đồ làm cửa duy nhất: RootsMagic có People
-// list view, Legacy tìm theo RIN, FamilySearch tra theo PID. Đây là cái cửa đó.
-//
-// --- Ba quyết định của màn hình -----------------------------------------
-//
-// 1. Bấm một dòng là mở HỒ SƠ, không phải đổi người trung tâm. Người ta tìm
-//    để XEM trước đã; đổi luôn người trung tâm là ném họ sang một sơ đồ khác
-//    trước khi kịp nhìn xem có đúng người mình tìm không. Thẻ thông tin đã có
-//    sẵn nút "Đưa ra giữa sơ đồ" cho bước tiếp theo.
-//
-//    Nơi gọi không truyền `onXemHoSo` mà chỉ truyền `onChonNguoi` thì dòng bấm
-//    vào sẽ gọi `onChonNguoi` — đó là chế độ CHỌN NGƯỜI, thứ bước 25 cần cho
-//    ba mục Kết nối · Thêm cha mẹ · Thêm vợ/chồng. Một tap một dòng, không bao
-//    giờ hai nút cạnh nhau: trên điện thoại hai đích chạm sát nhau trong một
-//    dòng cao 44px là mời bấm nhầm.
-//
-// 2. Danh sách KHÔNG tự đóng khi mở hồ sơ. Thẻ thông tin nổi lên trên, đóng
-//    thẻ là quay lại đúng chỗ đang tìm — người tra gia phả thường mở ba bốn
-//    người liền nhau để so. Việc nào ĐỔI dữ liệu hoặc đổi sơ đồ thì nơi gọi tự
-//    đóng danh sách; xem `moDanhSachNguoi()` ở `pages/tree-view.js`.
-//
-// 3. Người đã xoá mềm KHÔNG có mặt TRONG DANH SÁCH. `searchPersons` kể ra được
-//    họ (`gomDaXoa: true`), nhưng thẻ thông tin đọc từ `state.index`, mà
-//    `buildIndex()` bỏ qua bản ghi mang cờ `deleted` — kể tên rồi bấm vào
-//    không ra gì thì tệ hơn là không kể tên. Họ có màn hình RIÊNG, ngay dưới.
-//
-// Hai file `pages` KHÔNG import lẫn nhau: file này không mở thẻ thông tin, nó
-// báo ra ngoài bằng callback (đúng luật đã chốt 17/08/2026, chat 1.6).
-//
-// --- THÙNG RÁC — năm quyết định (bước 29, và quyết định 5 ở việc 6B) ------
-//
-// Treo từ bước 21: xoá là đặt cờ `deleted`, hoàn tác chỉ làm được NGAY LÚC ẤY
-// trong lúc hộp còn mở. Đóng hộp rồi thì người ấy nằm trong file mãi mãi mà
-// không cửa nào tới được — kể cả màn hình Danh sách người, vì lý do 3 bên trên.
-//
-// 1. **Thùng rác KHÔNG có ô tìm.** Danh sách người có ô tìm vì nó nhìn vào cả
-//    kho vài trăm đến vài nghìn bản ghi; thùng rác nhìn vào những thứ vừa bị
-//    xoá — đếm trên đầu ngón tay. Thêm ô tìm là thêm mã cho một việc chưa ai
-//    cần, và ô tìm rỗng giữa một danh sách ba dòng trông như app hỏng.
-//
-// 2. **Bấm một dòng là ĐƯA TRỞ LẠI, không phải xem hồ sơ.** Thùng rác chỉ có
-//    đúng một việc. Mở hồ sơ người đã xoá thì không mở được — thẻ thông tin đọc
-//    `state.index` mà chỉ mục không có họ. Hộp xác nhận nằm ở `person-edit.js`,
-//    cùng chỗ với mọi đường ghi khác.
-//
-// 3. **Người và CẶP đứng chung một màn hình, hai nhóm.** Cặp bị xoá mềm cũng
-//    không có đường quay lại (bước 26 gỡ nối làm cặp mất lý do tồn tại thì cả
-//    cặp bị xoá theo). Dựng hai màn hình cho hai loại là bắt người dùng đoán
-//    thứ mình vừa mất thuộc loại nào.
-//
-// 4. **Nút vào thùng rác nằm ở chân màn hình Danh sách người**, và luôn hiện
-//    kèm con số — kể cả khi con số là 0. Nút mọc ra rồi biến đi tuỳ lúc là thứ
-//    người dùng không tìm lại được lần sau.
-//
-// 5. **XOÁ THẬT chỉ có ĐÚNG MỘT CỬA: nút *Dọn thùng rác* ngay trong màn hình
-//    này** (việc 6B). Không thêm một mục nào vào menu vòng tròn, không thêm nút
-//    nào vào thẻ thông tin. Người bấm *"Xoá khỏi gia phả"* giữa lúc đang xem sơ
-//    đồ không ở tâm thế dọn dẹp — họ đang sửa một bản ghi, và một thao tác không
-//    lùi được đặt giữa dòng công việc bình thường thì có ngày mất dữ liệu thật.
-//
-//    ⚠ Và nút ấy **ngược luật của quyết định 4**: nó biến đi khi thùng rác
-//    trống. Hai nút, hai loại: nút *Thùng rác (n)* là một CỬA nên phải luôn tìm
-//    lại được; nút này là một VIỆC, mà việc không có gì để làm thì đừng mời bấm.
 
 import { state } from '../state.js';
 import { searchPersons } from '../domains/person.js';
@@ -109,29 +37,10 @@ let nutKhoiPhuc = null;
 let nutXoaHan   = null;
 
 /**
- * CHẾ ĐỘ CHỌN của *Danh sách người* và *Các gia đình* (22/08/2026).
- *
- * --- Vì sao là một CHẾ ĐỘ BẬT/TẮT, không phải ô tích luôn hiện -----------
- *
- * Ở hai màn hình ấy, bấm một dòng đang có nghĩa là *"mở người/gia đình này ra
- * xem"* — việc làm nhiều nhất, và là lý do người ta mở danh sách. Cho ô tích
- * hiện thường trực thì mỗi dòng có HAI đích chạm trong một hàng cao 44px, đúng
- * điều luật bước 24 cấm. Còn đổi hẳn cú bấm thành *chọn* thì mất luôn đường đi
- * xem.
- *
- * Bật một chế độ giải được cả hai: ngoài chế độ, cả dòng mở ra xem; trong chế
- * độ, cả dòng là chọn. Lúc nào cũng đúng MỘT đích chạm một dòng, và dòng nhắc
- * dưới tiêu đề luôn nói rõ đang ở chế độ nào.
- *
- * ⚠ **THÙNG RÁC KHÔNG dùng biến này.** Ở đó chọn nhiều là chuyện thường trực —
- * màn hình ấy chỉ có mỗi việc chọn — nên nó bật sẵn, không có gì để tắt.
- *
- * ⚠ **KHÔNG có dòng "Chọn tất cả" ở hai màn hình này**, khác hẳn thùng rác.
- * Ở thùng rác, *chọn tất cả rồi khôi phục* là ca thật và không mất gì. Ở đây
- * *chọn tất cả rồi cho vào thùng rác* là cả cuốn gia phả biến khỏi sơ đồ sau
- * đúng hai cú chạm. Lấy lại được, nhưng một cú bấm nhầm không nên đắt đến thế.
+ * ⚠ KHÔNG còn chế độ *Chọn nhiều để xoá* ở hai màn hình này (gỡ 29/09/2026, b159d).
+ * Dọn hàng loạt là việc của trang Quản trị: *Quản trị hệ thống → Dữ liệu mồ côi* và
+ * *Thùng rác → Người đã xoá*. Xoá TỪNG người/cặp vẫn ở thẻ chi tiết.
  */
-let dangChonNhieu = false;
 
 /**
  * Mở danh sách người.
@@ -146,9 +55,6 @@ let dangChonNhieu = false;
  *                        việc khác thì không phải lúc rẽ sang việc thứ hai.
  *        `onRaSoat`    — có thì chân mọc thêm nút *"Rà soát"*. Cùng luật với
  *                        `onThungRac`: chế độ CHỌN NGƯỜI không nhận.
- *        `onGomRac`    — có thì chân mọc thêm nút *"Chọn nhiều để xoá"*, và
- *                        bật được CHẾ ĐỘ CHỌN. Nhận mảng mã `P….` và `U….`;
- *                        hộp xác nhận nằm ở `person-edit.chuyenVaoThungRac()`.
  *        `tuKhoa`      — chữ điền sẵn vào ô tìm.
  */
 export function openPersonList(xuLy = {}) {
@@ -178,8 +84,7 @@ export function openThungRac(xuLy = {}) {
 /**
  * Mở MÀN HÌNH CÁC GIA ĐÌNH — danh sách mọi CẶP trong gia phả (22/08/2026).
  *
- * @param {{onXemCap?:function(string), onGomRac?:function(string[]),
- *          tuKhoa?:string}} [xuLy]
+ * @param {{onXemCap?:function(string), tuKhoa?:string}} [xuLy]
  *
  * --- Vì sao màn hình này phải có, và vì sao nó ở ĐÂY --------------------
  *
@@ -214,7 +119,6 @@ function moManHinh(che, xuLy) {
   xuLyNgoai = xuLy || {};
   cheDo     = che;
   daChon    = new Set();
-  dangChonNhieu = false;
 
   lopPhu = document.createElement('div');
   lopPhu.style.cssText =
@@ -332,42 +236,9 @@ function veChan(laThungRac, laChonNguoi) {
     'display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;flex:0 0 auto;' +
     'justify-content:center';
 
-  // --- CHẾ ĐỘ CHỌN: nút bật, rồi hai nút việc khi đã bật ----------------
-  //
-  // ⚠ Nút *Cho vào thùng rác* MỜ ĐI khi chưa chọn dòng nào, không biến mất.
-  // Cùng lý lẽ đã viết cho hai nút của thùng rác ngay dưới: cái mờ dạy đúng
-  // một điều ngay tại chỗ — *chọn gì đó trước đã* — còn cái biến mất thì
-  // không dạy gì cả.
-  // ⚠ Đọc thẳng `cheDo` chứ KHÔNG dùng `laChonNguoi`: nơi gọi gộp *màn gia
-  // đình* vào tham số ấy để chặn hai cửa Thùng rác / Rà soát, mà chế độ chọn
-  // thì màn gia đình PHẢI có. Gộp hai câu hỏi khác nhau vào một lá cờ chính là
-  // chỗ đã làm nút này biến mất khỏi màn gia đình ở bản đầu.
-  const chonNguoiThat = laChonNguoi && cheDo !== 'giaDinh';
-  if (!laThungRac && !chonNguoiThat && xuLyNgoai.onGomRac) {
-    if (!dangChonNhieu) {
-      const b = nutChan('Chọn nhiều để xoá', () => doiCheDoChon(true));
-      b.dataset.viec = 'bat-chon-nhieu';
-      chan.append(b);
-    } else {
-      nutXoaHan = nutChan('Cho vào thùng rác', () => {
-        if (daChon.size === 0) return;
-        const ds = [...daChon];
-        const chay = xuLyNgoai.onGomRac;
-        closePersonList();
-        chay(ds);
-      }, true);
-      nutXoaHan.dataset.viec = 'gom-rac';
-      chan.append(nutXoaHan);
-
-      const thoi = nutChan('Thôi', () => doiCheDoChon(false));
-      thoi.dataset.viec = 'thoi-chon';
-      chan.append(thoi);
-    }
-  }
-
-  // Ba cửa dưới đây KHÔNG mọc khi đang chọn: đang giữa một việc thì không phải
-  // lúc rẽ sang việc thứ hai — cùng luật đã chốt cho chế độ CHỌN NGƯỜI.
-  if (!laThungRac && !laChonNguoi && !dangChonNhieu && xuLyNgoai.onThungRac) {
+  // Hai cửa dưới đây KHÔNG mọc ở chế độ CHỌN NGƯỜI (đang giữa một việc thì
+  // không rẽ sang việc thứ hai).
+  if (!laThungRac && !laChonNguoi && xuLyNgoai.onThungRac) {
     const rac = nutChan('Thùng rác (' + demThungRac() + ')', () => {
       const chay = xuLyNgoai.onThungRac;
       closePersonList();
@@ -377,7 +248,7 @@ function veChan(laThungRac, laChonNguoi) {
     chan.append(rac);
   }
 
-  if (!laThungRac && !laChonNguoi && !dangChonNhieu && xuLyNgoai.onRaSoat) {
+  if (!laThungRac && !laChonNguoi && xuLyNgoai.onRaSoat) {
     const ra = nutChan('Rà soát', () => {
       const chay = xuLyNgoai.onRaSoat;
       closePersonList();
@@ -417,7 +288,7 @@ function veChan(laThungRac, laChonNguoi) {
   // thành hai dòng bên trong nút — cùng cái đã xảy ra với *Xoá vĩnh viễn*
   // ở bước 38. Không mất đường ra: *Thôi* đưa về chế độ thường nơi *Đóng*
   // hiện lại, mà phím Esc và cú bấm ra ngoài lớp phủ thì vẫn đóng như cũ.
-  if (!dangChonNhieu) chan.append(nutChan('Đóng', () => closePersonList()));
+  chan.append(nutChan('Đóng', () => closePersonList()));
   return chan;
 }
 
@@ -443,20 +314,6 @@ function chayViecTrenLuaChon(laXoaHan) {
 }
 
 /**
- * Bật hoặc tắt chế độ chọn: dựng lại cả danh sách lẫn chân, vì cả hai đổi hẳn.
- *
- * Bỏ sạch tập đang chọn ở CẢ HAI chiều. Tắt rồi bật lại mà tập cũ còn nguyên
- * là người dùng bấm *Cho vào thùng rác* trên một lựa chọn họ tưởng đã bỏ.
- */
-function doiCheDoChon(bat) {
-  dangChonNhieu = !!bat;
-  daChon = new Set();
-  veLaiNhac();
-  veLaiDanhSach();
-  veLaiChan();
-}
-
-/**
  * Vẽ lại CẢ hàng chân — dùng khi bật/tắt chế độ chọn, vì lúc ấy chân đổi hẳn
  * bộ nút chứ không chỉ đổi nhãn.
  */
@@ -478,13 +335,10 @@ function veLaiNhac() {
   khoiNhac.textContent = (cheDo === 'thungRac')
     ? 'Người và cặp đã xoá vẫn nằm nguyên trong file, chỉ mang một cái cờ. ' +
       'Đánh dấu những dòng cần xử lý, rồi chọn Khôi phục hay Xoá hẳn.'
-    : (dangChonNhieu
-        ? 'ĐANG CHỌN — bấm một dòng là đánh dấu, không mở ra nữa. Chọn xong thì ' +
-          'bấm "Cho vào thùng rác": xoá mềm, lấy lại được bất cứ lúc nào.'
-        : (cheDo === 'giaDinh'
-            ? 'Mỗi dòng là một gia đình. Tìm được cả gia đình mà không sơ đồ ' +
-              'nào vẽ ra — kể cả cặp thừa do bấm nhầm.'
-            : 'Tìm được cả người chưa nối với ai — những người không sơ đồ nào vẽ ra.'));
+    : (cheDo === 'giaDinh'
+        ? 'Mỗi dòng là một gia đình. Tìm được cả gia đình mà không sơ đồ ' +
+          'nào vẽ ra — kể cả cặp thừa do bấm nhầm.'
+        : 'Tìm được cả người chưa nối với ai — những người không sơ đồ nào vẽ ra.');
 }
 
 /** Nhãn hai nút việc chạy theo số đang chọn, và mờ đi khi chưa chọn gì. */
@@ -540,7 +394,6 @@ export function closePersonList() {
   daChon    = new Set();
   nutKhoiPhuc = null;
   nutXoaHan   = null;
-  dangChonNhieu = false;
 }
 
 /** Danh sách có đang mở hay không — nơi gọi hỏi trước khi đóng cho đúng lúc. */
@@ -630,18 +483,6 @@ function veDongGiaDinh(u) {
     .filter((id) => id && state.index.personById.has(id))
     .map((id) => fullName(state.index.personById.get(id)))
     .filter(coGiaTri);
-
-  if (dangChonNhieu) {
-    const soCon = (Array.isArray(u.children) ? u.children : [])
-      .filter((c) => c && c.personId && state.index.personById.has(c.personId)).length;
-    const dong = veDongTrong(
-      u.id,
-      tenCap.length > 0 ? tenCap.join('  và  ') : '(gia đình chưa có ai)',
-      [soCon > 0 ? soCon + ' con' : 'chưa có con', u.id].join('  ·  '),
-      tenCap.length > 0);
-    dong.setAttribute('data-ma', u.id);
-    return dong;
-  }
 
   const nut = document.createElement('button');
   nut.type = 'button';
@@ -953,16 +794,6 @@ function tenTrongCay(personId) {
  *     là thứ làm người dùng tưởng máy hỏng.
  */
 function veMotDong(muc) {
-  // Đang chọn thì dùng đúng khuôn dòng của thùng rác — ô ✓ bên trái, cả dòng
-  // là một đích chạm, bấm là đánh dấu. Một khuôn cho cả ba màn hình.
-  if (dangChonNhieu) {
-    const dong = veDongTrong(muc.id, muc.ten !== '' ? muc.ten : '(chưa có tên)',
-                             [muc.id, muc.doiSong].filter(coGiaTri).join('  ·  '),
-                             muc.ten !== '');
-    dong.setAttribute('data-ma', muc.id);
-    return dong;
-  }
-
   const nut = document.createElement('button');
   nut.type = 'button';
   nut.setAttribute('data-ma', muc.id);

@@ -6,7 +6,7 @@
 //            utils/{text,glyph,graph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
 //            chon-gia-pha,import-export,export-image}
-// Phiên bản: 1.45.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
+// Phiên bản: 1.46.0 · Cập nhật: 29/09/2026 (b159d) — bỏ onGomRac của Danh sách người/gia đình
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (nút Cũ/Mới · dâu/rể)
 // ============================================================
 //
@@ -966,12 +966,9 @@ function moDanhSachNguoi() {
   // trước đã (quyết định 5 của bước 24). Muốn làm gì thì thẻ có nút *"Sửa gia
   // phả"* dẫn sang vòng tròn, và vòng tròn ấy nhận đúng bộ hàm xử lý bọc sẵn
   // dưới đây — nên đường nào cũng đóng danh sách trước khi đi tiếp.
-  const moLai = () => { refresh(); moDanhSachNguoi(); };
-
   openPersonList({
     onThungRac: moThungRac,
     onRaSoat:   moRaSoat,
-    onGomRac:   (ids) => chuyenVaoThungRac(ids, { onDaLuu: moLai }),
     onXemHoSo: (id) => openPersonDetail(id, {
       onChonNguoi:  dongTruoc(goc.onChonNguoi),
       onSuaNguoi:   dongTruoc(goc.onSuaNguoi),
@@ -1137,14 +1134,8 @@ function moXoaCap(unionId) {
  * nào là tuỳ bộ ấy có gì, và thiếu một cái thì đúng mục ấy lặng lẽ không hiện.
  */
 function moDanhSachGiaDinh() {
-  const moLai = () => { refresh(); moDanhSachGiaDinh(); };
   openDanhSachGiaDinh({
     onXemCap: (unionId) => openUnionDetail(unionId, xuLyThe()),
-
-    // Gom rác xong thì MỞ LẠI danh sách, cùng lối với màn Rà soát: người đang
-    // dọn thường dọn vài lượt liền nhau, và lượt sau phải nhìn được kết quả
-    // lượt trước.
-    onGomRac: (ids) => chuyenVaoThungRac(ids, { onDaLuu: moLai }),
   });
 }
 
