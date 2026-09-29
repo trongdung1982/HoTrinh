@@ -1,8 +1,8 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 29/09/2026 · **b155 (nút Khôi phục, hai đường: file trong máy · web app máy sao lưu) ĐẠT trên app thật 29/09.** **b154 (sao lưu ảnh) ĐẠT; khôi phục một tấm ảnh thật chưa thử.** **b153a (trang sơ đồ theo tông màu) XONG MÃ ·
+*Cập nhật 29/09/2026 · **b155 (nút Khôi phục, hai đường: file trong máy · web app máy sao lưu) ĐẠT trên app thật 29/09.** **b154 (sao lưu + khôi phục ảnh) ĐẠT trên app thật 29/09 — xoá ảnh rồi khôi phục, ảnh về lại.** **b153a (trang sơ đồ theo tông màu) XONG MÃ ·
 b152 (công khai theo từng người áp cả cho vai `xem`) XONG MÃ, `53` đã dán
-29/09.** Mười tám điểm dừng dưới chưa bấm thử.*
+29/09.** Mười bảy điểm dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -27,7 +27,6 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b154** Khôi phục ảnh thật (một tấm) *(sao lưu ảnh ĐẠT; khôi phục dữ liệu + nút Khôi phục ảnh ĐẠT trên app 29/09 nhưng lúc ấy thiếu 0 tấm)* | Trên cây thử `TH957`: gắn một ảnh cho một người → bấm `saoLuuNgay` để ảnh lên Drive → Supabase → *Storage* → kho `anh` → xoá tệp ấy (ảnh trên app mất, dòng dữ liệu còn) → *Quản trị hệ thống → Sao lưu & khôi phục* → nút khôi phục → chọn bản mới nhất → khôi phục → *Khôi phục ảnh* → phải báo **"tải lên 1 tấm"** → Ctrl+F5, ảnh hiện lại |
 | **b152** Công khai theo từng người — cả vai Xem | ✓ `53` đã dán. Ctrl+F5. Cần một người CÓ tài khoản gắn, ở cây thử `TH957` (ví dụ người của bạn): *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia* → dòng `TH957` → cột *Thông tin công khai* → tắt *Quê quán* + *Tiểu sử* → *Lưu*. Mời `khach@io.vn` vào `TH957` vai **Khách** (`xem`), đăng nhập `khach@io.vn` → mở `TH957` → bấm người của bạn: KHÔNG thấy quê quán, tiểu sử. Người khác vẫn đủ như cũ (người còn sống vẫn bị lược như b148). Đăng nhập lại tài khoản của bạn: thấy đủ. Xong: bật lại hai trường, gỡ vai của `khach@io.vn` |
 | **Tông màu** (trang Quản trị) | Ctrl+F5 → *Quản trị* → thanh trái có nút **🎨 Tông màu** ngay trên *← Về trang sơ đồ* → bấm → bảng 10 tông mở sang phải nút → chọn *Đêm hoài cổ* → cả trang tối lại, chữ đọc được → tải lại trang (F5) → vẫn tông ấy. Chọn *Kem tối giản (mặc định)* → về y như cũ. Điện thoại: ☰ → *Tông màu* → bảng đứng giữa màn hình. **b153a — trang sơ đồ**: để tông *Đêm hoài cổ* → *← Về trang sơ đồ* → nền, nút tròn, Cài đặt, thẻ chi tiết, form Sửa, Danh sách người đều tối theo; ô người trên sơ đồ vẫn sáng (cố ý — không đổi `render.js`). Chọn lại *Kem tối giản* → trang sơ đồ y hệt trước |
 | **Cột Nội dung thao tác** (Kiểm duyệt) | Ctrl+F5 → *Quản trị → Kiểm duyệt*: cột *Nội dung thao tác* đọc thành câu, không còn một chữ mỗi dòng. Tab *Đã từ chối & hoàn tác*: cột *Lý do từ chối* cũng vậy |
@@ -185,8 +184,8 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 28/09 08:04 chỉ có cây NTB; file SQL khôi phục chứa cả gia phả, KHÔNG thả vào
 `supabase/`.
 
-**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử mười tám
-điểm dừng ở trên trước (b154 và b152 trước, rồi ba điểm b151). Việc Claude
+**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử mười bảy
+điểm dừng ở trên trước (b152 trước, rồi ba điểm b151). Việc Claude
 tự đo được bằng REST (b152 · b148 · b145 · b150 phần khách) đã đề xuất 29/09,
 chưa làm.
 

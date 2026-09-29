@@ -59,8 +59,9 @@ khớp. Hệ quả: file ghi trước 0.8.0 phải đi đường `khoi-phuc.mjs`
   `DEM_LAN_TRUOC` để so sụt giảm, "chưa chép" giảm là tin tốt.
 - Khôi phục cần tài khoản GHI (`ghi_anh` = `co_the_sua()`), vai `sao_luu`
   không ghi được: chủ dự án điền tạm `EMAIL_/MAT_KHAU_KHOI_PHUC` rồi xoá.
-  `saoLuuNgay` 0.7.0 ĐẠT trên máy thật 29/09. ⚠ `khoiPhucAnh` (tải lên)
-  mới đo bằng máy chủ giả.
+  ĐẠT trên máy thật 29/09: sao lưu ảnh, và ca xoá tệp ảnh khỏi kho → khôi
+  phục qua web app → ảnh về lại (chủ dự án bấm). Đường `khoiPhucAnh` chạy
+  tay (mật khẩu điền tạm) chưa chạy thật — cùng lõi `khoiPhucAnhBang_`.
 | Đo khôi phục trọn vòng (36 phép) | `../kiem-thu/ban-thu-sql/do-b142b.mjs` *(ngoài repo)* |
 
 ## Khôi phục làm gì — và cố ý KHÔNG làm gì
