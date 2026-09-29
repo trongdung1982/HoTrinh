@@ -40,8 +40,9 @@ bấm thử tạo tài khoản ĐẠT cùng ngày*
 
 - **Gửi liên kết qua email: mờ.** App chưa có màn hình đặt mật khẩu khi bấm
   liên kết (cả luồng *Quên mật khẩu* cũng chưa có), và thư mặc định của
-  Supabase chỉ tới email thành viên dự án — cần SMTP riêng. Hai việc ấy xong
-  thì mới mở lựa chọn này.
+  Supabase chỉ tới email thành viên dự án — cần SMTP riêng. ⚠ **Chủ dự án
+  HUỶ tính năng này 29/09/2026** (không thuê dịch vụ gửi thư) — nút cứ để
+  mờ, đừng đề xuất làm lại.
 - **Nhật ký ghi người làm = chính tài khoản mới** (`nk_tao_tai_khoan`, `42`
   mục 3c — trigger không biết ai gọi Edge Function). Muốn ghi đúng QTHT thì
   phải đổi `42`.

@@ -4,7 +4,7 @@
 // Lớp      : services — được gọi bởi: pages · gọi: services/sb,
 //            services/hinh-dang, utils, state
 // Phụ thuộc: services/sb.js, services/hinh-dang.js, utils/graph.js, state.js
-// Phiên bản: 0.10.0 · Cập nhật: 28/09/2026 17:41 (b148b) — cờ che người còn sống do máy chủ bật
+// Phiên bản: 0.11.0 · Cập nhật: 29/09/2026 (b157) — đọc cây sẵn từ layPhien, xin mã chạy ngầm
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -46,7 +46,9 @@ import { DATA_VERSION } from '../config.js';
  * @returns {Promise<object>} chính là phiên máy chủ trả về
  */
 export async function khoiTao() {
-  const phien = await sb.layPhien();
+  // `docCayLuon`: sb.js khởi hành lần đọc cây ngay khi biết mã cây, chung
+  // vòng với quyền + cài đặt — `napCay()` dưới nhận lại đúng lời hứa ấy (b157).
+  const phien = await sb.layPhien({ docCayLuon: true });
   state.phien = phien;
 
   if (!phien.daDangNhap) return phien;   // chưa đăng nhập
@@ -71,9 +73,12 @@ export async function napCay() {
   const treeId = state.phien && state.phien.treeId;
   if (!treeId) throw new Error('Chưa biết đang mở gia phả nào.');
 
-  // Xin mã ĐI CÙNG CHUYẾN với lần đọc cây — hai việc không phụ thuộc nhau, nối
-  // tiếp là cộng thêm một vòng mạng vào đúng chỗ người dùng đang chờ màn hình.
-  const [kq] = await Promise.all([sb.layDong(treeId), dayKhoMa()]);
+  // Xin mã chạy NGẦM, không bắt sơ đồ chờ (b157): lần đọc cây thường đã khởi
+  // hành sẵn từ `layPhien()`, nên chờ mã là cộng nguyên một vòng mạng vào
+  // đúng chỗ người dùng đang nhìn màn hình trắng. `dayKhoMa()` không bao giờ
+  // ném lỗi, và kho chưa kịp đầy thì `nextId()` có đường lùi.
+  dayKhoMa();
+  const kq = await sb.layDong(treeId);
   if (!kq)    throw new Error('Máy chủ không trả về gì khi đọc cây gia phả.');
   if (!kq.ok) throw new Error(kq.loi || 'Máy chủ từ chối trả cây gia phả.');
 

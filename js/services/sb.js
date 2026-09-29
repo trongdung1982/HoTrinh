@@ -5,8 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.46.0 · Cập nhật: 29/09/2026 (b155) — `xemTruocKhoiPhuc` ·
-//            `khoiPhucBanSao` (`54`). Lịch sử: `git log -p`.
+// Phiên bản: 0.47.0 · Cập nhật: 29/09/2026 (b157) — `layPhien()` gom vòng
+//            mạng + đọc cây sẵn (`docCayLuon`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -166,12 +166,29 @@ export async function doiMatKhau(matKhauCu, matKhauMoi) {
   return error ? { ok: false, loi: cauLoi(error) } : { ok: true, loi: null };
 }
 
-/** Người đang đăng nhập, hoặc `null`. Không gọi mạng — đọc phiên trong máy. */
+/**
+ * Người đang đăng nhập, hoặc `null`. ⚠ CÓ gọi mạng (`getUser()` hỏi máy chủ
+ * xác thực, ~130 ms) — lấy thông tin tươi như ngày đăng ký. Chỉ cần biết
+ * "ai" thì dùng `nguoiTrongPhien()`.
+ */
 export async function nguoiDangNhap() {
   const k = layKhach();
   if (!k) return null;
   const { data } = await k.auth.getUser();
   return (data && data.user) || null;
+}
+
+/**
+ * Người trong phiên đã lưu ở máy — KHÔNG gọi mạng (trừ khi phải làm mới
+ * chìa khoá hết hạn). Đủ cho `layPhien()`: hàng rào thật là máy chủ kiểm chìa
+ * khoá ở MỌI câu hỏi sau đó, không phải câu này. Bớt một vòng mạng ở đầu mọi
+ * trang (b157).
+ */
+async function nguoiTrongPhien() {
+  const k = layKhach();
+  if (!k) return null;
+  const { data } = await k.auth.getSession();
+  return (data && data.session && data.session.user) || null;
 }
 
 // ============================================================
@@ -201,7 +218,7 @@ export async function nguoiDangNhap() {
  *   nhánh *được mời* như trước. Trang Quản trị dựa vào chúng để gọi đúng tên
  *   cây trong mọi bảng sửa quyền — xem `caiDatCay()`.
  */
-export async function layPhien() {
+export async function layPhien({ docCayLuon = false } = {}) {
   const nen = {
     daDangNhap: false, email: '', vaiTro: null,
     docDuoc: false, suaDuoc: false, treeId: null,
@@ -218,7 +235,7 @@ export async function layPhien() {
   const k = layKhach();
   if (!k) return { ...nen, loi: 'Chưa nạp được thư viện Supabase (vendor/supabase.js).' };
 
-  const nguoi = await nguoiDangNhap();
+  const nguoi = await nguoiTrongPhien();
   if (!nguoi) return nen;                       // chưa đăng nhập — không phải lỗi
 
   // Người này là thành viên của những cây nào. Row Level Security đã lọc sẵn:
@@ -241,7 +258,10 @@ export async function layPhien() {
   //   tài khoản bị khoá mềm bị mọi hàng rào (`la_thanh_vien()`,
   //   `co_the_xem_cay()`, `co_the_sua()`) chặn im lặng — không có nhánh này
   //   thì họ chỉ thấy "chưa được duyệt", sai hẳn với cái đang xảy ra.
-  const [{ data: ds, error }, { data: coQuyenHT }, { data: maTk }, { data: hangTk }, { data: coBiKhoa }] =
+  // ⚠ Câu thứ sáu — `user_settings` của MỌI cây — cũng đi lượt này (b157):
+  //   cây đang mở và cài đặt của nó trước kia là hai vòng riêng nối đuôi.
+  const [{ data: ds, error }, { data: coQuyenHT }, { data: maTk }, { data: hangTk }, { data: coBiKhoa },
+         { data: caiDat }] =
     await Promise.all([
       k.from('tree_members').select('tree_id, role').eq('user_id', nguoi.id),
       k.rpc('la_quan_tri_he_thong'),
@@ -249,6 +269,8 @@ export async function layPhien() {
       k.from('tai_khoan').select('ho_ten, duoc_tao_cay, khoa_ly_do, person_id, cay_chinh_id')
         .eq('user_id', nguoi.id).maybeSingle(),
       k.rpc('bi_khoa'),
+      k.from('user_settings').select('tree_id, dang_mo, focus_person_id, hien_ngay_gio')
+        .eq('user_id', nguoi.id),
     ]);
 
   const laQuanTriHeThong = Boolean(coQuyenHT);
@@ -268,13 +290,35 @@ export async function layPhien() {
   //   câu tra tên dưới đây thường không chạy — chỉ tốn mạng khi có giá trị.
   const maNguoiGan = (hangTk && hangTk.person_id) || '';
   const cayChinhId = (hangTk && hangTk.cay_chinh_id) || null;
-  const [tenNguoiGan, tenDongHo] = await Promise.all([
+  // ⚠ Hai câu tra tên KHỞI HÀNH ngay, chờ ở lúc trả kết quả — chúng chạy
+  //   chung lượt với vòng cây dưới, không chiếm một vòng riêng (b157).
+  const hoiTen = Promise.all([
     maNguoiGan ? layTenNguoiGan(k, maNguoiGan) : Promise.resolve(''),
     cayChinhId ? layTenCayChinh(k, cayChinhId) : Promise.resolve(''),
   ]);
-  const nenNguoi = { ...nen, laQuanTriHeThong, maNgan, hoTen,
-                     userId: nguoi.id, duocTaoCay, biKhoa,
-                     maNguoiGan, tenNguoiGan, cayChinhId, tenDongHo };
+  const nenNguoi = async () => {
+    const [tenNguoiGan, tenDongHo] = await hoiTen;
+    return { ...nen, laQuanTriHeThong, maNgan, hoTen,
+             userId: nguoi.id, duocTaoCay, biKhoa,
+             maNguoiGan, tenNguoiGan, cayChinhId, tenDongHo };
+  };
+
+  // ⚠ VÒNG CÂY (b157): mọi câu chỉ cần mã cây đi CHUNG một lượt — trước kia
+  //   là bốn vòng nối đuôi (thùng rác → quyền sửa → cài đặt). `docCayLuon`
+  //   (chỉ `repo.khoiTao` bật) cho đọc luôn cả cây trong lượt ấy; trang Quản
+  //   trị không bật, khỏi kéo 600 KB nó không dùng. Hàng rào không đổi: vẫn
+  //   những câu ấy, máy chủ vẫn gác từng câu — chỉ đổi LÚC hỏi.
+  const docTruocCay = (treeId) => {
+    if (docCayLuon) docTruoc = { treeId, luc: Date.now(), hua: docDong(treeId) };
+  };
+  const vongCay = (treeId, hoiSua) => {
+    docTruocCay(treeId);
+    return Promise.all([
+      tinThungRac(treeId),
+      caiDatCay(k, treeId, caiDat),
+      hoiSua ? coTheSua(treeId) : Promise.resolve(true),
+    ]);
+  };
 
   // ⚠ ĐỨNG TRƯỚC MỌI NHÁNH KHÁC, kể cả nhánh Quản trị hệ thống ngay dưới:
   //   `la_quan_tri_he_thong()` đã tự trả `false` cho một tài khoản bị khoá
@@ -283,14 +327,14 @@ export async function layPhien() {
   //   được duyệt" của người mới.
   if (biKhoa) {
     return {
-      ...nenNguoi, daDangNhap: true, email: nguoi.email || '',
+      ...(await nenNguoi()), daDangNhap: true, email: nguoi.email || '',
       vaiTro: null, docDuoc: false, suaDuoc: false,
       trangThai: 'khoa', khoaLyDo: (hangTk && hangTk.khoa_ly_do) || '',
     };
   }
 
   if (error) {
-    return { ...nenNguoi, daDangNhap: true, email: nguoi.email, loi: cauLoi(error) };
+    return { ...(await nenNguoi()), daDangNhap: true, email: nguoi.email, loi: cauLoi(error) };
   }
 
   // ⚠ QUẢN TRỊ HỆ THỐNG ĐI TRƯỚC, và phải đứng trước nhánh "không có chân"
@@ -301,22 +345,23 @@ export async function layPhien() {
   //   *"bạn đang chờ được duyệt"*.
   if (laQuanTriHeThong) {
     const treeId = (ds && ds.length)
-      ? await cayDangChon(k, nguoi.id, ds)
+      ? cayDangChon(ds, caiDat)
       : await cayDauTien(k);
 
     // b110 — cây đang mở vừa vào thùng rác. Quản trị hệ thống cũng KHÔNG đọc
     // được nó (`16` mục 3, cố ý), nên đi tiếp là mở ra một sơ đồ trống.
-    const tinRac = treeId ? await tinThungRac(treeId) : {};
+    const [tinRac, cd] = treeId ? await vongCay(treeId, false) : [{}, {}];
     if (tinRac.daXoa) {
+      docTruoc = null;
       return {
-        ...nenNguoi, daDangNhap: true, email: nguoi.email || '',
+        ...(await nenNguoi()), daDangNhap: true, email: nguoi.email || '',
         vaiTro: 'quan_tri_he_thong', docDuoc: false, suaDuoc: false,
         trangThai: 'daxoa', treeId, ...tinRac,
       };
     }
 
     return {
-      ...nenNguoi,
+      ...(await nenNguoi()),
       daDangNhap: true,
       email: nguoi.email || '',
       vaiTro: 'quan_tri_he_thong',
@@ -324,7 +369,7 @@ export async function layPhien() {
       suaDuoc: true,
       trangThai: 'daduyet',
       treeId,
-      ...(treeId ? await caiDatCay(k, nguoi.id, treeId) : {}),
+      ...cd,
     };
   }
 
@@ -335,8 +380,9 @@ export async function layPhien() {
     //   (`co_the_xem_cay()`), câu này chỉ hỏi máy chủ xem cửa ấy có mở không.
     const { data: cayMacDinh } = await k.rpc('cay_mac_dinh');
     if (cayMacDinh) {
+      docTruocCay(cayMacDinh);
       return {
-        ...nenNguoi,
+        ...(await nenNguoi()),
         daDangNhap: true,
         email: nguoi.email || '',
         vaiTro: 'xem',
@@ -344,7 +390,7 @@ export async function layPhien() {
         suaDuoc: false,
         trangThai: 'daduyet',
         treeId: cayMacDinh,
-        ...(await caiDatCay(k, nguoi.id, cayMacDinh)),
+        ...(await caiDatCay(k, cayMacDinh, caiDat)),
       };
     }
 
@@ -363,7 +409,7 @@ export async function layPhien() {
     //   nào khác để biết mã cây.
     const tt = await trangThaiCuaToi();
     return {
-      ...nenNguoi,
+      ...(await nenNguoi()),
       daDangNhap: true,
       email: nguoi.email,
       trangThai: tt.trangThai,
@@ -378,7 +424,7 @@ export async function layPhien() {
     };
   }
 
-  const treeId = await cayDangChon(k, nguoi.id, ds);
+  const treeId = cayDangChon(ds, caiDat);
   const vaiTro = (ds.find((m) => m.tree_id === treeId) || ds[0]).role;
 
   // b110 — cây đang mở vừa bị xoá. `docDuoc` ở nhánh này vốn là hằng `true`
@@ -386,17 +432,18 @@ export async function layPhien() {
   // còn đủ. Đây là chỗ chủ dự án chỉ thẳng: *"người nào đang có chân trong
   // cây này thì nhận thông báo cây đã bị xoá bởi… vậy không lo màn hình
   // trắng"* — nên phải lấy về cả TÊN CÂY và NGƯỜI XOÁ, không chỉ một chữ có.
-  const tinRac = await tinThungRac(treeId);
+  const [tinRac, cd, suaDuoc] = await vongCay(treeId, true);
   if (tinRac.daXoa) {
+    docTruoc = null;
     return {
-      ...nenNguoi, daDangNhap: true, email: nguoi.email || '',
+      ...(await nenNguoi()), daDangNhap: true, email: nguoi.email || '',
       vaiTro, docDuoc: false, suaDuoc: false,
       trangThai: 'daxoa', treeId, ...tinRac,
     };
   }
 
   return {
-    ...nenNguoi,
+    ...(await nenNguoi()),
     daDangNhap: true,
     email:   nguoi.email || '',
     vaiTro,
@@ -407,10 +454,10 @@ export async function layPhien() {
     //   được — giao diện mở nút Sửa rồi máy chủ mới chặn ở lúc bấm Lưu.
     //   `co_the_sua()` là chỗ DUY NHẤT trả lời câu này; hỏi nó thì không bao
     //   giờ có hai câu trả lời khác nhau cho cùng một người.
-    suaDuoc: await coTheSua(treeId),
+    suaDuoc,
     trangThai: 'daduyet',
     treeId,
-    ...(await caiDatCay(k, nguoi.id, treeId)),
+    ...cd,
   };
 }
 
@@ -467,13 +514,9 @@ async function coTheSua(treeId) {
 //   dòng rồi chèn lại một dòng — tức **xoá người trung tâm mặc định của mọi
 //   cây** mỗi lần đổi cây. Với một cây thì không ai thấy; với hai cây thì mất
 //   mỗi lần. `luoc-do/10-sua-nhieu-cay.sql` mục 1 kể đầy đủ.
-async function cayDangChon(k, userId, ds) {
-  const { data } = await k
-    .from('user_settings')
-    .select('tree_id, dang_mo')
-    .eq('user_id', userId).eq('dang_mo', true);
-
-  const daChon = (data || []).map((r) => r.tree_id);
+function cayDangChon(ds, caiDat) {
+  // Dòng `user_settings` đã đọc sẵn ở lượt đầu của `layPhien()` (b157).
+  const daChon = (caiDat || []).filter((r) => r.dang_mo === true).map((r) => r.tree_id);
   const hop = ds.find((m) => daChon.includes(m.tree_id));
   // Không có lựa chọn nào còn hợp lệ thì lấy cây đầu tiên, để màn hình không
   // trắng trơn. Cùng lý lẽ với `repo.chonNguoiTrungTam` của bản cũ.
@@ -503,22 +546,18 @@ async function cayDauTien(k) {
  *   mời*), nên trang Quản trị không có đường nào biết tên cây đang mở, và
  *   `khu-thanh-vien.js` phải viết chuỗi thay thế `'Gia phả đang mở'`.
  *
- * ⚠ Hai câu đi SONG SONG, không nối tiếp. Chúng không phụ thuộc nhau, và
- *   `layPhien()` chạy ở đầu MỌI trang — nối tiếp là cộng thêm một vòng mạng
- *   vào đúng chỗ đắt nhất.
+ * ⚠ Chỉ còn MỘT câu (tên cây) — `user_settings` đọc sẵn ở lượt đầu, và câu
+ *   này chạy chung vòng cây với thùng rác + quyền sửa (b157). `layPhien()`
+ *   chạy ở đầu MỌI trang — mỗi vòng mạng nối tiếp là ~130 ms người dùng chờ.
  *
  * ⚠ `tenCay` rỗng là một câu trả lời HỢP LỆ, không phải lỗi: RLS có thể không
  *   cho người này đọc dòng `trees` (cây trong thùng rác, chẳng hạn). Nơi gọi
  *   phải chịu được chuỗi rỗng — đừng vẽ chữ "Không rõ", `CLAUDE.md` mục 7.
  */
-async function caiDatCay(k, userId, treeId) {
-  const [{ data }, { data: cay }] = await Promise.all([
-    k.from('user_settings')
-      .select('focus_person_id, hien_ngay_gio')
-      .eq('user_id', userId).eq('tree_id', treeId)
-      .maybeSingle(),
-    k.from('trees').select('name, tree_code').eq('id', treeId).maybeSingle(),
-  ]);
+async function caiDatCay(k, treeId, caiDat) {
+  // Dòng `user_settings` của cây này lấy từ lượt đầu (b157) — chỉ còn tên cây phải hỏi.
+  const data = (caiDat || []).find((r) => r.tree_id === treeId) || null;
+  const { data: cay } = await k.from('trees').select('name, tree_code').eq('id', treeId).maybeSingle();
   return {
     nguoiTrungTamMacDinh: (data && data.focus_person_id) || null,
     hienNgayGio: !!(data && data.hien_ngay_gio),
@@ -573,7 +612,21 @@ export async function xoaNguoiTrungTamMacDinh(treeId) {
  */
 const GIOI_HAN = 20000;
 
-export async function layDong(treeId) {
+// ⚠ ĐỌC TRƯỚC (b157): `layPhien({ docCayLuon: true })` đã khởi hành lần đọc cây
+//   cùng vòng cây của nó. `layDong()` lấy đúng lời hứa ấy — MỘT lần, đúng cây,
+//   trong 15 giây — rồi xoá; mọi lần sau (Thử lại, đổi cây, nạp lại sau Lưu)
+//   đọc mới. Kết quả hỏng (cây vừa bị xoá…) thì nơi gọi báo lỗi như thường.
+let docTruoc = null;
+const HAN_DOC_TRUOC_MS = 15000;
+
+export function layDong(treeId) {
+  const san = docTruoc;
+  docTruoc = null;
+  if (san && san.treeId === treeId && Date.now() - san.luc < HAN_DOC_TRUOC_MS) return san.hua;
+  return docDong(treeId);
+}
+
+async function docDong(treeId) {
   const k = layKhach();
   if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', dong: null };
 
