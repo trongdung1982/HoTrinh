@@ -98,7 +98,6 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **b127b chưa bấm thật**: thẻ người kéo sang `T388` phải đủ vợ/con | — |
 | ⚠ **Ô gợi ý trên điện thoại thật chưa ai bấm lại** | `so-tay/o-goi-y.md` |
-| **Thùng rác + Rà soát VẪN ở chân *Danh sách người* của trang sơ đồ** (chủ dự án chọn giữ 29/09, chỉ gỡ *Chọn nhiều để xoá*). Gỡ nốt cần làm TRƯỚC: ① Thùng rác của cây cho chủ cây / quản trị cây (không phải QTHT) khôi phục người xoá nhầm — tab Quản trị mới chỉ QTHT; ② cảnh báo niên đại + GỘP cặp trùng của Rà soát — tab Dữ liệu mồ côi không có | `pages/person-list.js` · `pages/review.js` · `pages/form-thung-rac.js` |
 | **Dữ liệu mồ côi — hai chỗ chưa dọn được**: ① người ngoài mọi cây mà còn đứng trong cặp (ô tích khoá, `58` không xoá); ② file thừa trong thư mục của cây đang ẩn/thùng rác (luật `xoa_anh` từ chối, báo "không xoá được"). Cần thì làm SQL riêng | `pages/quan-tri/khu-du-lieu-mo-coi.js` |
 | ⚠ **Dọn thùng rác có hoàn tác được qua Kiểm duyệt không?** `luu_cay()` CHỤP dữ liệu cũ kể cả lần xoá thật (`03` khối *CHỤP ẢNH*, ý 3 nói thẳng "hoàn tác một lần Dọn thùng rác"), nhưng hộp xác nhận vẫn nói "KHÔNG hoàn tác được". Chưa ai đo; đo xong thì sửa câu ấy trong `cauKeKhiDonRac()` | `pages/form-thung-rac.js` |
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |
