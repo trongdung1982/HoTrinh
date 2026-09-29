@@ -95,9 +95,19 @@ xem lại**: ① vai `xem` thấy = nhóm NGƯỜI bật, KHÔNG giao với nhó
 riêng — chặt hơn thắng · ③ người xem có quyền sửa ở cây khác chứa người ấy thì
 thấy đủ (như b148). Muốn khác thì một chỗ ở `53`.
 
-### Sau đó — chưa đặt số, chưa chốt
+### Việc mã đã chốt (30/09/2026) — theo thứ tự
 
-*(Trống. Tạo tài khoản qua email: chủ dự án HUỶ 29/09 — `so-tay/tao-tai-khoan.md`.)*
+1. **b162a — các hàm còn đọc `tree_members.person_id` chuyển sang `tai_khoan.person_id`**
+   (khuôn vá của b132: join `tai_khoan` → `tree_persons`). Sửa lỗi thật: ô
+   tìm tài khoản/tìm người có thể hiện người CŨ; *Từ chối* ở Kiểm duyệt có
+   thể chặn nhầm/để lọt việc xoá người đang gắn. Đụng `tu_choi_thay_doi()`
+   (bản cuối `52`) + `gop_hai_nguoi()` — đọc *Chuỗi dán lại* trước. Opus.
+2. **b162b — bỏ hẳn cột `tree_members.person_id`**, sau khi không hàm nào đụng.
+3. **Sau cùng mọi việc:** đưa hai bảng nhật ký vào sao lưu (xem *Còn treo*).
+
+*(Chủ dự án bỏ 30/09: sửa `sinh-sql-di-doi.mjs` · xoá `branches`/`branch_access`
+— bảng trống vô hại, xoá phải sửa sao lưu + khôi phục + gộp người. Tạo tài
+khoản qua email: HUỶ 29/09 — `so-tay/tao-tai-khoan.md`.)*
 
 ---
 
@@ -108,8 +118,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 
 | Việc | Ghi ở đâu |
 |---|---|
-| ⚠ **`di-doi/sinh-sql-di-doi.mjs` lạc hậu từ `26`** — SQL nó sinh còn gắn `tree_id` vào bốn bảng dùng chung. Ba cây đã di dời xong nên chưa có việc; chạy sẽ lỗi to tiếng | đầu chính file ấy |
-| Bảng cố ý CHƯA sao lưu: hai bảng nhật ký (`42`, tự có thùng rác 120 ngày) · `bao_trung_nguoi` (`48`, mất chỉ mất đơn đang chờ) · `ban_sao_luu_da_ghi` (`54`, sổ dấu vân tay). Muốn vào thì sửa `sao_luu_bang_he_thong()` + `SaoLuu.gs` cùng lúc | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
+| **(Làm SAU CÙNG mọi việc — chủ dự án 30/09)** Bảng cố ý CHƯA sao lưu: hai bảng nhật ký (`42`, tự có thùng rác 120 ngày) · `bao_trung_nguoi` (`48`, mất chỉ mất đơn đang chờ) · `ban_sao_luu_da_ghi` (`54`, sổ dấu vân tay). Muốn vào thì sửa `sao_luu_bang_he_thong()` + `SaoLuu.gs` cùng lúc | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
 | ⚠ **Bảng/cột mới mang MÃ NGƯỜI phải vào `gop_hai_nguoi()` mục 5** (`48`) — sót thì gộp để lại mã thua ở đó, im lặng | `so-tay/luu-du-lieu.md` đầu file |
 | ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **b127b chưa bấm thật**: thẻ người kéo sang `T388` phải đủ vợ/con | — |
@@ -119,5 +128,5 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
 | ⚠ **`tree_members.person_id` KHÔNG chết hẳn** (đo bàn thử 30/09, b161): 3 hàm GHI (`duyet_thanh_vien` · `gan_nguoi_cho_thanh_vien` · `moi_vao_cay`), 3 hàm ĐỌC (`tu_choi_thay_doi` — chặn xoá người đang gắn thành viên · `tim_tai_khoan` · `tim_nguoi_trong_cay` — hai hàm này có thể đang đọc dữ liệu cũ từ b126), `gop_hai_nguoi` sửa nó. Bỏ cột = viết lại `tu_choi_thay_doi` (bản cuối `52`) + `gop_hai_nguoi` — chuỗi dán lại dài, làm khi có chủ dự án | `so-tay/luu-mot-dong-quan-tri.md` |
 | Repo vệ tinh `LeVanTrac` · `NguyenQuang` kẹt Pages từ 28/09 08:12 (push dồn → deploy giẫm nhau). Chủ dự án bảo **treo** — app chưa xong; lần push sau thường tự gỡ | `.github/workflows/dong-bo-sang-levantrac.yml` |
-| Đổi tên hai vết sẹo (`driveFileId` · `driveThumbUrl`) | `KIEN-TRUC.md` mục 4 |
-| **`branches` / `branch_access` dựng từ `01-bang.sql` nay KHÔNG dùng** — luật đi theo trực hệ, không chia chi *(chốt 04/09/2026)* | `06-quyen-truc-he.sql` mục 2 |
+| Đổi tên hai vết sẹo (`driveFileId` · `driveThumbUrl`) — lợi ít (người dùng không thấy gì), đụng `domains/` + cột CSDL + khôi phục bản cũ; chờ chủ dự án chốt làm hay bỏ | `KIEN-TRUC.md` mục 4 |
+| **`branches` / `branch_access` dựng từ `01-bang.sql` nay KHÔNG dùng** — luật đi theo trực hệ, không chia chi *(chốt 04/09/2026)*. GIỮ, không xoá (chủ dự án 30/09): trống, vô hại; sao lưu · khôi phục · `gop_hai_nguoi` còn nhắc tới | `06-quyen-truc-he.sql` mục 2 |
