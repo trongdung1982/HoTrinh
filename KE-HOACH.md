@@ -54,7 +54,11 @@ kéo theo file nào, bản nào đứng cuối): **`so-tay/phan-quyen.md`** mụ
 dán lại* — đọc TRƯỚC khi dán lại bất cứ file nào.
 
 **`01` → `55` — ĐÃ DÁN lên THẬT cả, tự kiểm ĐẠT cả** (`55` ngày 29/09/2026).
-Không còn file nào chờ dán.
+
+**`56-khep-cot-doi.sql` — CHỜ DÁN, ĐƯỢC dán** (b158, bàn thử `do-b158.mjs`
+22/22). Mã JS đi kèm đã đẩy, chạy được cả trước lẫn sau khi dán. Dán một
+mình nó, bảng tự kiểm cuối phải ra ĐẠT cả bốn dòng. Dán xong: Ctrl+F5, mở
+một cây, sửa một người rồi *Lưu* — cột/hàng Đời vẫn hiện số như trước.
 
 ---
 
@@ -98,7 +102,6 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **b103 → b105 của Antigravity vẫn nằm NGOÀI repo**, trong `codex/`. Từng dán thử lên Staging nhưng Staging đã XOÁ 26/09 — nay chưa dán ở đâu cả, chưa rà kỹ, chưa đo | `PHOI-HOP-AI.md` |
 | ⚠ **Bộ bất biến bố cục đang gác nhầm nhánh** — `import` từ `../giapha/js/` (đóng băng), nên sửa `supabase/js/domains/` nó vẫn xanh. `person.js` · `layout.js` · `gedcom.js` đã khác bản đóng băng (chủ dự án cho phép). Đo `layout.js` phải qua `--import ./sang-supabase.mjs` hoặc `kiem-buoc-80-sb.mjs` | `/kiem-tra` phép 9 · `so-tay/ve-so-do.md` |
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |
-| ⚠ **Vai `xem` đọc thẳng `tree_persons.doi` qua REST** — Đời của người tắt nhóm Đời vẫn lộ theo đường ấy (app không đi đường ấy, `53` khép ba đường kia). Đóng = giấu cả dòng `tree_persons`, đụng mọi chỗ hỏi "người này ở cây nào" | `luoc-do/53` đầu file · `so-tay/phan-quyen.md` |
 | **Dọn ghi chú đầu file `person-edit.js`** (212 dòng, trần 30) — chủ dự án hoãn 29/09/2026. Tám file `pages/` khác sửa ở b153a cũng còn nợ (`do-gon.mjs --tat-ca`) | `QUY-TAC-GON.md` D1 |
 | Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
 | ⚠ **`tree_members.person_id` vẫn là cột chết từ b126** — `duyet_thanh_vien()` (đơn xin vào cây) vẫn GHI vào đó; không hàm đọc nào dùng nó nữa. Bỏ hẳn cột là một bước riêng | `so-tay/luu-mot-dong-quan-tri.md` |

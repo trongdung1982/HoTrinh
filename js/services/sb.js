@@ -5,8 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.48.0 · Cập nhật: 29/09/2026 (b157b) — `layPhien()` hỏi gói
-//            `mo_phien()` (`55`), chưa có thì đi đường cũ. Lịch sử: `git log -p`.
+// Phiên bản: 0.49.0 · Cập nhật: 29/09/2026 (b158) — Đời chỉ đọc qua hàm đã che
+//            (`doc_cay().doi` · `doc_doi_cay()`, `56`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/mo-app.md (layPhien — HAI đường phải đồng bộ)
 // ============================================================
 //
@@ -677,7 +677,9 @@ async function docDong(treeId) {
   if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', dong: null };
 
   try {
-    const [cay, chung, sources, imports, maNhatKy, doi] = await Promise.all([
+    // Đời đi trong `doc_cay().doi` (bản che, từ `52`) — không đọc thẳng
+    // `tree_persons.doi` nữa: `56` thu quyền đọc cột ấy.
+    const [cay, chung, sources, imports, maNhatKy] = await Promise.all([
       k.from('trees').select('*').eq('id', treeId).maybeSingle(),
       k.rpc('doc_cay', { p_tree: treeId }),
       k.from('sources').select('*').eq('tree_id', treeId).range(0, GIOI_HAN),
@@ -687,18 +689,13 @@ async function docDong(treeId) {
       // biết vì sao thứ này phải nạp ở mọi lần mở app, và vì sao nó lại
       // được rút gọn tới mức chỉ còn một cột.
       k.from('v_ma_nhat_ky').select('ma').eq('tree_id', treeId).range(0, GIOI_HAN),
-      cauDoi(k, treeId),
     ]);
 
-    // ⚠ Đời hỏng thì cây VẪN mở, chỉ hàng Đời trống — không đưa `doi` vào
-    //   vòng dưới. Mã đẩy lên trước khi dán `40` (cột chưa có) mà chặn cả việc
-    //   mở gia phả thì là đổi một cột phụ lấy cả app.
-    if (doi.error) console.warn('[sb] chưa đọc được Đời: ' + cauLoi(doi.error));
     for (const kq of [cay, chung, sources, imports, maNhatKy]) {
       if (kq.error) return { ok: false, loi: cauLoi(kq.error), dong: null };
     }
     return ghepDong(cay.data, chung.data, sources.data, imports.data,
-                    (maNhatKy.data || []).map((r) => r.ma), (!doi.error && doi.data) || []);
+                    (maNhatKy.data || []).map((r) => r.ma));
   } catch (e) {
     return { ok: false, loi: cauLoi(e), dong: null };
   }
@@ -706,14 +703,14 @@ async function docDong(treeId) {
 
 /** Phần `dong` của gói `mo_phien()` (`55`) — cùng năm thứ, ráp qua cùng `ghepDong()`. */
 function ghepGoiDong(d) {
-  return ghepDong(d.tree, d.doc_cay, d.sources, d.imports, d.ma_nhat_ky, []);
+  return ghepDong(d.tree, d.doc_cay, d.sources, d.imports, d.ma_nhat_ky);
 }
 
 /**
  * Ráp năm thứ đọc được thành `dong` — MỘT chỗ cho cả đường đọc lẻ lẫn gói
  * `mo_phien()`, để hai đường không bao giờ ráp khác nhau.
  */
-function ghepDong(cay, chung, sources, imports, maNhatKy, doiRieng) {
+function ghepDong(cay, chung, sources, imports, maNhatKy) {
   // Hàm máy chủ tự viết câu từ chối khi người này không xem được cây —
   // in thẳng câu ấy ra, đừng chế câu khác.
   if (!chung || chung.ok !== true) {
@@ -737,10 +734,9 @@ function ghepDong(cay, chung, sources, imports, maNhatKy, doiRieng) {
       sources:  sources  || [],
       imports:  imports  || [],
       maNhatKy: maNhatKy || [],
-      // `luoc-do/40` — Đời theo cây, máy chủ tính. Từ `52` `doc_cay` tự trả
-      // bản đã che cho khách, và khách thôi đọc thẳng `tree_persons` được —
-      // có thì dùng bản ấy; máy chủ chưa dán `52` thì về câu đọc thẳng như cũ.
-      doi:      Array.isArray(chung.doi) ? chung.doi : (doiRieng || []),
+      // `luoc-do/40` — Đời theo cây, máy chủ tính; `doc_cay` trả bản đã che
+      // (`52`/`53`). Đây là đường DUY NHẤT: `56` thu quyền đọc thẳng cột ấy.
+      doi:      Array.isArray(chung.doi) ? chung.doi : [],
       // `luoc-do/50` — máy chủ đã che người còn sống (người gọi chỉ có vai xem),
       // kèm ĐÚNG danh sách mã đã che. Máy chủ chưa dán `50` thì cả hai rỗng.
       cheConSong: chung.che_con_song === true,
@@ -749,18 +745,15 @@ function ghepDong(cay, chung, sources, imports, maNhatKy, doiRieng) {
   };
 }
 
-/** Câu đọc Đời của một cây — dùng chung cho `layDong()` và `docDoi()`. Luật
- *  đọc của `tree_persons` (`26` mục 5) là cổng; không có luật ghi nào. */
-function cauDoi(k, treeId) {
-  return k.from('tree_persons').select('person_id, doi')
-    .eq('tree_id', treeId).range(0, GIOI_HAN);
-}
-
 /**
  * Đọc lại RIÊNG Đời của một cây (b125g) — sau một lần Lưu, và lúc Xuất Excel.
  *
  * Đời do trigger máy chủ tính lại trong cùng giao dịch với lần Lưu, nên đọc
- * ngay sau khi `luu_cay()` gật là đã có số mới. Một câu, vài nghìn byte.
+ * ngay sau khi `luu_cay()` gật là đã có số mới.
+ *
+ * ⚠ Đi qua `doc_doi_cay()` (`luoc-do/56`, b158) — cùng luật che với
+ *   `doc_cay().doi`. `56` thu quyền đọc thẳng cột `tree_persons.doi`; câu đọc
+ *   thẳng dưới chỉ còn để chạy khi máy chủ chưa dán `56`.
  *
  * @returns {Promise<{ok:boolean, loi:string|null, dong:Array<{person_id:string, doi:number|null}>}>}
  */
@@ -768,9 +761,18 @@ export async function docDoi(treeId) {
   const k = layKhach();
   if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', dong: [] };
   try {
-    const { data, error } = await cauDoi(k, treeId);
-    if (error) return { ok: false, loi: cauLoi(error), dong: [] };
-    return { ok: true, loi: null, dong: data || [] };
+    const { data, error } = await k.rpc('doc_doi_cay', { p_tree: treeId });
+    if (!error) {
+      if (!Array.isArray(data)) return { ok: false, loi: 'Không đọc được Đời của gia phả này.', dong: [] };
+      return { ok: true, loi: null, dong: data };
+    }
+    if (!/Could not find the function/i.test(error.message || '')) {
+      return { ok: false, loi: cauLoi(error), dong: [] };
+    }
+    const cu = await k.from('tree_persons').select('person_id, doi')
+      .eq('tree_id', treeId).range(0, GIOI_HAN);
+    if (cu.error) return { ok: false, loi: cauLoi(cu.error), dong: [] };
+    return { ok: true, loi: null, dong: cu.data || [] };
   } catch (e) {
     return { ok: false, loi: cauLoi(e), dong: [] };
   }

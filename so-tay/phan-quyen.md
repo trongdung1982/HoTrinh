@@ -49,6 +49,8 @@ Dán lại file bên trái thì phải dán tiếp các file bên phải, đúng
   chi tiết người còn sống; quên `51`/`52` là khách thấy lại trường chính chủ
   đã tắt, và đọc lại Đời qua `tree_persons`; quên `53` là người chỉ xem thấy
   lại trường chính chủ đã tắt. Cả năm im lặng.
+- ⚠ **`26` → `56`**: `26` cấp `select` CẢ BẢNG `tree_persons` — dán lại `26`
+  mà quên `56` là mọi thành viên đọc thẳng lại được cột Đời, im lặng.
 - ⚠ **`28`/`32`/`48` → `52`**: `52` VÁ TẠI CHỖ `tu_choi_thay_doi()` ·
   `luu_cay()` · `gop_hai_nguoi()` (thêm `contact`). Dán lại một trong ba mà
   quên `52` là ô Liên hệ thôi lưu / thôi trả lại / thôi gộp — im lặng.
@@ -153,9 +155,13 @@ thấy. Khách thấy = nhóm cây bật (`47`) ∩ nhóm người bật. Chỉ 
   `ds_nguoi_xem_duoc()` (→ `persons`/`media`) + `ds_nguoi_bi_che()` (→
   `unions`) · `doc_ho_so_nguoi()` (cài đặt chặt nhất — `truong_rieng_nguoi(mã,
   null)` = giao mọi cây). ⚠ `bi_che` của `doc_cay()` VẪN chỉ kể người còn
-  sống (app nói "còn sống nên lược bớt"). ⚠ **Khe còn mở**: vai `xem` đọc
-  thẳng `tree_persons.doi` — Đời của người tắt nhóm ấy lộ qua REST (app không
-  đi đường ấy). Đo: `do-b152.mjs` 29/29.
+  sống (app nói "còn sống nên lược bớt"). Đo: `do-b152.mjs` 29/29.
+- **Khép cột Đời từ `56` (b158)**: `authenticated` thôi đọc cột
+  `tree_persons.doi` (quyền THEO CỘT — chỉ `tree_id` · `person_id`); Đời chỉ
+  đi qua `doc_cay().doi` · `doc_doi_cay()` (= đúng phần ấy của `doc_cay`, gọi
+  thẳng, không chép luật) · `doc_ho_so_nguoi().cay`. Không giấu DÒNG nên mọi
+  chỗ hỏi "người này ở cây nào" chạy như cũ. ⚠ Cột mới thêm vào
+  `tree_persons` thì `authenticated` KHÔNG tự đọc được. Đo: `do-b158.mjs` 22/22.
 - **Đo trên máy THẬT bằng REST (b156, 29/09)**: b148 7/7 (`khach` vai `xem` ở
   cây 681 · 374 người bị che) · b152 9/9 (`thu-h9` tắt nhóm giới tính ở
   `TH957`). Hai bẫy khi tự viết phép đo: tắt `gioi_tinh` cho `sex='U'`, KHÔNG

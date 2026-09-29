@@ -26,10 +26,7 @@
 --   ③ `doc_ho_so_nguoi()` (trang Hồ sơ người) trả bản che, theo cài đặt CHẶT
 --     NHẤT của người ấy — trang ấy không gắn với một cây.
 --   `change_log` đã khép cho cây chỉ xem từ `50`.
--- ⚠ CÒN MỘT KHE, nói thẳng: người chỉ xem vẫn đọc thẳng được `tree_persons`
---   (cột `doi`) của cây mình. Nhóm Đời của người tắt nó vẫn lộ qua đường ấy
---   (app không đi đường ấy — nó đọc `doc_cay().doi`). Đóng = giấu cả DÒNG
---   `tree_persons`, đụng mọi chỗ đọc "người này ở cây nào" — một bước riêng.
+-- Khe cột `tree_persons.doi` (người chỉ xem đọc thẳng qua REST): khép ở `56`.
 -- ⚠ Cờ `bi_che` của `doc_cay()` vẫn chỉ kể người còn sống: app dùng nó để nói
 --   "còn sống nên đã lược bớt" — người che theo cài đặt riêng không đúng câu ấy.
 
