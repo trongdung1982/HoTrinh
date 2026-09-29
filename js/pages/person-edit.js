@@ -6,208 +6,19 @@
 // Phụ thuộc: pages/form-nen.js (nền dùng chung), pages/form-{go-noi,xoa,anh}.js,
 //            pages/quan-tri/o-goi-y.js, state, domains/{person,union,validate},
 //            services/repo, utils/{graph,text,date}, config
-// Phiên bản: 1.54.0 · Cập nhật: 29/09/2026 (b158) — đợt 7: nền dùng chung dời sang `form-nen.js`
-// Sổ tay   : so-tay/luu-du-lieu.md · so-tay/o-goi-y.md · so-tay/nguoi-xuyen-cay.md
+// Phiên bản: 1.54.1 · Cập nhật: 29/09/2026 (b158) — ghi chú đầu file 210 → 21 dòng
+// Sổ tay   : so-tay/form-nguoi.md (13 luật của form) · so-tay/luu-du-lieu.md ·
+//            so-tay/o-goi-y.md · so-tay/nguoi-xuyen-cay.md
 // ============================================================
 //
-// NGƯỢC với hai màn hình kia: form HIỆN ĐỦ MỌI Ô, kèm chữ mờ gợi ý.
-// Không ẩn ô trống — người dùng phải điền được. Thẻ thông tin ẩn hàng trống vì
-// nó KỂ về một người; form thì HỎI, mà câu hỏi không hiện ra thì không ai trả
-// lời được.
+// Form HIỆN ĐỦ MỌI Ô kèm chữ mờ gợi ý — ngược thẻ thông tin: thẻ KỂ nên ẩn hàng
+// trống, form HỎI nên phải hiện.
 //
-// --- TÁM luật của màn hình này (3 · 4–7 · 8, theo ba đợt) ---------------
-//
-// 1. THỨ ĐƯỢC RÀ PHẢI ĐÚNG LÀ THỨ ĐƯỢC GHI.
-//    Bản ghi mới được tính đúng MỘT lần bằng `updatePerson()`, rồi dùng lại cho
-//    cả phép rà lẫn lần ghi. Tính hai lần — một lần cho validate, một lần trong
-//    hàm sửa của `luuCay()` — là mở đúng cái khe mà một lỗi gõ phím lọt qua
-//    được phép rà rồi rơi xuống Drive.
-//
-// 2. RÀ TRÊN CÂY MỚI, CHỈ MỤC MỚI. `validateAll(..., 'person', {person})` chỉ
-//    soi được hai cái ngày của chính người đó; các phép soi QUAN HỆ vẫn đọc
-//    `index` và vẫn thấy năm sinh CŨ (ranh giới đã ghi trong `validate.js`,
-//    NK-B17). Nên ở đây dựng cây mới, chạy `buildIndex()` lại, rồi mới rà —
-//    59 người thì tức thì, và đổi lại là mọi phép rà cùng nhìn một bản dữ liệu.
-//
-// 3. GIAO DIỆN CHỈ ĐỔI SAU KHI MÁY CHỦ XÁC NHẬN. Form không đụng `state.tree`;
-//    `repo.luuCay()` nhận hàm sửa và tự lo phần đó. Máy chủ lắc đầu thì màn
-//    hình vẫn đang hiện đúng bản cũ, không có gì phải lùi lại.
-//
-// --- Máy chủ KHÔNG chạy lại chín luật (chốt 17/08/2026, chat 2.3) --------
-//
-// Rà soát nghiệp vụ chỉ có ở trình duyệt. `validate.js` là ES Module nạp từ
-// GitHub Pages, Apps Script không import được nó, nên "rà thêm ở máy chủ" thực
-// chất là chép chín luật sang `Code.gs` thành bản thứ hai — và hai bản sẽ trôi
-// khác nhau. Máy chủ giữ đúng lớp gác của nó (`raSoatTruocKhiGhi_` và luật
-// không được giảm bản ghi): nó hỏi "thứ này có phải cây gia phả nguyên vẹn
-// không", còn chín luật hỏi "gia phả này có hợp lý không" — hai câu khác nhau.
-//
-// ⚠ Hệ quả phải nói thẳng: người biên tập sửa tay file JSON trên Drive vẫn qua
-// mặt được cả chín luật. Đó là lỗ hổng đã biết từ trước (CLAUDE.md mục 11),
-// và rà ở máy chủ cũng KHÔNG bịt được — đường đó không đi qua `luuCay()`.
-// Ngưỡng mở lại chuyện này: khi có người ngoài nhóm nhỏ hiện nay được cấp
-// quyền sửa.
-//
-// --- THÊM NGƯỜI: ba điều của chat 2.4 (18/08/2026) ----------------------
-//
-// 4. MỘT LẦN LƯU, KHÔNG PHẢI HAI. Thêm một người con là ba việc — tạo bản ghi
-//    người, (đôi khi) tạo một union, nối con vào union — và cả ba đi trong ĐÚNG
-//    MỘT lần `luuCay()`. Lưu ba lần thì mỗi lần là một cơ hội để lần sau hỏng:
-//    lưu được người rồi mất mạng là gia phả có một người lơ lửng không nối với
-//    ai, mà app CHƯA có đường xoá (`softDeletePerson` vẫn là khung).
-//
-// 5. RÀ CẢ HAI CÂU HỎI. `validateAll(…, 'person')` hỏi *"bản ghi này có ổn
-//    không"*; `validateAll(…, 'child')` hỏi *"mối nối này có ổn không"*. Trên
-//    cây mới thì hai nhánh chồng lấn nhau gần hết, nhưng gọi cả hai là cách duy
-//    nhất không phải NGẦM tin rằng nhánh này đã bao hết nhánh kia — và nhánh
-//    `'child'` viết từ bước 17 đến đây mới chạy lần đầu trong app thật. Lời
-//    trùng nhau bị gộp lại trước khi hiện (`gopRaSoat`).
-//
-// 6. CHƯA CÓ ĐƯỜNG XOÁ, NÊN THÊM NHẦM LÀ VẾT VĨNH VIỄN. Vì thế form tự thêm một
-//    lời nhắc của RIÊNG nó khi người dùng bấm thêm mà chưa gõ một chữ tên nào.
-//    Lời ấy KHÔNG phải phép rà thứ mười: chín luật sống ở `domains/validate.js`
-//    và chỉ ở đó. Đây là lời của màn hình, và nó nói rõ mình là ai.
-//
-// 7. THỨ TỰ ANH CHỊ EM CÓ BA LỰA CHỌN, KHÔNG PHẢI HAI. Người con vừa thêm mà
-//    lớn tuổi hơn một anh chị em đứng trước thì app hỏi: vẫn thêm · thêm và
-//    sắp lại theo tuổi · huỷ. Không chặn, vì thứ tự anh em không phải lúc nào
-//    cũng theo tuổi (con vợ cả chép trước con vợ thứ là lệ có thật); cũng không
-//    tự sắp. Phép sắp chạy TRƯỚC phép rà — luật 1.
-//
-// --- XOÁ NGƯỜI: luật thứ tám (18/08/2026, chat 2.5a) --------------------
-//
-// 8. XOÁ THÌ PHẢI KỂ TÊN HẬU QUẢ, VÀ HẬU QUẢ ĐỌC TỪ CÂY MỚI. Xoá một người
-//    không tạo ra dữ liệu mới nào để chín luật rà, nên hộp xác nhận KHÔNG chạy
-//    `validateAll`. Thứ nó phải nói ra là chuyện khác: xoá người này thì AI bị
-//    ảnh hưởng, và ảnh hưởng thế nào. Câu đó chỉ trả lời được bằng cách dựng cây
-//    đã xoá rồi `buildIndex()` lại và so hai bên — cùng đúng cái lối của luật 2,
-//    và cùng một lý do: đoán bằng chỉ mục CŨ thì đoán sai.
-//
-//    Một dòng cảnh báo chung ("người này còn quan hệ, chắc chắn xoá?") thì ai
-//    cũng bấm qua. Một dòng gọi đúng tên — *"xoá xong thì bà Nhàn không còn nối
-//    với ai"* — mới là thứ người ta dừng lại đọc.
-//
-// --- NỐI VÀ GỠ NỐI: hai luật của bước 26 (20/08/2026, chat 2.5c) --------
-//
-// 9. QUAN HỆ CHA MẸ – CON ĐI QUA CẶP, KHÔNG NỐI THẲNG NGƯỜI VỚI NGƯỜI. Nên hai
-//    việc mà người dùng tưởng là một thì thật ra là một, và phải nói ra:
-//      · gỡ một người khỏi hàng VỢ/CHỒNG của một cặp còn con ⟹ người ấy đồng
-//        thời thôi làm cha/mẹ của TẤT CẢ những người con của cặp ấy;
-//      · gỡ nối với "cha" ⟹ không có cách nào giữ lại "mẹ", vì thứ bị gỡ là
-//        mối nối tới CẶP. Nên màn hình này kể cha mẹ theo CẶP, mỗi cặp một
-//        dòng, không kể theo từng người — một nút bấm phải bằng đúng một việc.
-//    Muốn bỏ hôn nhân mà giữ quan hệ cha con thì thứ phải đổi là `status` của
-//    cặp (`'divorced'`), không phải `partners`.
-//
-// 10. GỠ XONG PHẢI HỎI TIẾP: *"CẶP NÀY CÒN KHẲNG ĐỊNH ĐƯỢC ĐIỀU GÌ KHÔNG?"*
-//    Câu trả lời là `union.conLyDoTonTai()`, và hộp xác nhận phải KỂ RA trước
-//    khi làm khi câu trả lời là không — vì lúc ấy cả cặp bị xoá mềm theo, và đó
-//    là một việc lớn hơn nhiều so với thứ người dùng vừa bấm. Cùng đúng tinh
-//    thần của luật 8: một lần bấm không được gây ra thứ gì mà hộp chưa kể tên.
-//
-// --- SỬA QUAN HỆ: luật thứ mười một (21/08/2026, việc 3) ----------------
-//
-// 11. FORM NÀY SỬA QUAN HỆ ĐÃ CÓ, KHÔNG THÊM VÀ KHÔNG BỚT QUAN HỆ NÀO. Ranh
-//    giới ấy là thứ giữ cho luật 9 và 10 còn nguyên giá trị: thêm hay gỡ một
-//    mối nối là chạm vào `partners`/`children`, và mỗi lần chạm còn phải hỏi
-//    tiếp câu *"cặp này còn lý do tồn tại không"*. Khối Quan hệ chỉ đổi CHỮ
-//    trong những mục đã có — `children[].relation`, `union.status`,
-//    `union.ranks` — nên không lần nào phải hỏi câu ấy.
-//
-//    Hệ quả: `status` và thứ bậc (qua `ranks`/`rankCua()`) bây giờ sửa được từ
-//    HAI CỬA — form Sửa cặp (bước 29) và khối này. Được, và chỉ được vì cả hai
-//    gọi ĐÚNG MỘT hàm `union.updateUnion()`. Chép logic so sánh sang đây là
-//    dựng bản thứ hai, và hai bản sẽ trôi lệch nhau đúng như chín luật rà soát
-//    sẽ trôi lệch nếu chép sang `Code.gs`.
-//
-//    ⚠ Thứ bậc SỬA Ở ĐÂY luôn khoá theo NGƯỜI ĐANG MỞ MÀN HÌNH này (`mocId`) —
-//    xem `DAC-TA-RANK_V01.md`. Đây không phải hệ quả phụ, mà là chính lý do
-//    lược đồ đổi từ `rank` sang `ranks`: "thứ mấy" chỉ có nghĩa từ MỘT phía.
-//
-//    ⚠ `relation` THUỘC VỀ CẶP, KHÔNG THUỘC VỀ NGƯỜI. Sửa *"đứa này là con
-//    nuôi"* từ phía người cha là sửa đúng cùng một trường mà thẻ của người con
-//    cũng đọc. Nên đổi ở đây thì thẻ của CẢ HAI người đổi theo — đó là đúng,
-//    không phải lỗi.
-//
-//    ⚠ VÀ ĐÁNH DẤU SAI Ở ĐÂY LÀ TẮT PHÉP RÀ, KHÔNG PHẢI BÁO LỖI.
-//    `validate.js` bỏ qua mọi phép rà tuổi sinh học với quan hệ khác
-//    `'birth'`. Ghi nhầm một người con đẻ thành con nuôi không hiện ra thành
-//    một lời nào — nó chỉ làm mấy phép rà im lặng. Vì thế mặc định của mọi ô
-//    chọn ở đây là thứ ĐANG LƯU, không bao giờ là một giá trị app tự đoán.
-//
-// --- HỎI THỨ BẬC NGAY LÚC NHẬP: luật thứ mười hai (27/08/2026) ----------
-//
-// 12. CUỘC HÔN NHÂN THỨ HAI PHẢI ĐƯỢC HỎI, KHÔNG ĐƯỢC ĐOÁN — VÀ CHỈ HỎI KHI
-//    NÓ LÀ THỨ HAI. Trước hôm nay mọi đường tạo cặp đều gọi
-//    `createUnion(…, {})`, tức lặng lẽ ghi *"cặp thứ 1"* cho cả hai phía. Thêm
-//    ông D làm chồng bà C — bà đã có một đời chồng — thì gia phả nhận một câu
-//    sai mà không ai báo gì, và người dùng phải tự nhớ để vào sửa lại.
-//
-//    Nay ô ấy mọc ra ngay trong form / trong hộp Kết nối, nhưng **chỉ với người
-//    ĐÃ đứng trong ít nhất một cặp khác**. Lấy vợ/chồng lần đầu thì không hỏi
-//    gì cả: hỏi một câu chỉ có một câu trả lời là bắt người ta đọc rồi gõ lại
-//    đúng con số app vừa điền — cùng lý lẽ đã dùng cho `chonCap()`.
-//
-//    ⚠ SỐ ĐIỀN SẴN LÀ GỢI Ý, KHÔNG PHẢI KẾT LUẬN. App điền *"số cặp đang có
-//    + 1"* vì đó là ca thường gặp, nhưng ô để MỞ: gia phả cũ chép thứ bậc theo
-//    lệ chứ không theo thứ tự nhập liệu — có nhà bà cưới sau vẫn là chính thất.
-//
-//    ⚠ HỎI THEO TỪNG NGƯỜI, VÀ CÓ THỂ HỎI HAI LẦN TRONG MỘT HỘP. Nối hai người
-//    đều đã có cặp thì hộp mọc HAI ô, mỗi ô một cái mốc. Đó không phải giao
-//    diện rườm rà mà là chính điều `ranks` sinh ra để chứa: *"vợ 1 / vợ 2"* của
-//    ông A có thể là CÙNG THỜI (vợ cả / vợ thứ), còn *"chồng 1 / chồng 2"* của
-//    bà C là NỐI TIẾP (hai đời chồng) — cùng một con số, hai nghĩa, và chỉ
-//    chứa nổi cả hai khi con số gắn với NGƯỜI. Ví dụ A–B–C–D ở `KE-HOACH_V43`
-//    là bài nghiệm thu của đúng chỗ này.
-//
-//    ⚠ GÕ SAI THÌ KHÔNG ĐOÁN HỘ, VÀ FORM PHẢI NÓI RA — cùng đúng luật của ô
-//    Đời (bước 32). Ô để trống hay gõ chữ thì app ghi thứ 1 và kể ra điều đó
-//    trong khối cảnh báo, chứ không lặng lẽ chọn một con số nào khác.
-//
-// --- BA HỘP THOẠI: luật thứ mười ba (bước 65, 30/08/2026) --------------
-//
-// 13. CÂU HỎI VỀ CHỖ NỐI PHẢI NẰM TRONG CHÍNH CÁI FORM, KHÔNG ĐỨNG TRƯỚC VÀ
-//    KHÔNG ĐỨNG SAU NÓ. Chủ dự án đưa ba ảnh chụp My Family Tree
-//    (`tai-lieu/anh/My Family Tree - them *.png`) và chốt: thêm một người là
-//    MỘT màn hình, mọi câu hỏi hiện cùng lúc, sửa lại được trước khi bấm.
-//
-//    Trước hôm nay app hỏi ở hai chỗ khác, và cả hai đều sai chỗ:
-//      · TRƯỚC form — "Thêm con vào cặp nào?" mọc ra ở thẻ người, rồi biến mất
-//        khi form mở. Chọn nhầm thì phải đóng form, mở lại thẻ, bấm lại vành.
-//        Và nó chỉ hỏi khi có từ HAI cặp, nên người có đúng một cặp không có
-//        đường nào khai một người con ĐƠN THÂN.
-//      · SAU form — "Nối vào cặp Uxxxx sẵn có" (bước 63) mọc trong khối cảnh
-//        báo, tức sau khi người ta đã gõ xong và bấm nút. Đó đúng cái bệnh nếp
-//        (35) của bước 64 gọi tên: **một cửa canh đặt SAU khi người ta đã
-//        quyết thì không canh gì cả.**
-//
-//    Nay cả hai câu ấy là KHỐI TRONG FORM. Nút "Nối vào cặp sẵn có" vẫn còn,
-//    nhưng chỉ cho những cặp mà khối trong form KHÔNG kể tới — cặp một người
-//    CHƯA CÓ CON. Hỏi lại một câu người ta vừa trả lời là tự mâu thuẫn.
-//
-//    ⚠ THÊM VỢ/CHỒNG: Ô TÍCH THEO TỪNG NGƯỜI CON, NHƯNG NHẬN THEO CẢ CẶP.
-//    Ảnh mẫu bày mỗi người con một ô tích. Mô hình ở đây thì đặt quan hệ cha
-//    mẹ – con ở CẶP (luật 9), nên bước vào một cặp là thành cha/mẹ của TẤT CẢ
-//    con của cặp ấy — không có nửa vời. Hai điều ấy dung hoà được mà không nói
-//    dối: ô tích vẽ theo từng người con đúng như ảnh, nhưng tích một ô là app
-//    tích luôn cả nhóm và nói ra vì sao. Người dùng thấy hệ quả NGAY LÚC BẤM,
-//    chứ không đọc một dòng luật rồi tự suy.
-//
-//    ⚠ CON CỦA CẶP ĐÃ ĐỦ HAI NGƯỜI THÌ CHỈ KỂ, KHÔNG CHO TÍCH. `addPartner`
-//    không nhét được người thứ ba. Không kể ra thì người dùng nhìn danh sách
-//    thiếu mất đứa con họ đang nghĩ tới và tưởng app quên; kể mà cho tích thì
-//    hứa một việc không làm được.
-//
-//    ⚠ ĐỔI CHỖ NỐI LÀ XOÁ MỌI CÂU TRẢ LỜI ĐÃ CHO. Tích một cặp khác, hay chọn
-//    một cặp cha mẹ khác, thì `daXemCanhBao` · `daXemThuTu` · `sapXepLai` đều
-//    về `false` và ô thứ bậc vẽ lại. Cảnh báo cũ nói về một chỗ nối không còn
-//    được chọn nữa — giữ lại là cho người ta bấm "Vẫn thêm" cho một câu hỏi
-//    khác với câu họ đã đọc.
-//
-//    ⚠ Ô TÍCH "con nuôi" ĐỔI THÀNH Ô CHỌN ĐỦ NĂM MÃ. Ảnh mẫu bày một ô chọn,
-//    và lược đồ vốn có năm mã (`QUAN_HE_CON_NHAN`) trong khi ô tích chỉ ghi
-//    được `adopted`. Hạn chế ấy ghi trong `KE-HOACH` từ việc 8 — nay đóng, ở
-//    cả ba cửa: thêm con · thêm cha/mẹ · hộp Kết nối.
+// ⚠ "luật N" trong file này = luật N của `so-tay/form-nguoi.md` — đọc trước khi
+//   sửa. Hay vấp nhất: rà đúng thứ được ghi, trên cây mới (1–2) · một lần Lưu
+//   (4) · xoá/gỡ phải kể hậu quả (8–10) · khối Quan hệ chỉ SỬA (11) · câu hỏi
+//   chỗ nối nằm TRONG form (13).
+// ⚠ Màn hình mới → file `form-*.js` riêng; biến `let` mới → `donDepNguoi()`.
 
 // ⚠ Nền dùng chung (trạng thái `N`, bảng ô `o`, hộp, nút, ô nhập, ghi) ở
 // `form-nen.js` từ đợt 7 (b158). Nhập từ `form-*.js` vẫn hai chiều — chúng
@@ -281,7 +92,7 @@ let quanHe    = null;
 
 // --- BA HỘP THOẠI KIỂU MY FAMILY TREE (bước 65, 30/08/2026) -------------
 //
-// Xem luật 13 ở đầu file. Ba bản làm việc, cùng lối `tenPhu` và `quanHe`: form
+// Xem luật 13 (sổ tay). Ba bản làm việc, cùng lối `tenPhu` và `quanHe`: form
 // giữ RIÊNG tham chiếu tới từng ô, không đọc ngược từ `document`. Lý do y hệt
 // `thuBacNhap` — `hienNhan()` xoá sạch `N.khoiKetQua` mỗi lần nó nói một câu,
 // và mấy khối này thì vẽ lại được giữa chừng.
@@ -1421,7 +1232,7 @@ function veHangBanDoi(m, i) {
 /**
  * Nút ✉ + dòng ghi chú cho một hàng của khối Quan hệ bị KHOÁ vì cặp có người
  * ngoài cây (rào thép b128a, `so-tay/nguoi-xuyen-cay.md`). Khối này chỉ SỬA
- * quan hệ đã có (luật 11 đầu file) nên không có đường gỡ nào khác — bấm nút mở
+ * quan hệ đã có (luật 11, sổ tay) nên không có đường gỡ nào khác — bấm nút mở
  * một ô nhỏ để gõ lý do và gửi `repo.nopDeNghiQuanHe()` (b127d-2, `luoc-do/33`).
  * Quản trị hệ thống duyệt thì máy chủ TỰ GỠ; ở đây chỉ nộp đơn.
  *
@@ -1844,8 +1655,8 @@ async function handleSave(nguoi) {
 
   const thayDoi = gomThayDoi();
 
-  // Bản ghi mới tính đúng MỘT lần, dùng cho cả phép rà lẫn lần ghi — luật 1 ở
-  // đầu file. `updatePerson` là hàm thuần, `state.tree` không bị đụng tới.
+  // Bản ghi mới tính đúng MỘT lần, dùng cho cả phép rà lẫn lần ghi — luật 1
+  // (sổ tay). `updatePerson` là hàm thuần, `state.tree` không bị đụng tới.
   const kq = updatePerson(state.tree, nguoi.id, thayDoi, { boi, luc });
   if (!kq) { hienNhan('Không tìm thấy bản ghi của người này nữa. Tải lại trang rồi thử lại.', true); return; }
 
@@ -1987,7 +1798,7 @@ async function handleSave(nguoi) {
 /**
  * Thêm một người con. Trình tự giống `handleSave`, khác ba chỗ:
  *   - dựng cây mới bằng BA hàm domains nối đuôi nhau (`dungCayThemCon`);
- *   - rà bằng CẢ HAI nhánh `'person'` và `'child'` — luật 5 ở đầu file;
+ *   - rà bằng CẢ HAI nhánh `'person'` và `'child'` — luật 5 (sổ tay);
  *   - gửi lên MỘT lần lưu duy nhất, mang cả người lẫn union — luật 4.
  */
 async function handleAddChild() {

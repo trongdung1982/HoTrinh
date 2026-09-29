@@ -5,36 +5,19 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: pages/form-nen.js (nền dùng chung), state,
 //            domains/{union,validate,media}, utils/{graph,text}, config
-// Phiên bản: 1.0.2 · Cập nhật: 29/09/2026 (b158) — nhập nền từ `form-nen.js` (đợt 7)
+// Phiên bản: 1.0.3 · Cập nhật: 29/09/2026 (b158) — ghi chú đầu file 37 → 20 dòng
 // ============================================================
 //
-// Mảnh CUỐI của việc 8 (`tai-lieu/DAC-TA-GOP_V02.md` mục 5). Ba hàm thuần
-// `timCapTrung` · `timXungDotGop` · `mergeUnions` đã chạy thật từ bước 46; file
-// này chỉ là CỬA của chúng — không có một luật gộp nào viết lại ở đây.
+// Mảnh CUỐI của việc 8 (`tai-lieu/DAC-TA-GOP_V02.md` mục 5). File này chỉ là
+// CỬA của `timCapTrung` · `timXungDotGop` · `mergeUnions` — không viết lại luật gộp.
 //
-// --- NĂM quyết định của màn hình này -------------------------------------
-//
-// 1. **KHÔNG hỏi giữ cặp nào.** Luật đã chốt 23/08: cặp mang mã NHỎ HƠN được
-//    giữ, cặp kia xoá mềm. Hỏi lại một câu đã có đáp án cố định là mời người
-//    dùng trả lời sai.
-//
-// 2. **CHỈ hỏi những trường `timXungDotGop` báo là vênh THẬT.** Bên nào trống
-//    thì `mergeUnions` tự lấy bên kia. Một form dựng sẵn sáu câu hỏi mà năm
-//    câu có đúng một đáp án khả dĩ thì người đọc thôi đọc từ câu thứ hai.
-//
-// 3. **Có KHỐI XEM TRƯỚC, và nó tính bằng chính `mergeUnions`.** Người dùng
-//    thấy trước cặp sau khi gộp có mấy người, mấy con, ngày cưới nào. Tính lại
-//    bằng tay một bản tóm tắt "chắc là thế" là dựng bản sao thứ hai của luật
-//    gộp — tới ngày một bản được sửa còn bản kia không.
-//
-// 4. **Ảnh cưới hỏi MỖI LẦN, mặc định là CHUYỂN.** Quyết định 3 của đặc tả cấm
-//    đặt luật cố định. Mặc định chuyển vì cặp bị xoá sẽ không còn cửa nào mở
-//    ra được — để nguyên là ảnh biến mất khỏi mọi màn hình.
-//
-// 5. **Gộp ĐI QUA đường ghi chuẩn** (`ghiBanGhi` → `repo.luuCay`), một lần lưu
-//    mang cả hai cặp: cặp giữ lại đã gộp và cặp bị xoá mềm. Hai lần ghi là có
-//    một khoảnh khắc gia phả mang hai cặp đúng y hệt nhau mà không cặp nào bị
-//    đánh dấu — đúng cái trạng thái màn hình này sinh ra để dọn.
+// NĂM quyết định:
+// 1. KHÔNG hỏi giữ cặp nào — cặp mã NHỎ HƠN được giữ, cặp kia xoá mềm (23/08).
+// 2. CHỈ hỏi trường `timXungDotGop` báo vênh THẬT; bên trống thì lấy bên kia.
+// 3. Khối XEM TRƯỚC tính bằng chính `mergeUnions` — không tóm tắt tay (bản thứ hai).
+// 4. Ảnh cưới hỏi MỖI LẦN, mặc định CHUYỂN (cặp bị xoá không còn cửa nào mở ra).
+// 5. MỘT lần `ghiBanGhi` mang cả hai cặp — hai lần ghi là có lúc hai cặp y hệt
+//    nhau mà không cặp nào bị đánh dấu.
 
 import { N, KIEU_NUT_CHON, KIEU_NUT_CHAN, KIEU_LOP_PHU, KIEU_HOP,
          closePersonForm, canTroLuu, ghiBanGhi, hienNhan, hienLoiGhi,

@@ -101,7 +101,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Ô gợi ý trên điện thoại thật chưa ai bấm lại** | `so-tay/o-goi-y.md` |
 | ⚠ **12 bài Chrome đường LƯU chưa gác nhánh này** — chúng giả `google.script.run`, nhánh Supabase lưu qua `sb.js` (`luuCay` · `cap_ma`). `chay-supabase.mjs` (b158, 50/50 đạt) bỏ chúng ra kèm lý do. Gác lại được = viết bản giả `sb.js` cho máy chủ thử của bài Chrome — một bước riêng | `kiem-thu/chay-tat-ca.mjs` `BO_O_SUPABASE` · `/kiem-tra` phép 9 |
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |
-| **Dọn ghi chú đầu file `person-edit.js`** (212 dòng, trần 30) — chủ dự án hoãn 29/09/2026. Tám file `pages/` khác sửa ở b153a cũng còn nợ (`do-gon.mjs --tat-ca`) | `QUY-TAC-GON.md` D1 |
+| Nợ ghi chú đầu file còn 14 khoản (nặng nhất `export-image.js` 140 dòng · `review.js` 99) — trả khi chạm tới file ấy, không đi rà riêng | `do-gon.mjs --tat-ca` · `QUY-TAC-GON.md` D1 |
 | Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
 | ⚠ **`tree_members.person_id` vẫn là cột chết từ b126** — `duyet_thanh_vien()` (đơn xin vào cây) vẫn GHI vào đó; không hàm đọc nào dùng nó nữa. Bỏ hẳn cột là một bước riêng | `so-tay/luu-mot-dong-quan-tri.md` |
 | Repo vệ tinh `LeVanTrac` · `NguyenQuang` kẹt Pages từ 28/09 08:12 (push dồn → deploy giẫm nhau). Chủ dự án bảo **treo** — app chưa xong; lần push sau thường tự gỡ | `.github/workflows/dong-bo-sang-levantrac.yml` |
