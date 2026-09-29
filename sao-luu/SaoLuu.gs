@@ -786,8 +786,12 @@ function docThuMucAnh_(thuMuc) {
  *   Xong thì XOÁ hai dòng ấy. KHOI_PHUC_CAY (mã cây, uuid) để trống = mọi cây.
  * ⚠ Cây đang nằm thùng rác thì máy chủ từ chối (`co_the_sua()` = false) —
  *   phục hồi cây trong app trước.
- * ⚠ Tải lên cả ảnh app đã cố ý xoá (Drive không xoá theo). Chúng nằm trong
- *   kho mà không ai trỏ tới: tốn chỗ, không hiện ở đâu.
+ * ⚠ CHỈ tải tấm còn có dòng `media` trỏ tới (`drive_file_id` hoặc
+ *   `drive_file_id_lon` = đúng đường dẫn trong kho) — kể cả dòng đang nằm
+ *   thùng rác, vì phục hồi người thì ảnh phải về theo. Tấm Drive giữ mà không
+ *   dòng nào trỏ tới là ảnh app đã dọn hẳn (`purge.js`: xoá dòng rồi mới xoá
+ *   tệp); tải nó lên là đẻ ảnh mồ côi. Khôi phục dữ liệu chữ TRƯỚC, ảnh SAU:
+ *   làm ngược thì bảng `media` chưa về, không tấm nào được coi là cần.
  */
 function khoiPhucAnh() {
   var cauHinh = docCauHinh_();
@@ -810,11 +814,20 @@ function khoiPhucAnh() {
   var coSan = {};
   docKhoAnh_(cauHinh).tep.forEach(function (t) { coSan[t.ten] = true; });
 
+  // Tấm nào dữ liệu gia phả còn cần. Giá trị không có '/' là mã tệp Google
+  // Drive từ thời bản Apps Script — không nằm trong kho này, bỏ qua.
+  var canDung = {};
+  docBang_(cauHinh, 'media').forEach(function (m) {
+    [m.drive_file_id, m.drive_file_id_lon].forEach(function (d) {
+      if (d && String(d).indexOf('/') > 0) canDung[d] = true;
+    });
+  });
+
   var phieuGhi = xinPhieu_(cauHinh, email, matKhau,
     'Không đăng nhập được tài khoản khôi phục. Kiểm EMAIL_KHOI_PHUC và ' +
     'MAT_KHAU_KHOI_PHUC trong Script Properties.');
 
-  var kq = { taiLen: 0, daCo: 0, conLai: 0, loi: '' };
+  var kq = { taiLen: 0, daCo: 0, moCoi: 0, conLai: 0, loi: '' };
   var loiLienTiep = 0;
   var cacCay = goc.getFolders();
   while (cacCay.hasNext()) {
@@ -825,6 +838,7 @@ function khoiPhucAnh() {
     Object.keys(tep).forEach(function (ten) {
       var duong = cay + '/' + ten;
       if (coSan[duong]) { kq.daCo++; return; }
+      if (!canDung[duong]) { kq.moCoi++; return; }
       if (hetGio_(cauHinh) || loiLienTiep >= SO_LOI_LIEN_TIEP_TOI_DA) { kq.conLai++; return; }
       var loi = taiAnhLen_(cauHinh, phieuGhi, duong, tep[ten].getBlob());
       if (loi === '') { kq.taiLen++; loiLienTiep = 0; return; }
@@ -836,7 +850,8 @@ function khoiPhucAnh() {
   }
 
   var ket = 'Khôi phục ảnh: tải lên ' + kq.taiLen + ' tấm, ' + kq.daCo +
-            ' tấm kho đã có sẵn, còn ' + kq.conLai + ' tấm chưa tải.' +
+            ' tấm kho đã có sẵn, bỏ qua ' + kq.moCoi + ' tấm không còn ai dùng' +
+            ', còn ' + kq.conLai + ' tấm chưa tải.' +
             (kq.loi ? '\nLỗi đầu tiên: ' + kq.loi : '') +
             (kq.conLai ? '\nBấm chạy lại khoiPhucAnh để làm tiếp.'
                        : '\nXONG. Nhớ xoá EMAIL_KHOI_PHUC và MAT_KHAU_KHOI_PHUC.');

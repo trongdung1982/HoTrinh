@@ -355,8 +355,13 @@ Ra *"còn N tấm chưa chép"* kèm một câu lỗi thì chép câu ấy gửi
 ### Khôi phục ảnh — hàm `khoiPhucAnh`
 
 Dùng khi ảnh trên app mất (hoặc sau khi khôi phục dữ liệu từ file JSON). Nó
-tải lên những tấm **có trên Drive mà kho Supabase đang thiếu**. Tấm còn thì
-bỏ qua, nên chạy thừa không hại gì.
+đọc dữ liệu gia phả xem **tấm ảnh nào còn được dùng** (kể cả ảnh của người
+đang nằm thùng rác), rồi chỉ tải lên những tấm ấy mà kho Supabase đang thiếu.
+Ảnh đã dọn hẳn khỏi app thì Drive vẫn giữ nhưng **không tải lên**, kẻo thành
+ảnh mồ côi. Tấm kho còn thì bỏ qua, nên chạy thừa không hại gì.
+
+⚠ Phải khôi phục dữ liệu (file JSON) **trước**, ảnh **sau**. Làm ngược thì
+dữ liệu chưa về, máy coi mọi tấm là không ai dùng và không tải tấm nào.
 
 Tài khoản sao lưu cố ý **không ghi được gì**, nên việc này cần tài khoản của
 bạn (Quản trị hệ thống), điền **tạm**:
@@ -370,8 +375,8 @@ bạn (Quản trị hệ thống), điền **tạm**:
    *(Chỉ muốn khôi phục một gia phả: thêm `KHOI_PHUC_CAY` = tên thư mục của
    cây ấy trong `Anh`.)* → **Save script properties**.
 2. Về **Editor** → chọn hàm **`khoiPhucAnh`** → **Run**.
-3. Đọc dòng nhật ký: *"tải lên N tấm, M tấm kho đã có sẵn, còn 0 tấm chưa
-   tải. XONG."* Ra *"còn … Bấm chạy lại"* thì bấm **Run** lần nữa (hết giờ,
+3. Đọc dòng nhật ký: *"tải lên N tấm, M tấm kho đã có sẵn, bỏ qua K tấm
+   không còn ai dùng, còn 0 tấm chưa tải. XONG."* Ra *"còn … Bấm chạy lại"* thì bấm **Run** lần nữa (hết giờ,
    nó làm tiếp). Ra *"bị từ chối"* thì tài khoản ấy không phải Quản trị hệ
    thống, hoặc gia phả đang nằm thùng rác (phục hồi nó trong app trước).
 4. **Xoá** hai dòng `EMAIL_KHOI_PHUC`, `MAT_KHAU_KHOI_PHUC` (và

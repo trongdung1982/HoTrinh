@@ -880,27 +880,39 @@ const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac', 'bao_trung_nguoi'];
 {
   const C = '00000000-0000-4000-8000-0000000000c1';
   const D = '00000000-0000-4000-8000-0000000000c2';
-  const kho = { [C + '/p.jpg']: 'P', [C + '/q.jpg']: 'Q', [D + '/r.jpg']: 'R' };
+  const kho = { [C + '/p.jpg']: 'P', [C + '/q.jpg']: 'Q', [D + '/r.jpg']: 'R',
+                [C + '/mo-coi.jpg']: 'M' };
   const a = dungMoiTruong({ duLieu: cayGia(), khoAnhThat: kho });
   a.api.saoLuuNgay();
 
+  // Dữ liệu gia phả trỏ tới p (bản nhỏ) + q (bản lớn) + r (dòng đang ở thùng
+  // rác — vẫn phải về). `mo-coi.jpg` đã được app dọn hẳn: không dòng nào trỏ.
+  // Thêm một mã tệp Drive đời Apps Script (không có '/') — phải bị bỏ qua.
+  const cayGiaAnh = () => Object.assign(cayGia(), { media: [
+    { id: 'M1', drive_file_id: C + '/p.jpg', drive_file_id_lon: C + '/q.jpg', deleted: false },
+    { id: 'M2', drive_file_id: D + '/r.jpg', drive_file_id_lon: '', deleted: true },
+    { id: 'M3', drive_file_id: '1AbCdriveCu', drive_file_id_lon: '', deleted: false }] });
+
   // Kho mất sạch, trừ một tấm.
   const kp = { EMAIL_KHOI_PHUC: EMAIL_KP, MAT_KHAU_KHOI_PHUC: MAT_KHAU_KP };
-  const b = dungMoiTruong({ duLieu: cayGia(), khoAnhThat: { [C + '/q.jpg']: 'Q' },
+  const b = dungMoiTruong({ duLieu: cayGiaAnh(), khoAnhThat: { [C + '/q.jpg']: 'Q' },
                             thuMuc: a.thuMuc, thuocTinh: kp });
   const ket = b.api.khoiPhucAnh();
   kiem('khôi phục: tải lên đúng 2 tấm thiếu, bỏ qua tấm kho còn, nội dung đúng',
        b.nhatKy.taiLen.length === 2 && b.khoAnhThat[C + '/p.jpg'] === 'P' &&
        b.khoAnhThat[D + '/r.jpg'] === 'R' && /tải lên 2 tấm, 1 tấm kho đã có/.test(ket),
        ket.split('\n')[0]);
+  kiem('ảnh app đã dọn hẳn (không dòng media nào trỏ): KHÔNG tải lên — không đẻ ảnh mồ côi',
+       b.khoAnhThat[C + '/mo-coi.jpg'] === undefined && /bỏ qua 1 tấm không còn ai dùng/.test(ket),
+       ket.split('\n')[0]);
   kiem('khôi phục xong: nhắc xoá hai dòng mật khẩu, không lộ mật khẩu',
        /XONG/.test(ket) && !ket.includes(MAT_KHAU_KP) &&
        !b.nhatKy.log.join('\n').includes(MAT_KHAU_KP), '');
   kiem('chạy lại lần hai: không tải gì nữa',
-       /tải lên 0 tấm, 3 tấm kho đã có/.test(dungMoiTruong({ duLieu: cayGia(),
+       /tải lên 0 tấm, 3 tấm kho đã có/.test(dungMoiTruong({ duLieu: cayGiaAnh(),
          khoAnhThat: b.khoAnhThat, thuMuc: a.thuMuc, thuocTinh: kp }).api.khoiPhucAnh()), '');
 
-  const chi = dungMoiTruong({ duLieu: cayGia(), thuMuc: a.thuMuc,
+  const chi = dungMoiTruong({ duLieu: cayGiaAnh(), thuMuc: a.thuMuc,
                               thuocTinh: Object.assign({ KHOI_PHUC_CAY: D }, kp) });
   chi.api.khoiPhucAnh();
   kiem('KHOI_PHUC_CAY: chỉ tải ảnh của đúng cây ấy',
@@ -915,7 +927,7 @@ const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac', 'bao_trung_nguoi'];
        loi.slice(0, 80));
 
   // Điền nhầm tài khoản SAO LƯU vào ô khôi phục: máy chủ từ chối (vai chỉ đọc).
-  const nham = dungMoiTruong({ duLieu: cayGia(), thuMuc: a.thuMuc,
+  const nham = dungMoiTruong({ duLieu: cayGiaAnh(), thuMuc: a.thuMuc,
     thuocTinh: { EMAIL_KHOI_PHUC: EMAIL_THU, MAT_KHAU_KHOI_PHUC: MAT_KHAU_THU } });
   const ketNham = nham.api.khoiPhucAnh();
   kiem('tài khoản không ghi được ảnh: báo "bị từ chối", còn lại 3 tấm, bảo chạy lại',

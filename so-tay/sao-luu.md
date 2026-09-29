@@ -15,8 +15,10 @@
 ## Ảnh — ba điều cố ý
 
 - Drive **không xoá theo** app (app xoá ảnh là xoá thật, `xoaAnhThat()`), nên
-  khôi phục dữ liệu về hôm qua vẫn có ảnh. Đổi lại `Anh` chỉ lớn lên, và
-  `khoiPhucAnh` đưa cả ảnh đã xoá về kho (mồ côi, không hiện ở đâu).
+  khôi phục dữ liệu về hôm qua vẫn có ảnh. Đổi lại `Anh` chỉ lớn lên.
+- `khoiPhucAnh` **chỉ tải tấm còn dòng `media` trỏ tới** (kể cả dòng ở thùng
+  rác) — tải theo "Drive có mà kho thiếu" thì đẻ ảnh mồ côi (chủ dự án bắt,
+  29/09). Nên khôi phục dữ liệu chữ TRƯỚC, ảnh SAU.
 - Số ảnh báo nhật ký nằm ở `demBao`, **không** ở `banSao.dem` — dem ấy vào
   `DEM_LAN_TRUOC` để so sụt giảm, "chưa chép" giảm là tin tốt.
 - Khôi phục cần tài khoản GHI (`ghi_anh` = `co_the_sua()`), vai `sao_luu`
