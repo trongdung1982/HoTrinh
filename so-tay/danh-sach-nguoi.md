@@ -78,3 +78,14 @@ không cửa nào tới được — kể cả màn hình Danh sách người, v
    trống. Hai nút, hai loại: nút *Thùng rác (n)* là một CỬA nên phải luôn tìm
    lại được; nút này là một VIỆC, mà việc không có gì để làm thì đừng mời bấm.
 ```
+
+## Dọn thùng rác có hoàn tác được không (đo b161e, 30/09/2026)
+
+- Người được **tự duyệt** (chủ cây · quản trị · tin cậy) dọn → dòng `change_log`
+  là `duyet` → **không** hoàn tác được: `tu_choi_thay_doi()` chỉ nhận dòng `cho`.
+- Người **sửa thường** dọn → dòng `cho` → người quản lý *Từ chối* là người +
+  bản ghi ảnh về lại (`luu_cay` đã chụp `truoc`).
+- ⚠ Vì thế trình duyệt KHÔNG được xoá file ảnh khi `luuCay()` trả
+  `trangThai: 'cho'` — trước b161e nó xoá luôn, từ chối xong ảnh hỏng. Duyệt
+  xong thì file thành file thừa, tab *Dữ liệu mồ côi* dọn.
+- Đo lại: `kiem-thu/ban-thu-sql/do-b161e.mjs`.

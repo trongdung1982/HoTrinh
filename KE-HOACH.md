@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 29/09/2026 · Hai mươi mốt điểm dừng chưa bấm thử.*
+*Cập nhật 30/09/2026 · Hai mươi sáu điểm dừng chưa bấm thử · ba file SQL chờ dán (`59` `60` `61`).*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -83,8 +83,9 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-Bấm thử các điểm dừng ở trên (ba điểm b151 trước tiên). Việc mã lớn còn lại nằm
-ở *Còn treo*. ⚠ b145 và phần khách của
+**Dán `59` → `60` → `61`** (thứ tự nào cũng được — mỗi file tự kiểm), rồi bấm
+thử các điểm dừng ở trên (ba điểm b151 và b161a–e trước tiên). Việc mã còn lại
+ở *Còn treo* đều cần chủ dự án quyết trước. ⚠ b145 và phần khách của
 b150 Claude KHÔNG đo REST được: cần đặt cây mặc định = cờ Quản trị hệ thống,
 hai tài khoản thử không có — phải bấm tay bằng tài khoản của bạn.
 

@@ -7,6 +7,7 @@
 //            domains/{person,union,purge}, services/{repo,sb}, utils/date
 // Phiên bản: 1.1.0 · Cập nhật: 30/09/2026 (b161e) — lần dọn CHỜ DUYỆT không xoá file ảnh
 //            (từ chối thì ảnh còn); câu cảnh báo nói đúng khi nào hoàn tác được
+// Sổ tay   : so-tay/danh-sach-nguoi.md (mục *Dọn thùng rác có hoàn tác được không*)
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 2 của
