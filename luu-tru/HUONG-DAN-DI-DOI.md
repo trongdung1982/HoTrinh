@@ -229,8 +229,8 @@ cũ.
 Chủ dự án không cần đọc mục này.
 
 ```
-node supabase/di-doi/sinh-sql-di-doi.mjs --file tai-lieu/giapha-nguyen-trong-bac.json --ma-cay NTB
-node supabase/di-doi/sinh-sql-di-doi.mjs --file tai-lieu/giapha-nguyen-phuc-giao.json --ma-cay NPGQ8C9 --ra tai-lieu/di-doi-NPG-20260905.sql
+node supabase/luu-tru/sinh-sql-di-doi.mjs --file tai-lieu/giapha-nguyen-trong-bac.json --ma-cay NTB
+node supabase/luu-tru/sinh-sql-di-doi.mjs --file tai-lieu/giapha-nguyen-phuc-giao.json --ma-cay NPGQ8C9 --ra tai-lieu/di-doi-NPG-20260905.sql
 ```
 
 ⚠ Từ 05/09/2026 bộ sinh **tự dựng cây nếu `tree_code` chưa có trên máy chủ**,

@@ -29,7 +29,7 @@ file. ⚠ `KE-HOACH.md` **hết trần** (b131) — gọn bằng kỷ luật "xo
 | **Lúc mở app** · `layPhien` · `mo_phien` | ⚠ `so-tay/mo-app.md` (hai đường phải đồng bộ) |
 | Đụng ảnh | `KIEN-TRUC.md` mục 7 (kho KÍN, `59`) |
 | Đụng sao lưu, **khôi phục** | ⚠ `so-tay/sao-luu.md` *(bản đồ file)* |
-| Đụng di dời dữ liệu vào bảng | `di-doi/HUONG-DAN-DI-DOI.md` · `di-doi/sinh-sql-di-doi.mjs` |
+| Di dời JSON cũ vào bảng *(LƯU TRỮ, lạc hậu từ `26`)* | `luu-tru/` |
 | Thêm/nâng cấp thư viện | `js/vendor/DOC-VENDOR.md` — và **hỏi chủ dự án trước** |
 | **Gặp lỗi / điều đáng chú ý** · dọn rác · ghi chú đầu file · phép 10 báo LỖI | `QUY-TAC-GON.md` mục 4–5 · `so-tay/` · đo: `node kiem-thu/do-gon.mjs` |
 | Xuất/nhập GEDCOM, Excel | `so-tay/nhap-xuat.md` · `../tai-lieu/CAU-TRUC-DU-LIEU_V06.md` mục *Ánh xạ* · ⚠ Đời (lưu, `luoc-do/40`), xuất Excel: `so-tay/xuat-excel.md` |

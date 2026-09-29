@@ -105,7 +105,7 @@ thấy đủ (như b148). Muốn khác thì một chỗ ở `53`.
 2. **b162b — bỏ hẳn cột `tree_members.person_id`**, sau khi không hàm nào đụng.
 3. **Sau cùng mọi việc:** đưa hai bảng nhật ký vào sao lưu (xem *Còn treo*).
 
-*(Chủ dự án bỏ 30/09: sửa `sinh-sql-di-doi.mjs` · xoá `branches`/`branch_access`
+*(Chủ dự án bỏ 30/09: đổi tên `driveFileId`/`driveThumbUrl` · sửa `sinh-sql-di-doi.mjs` (cất vào `luu-tru/`) · xoá `branches`/`branch_access`
 — bảng trống vô hại, xoá phải sửa sao lưu + khôi phục + gộp người. Tạo tài
 khoản qua email: HUỶ 29/09 — `so-tay/tao-tai-khoan.md`.)*
 
@@ -128,5 +128,4 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
 | ⚠ **`tree_members.person_id` KHÔNG chết hẳn** (đo bàn thử 30/09, b161): 3 hàm GHI (`duyet_thanh_vien` · `gan_nguoi_cho_thanh_vien` · `moi_vao_cay`), 3 hàm ĐỌC (`tu_choi_thay_doi` — chặn xoá người đang gắn thành viên · `tim_tai_khoan` · `tim_nguoi_trong_cay` — hai hàm này có thể đang đọc dữ liệu cũ từ b126), `gop_hai_nguoi` sửa nó. Bỏ cột = viết lại `tu_choi_thay_doi` (bản cuối `52`) + `gop_hai_nguoi` — chuỗi dán lại dài, làm khi có chủ dự án | `so-tay/luu-mot-dong-quan-tri.md` |
 | Repo vệ tinh `LeVanTrac` · `NguyenQuang` kẹt Pages từ 28/09 08:12 (push dồn → deploy giẫm nhau). Chủ dự án bảo **treo** — app chưa xong; lần push sau thường tự gỡ | `.github/workflows/dong-bo-sang-levantrac.yml` |
-| Đổi tên hai vết sẹo (`driveFileId` · `driveThumbUrl`) — lợi ít (người dùng không thấy gì), đụng `domains/` + cột CSDL + khôi phục bản cũ; chờ chủ dự án chốt làm hay bỏ | `KIEN-TRUC.md` mục 4 |
 | **`branches` / `branch_access` dựng từ `01-bang.sql` nay KHÔNG dùng** — luật đi theo trực hệ, không chia chi *(chốt 04/09/2026)*. GIỮ, không xoá (chủ dự án 30/09): trống, vô hại; sao lưu · khôi phục · `gop_hai_nguoi` còn nhắc tới | `06-quyen-truc-he.sql` mục 2 |

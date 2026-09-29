@@ -108,8 +108,9 @@ nghĩa là chạm vào `domains/`.
 | Cột `drive_file_id`, trường `driveFileId` | Không còn Drive nào; giá trị nay là đường dẫn kho Supabase | `domains/media.js`, `gedcom.js`, `excel.js` và bảy màn hình đọc/ghi trường này ở hơn ba mươi chỗ |
 | Hàm `driveThumbUrl()` | Tra URL có chữ ký (kho kín, mục 7), và **bỏ qua tham số `size`** | Tám chỗ gọi, một trong đó là `domains/render.js` |
 
-Đổi tên cả hai là **một việc riêng**, một phiên riêng, có bước đổi dữ liệu và
-có bộ kiểm chạy lại. Đừng để nó lẻn vào một lần sửa khác.
+**Chủ dự án chốt 30/09/2026: KHÔNG đổi tên.** Người dùng không thấy gì, còn cái
+giá là `domains/` + cột CSDL + khôi phục bản sao lưu cũ. Tên cũ ở lại, bảng
+này là lời giải thích.
 
 *(Vết thứ ba — giàn giáo `services/tuong-thich.js` — đã tháo và xoá ở b161b,
 30/09/2026: màn cuối cùng dựa vào nó, `chon-gia-pha`, nay gọi thẳng `sb.js`.)*
@@ -179,11 +180,11 @@ Hai chỗ hở còn nguyên, đừng mô tả hơn thế:
    chuyện thứ hai chỉ chứng minh được bằng cách đổ ngược vào một project trống.
 2. **Ảnh không được chép**, chỉ được liệt kê. Xem mục 7.
 
-**Di dời dữ liệu (H5): mã xong, chưa ai dán.** `di-doi/sinh-sql-di-doi.mjs`
+**Di dời dữ liệu (H5): mã xong, chưa ai dán.** `luu-tru/sinh-sql-di-doi.mjs` *(lưu trữ 30/09/2026 — lạc hậu từ `26`, không chạy)*
 sinh một file `.sql` để chủ dự án dán vào SQL Editor — không đi qua `luu_cay()`,
 và đó là **cố ý phá lệ cửa ghi duy nhất** cho đúng một việc làm một lần, ngoài
 app, do chính chủ dự án bấm. Lý do đầy đủ ở `KE-HOACH.md` việc 2. Ngày nào
-thấy app gọi tới `di-doi/` là ranh giới đã vỡ.
+thấy app gọi tới `luu-tru/` là ranh giới đã vỡ.
 
 ⚠ Đây là dự án Apps Script **RIÊNG**, không phải `giapha/gas/`. Bước H8 của
 `KE-HOACH-HA-TANG-Supabase_V01.md` viết *"gỡ deploy dạng web app"* — câu ấy viết

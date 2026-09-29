@@ -247,7 +247,7 @@ console.log('\nPHẦN F — quét cả thư mục tìm chỗ còn ĐẶT vai cũ
 
 {
   const gocLuoc = resolve(DAY, '../luoc-do');
-  const gocDiDoi = resolve(DAY, '../di-doi');
+  const gocDiDoi = resolve(DAY, '../luu-tru');   // bộ sinh SQL di dời, cất ở đây từ 30/09/2026
   const soi = [];
 
   for (const f of readdirSync(gocLuoc).filter((x) => x.endsWith('.sql'))) {
@@ -258,7 +258,7 @@ console.log('\nPHẦN F — quét cả thư mục tìm chỗ còn ĐẶT vai cũ
     soi.push([join(gocLuoc, f), 'luoc-do/' + f]);
   }
   for (const f of readdirSync(gocDiDoi).filter((x) => x.endsWith('.mjs'))) {
-    soi.push([join(gocDiDoi, f), 'di-doi/' + f]);
+    soi.push([join(gocDiDoi, f), 'luu-tru/' + f]);
   }
 
   const banAn = [];

@@ -1,5 +1,5 @@
 // ============================================================
-// giapha-supabase · di-doi/sinh-sql-di-doi.mjs
+// giapha-supabase · luu-tru/sinh-sql-di-doi.mjs   ⚠ LƯU TRỮ 30/09/2026 — lạc hậu từ `26`, KHÔNG chạy
 // Vai trò  : Đọc một file gia phả `giapha-json` và sinh ra MỘT file `.sql`
 //            để dán vào Supabase → SQL Editor. Đây là bước di dời dữ liệu
 //            (H5) từ bản Apps Script sang bản Supabase.
@@ -296,7 +296,7 @@ export function sinhSql(cay, tuyChon) {
 '-- ============================================================',
 '-- DI DỜI DỮ LIỆU GIA PHẢ  →  Supabase',
 '--',
-'-- Sinh tự động bởi: supabase/di-doi/sinh-sql-di-doi.mjs',
+'-- Sinh tự động bởi: supabase/luu-tru/sinh-sql-di-doi.mjs',
 '-- Từ file nguồn   : ' + tuyChon.tenNguon,
 '-- Cây đích        : tree_code = ' + maCay,
 '-- Sinh lúc        : ' + tuyChon.luc,
@@ -574,7 +574,7 @@ function chay(argv) {
     console.log('  ' + bang.padEnd(15) + dem[bang]);
   }
   console.log('');
-  console.log('Bước tiếp theo: mở supabase/di-doi/HUONG-DAN-DI-DOI.md');
+  console.log('Bước tiếp theo: mở supabase/luu-tru/HUONG-DAN-DI-DOI.md');
 }
 
 /** `dd/mm/yyyy HH:mm` của lúc này — khuôn thời gian duy nhất của cả dự án. */

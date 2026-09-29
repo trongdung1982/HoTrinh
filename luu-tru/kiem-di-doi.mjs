@@ -1,9 +1,9 @@
 // ============================================================
-// giapha-supabase · kiem-thu/kiem-di-doi.mjs
-// Vai trò  : Kiểm `di-doi/sinh-sql-di-doi.mjs` — bộ sinh file SQL di dời dữ
+// giapha-supabase · luu-tru/kiem-di-doi.mjs
+// Vai trò  : Kiểm `luu-tru/sinh-sql-di-doi.mjs` — bộ sinh file SQL di dời dữ
 //            liệu — bằng cách sinh SQL từ gia phả thật rồi BÓC NGƯỢC dữ liệu
 //            ra khỏi chính file ấy và so lại với cây nguồn.
-// Chạy     : cd supabase/kiem-thu && node kiem-di-doi.mjs
+// Chạy     : node supabase/luu-tru/kiem-di-doi.mjs   (LƯU TRỮ — bộ sinh lạc hậu từ `26`)
 // Phiên bản: 0.1.0 · Cập nhật: 04/09/2026 09:31
 // ============================================================
 //
@@ -34,7 +34,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { docCay, dienUid, sinhSql, isoTuDau, nhatKyRa }
-  from '../di-doi/sinh-sql-di-doi.mjs';
+  from './sinh-sql-di-doi.mjs';
 import { rapCay, soSanh, coGiDeGhi } from '../js/services/hinh-dang.js';
 import { sinhUid } from '../js/utils/id.js';
 
