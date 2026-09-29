@@ -5,7 +5,7 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.49.0 · Cập nhật: 29/09/2026 (b158) — Đời chỉ đọc qua hàm đã che
+// Phiên bản: 0.50.0 · Cập nhật: 29/09/2026 (b159b) — dsNguoiDaXoa() (luoc-do/57)
 //            (`doc_cay().doi` · `doc_doi_cay()`, `56`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/mo-app.md (layPhien — HAI đường phải đồng bộ)
 // ============================================================
@@ -818,6 +818,35 @@ export async function dsNguoiMoCoi() {
     gioi: r.gioi || '',
     daXoa: Boolean(r.da_xoa),
     soHonNhan: Number(r.so_hon_nhan) || 0,
+  }));
+  return { ok: true, loi: null, ds };
+}
+
+/**
+ * Người mang cờ `deleted` của MỌI cây — `ds_nguoi_da_xoa()` của `luoc-do/57`
+ * (b159b). Chỉ QTHT nhận dòng. Người xuyên cây ra một dòng cho mỗi cây.
+ * Máy chủ chưa dán `57` thì `chuaDan = true` — nơi gọi nói đúng câu ấy.
+ */
+export async function dsNguoiDaXoa() {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', ds: [] };
+  const { data, error } = await k.rpc('ds_nguoi_da_xoa');
+  if (error) {
+    const chuaDan = /Could not find the function/i.test(error.message || '');
+    return { ok: false, chuaDan, ds: [],
+             loi: chuaDan ? 'Máy chủ chưa có hàm này — chưa dán luoc-do/57.' : cauLoi(error) };
+  }
+  const ds = (data || []).map((r) => ({
+    treeId: r.tree_id,
+    tenCay: r.ten_cay || '',
+    maCay: r.ma_cay || '',
+    maNguoi: r.person_id,
+    ten: r.ten || '',
+    namSinh: r.nam_sinh || '',
+    namMat: r.nam_mat || '',
+    gioi: r.gioi || '',
+    xoaLuc: r.xoa_luc || '',
+    xoaBoi: r.xoa_boi || '',
   }));
   return { ok: true, loi: null, ds };
 }

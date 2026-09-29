@@ -4,7 +4,7 @@
 // Lớp      : services — được gọi bởi: pages · gọi: services/sb,
 //            services/hinh-dang, utils, state
 // Phụ thuộc: services/sb.js, services/hinh-dang.js, utils/graph.js, state.js
-// Phiên bản: 0.11.0 · Cập nhật: 29/09/2026 (b157) — đọc cây sẵn từ layPhien, xin mã chạy ngầm
+// Phiên bản: 0.12.0 · Cập nhật: 29/09/2026 (b159b) — napCayRieng/luuCayRieng cho trang Quản trị
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/mo-app.md (khoiTao · napCay)
 // ============================================================
 //
@@ -331,6 +331,63 @@ export async function luuCay(apDung, moTa) {
 
   console.log('[repo] đã lưu: revision ' + kq.revision + ' · ' + tomTat(ops));
   return kq;
+}
+
+// ============================================================
+// CÂY RIÊNG — nạp/lưu MỘT cây theo mã, KHÔNG đụng `state` (b159b)
+// ============================================================
+//
+// Cho trang Quản trị: QTHT dọn thùng rác người của MỌI cây, và trang ấy không
+// có "cây đang mở" (luật b110b). Cùng đường ghi với `luuCay()` ở trên — bản
+// sao · `apDung` · `soSanh` · `luu_cay()` — chỉ khác chỗ cầm cây: nơi gọi giữ.
+// ⚠ Không xin mã, không cập nhật Đời, không `notify()`: dọn thùng rác không
+//   tạo bản ghi mới, và trang Quản trị không vẽ sơ đồ.
+
+/**
+ * @param {string} treeId
+ * @returns {Promise<{ok:boolean, loi:string|null, cay:object|null}>}
+ */
+export async function napCayRieng(treeId) {
+  try {
+    const kq = await sb.layDong(treeId);
+    if (!kq || !kq.ok) return { ok: false, loi: (kq && kq.loi) || 'Máy chủ không trả cây.', cay: null };
+    return { ok: true, loi: null, cay: kiemPhienBan(rapCay(kq.dong)) };
+  } catch (e) {
+    return { ok: false, loi: e && e.message ? e.message : String(e), cay: null };
+  }
+}
+
+/**
+ * Lưu một cây đã nạp bằng `napCayRieng()`. `cay` không bị sửa; máy chủ gật
+ * thì kết quả mang `cay` mới (đã tăng số bản ghi) để lưu tiếp được.
+ *
+ * @param {string} treeId
+ * @param {object} cay
+ * @param {function(object):void} apDung  sửa trên bản sao
+ * @param {object|function():object} [moTa]  hàm thì gọi SAU `apDung` — mô tả
+ *        thường cần thứ `apDung` vừa tính ra (số cặp, số ảnh bị dọn)
+ */
+export async function luuCayRieng(treeId, cay, apDung, moTa) {
+  const banNhap = JSON.parse(JSON.stringify(cay));
+  apDung(banNhap);
+  const ops = soSanh(cay, banNhap);
+  if (!coGiDeGhi(ops)) return { ok: true, lyDo: 'khongdoigi', loi: null, cay };
+  const mt = typeof moTa === 'function' ? moTa() : moTa;
+
+  let kq;
+  try {
+    kq = await sb.luuCay(treeId, cay.tree.revision, ops, mt || null);
+  } catch (e) {
+    return tuChoi('khongnoiduoc', 'Không gọi được máy chủ nên chưa lưu được. ' +
+      (e && e.message ? e.message : String(e)));
+  }
+  if (!kq) return tuChoi('khongtraloi', 'Máy chủ không trả về gì khi lưu.');
+  if (!kq.ok) return kq;
+
+  banNhap.tree.revision = kq.revision;
+  tangSoSauKhiLuu(banNhap, ops);
+  console.log('[repo] đã lưu cây ' + treeId + ': revision ' + kq.revision + ' · ' + tomTat(ops));
+  return { ...kq, cay: banNhap };
 }
 
 /**

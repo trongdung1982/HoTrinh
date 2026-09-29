@@ -41,6 +41,11 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   một tài khoản gọi lại. Mọi hộp gọi TÊN CÂY (`cumCay`, luật 5a).
 - **Máy chủ chưa làm được** thì nút mờ kèm lý do / chữ *"Chưa có"* kèm `title` —
   không vẽ số giả, không giả vờ chạy. Câu hỏi nói đúng máy chủ HÔM NAY.
+- **Ghi vào dữ liệu MỘT cây từ trang Quản trị** (b159b): `repo.napCayRieng(treeId)`
+  → sửa bằng hàm `domains/` → `repo.luuCayRieng(treeId, cay, apDung, moTa)`. Đi
+  đúng `luu_cay()` như trang sơ đồ, KHÔNG đụng `state` (trang này không có cây
+  đang mở). Đừng viết hàm SQL ghi riêng cho QTHT — cửa ghi chỉ có một. Mẫu:
+  `khu-nguoi-da-xoa.js` (Thùng rác → Người đã xoá).
 - **Thêm cửa vào `sb.js` thì thêm ở `sb-gia.mjs`** — thiếu một tên là `SyntaxError`
   lúc nạp, cả bộ ảnh ra nền trơn (đã xảy ra b110b, b111). Tham số của bản giả
   phải cùng NGHĨA với máy chủ.

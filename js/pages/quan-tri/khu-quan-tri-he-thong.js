@@ -7,9 +7,9 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang ·
 //            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don · khu-nhat-ky ·
-//            khu-tao-tai-khoan · khu-bao-trung
-// Phiên bản: 1.16.0 · Cập nhật: 29/09/2026 (b155e) — nút Sao lưu ngay chạy
-//            được khi có máy sao lưu (web app). Lịch sử: `git log -p`.
+//            khu-tao-tai-khoan · khu-bao-trung · khu-nguoi-da-xoa
+// Phiên bản: 1.17.0 · Cập nhật: 29/09/2026 (b159b) — tab Thùng rác có bảng
+//            Người đã xoá mọi cây (`khu-nguoi-da-xoa.js`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -44,6 +44,7 @@ import { veKhuDuyetBaoTrung } from './khu-bao-trung.js';
 import { veKhuHoSoDon } from './khu-ho-so-don.js';
 import { veKhuNhatKy } from './khu-nhat-ky.js';
 import { veKhuTaoTaiKhoan } from './khu-tao-tai-khoan.js';
+import { veKhuNguoiDaXoa } from './khu-nguoi-da-xoa.js';
 import {
   td, span, huyHieu, nut, nutNho, nutMo, lienKet, hangNut, dongTrong,
   chepKieu, ngay, ngayGio,
@@ -96,6 +97,7 @@ export async function mountKhuQuanTriHeThong(sec, phien) {
   veSoTaiKhoan(sec, tk, napLai);
   veCayMacDinh(sec, dsSong, cmd, napLai);
   veThungRac(sec, kq, napLai);
+  veKhuNguoiDaXoa(sec, phien);
   veKhuSaoLuu(sec, dsSong);
   veLichSuSaoLuu(sec);
   ganNutKhoiPhuc(sec);

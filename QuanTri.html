@@ -505,6 +505,15 @@
 <table><thead><tr><th>Tên tài khoản</th><th>Email</th><th>Mã tài khoản</th><th>Ngày đưa vào danh sách</th><th>Người thực hiện</th><th>Thời hạn còn lại</th><th>Hành động</th></tr></thead><tbody id="stk-cho-xoa-tbody"></tbody></table>
 </div>
 
+<!-- Người đã xoá của MỌI cây (b159b) — chuyển về từ Danh sách người → Thùng rác của trang sơ đồ. Không có trong quantri3. -->
+<div class="panel" style="margin-bottom:16px">
+<div class="panel-head">
+<div><h3>Người đã xoá</h3><span id="nguoi-rac-dem"></span></div>
+<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><select id="nguoi-rac-loc" class="role-select" style="min-width:180px"><option value="all">Tất cả các cây</option></select><button class="btn" id="btn-nguoi-rac-khoi-phuc" disabled style="font-size:12px;padding:6px 12px">Khôi phục (0)</button><button class="btn danger" id="btn-nguoi-rac-xoa" disabled style="font-size:12px;padding:6px 12px">Xoá vĩnh viễn (0)</button></div>
+</div>
+<table><thead><tr><th style="width:40px;text-align:center"><input type="checkbox" id="nguoi-rac-chon-het" title="Chọn mọi dòng đang hiện" aria-label="Chọn mọi dòng đang hiện"></th><th>Họ tên</th><th>Mã người</th><th>Gia phả</th><th>Năm sinh – mất</th><th>Ngày xoá</th><th>Người xoá</th></tr></thead><tbody id="nguoi-rac-tbody"></tbody></table>
+</div>
+
 <div class="panel" style="margin-bottom:16px">
 <div class="panel-head">
 <div><h3>Cây gia phả trong thùng rác</h3><span id="rac-dem"></span></div>

@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 29/09/2026 · Mười tám điểm dừng chưa bấm thử.*
+*Cập nhật 29/09/2026 · Hai mươi điểm dừng chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -26,6 +26,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b159b Người đã xoá** (sau khi dán `57`) | Ctrl+F5. Trang sơ đồ, cây thử `TH957`: xoá hai người. → *Quản trị → Quản trị hệ thống → Thùng rác*: bảng *Người đã xoá* có hai người ấy, đúng cây, có ngày và người xoá; ô lọc cây chọn được. Tích một người → *Khôi phục (1)* → *Khôi phục 1 người* → báo "Đã khôi phục", bảng còn một → về trang sơ đồ, người ấy hiện lại đúng chỗ. Tích người còn lại → *Xoá vĩnh viễn (1)* → hộp kể tên → *Xoá vĩnh viễn* → bảng trống; trang sơ đồ *Danh sách người → Thùng rác* cũng không còn người ấy |
 | **Bảng tài khoản chờ xóa đã chuyển chỗ** | Ctrl+F5 → *Quản trị → Quản trị hệ thống → Sổ tài khoản*: bảng cuối trang không còn. Sang tab *Thùng rác*: bảng *Danh sách tài khoản chờ xóa (Lưu giữ 60 ngày)* nằm trên cùng, ghi "Chưa có ở máy chủ" (xoá mềm 60 ngày chưa làm — việc cũ b118b) |
 | **Câu chữ Dọn thùng rác** | Ctrl+F5. Cây thử `TH957`: xoá một người có ảnh → *Danh sách người* → Thùng rác → tích người ấy → *Xoá vĩnh viễn…*: hộp nói *"… file ảnh bị xoá khỏi kho — chỉ còn ở bản sao lưu đêm"* và *"Không có bản sao lưu riêng cho lần dọn này…"* — KHÔNG còn chữ "thùng rác Drive 30 ngày" |
 | **b152** Công khai theo từng người — cả vai Xem *(hàng rào máy chủ đã đo REST 29/09, 9/9 — chỉ còn phần màn hình)* | Ctrl+F5 → *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia* → một dòng cây → cột *Thông tin công khai* → trang mười dòng mở ra, tắt/bật rồi *Lưu* không báo lỗi, tải lại thì còn đúng như vừa lưu |
@@ -57,6 +58,11 @@ dán lại* — đọc TRƯỚC khi dán lại bất cứ file nào.
 
 **`01` → `56` — ĐÃ DÁN lên THẬT cả** (`56` ngày 29/09/2026, chủ dự án báo).
 
+**`57-nguoi-da-xoa-moi-cay.sql` — CHỜ DÁN, ĐƯỢC dán** (b159b, bàn thử
+`do-b159b.mjs` 17/17). Chỉ thêm MỘT hàm đọc, không đổi bảng. Mã JS đã đẩy,
+chạy được cả trước khi dán (bảng *Người đã xoá* ghi "chưa dán luoc-do/57").
+Dán một mình nó; bảng tự kiểm cuối ra ĐẠT cả hai dòng.
+
 ---
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
@@ -76,7 +82,6 @@ mồ côi, KHÔNG phải nút dọn cây > N ngày. Chốt: **chỉ QTHT** dùng
 
 | Phiên | Việc |
 |---|---|
-| B | Tab *Thùng rác* thêm bảng **Người đã xoá** mọi cây: khôi phục · xoá vĩnh viễn · chọn nhiều |
 | C | Tab mới **Dữ liệu mồ côi**: người · gia đình · ảnh (mất chủ + file thừa kho) → tích nhiều → thùng rác |
 | D | Gỡ ba nút ở trang sơ đồ + sửa bài kiểm, SAU khi B–C bấm thử đạt |
 
