@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 29/09/2026 · Mười tám điểm dừng chưa bấm thử.*
+*Cập nhật 29/09/2026 · Mười bảy điểm dừng chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -26,7 +26,6 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b155e** Nút Sao lưu ngay | ⚠ Trước hết thay mã `SaoLuu.gs` **0.10.0** VÀ *Deploy → Manage deployments → bút chì → Version: New version → Deploy* (không thì web app còn chạy 0.9.0, nút báo *"không biết việc sao-luu-ngay"*). Mở địa chỉ web app phải ra `"phienBan":"0.10.0"`. Ctrl+F5 → *Quản trị hệ thống → Sao lưu & khôi phục* → *+ Sao lưu ngay (Thủ công)* → nút đổi chữ *Đang sao lưu…* → 1–5 phút → hộp *Đã sao lưu* nêu tên file → bảng Lịch sử có dòng mới trên cùng |
 | **b152** Công khai theo từng người — cả vai Xem *(hàng rào máy chủ đã đo REST 29/09, 9/9 — chỉ còn phần màn hình)* | Ctrl+F5 → *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia* → một dòng cây → cột *Thông tin công khai* → trang mười dòng mở ra, tắt/bật rồi *Lưu* không báo lỗi, tải lại thì còn đúng như vừa lưu |
 | **Tông màu** (trang Quản trị) | Ctrl+F5 → *Quản trị* → thanh trái có nút **🎨 Tông màu** ngay trên *← Về trang sơ đồ* → bấm → bảng 10 tông mở sang phải nút → chọn *Đêm hoài cổ* → cả trang tối lại, chữ đọc được → tải lại trang (F5) → vẫn tông ấy. Chọn *Kem tối giản (mặc định)* → về y như cũ. Điện thoại: ☰ → *Tông màu* → bảng đứng giữa màn hình. **b153a — trang sơ đồ**: để tông *Đêm hoài cổ* → *← Về trang sơ đồ* → nền, nút tròn, Cài đặt, thẻ chi tiết, form Sửa, Danh sách người đều tối theo; ô người trên sơ đồ vẫn sáng (cố ý — không đổi `render.js`). Chọn lại *Kem tối giản* → trang sơ đồ y hệt trước |
 | **Cột Nội dung thao tác** (Kiểm duyệt) | Ctrl+F5 → *Quản trị → Kiểm duyệt*: cột *Nội dung thao tác* đọc thành câu, không còn một chữ mỗi dòng. Tab *Đã từ chối & hoàn tác*: cột *Lý do từ chối* cũng vậy |
@@ -65,8 +64,8 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử mười tám
-điểm dừng ở trên trước (b155e, rồi ba điểm b151). ⚠ b145 và phần khách của
+**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử mười bảy
+điểm dừng ở trên trước (ba điểm b151 trước tiên). ⚠ b145 và phần khách của
 b150 Claude KHÔNG đo REST được: cần đặt cây mặc định = cờ Quản trị hệ thống,
 hai tài khoản thử không có — phải bấm tay bằng tài khoản của bạn.
 
