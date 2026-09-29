@@ -54,12 +54,7 @@ File thêm gì: đầu chính file ấy. Ngày dán: `git log`. Luật dán lạ
 kéo theo file nào, bản nào đứng cuối): **`so-tay/phan-quyen.md`** mục *Chuỗi
 dán lại* — đọc TRƯỚC khi dán lại bất cứ file nào.
 
-**`01` → `55` — ĐÃ DÁN lên THẬT cả, tự kiểm ĐẠT cả** (`55` ngày 29/09/2026).
-
-**`56-khep-cot-doi.sql` — CHỜ DÁN, ĐƯỢC dán** (b158, bàn thử `do-b158.mjs`
-22/22). Mã JS đi kèm đã đẩy, chạy được cả trước lẫn sau khi dán. Dán một
-mình nó, bảng tự kiểm cuối phải ra ĐẠT cả bốn dòng. Dán xong: Ctrl+F5, mở
-một cây, sửa một người rồi *Lưu* — cột/hàng Đời vẫn hiện số như trước.
+**`01` → `56` — ĐÃ DÁN lên THẬT cả** (`56` ngày 29/09/2026, chủ dự án báo).
 
 ---
 
@@ -69,8 +64,13 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-**Chưa đặt bước kế tiếp.** Trước hết: dán `56` (mục SQL trên). Rồi bấm thử
-các điểm dừng ở trên (ba điểm b151 trước tiên). Việc mã lớn còn lại nằm
+**Ứng viên kế tiếp (chủ dự án yêu cầu 29/09, CHƯA chốt phạm vi):** tab
+*Quản trị hệ thống → Thùng rác* thêm hai thứ quantri3 KHÔNG có — ① bảng
+**người đã xoá của mọi cây** (hiện chỉ xem được trong từng cây: trang sơ đồ →
+*Danh sách người* → *Thùng rác*); ② **dữ liệu mồ côi**: người không nối ai,
+gia đình không còn thành viên, ảnh không còn chủ. Chưa có ở đâu cả.
+
+Bấm thử các điểm dừng ở trên (ba điểm b151 trước tiên). Việc mã lớn còn lại nằm
 ở *Còn treo*. ⚠ b145 và phần khách của
 b150 Claude KHÔNG đo REST được: cần đặt cây mặc định = cờ Quản trị hệ thống,
 hai tài khoản thử không có — phải bấm tay bằng tài khoản của bạn.
