@@ -55,7 +55,10 @@ kéo theo file nào, bản nào đứng cuối): **`so-tay/phan-quyen.md`** mụ
 dán lại* — đọc TRƯỚC khi dán lại bất cứ file nào.
 
 **`01` → `54` — ĐÃ DÁN lên THẬT cả, tự kiểm ĐẠT cả** (`54` ngày 29/09/2026).
-Không còn file nào chờ dán.
+
+⚠ **`55-mo-phien.sql` — CHỜ DÁN** (b157b). ĐƯỢC dán ngay, dán sau `53` (đã
+có). Bàn thử `do-b157b.mjs` 20/20. Chưa dán thì app vẫn chạy (đường cũ) nhưng
+mỗi lần mở tốn thêm một câu hỏi hụt.
 
 ---
 
@@ -79,8 +82,6 @@ thấy đủ (như b148). Muốn khác thì một chỗ ở `53`.
 ### Sau đó — chưa đặt số, chưa chốt
 
 *(Trống. Tạo tài khoản qua email: chủ dự án HUỶ 29/09 — `so-tay/tao-tai-khoan.md`.)*
-Còn gỡ được nữa nếu cần nhanh hơn: một hàm máy chủ `mo_phien()` gộp cả sáu
-câu vòng đầu + vòng cây (~250 ms) — phải viết SQL, đụng hàng rào, bước riêng.
 
 ---
 

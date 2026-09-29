@@ -5,8 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.47.0 · Cập nhật: 29/09/2026 (b157) — `layPhien()` gom vòng
-//            mạng + đọc cây sẵn (`docCayLuon`). Lịch sử: `git log -p`.
+// Phiên bản: 0.48.0 · Cập nhật: 29/09/2026 (b157b) — `layPhien()` hỏi gói
+//            `mo_phien()` (`55`), chưa có thì đi đường cũ. Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -260,8 +260,18 @@ export async function layPhien({ docCayLuon = false } = {}) {
   //   thì họ chỉ thấy "chưa được duyệt", sai hẳn với cái đang xảy ra.
   // ⚠ Câu thứ sáu — `user_settings` của MỌI cây — cũng đi lượt này (b157):
   //   cây đang mở và cài đặt của nó trước kia là hai vòng riêng nối đuôi.
+  //
+  // ⚠⚠ b157b — GÓI `mo_phien()` (`luoc-do/55`) đi TRƯỚC: một lượt mạng trả cả
+  //   sáu câu dưới + vòng cây + (nếu `docCayLuon`) dữ liệu cây. Hàm ấy là
+  //   `security invoker` — cùng những câu này, cùng luật RLS, chạy ở máy chủ
+  //   (`do-b157b.mjs`: khớp từng byte với câu lẻ ở mọi hạng người). Máy chủ
+  //   chưa dán `55` thì `goi` = null và mọi thứ dưới đây đi ĐƯỜNG CŨ y nguyên.
+  const goi = await layGoiPhien(k, docCayLuon);
   const [{ data: ds, error }, { data: coQuyenHT }, { data: maTk }, { data: hangTk }, { data: coBiKhoa },
-         { data: caiDat }] =
+         { data: caiDat }] = goi ? [
+      { data: goi.ds, error: null }, { data: goi.laQuanTriHeThong }, { data: goi.maNgan },
+      { data: goi.tk }, { data: goi.biKhoa }, { data: goi.caiDat },
+    ] :
     await Promise.all([
       k.from('tree_members').select('tree_id, role').eq('user_id', nguoi.id),
       k.rpc('la_quan_tri_he_thong'),
@@ -292,10 +302,12 @@ export async function layPhien({ docCayLuon = false } = {}) {
   const cayChinhId = (hangTk && hangTk.cay_chinh_id) || null;
   // ⚠ Hai câu tra tên KHỞI HÀNH ngay, chờ ở lúc trả kết quả — chúng chạy
   //   chung lượt với vòng cây dưới, không chiếm một vòng riêng (b157).
-  const hoiTen = Promise.all([
-    maNguoiGan ? layTenNguoiGan(k, maNguoiGan) : Promise.resolve(''),
-    cayChinhId ? layTenCayChinh(k, cayChinhId) : Promise.resolve(''),
-  ]);
+  const hoiTen = goi
+    ? Promise.resolve([(goi.nguoiGan && fullName(goi.nguoiGan)) || '', goi.tenDongHo || ''])
+    : Promise.all([
+      maNguoiGan ? layTenNguoiGan(k, maNguoiGan) : Promise.resolve(''),
+      cayChinhId ? layTenCayChinh(k, cayChinhId) : Promise.resolve(''),
+    ]);
   const nenNguoi = async () => {
     const [tenNguoiGan, tenDongHo] = await hoiTen;
     return { ...nen, laQuanTriHeThong, maNgan, hoTen,
@@ -308,14 +320,24 @@ export async function layPhien({ docCayLuon = false } = {}) {
   //   (chỉ `repo.khoiTao` bật) cho đọc luôn cả cây trong lượt ấy; trang Quản
   //   trị không bật, khỏi kéo 600 KB nó không dùng. Hàng rào không đổi: vẫn
   //   những câu ấy, máy chủ vẫn gác từng câu — chỉ đổi LÚC hỏi.
+  // Gói đã chọn đúng cây này thì mọi thứ về cây lấy từ gói, không hỏi lại.
+  const goiCay = (treeId) => goi && goi.treeId && goi.treeId === treeId;
   const docTruocCay = (treeId) => {
-    if (docCayLuon) docTruoc = { treeId, luc: Date.now(), hua: docDong(treeId) };
+    if (!docCayLuon) return;
+    const hua = goiCay(treeId) && goi.dong ? Promise.resolve(ghepGoiDong(goi.dong)) : docDong(treeId);
+    docTruoc = { treeId, luc: Date.now(), hua };
   };
+  const caiDatCuaCay = (treeId) => goiCay(treeId)
+    ? Promise.resolve({ ...caiDatTuDong(caiDat, treeId), tenCay: goi.tenCay || '', maCay: goi.maCay || '' })
+    : caiDatCay(k, treeId, caiDat);
   const vongCay = (treeId, hoiSua) => {
     docTruocCay(treeId);
+    if (goiCay(treeId)) {
+      return Promise.all([goi.tinRac || {}, caiDatCuaCay(treeId), hoiSua ? goi.suaDuoc === true : true]);
+    }
     return Promise.all([
       tinThungRac(treeId),
-      caiDatCay(k, treeId, caiDat),
+      caiDatCuaCay(treeId),
       hoiSua ? coTheSua(treeId) : Promise.resolve(true),
     ]);
   };
@@ -344,9 +366,8 @@ export async function layPhien({ docCayLuon = false } = {}) {
   //   chứng khi sai: người có quyền cao nhất hệ thống nhìn thấy màn hình
   //   *"bạn đang chờ được duyệt"*.
   if (laQuanTriHeThong) {
-    const treeId = (ds && ds.length)
-      ? cayDangChon(ds, caiDat)
-      : await cayDauTien(k);
+    const treeId = goi ? goi.treeId
+      : (ds && ds.length) ? cayDangChon(ds, caiDat) : await cayDauTien(k);
 
     // b110 — cây đang mở vừa vào thùng rác. Quản trị hệ thống cũng KHÔNG đọc
     // được nó (`16` mục 3, cố ý), nên đi tiếp là mở ra một sơ đồ trống.
@@ -378,7 +399,9 @@ export async function layPhien({ docCayLuon = false } = {}) {
     //   MỘT cây cho người chưa có chân ở đâu cả — họ vào xem được, không sửa
     //   được, và không thấy danh sách thành viên. Hàng rào nằm ở Postgres
     //   (`co_the_xem_cay()`), câu này chỉ hỏi máy chủ xem cửa ấy có mở không.
-    const { data: cayMacDinh } = await k.rpc('cay_mac_dinh');
+    const { data: cayMacDinh } = goi
+      ? { data: goi.nguon === 'mac_dinh' ? goi.treeId : null }
+      : await k.rpc('cay_mac_dinh');
     if (cayMacDinh) {
       docTruocCay(cayMacDinh);
       return {
@@ -390,7 +413,7 @@ export async function layPhien({ docCayLuon = false } = {}) {
         suaDuoc: false,
         trangThai: 'daduyet',
         treeId: cayMacDinh,
-        ...(await caiDatCay(k, cayMacDinh, caiDat)),
+        ...(await caiDatCuaCay(cayMacDinh)),
       };
     }
 
@@ -424,7 +447,8 @@ export async function layPhien({ docCayLuon = false } = {}) {
     };
   }
 
-  const treeId = cayDangChon(ds, caiDat);
+  // Gói đã chọn cây theo cùng luật (`55` khối "Chọn cây").
+  const treeId = goi ? goi.treeId : cayDangChon(ds, caiDat);
   const vaiTro = (ds.find((m) => m.tree_id === treeId) || ds[0]).role;
 
   // b110 — cây đang mở vừa bị xoá. `docDuoc` ở nhánh này vốn là hằng `true`
@@ -556,14 +580,36 @@ async function cayDauTien(k) {
  */
 async function caiDatCay(k, treeId, caiDat) {
   // Dòng `user_settings` của cây này lấy từ lượt đầu (b157) — chỉ còn tên cây phải hỏi.
-  const data = (caiDat || []).find((r) => r.tree_id === treeId) || null;
   const { data: cay } = await k.from('trees').select('name, tree_code').eq('id', treeId).maybeSingle();
   return {
-    nguoiTrungTamMacDinh: (data && data.focus_person_id) || null,
-    hienNgayGio: !!(data && data.hien_ngay_gio),
+    ...caiDatTuDong(caiDat, treeId),
     tenCay: (cay && cay.name) || '',
     maCay: (cay && cay.tree_code) || '',
   };
+}
+
+/** Người trung tâm mặc định + công tắc ngày giỗ của một cây, từ dòng `user_settings` đã đọc. */
+function caiDatTuDong(caiDat, treeId) {
+  const data = (caiDat || []).find((r) => r.tree_id === treeId) || null;
+  return {
+    nguoiTrungTamMacDinh: (data && data.focus_person_id) || null,
+    hienNgayGio: !!(data && data.hien_ngay_gio),
+  };
+}
+
+/**
+ * Gói `mo_phien()` (`luoc-do/55`, b157b), hoặc `null` — khi đó `layPhien()`
+ * đi đường cũ từng câu. ⚠ Lỗi nào cũng về `null`, kể cả "chưa có hàm"
+ * (máy chủ chưa dán `55`): đổi một cách hỏi không được phép chặn việc mở app.
+ */
+async function layGoiPhien(k, docCay) {
+  try {
+    const { data, error } = await k.rpc('mo_phien', { p_doc_cay: docCay === true });
+    if (error || !data || data.ok !== true) return null;
+    return data;
+  } catch (_) {
+    return null;
+  }
 }
 
 /** Ghi người trung tâm mặc định của riêng người đang đăng nhập. */
@@ -651,43 +697,56 @@ async function docDong(treeId) {
     for (const kq of [cay, chung, sources, imports, maNhatKy]) {
       if (kq.error) return { ok: false, loi: cauLoi(kq.error), dong: null };
     }
-    // Hàm máy chủ tự viết câu từ chối khi người này không xem được cây —
-    // in thẳng câu ấy ra, đừng chế câu khác.
-    if (!chung.data || chung.data.ok !== true) {
-      return { ok: false, dong: null,
-               loi: (chung.data && chung.data.loi) ||
-                    'Máy chủ không trả về dữ liệu gia phả này.' };
-    }
-    if (!cay.data) {
-      return { ok: false, loi: 'Không đọc được gia phả này. Có thể bạn đã ' +
-                              'bị gỡ khỏi danh sách người được xem.', dong: null };
-    }
-
-    return {
-      ok: true, loi: null,
-      dong: {
-        tree:     cay.data,
-        persons:  chung.data.persons  || [],
-        unions:   chung.data.unions   || [],
-        children: chung.data.children || [],
-        media:    chung.data.media    || [],
-        vanhDai:  chung.data.vanh_dai || [],   // `luoc-do/30` — người ngoài cây, chỉ để điền thẻ
-        sources:  sources.data  || [],
-        imports:  imports.data  || [],
-        maNhatKy: (maNhatKy.data || []).map((r) => r.ma),
-        // `luoc-do/40` — Đời theo cây, máy chủ tính. Từ `52` `doc_cay` tự trả
-        // bản đã che cho khách, và khách thôi đọc thẳng `tree_persons` được —
-        // có thì dùng bản ấy; máy chủ chưa dán `52` thì về câu đọc thẳng như cũ.
-        doi:      Array.isArray(chung.data.doi) ? chung.data.doi : ((!doi.error && doi.data) || []),
-        // `luoc-do/50` — máy chủ đã che người còn sống (người gọi chỉ có vai xem),
-        // kèm ĐÚNG danh sách mã đã che. Máy chủ chưa dán `50` thì cả hai rỗng.
-        cheConSong: chung.data.che_con_song === true,
-        biChe:      Array.isArray(chung.data.bi_che) ? chung.data.bi_che : [],
-      },
-    };
+    return ghepDong(cay.data, chung.data, sources.data, imports.data,
+                    (maNhatKy.data || []).map((r) => r.ma), (!doi.error && doi.data) || []);
   } catch (e) {
     return { ok: false, loi: cauLoi(e), dong: null };
   }
+}
+
+/** Phần `dong` của gói `mo_phien()` (`55`) — cùng năm thứ, ráp qua cùng `ghepDong()`. */
+function ghepGoiDong(d) {
+  return ghepDong(d.tree, d.doc_cay, d.sources, d.imports, d.ma_nhat_ky, []);
+}
+
+/**
+ * Ráp năm thứ đọc được thành `dong` — MỘT chỗ cho cả đường đọc lẻ lẫn gói
+ * `mo_phien()`, để hai đường không bao giờ ráp khác nhau.
+ */
+function ghepDong(cay, chung, sources, imports, maNhatKy, doiRieng) {
+  // Hàm máy chủ tự viết câu từ chối khi người này không xem được cây —
+  // in thẳng câu ấy ra, đừng chế câu khác.
+  if (!chung || chung.ok !== true) {
+    return { ok: false, dong: null,
+             loi: (chung && chung.loi) || 'Máy chủ không trả về dữ liệu gia phả này.' };
+  }
+  if (!cay) {
+    return { ok: false, loi: 'Không đọc được gia phả này. Có thể bạn đã ' +
+                            'bị gỡ khỏi danh sách người được xem.', dong: null };
+  }
+
+  return {
+    ok: true, loi: null,
+    dong: {
+      tree:     cay,
+      persons:  chung.persons  || [],
+      unions:   chung.unions   || [],
+      children: chung.children || [],
+      media:    chung.media    || [],
+      vanhDai:  chung.vanh_dai || [],   // `luoc-do/30` — người ngoài cây, chỉ để điền thẻ
+      sources:  sources  || [],
+      imports:  imports  || [],
+      maNhatKy: maNhatKy || [],
+      // `luoc-do/40` — Đời theo cây, máy chủ tính. Từ `52` `doc_cay` tự trả
+      // bản đã che cho khách, và khách thôi đọc thẳng `tree_persons` được —
+      // có thì dùng bản ấy; máy chủ chưa dán `52` thì về câu đọc thẳng như cũ.
+      doi:      Array.isArray(chung.doi) ? chung.doi : (doiRieng || []),
+      // `luoc-do/50` — máy chủ đã che người còn sống (người gọi chỉ có vai xem),
+      // kèm ĐÚNG danh sách mã đã che. Máy chủ chưa dán `50` thì cả hai rỗng.
+      cheConSong: chung.che_con_song === true,
+      biChe:      Array.isArray(chung.bi_che) ? chung.bi_che : [],
+    },
+  };
 }
 
 /** Câu đọc Đời của một cây — dùng chung cho `layDong()` và `docDoi()`. Luật
