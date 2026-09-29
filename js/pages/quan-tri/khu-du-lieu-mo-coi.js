@@ -5,7 +5,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · services/repo · domains/{validate,person,union,purge}
 //            · utils/{graph,date} · quan-tri/{hop-thoai,o-bang,khu-nguoi-da-xoa}
-// Phiên bản: 0.1.1 · Cập nhật: 30/09/2026 (b161a) — xem trước ảnh bằng URL có chữ ký
+// Phiên bản: 0.2.0 · Cập nhật: 30/09/2026 (b161d) — xoá cả cặp mồ côi (luoc-do/61);
+//            b161a: xem trước ảnh bằng URL có chữ ký
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -91,13 +92,14 @@ async function quet(sec, phien, bang) {
   }
 
   // Người ngoài mọi cây — kể cả người mang cờ xoá: không thùng rác nào chứa
-  // họ nên không nơi nào khôi phục được. Còn đứng trong cặp thì máy chủ không
-  // xoá (`58` hàm 3) — khoá ô tích ngay từ đây, kèm lý do.
+  // họ nên không nơi nào khôi phục được. Cặp mà mọi thành viên cũng ngoài mọi
+  // cây thì xoá cùng (`61`); `soHonNhan` chỉ đếm cặp còn nối vào một cây —
+  // máy chủ không xoá được, khoá ô tích ngay từ đây, kèm lý do.
   for (const p of kqNgoai.ok ? kqNgoai.ds : []) {
     const khoaChon = p.soHonNhan > 0;
     nguoi.push({ loai: 'ngoai', treeId: null, tenCay: '', maCay: '', maNguoi: p.maNguoi, ten: p.ten,
                  namSinh: p.namSinh, namMat: p.namMat, daXoa: p.daXoa, khoaChon,
-                 lyDoKhoa: khoaChon ? 'Còn đứng trong ' + p.soHonNhan + ' cặp — máy chủ không xoá người còn cặp.' : '' });
+                 lyDoKhoa: khoaChon ? 'Còn đứng trong ' + p.soHonNhan + ' cặp với người thuộc một cây — xoá là đổi gia phả ấy, máy chủ không làm.' : '' });
   }
   const anh = [];
   for (const a of kqMatChu.ok ? kqMatChu.ds : []) {
@@ -302,9 +304,10 @@ async function hoiXoaHeThong(nguoi, matChu, thua, xong) {
   const r = kq.kq;
   const cau = [];
   if (r.nguoi.length) cau.push('Đã xoá ' + r.nguoi.length + ' người.');
+  if ((r.honNhan || []).length) cau.push('Đã xoá ' + r.honNhan.length + ' cặp không còn ai thuộc cây nào.');
   if (r.anh.length) cau.push('Đã xoá ' + r.anh.length + ' bản ghi ảnh.');
   if (r.soXoa) cau.push(r.soXoa + ' file đã xoá khỏi kho.');
-  if (r.soHong) cau.push(r.soHong + ' file không xoá được (thư mục của gia phả đang ẩn/thùng rác, hoặc file đã mất từ trước).');
+  if (r.soHong) cau.push(r.soHong + ' file không xoá được (còn bản ghi trỏ tới, hoặc máy chủ chưa dán luoc-do/61, hoặc file đã mất từ trước).');
   if (r.boQua.length) cau.push('Bỏ qua ' + r.boQua.length + ' mục không còn là mồ côi: ' + r.boQua.join(', ') + '.');
   bao('Đã dọn', cau.join(' ') || 'Không có gì để xoá.');
   xong();

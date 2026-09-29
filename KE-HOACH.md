@@ -27,6 +27,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 | Điểm dừng | Bấm gì |
 |---|---|
 | **b161a** Kho ảnh KÍN *(sau khi dán `59`)* | Ctrl+F5. Mở cây có ảnh (Nguyễn Phúc Giáo hoặc `TH957`): ảnh trên sơ đồ, thẻ chi tiết, bản lớn khi bấm ảnh vẫn hiện như cũ. Bấm phải một ảnh → *Mở ảnh trong thẻ mới* → địa chỉ có đoạn `token=` → xoá hết từ dấu `?` trở đi rồi Enter: trang báo lỗi, KHÔNG ra ảnh (đó là kho đã kín). ⚙ Cài đặt → *Xuất ảnh* PNG: ảnh người vẫn có trong file. *Quản trị hệ thống → Dữ liệu mồ côi → Quét*: cột ảnh xem trước hiện được |
+| **b161d** Dọn cặp mồ côi *(sau khi dán `61`)* | Ctrl+F5 → *Quản trị hệ thống → Dữ liệu mồ côi → Quét*. Bảng *Người không thuộc cây nào*: người có vợ/chồng cũng ngoài mọi cây nay tích được (trước bị khoá); người có vợ/chồng còn trong một cây vẫn khoá, di chuột lên ô tích đọc lý do. Tích vài người → *Xoá vĩnh viễn*: hộp báo "Đã xoá n cặp không còn ai thuộc cây nào"; file thừa không còn báo "không xoá được". *Nhật ký* có dòng "… người · … cặp · … ảnh" |
 | **b161c** Đổi tên hàm xoá / trả lại cây *(sau khi dán `60`)* | ⚠ Dùng cây thử, rồi trả lại. Ctrl+F5 → *Quản trị → Gia phả* → dòng cây thử `T388` → *Xoá* → gõ lý do → *Xoá ngay*: hộp báo xong, cây biến khỏi danh sách. *Quản trị hệ thống → Thùng rác* (hoặc chỗ liệt kê cây đang chờ) → dòng `T388` → *Trả lại* → cây về lại danh sách của bạn. *Nhật ký* có hai dòng tương ứng |
 | **b161b** Bỏ nút *Quay về gia phả mặc định* | Ctrl+F5 → ⚙ Cài đặt → *Chọn gia phả*: danh sách cây hiện, bấm một cây khác → hộp hỏi → *Mở gia phả này* → tải lại vào cây ấy. KHÔNG có nút *Quay về gia phả mặc định*, KHÔNG có *Dữ liệu mới* |
 | **b160** Bỏ ô Đời · nhập lại Bảng phẳng · Liên hệ qua GEDCOM | ⚠ Bước 3 DỰNG một gia phả thật — thử xong thì xoá. Ctrl+F5. ① Sơ đồ → mở một người → *Sửa*: KHÔNG còn ô *Đời thứ mấy*, khối ấy chỉ còn *Chi / nhánh*; sửa gì đó → *Lưu* → trang chi tiết vẫn hiện Đời như cũ. ② Cây thử `TH957` → *Danh sách người* → *Xuất Excel ▾* → *Bảng phẳng* → tải file. ③ ⚙ Cài đặt → *Nhập GEDCOM/Excel* → chọn file vừa tải → bản xem trước ghi đúng số người, có dòng "Đọc theo khuôn Bảng phẳng…" → tên `Thu b160` → *Tạo gia phả mới và ghi vào đó*. Đạt khi sơ đồ `Thu b160` giống `TH957` (vợ chồng, con, thứ tự con). Xong: *Quản trị → Gia phả* → xoá `Thu b160`. ④ ⚙ Cài đặt → *Xuất GEDCOM* → bỏ dấu *Ẩn chi tiết người còn sống* → tải → mở bằng Notepad: người có số điện thoại có dòng `1 _LIENHE …` |
@@ -70,6 +71,9 @@ mở app, không thì ảnh hiện bóng người tới khi tải lại.
 (thứ tự giữa hai file không quan trọng). ⚠ Mã JS đã gọi tên MỚI: chưa dán
 `60` thì hai nút *Xoá gia phả* / *Trả lại cho chủ* báo "chưa dán luoc-do/60".
 
+**`61-mo-coi-ca-cap.sql` — CHƯA DÁN. ĐƯỢC dán ngay**, sau `58` (đã dán),
+độc lập với `59`/`60`. Chưa dán thì tab *Dữ liệu mồ côi* chạy như cũ.
+
 ---
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
@@ -108,7 +112,6 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **b127b chưa bấm thật**: thẻ người kéo sang `T388` phải đủ vợ/con | — |
 | ⚠ **Ô gợi ý trên điện thoại thật chưa ai bấm lại** | `so-tay/o-goi-y.md` |
-| **Dữ liệu mồ côi — hai chỗ chưa dọn được**: ① người ngoài mọi cây mà còn đứng trong cặp (ô tích khoá, `58` không xoá); ② file thừa trong thư mục của cây đang ẩn/thùng rác (luật `xoa_anh` từ chối, báo "không xoá được"). Cần thì làm SQL riêng | `pages/quan-tri/khu-du-lieu-mo-coi.js` |
 | ⚠ **Dọn thùng rác có hoàn tác được qua Kiểm duyệt không?** `luu_cay()` CHỤP dữ liệu cũ kể cả lần xoá thật (`03` khối *CHỤP ẢNH*, ý 3 nói thẳng "hoàn tác một lần Dọn thùng rác"), nhưng hộp xác nhận vẫn nói "KHÔNG hoàn tác được". Chưa ai đo; đo xong thì sửa câu ấy trong `cauKeKhiDonRac()` | `pages/form-thung-rac.js` |
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |
 | Nợ ghi chú đầu file còn 14 khoản (nặng nhất `export-image.js` 140 dòng · `review.js` 99) — trả khi chạm tới file ấy, không đi rà riêng | `do-gon.mjs --tat-ca` · `QUY-TAC-GON.md` D1 |

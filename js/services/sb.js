@@ -5,8 +5,9 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.53.0 · Cập nhật: 30/09/2026 (b161c) — xoaCay/traLaiCay (luoc-do/60); b161a: `kyAnh()` xin
-//            chữ ký (luoc-do/59). Lịch sử: `git log -p`.
+// Phiên bản: 0.54.0 · Cập nhật: 30/09/2026 (b161d) — donMoCoiHeThong trả `honNhan`
+//            (luoc-do/61); b161c xoaCay/traLaiCay (60); b161a kyAnh (59).
+//            Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/mo-app.md (layPhien — HAI đường phải đồng bộ)
 // ============================================================
 //
@@ -900,8 +901,8 @@ export async function donMoCoiHeThong(dsNguoi, dsAnh) {
   });
   if (error) return { ok: false, loi: cauLoi(error) };
   if (!data || data.ok !== true) return { ok: false, loi: (data && data.loi) || 'Máy chủ từ chối.' };
-  return { ok: true, loi: null, nguoi: data.nguoi || [], anh: data.anh || [],
-           file: data.file || [], boQua: data.boQua || [] };
+  return { ok: true, loi: null, nguoi: data.nguoi || [], honNhan: data.honNhan || [],
+           anh: data.anh || [], file: data.file || [], boQua: data.boQua || [] };
 }
 
 // ============================================================
