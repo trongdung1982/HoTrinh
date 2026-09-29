@@ -12,8 +12,9 @@
 //            EMAIL_KHOI_PHUC · MAT_KHAU_KHOI_PHUC · KHOI_PHUC_CAY (chỉ điền
 //            tạm khi chạy `khoiPhucAnh`, xong thì xoá)
 //            SQL — luoc-do/05-sao-luu.sql phải chạy trước
-// Phiên bản: 0.9.0 · Cập nhật: 29/09/2026 (b155d) — WEB APP (`doPost`): trang
-//            Quản trị liệt kê/tải bản sao lưu + khôi phục ảnh, chỉ QTHT.
+// Phiên bản: 0.10.0 · Cập nhật: 29/09/2026 (b155e) — web app thêm việc
+//            `sao-luu-ngay` (nút Sao lưu ngay). 0.9.0: WEB APP (`doPost`) —
+//            liệt kê/tải bản sao lưu + khôi phục ảnh, chỉ QTHT.
 //            0.8.0: báo dấu vân tay SHA-256 mỗi file ghi (`luoc-do/54`).
 //            Ảnh (b154): chép sang Drive `Anh/<mã cây>/`, `khoiPhucAnh` tải
 //            ngược lên. Ảnh trên Drive KHÔNG xoá theo app.
@@ -922,7 +923,7 @@ function khoiPhucAnhBang_(cauHinh, phieuGhi, chiCay) {
 
 /** Chỉ để thử địa chỉ có sống không — không trả dữ liệu nào. */
 function doGet() {
-  return traJson_({ ok: true, may: 'giapha-sao-luu', phienBan: '0.9.0' });
+  return traJson_({ ok: true, may: 'giapha-sao-luu', phienBan: '0.10.0' });
 }
 
 function doPost(e) {
@@ -935,6 +936,10 @@ function doPost(e) {
       ra = { ok: true, ds: dsBanSaoLuu_(cauHinh) };
     } else if (yc.viec === 'tai') {
       ra = taiBanSaoLuu_(cauHinh, yc.id);
+    } else if (yc.viec === 'sao-luu-ngay') {
+      // Y như lịch đêm (kể cả thư báo hỏng, nhật ký, chép ảnh). Hỏng thì
+      // `saoLuuNgay` ném — khối catch dưới trả câu lỗi cho trang.
+      ra = { ok: true, cau: saoLuuNgay() };
     } else if (yc.viec === 'khoi-phuc-anh') {
       var kq = khoiPhucAnhBang_(cauHinh, yc.ve, '');
       ra = { ok: true, taiLen: kq.taiLen, daCo: kq.daCo, moCoi: kq.moCoi, conLai: kq.conLai,

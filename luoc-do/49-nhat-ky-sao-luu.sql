@@ -12,11 +12,9 @@
 -- Phiên bản: 0.1.0 · Cập nhật: 28/09/2026 (b147)
 -- ============================================================
 --
--- VÌ SAO: trang Quản trị chạy trong trình duyệt, không nối được tới Google
---   Drive hay Apps Script (không OAuth, `CLAUDE.md` mục 3) — nên bảng *Lịch
---   sử sao lưu* và thẻ *Sao lưu* ở Tổng quan xưa nay ghi "Không đọc được".
---   Đảo chiều: Apps Script đã nói chuyện được với Supabase, thì nó tự BÁO kết
---   quả mỗi lần chạy vào nhật ký; trang Quản trị đọc nhật ký như mọi dòng khác.
+-- VÌ SAO: bảng *Lịch sử sao lưu* và thẻ *Sao lưu* ở Tổng quan cần biết lần
+--   sao lưu đêm ra sao. Apps Script tự BÁO kết quả mỗi lần chạy vào nhật ký;
+--   trang Quản trị đọc nhật ký như mọi dòng khác (rẻ hơn hỏi web app, b155d).
 --
 -- ⚠ Vai `sao_luu` vẫn KHÔNG ghi được một dòng dữ liệu nào: hàm này chỉ chèn
 --   đúng một dòng nhật ký loại `backup`, và tự gọt đầu vào (chỉ nhận các khoá

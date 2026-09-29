@@ -1087,6 +1087,20 @@ const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac', 'bao_trung_nguoi', '
   const anhThuong = goi(c, { viec: 'khoi-phuc-anh', ve: VE_THUONG });
   kiem('người thường gọi khôi phục ảnh → từ chối', anhThuong.ok === false && anhThuong.taiLen === undefined, '');
 
+  // Sao lưu ngay (b155e): QTHT → một file mới; người thường → không file nào.
+  const d = dungMoiTruong({ duLieu: cayGia() });
+  const slThuong = goi(d, { viec: 'sao-luu-ngay', ve: VE_THUONG });
+  kiem('sao lưu ngay bằng vé người thường → từ chối, KHÔNG ghi file',
+       slThuong.ok === false && [...duyet(d.thuMuc)].length === 0, JSON.stringify(slThuong).slice(0, 100));
+  const sl = goi(d, { viec: 'sao-luu-ngay', ve: VE_QT });
+  kiem('sao lưu ngay bằng vé QTHT → ghi đúng một file, câu trả lời nêu tên file',
+       sl.ok === true && [...duyet(d.thuMuc)].length === 1 && /giapha-sao-luu-/.test(sl.cau || ''),
+       JSON.stringify(sl).slice(0, 140));
+  const h = dungMoiTruong({ duLieu: cayGia(), hongBang: 'persons' });
+  const slHong = goi(h, { viec: 'sao-luu-ngay', ve: VE_QT });
+  kiem('sao lưu ngay hỏng giữa chừng → ok:false kèm câu lỗi, không ném ra ngoài',
+       slHong.ok === false && /500/.test(slHong.loi || ''), JSON.stringify(slHong).slice(0, 140));
+
   const lan = goi(b, { viec: 'xoa-het', ve: VE_QT });
   kiem('việc lạ → từ chối', lan.ok === false && /không biết việc/.test(lan.loi), '');
   const toan = JSON.stringify([khongVe, veGia, thuong, ds, tai, anh]);

@@ -3,7 +3,7 @@
 // Vai trò  : Màn hình đăng nhập bằng email và mật khẩu.
 // Lớp      : pages
 // Phụ thuộc: services/sb, config
-// Phiên bản: 0.1.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
+// Phiên bản: 0.1.2 · Cập nhật: 29/09/2026 — bỏ lý do "cấm OAuth" (luật đã bỏ khỏi CLAUDE.md)
 // ============================================================
 //
 // ⚠ **Màn hình này KHÔNG có nút "Đăng ký".** Đó là chủ ý, không phải thiếu
@@ -16,13 +16,9 @@
 //   người đã đăng nhập gọi được `layPhien()`. Họ chưa thấy được gia phả nào
 //   — nhưng họ đã ở trong hệ thống.
 //
-// ⚠ **Email + mật khẩu, không phải "Đăng nhập bằng Google".** `CLAUDE.md`
-//   mục 3 loại mọi phương án cần OAuth Client ID, và đăng nhập Google trên
-//   Supabase bắt buộc phải có Client ID tạo trong Google Cloud Console.
-//   `BAT-DAU.md` mục 4.1 để ngỏ khả năng luật ấy nay đã lỗi thời — chưa ai
-//   thử xem tài khoản mới có tạo được project trong Console không. Ngày nào
-//   thử được, thêm một nút ở đây và một hàm ở `services/sb.js`; không có chỗ
-//   thứ ba phải sửa.
+// ⚠ **Email + mật khẩu.** Muốn thêm "Đăng nhập bằng Google" (Google Cloud
+//   Console đã có từ 29/09/2026): thêm một nút ở đây và một hàm ở
+//   `services/sb.js`; không có chỗ thứ ba phải sửa.
 
 import * as sb from '../services/sb.js';
 import { rongHop } from '../config.js';

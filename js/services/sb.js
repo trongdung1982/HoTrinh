@@ -102,16 +102,10 @@ function cauLoi(e) {
 // ĐĂNG NHẬP
 // ============================================================
 //
-// ⚠ **Email + mật khẩu, không phải "Đăng nhập bằng Google".**
-//   `CLAUDE.md` mục 3 loại mọi phương án cần OAuth Client ID, mà đăng nhập
-//   Google trên Supabase bắt buộc phải có Client ID tạo trong Google Cloud
-//   Console. `KE-HOACH-HA-TANG-Supabase_V01.md` đã chốt email + mật khẩu vì
-//   đúng lý do ấy.
-//
-//   `BAT-DAU.md` mục 4.1 để ngỏ khả năng luật kia đã lỗi thời (chưa ai thử
-//   xem tài khoản mới có tạo được project trong Console không). Nếu sau này
-//   thử được và muốn thêm đăng nhập Google, thì **thêm đúng một hàm ở đây**
-//   (`signInWithOAuth`) — không có chỗ nào khác phải sửa.
+// ⚠ **Email + mật khẩu.** Muốn thêm "Đăng nhập bằng Google" (chủ dự án đã có
+//   Google Cloud Console từ 29/09/2026, tạo được OAuth Client ID) thì **thêm
+//   đúng một hàm ở đây** (`signInWithOAuth`) + một nút ở `pages/dang-nhap.js` —
+//   không có chỗ nào khác phải sửa.
 
 /** Đăng nhập. Trả về { ok, loi, email }. */
 export async function dangNhap(email, matKhau) {
@@ -1492,6 +1486,9 @@ export function taiBanSaoLuuDrive(id) { return goiMaySaoLuu('tai', { id }); }
 
 /** Tải lên kho những ảnh dữ liệu còn trỏ tới mà kho thiếu: `{ ok, taiLen, conLai, cau }`. */
 export function khoiPhucAnhDrive() { return goiMaySaoLuu('khoi-phuc-anh'); }
+
+/** Sao lưu ngay, như lịch đêm (`saoLuuNgay`): `{ ok, cau }` — có thể mất vài phút. */
+export function saoLuuNgayDrive() { return goiMaySaoLuu('sao-luu-ngay'); }
 
 /**
  * Nhận một lần Lưu làm chính thức. Không đụng một dòng dữ liệu nào — dữ liệu

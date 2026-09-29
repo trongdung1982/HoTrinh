@@ -16,11 +16,9 @@
 // ⚠ Nút Khôi phục (b155) mở từ khi máy chủ khôi phục được (`luoc-do/54`) —
 //   `THIET-KE-QUAN-TRI.md` Khu 4 cấm vẽ nó TRƯỚC ngày ấy, không cấm mãi.
 //
-// ⚠ KHÔNG có cột "Bản sao lưu" thật: app chạy trong trình duyệt, không có
-//   đường nào đọc file trên Google Drive (không OAuth — `CLAUDE.md` mục 3).
-//   Bảng chỉ điền được cột "Hiện tại trên DB"; cột kia để "—" và chủ dự án tự
-//   mở file sao lưu mới nhất trong Drive ra so bằng mắt — đúng điều
-//   `sao-luu/HUONG-DAN-SAO-LUU.md` đã dặn từ đầu.
+// ⚠ Cột "Bản sao lưu" của bảng Đối chiếu vẫn "—": bảng ấy đếm THEO CÂY, còn
+//   khối `dem` của file sao lưu đếm cả máy chủ — hai con số không cùng loại.
+//   Muốn điền thì máy sao lưu (web app) phải đếm theo cây trong file; chưa làm.
 //
 // ⚠ Năm bảng ở đây PHẢI khớp đúng năm bảng `SaoLuu.gs` đếm vào "dem" — đếm
 //   THÔ, không lọc `deleted`/`trang_thai`. Đổi một bên mà quên bên kia thì
@@ -28,7 +26,7 @@
 
 import {
   demDuLieu, dsNhatKyHeThong, xemTruocKhoiPhuc, khoiPhucBanSao,
-  coMaySaoLuu, dsBanSaoLuuDrive, taiBanSaoLuuDrive, khoiPhucAnhDrive,
+  coMaySaoLuu, dsBanSaoLuuDrive, taiBanSaoLuuDrive, khoiPhucAnhDrive, saoLuuNgayDrive,
 } from '../../services/sb.js';
 import { td, span, huyHieu, datHuyHieu, dongTrong, ngayGio } from './o-bang.js';
 import { hoi, bao } from './hop-thoai.js';
@@ -69,9 +67,8 @@ function cauPhu(c) {
 /**
  * Bảng *Lịch sử sao lưu hệ thống* + thẻ *Sao lưu* ở Tổng quan — b147.
  *
- * ⚠ Trình duyệt KHÔNG đọc được Google Drive (không OAuth, `CLAUDE.md` mục 3).
- *   Nguồn ở đây là chiều ngược lại: `SaoLuu.gs` 0.6.0 tự báo mỗi lần chạy vào
- *   Nhật ký hệ thống (`ghi_sao_luu_dem()`, `luoc-do/49`). Chưa dán `49` hoặc
+ * Nguồn: `SaoLuu.gs` (từ 0.6.0) tự báo mỗi lần chạy vào Nhật ký hệ thống
+ *   (`ghi_sao_luu_dem()`, `luoc-do/49`) — đọc nhật ký rẻ hơn hỏi web app. Chưa dán `49` hoặc
  *   chưa thay `SaoLuu.gs` thì bảng nói đúng vậy, không vẽ số giả.
  * ⚠ Một lần đọc cho cả hai chỗ — `veTongQuan()` không đụng thẻ Sao lưu nữa.
  *
@@ -198,6 +195,22 @@ export function ganNutKhoiPhuc(sec) {
   chon.onchange = async () => {
     const f = chon.files && chon.files[0];
     if (f) await quyTrinh(nut, await f.text());
+  };
+}
+
+/**
+ * Nút *+ Sao lưu ngay (Thủ công)* — gọi máy sao lưu chạy `saoLuuNgay` như lịch
+ * đêm (b155e). Chưa có địa chỉ web app thì `veChuaCo()` đã làm mờ nó.
+ * @param {HTMLElement} sec  `section#quan-tri-he-thong`
+ */
+export function ganNutSaoLuuNgay(sec) {
+  const nut = sec.querySelector('#btn-sao-luu-ngay');
+  if (!nut || !coMaySaoLuu()) return;
+  nut.onclick = async () => {
+    const kq = await banRon(nut, 'Đang sao lưu… (1–5 phút)', saoLuuNgayDrive);
+    await bao(kq.ok ? 'Đã sao lưu' : 'Sao lưu không chạy được',
+              kq.ok ? kq.cau : kq.loi || 'Máy sao lưu không trả lời.');
+    veLichSuSaoLuu(sec);
   };
 }
 

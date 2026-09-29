@@ -8,8 +8,8 @@
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang ·
 //            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don · khu-nhat-ky ·
 //            khu-tao-tai-khoan · khu-bao-trung
-// Phiên bản: 1.15.0 · Cập nhật: 29/09/2026 (b155) — gắn nút Khôi phục ở tab
-//            Sao lưu (`khu-sao-luu.js`). Lịch sử: `git log -p`.
+// Phiên bản: 1.16.0 · Cập nhật: 29/09/2026 (b155e) — nút Sao lưu ngay chạy
+//            được khi có máy sao lưu (web app). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -34,10 +34,11 @@ import {
   dsTaiKhoanHeThong, dsThanhVien,
   duyetXoaCay, huyXinXoaCay, phucHoiCay, donThungRac, xoaAnhThat,
   datQuanTriHeThong, datDuocTaoCay, xoaTaiKhoan, khoaTaiKhoan, moKhoaTaiKhoan,
+  coMaySaoLuu,
 } from '../../services/sb.js';
 import { duongDan } from './trang-chi-tiet.js';
 import { hoi, bao } from './hop-thoai.js';
-import { veKhuSaoLuu, veLichSuSaoLuu, ganNutKhoiPhuc } from './khu-sao-luu.js';
+import { veKhuSaoLuu, veLichSuSaoLuu, ganNutKhoiPhuc, ganNutSaoLuuNgay } from './khu-sao-luu.js';
 import { veKhuDeNghiQuanHe } from './khu-de-nghi-quan-he.js';
 import { veKhuDuyetBaoTrung } from './khu-bao-trung.js';
 import { veKhuHoSoDon } from './khu-ho-so-don.js';
@@ -98,6 +99,7 @@ export async function mountKhuQuanTriHeThong(sec, phien) {
   veKhuSaoLuu(sec, dsSong);
   veLichSuSaoLuu(sec);
   ganNutKhoiPhuc(sec);
+  ganNutSaoLuuNgay(sec);
   veKhuDeNghiQuanHe(sec);
   veKhuDuyetBaoTrung(sec);
   veKhuHoSoDon(sec);
@@ -138,15 +140,17 @@ function veChuaCo(sec) {
 
   // ⚠ b119: bảng đối chiếu 5 số đếm đọc SỐNG (`veKhuSaoLuu`). b147: bảng
   //   Lịch sử đọc những gì máy sao lưu đêm TỰ BÁO vào nhật ký
-  //   (`veLichSuSaoLuu`). Nút "Sao lưu ngay" vẫn không làm được — trình duyệt
-  //   không có đường gọi Apps Script (không OAuth, `CLAUDE.md` mục 3).
-  const LY_SL = 'Lịch sử dưới đây là những gì máy sao lưu đêm (Apps Script) tự báo về Nhật ký hệ thống — ' +
-    'trình duyệt không đọc thẳng được Google Drive. File sao lưu nằm trong thư mục "Sao lưu gia phả ' +
-    '(Supabase)" trên Drive. Bảng Đối chiếu dữ liệu bên dưới đọc SỐNG từ cơ sở dữ liệu — cột "Bản sao lưu" ' +
-    'phải tự mở file sao lưu mới nhất ra so bằng mắt. Muốn quay về một bản sao lưu: bấm nút khôi ' +
-    'phục ở cuối trang rồi chọn file ngay trong ổ Google Drive của máy.';
+  //   (`veLichSuSaoLuu`). Nút "Sao lưu ngay" gọi máy sao lưu (web app, b155e)
+  //   — chỉ mờ khi `cau-hinh.js` chưa có địa chỉ `SAO_LUU_WEB_APP`.
+  const LY_SL = 'Máy sao lưu (Apps Script) chạy mỗi đêm khoảng 2 giờ, hoặc ngay khi bấm "Sao lưu ngay"; ' +
+    'mỗi lần chạy tự báo vào bảng Lịch sử dưới đây. File sao lưu và ảnh nằm trong thư mục "Sao luu gia ' +
+    'pha (Supabase)" trên Drive. Bảng Đối chiếu dữ liệu đọc SỐNG từ cơ sở dữ liệu. Muốn quay về một bản ' +
+    'sao lưu: bấm nút khôi phục ở cuối trang.';
   dat('sl-chua-co', LY_SL);
-  mo('#btn-sao-luu-ngay', 'Chưa nối — chạy hàm saoLuuNgay tại script.google.com.');
+  if (!coMaySaoLuu()) {
+    mo('#btn-sao-luu-ngay', 'Chưa điền địa chỉ máy sao lưu (SAO_LUU_WEB_APP trong js/cau-hinh.js) — ' +
+      'chạy hàm saoLuuNgay tại script.google.com.');
+  }
 
   // b134: nhật ký hệ thống đã có (`khu-nhat-ky.js`) — ô `notice` chỉ còn nói
   // nó ghi gì và KHÔNG ghi gì.

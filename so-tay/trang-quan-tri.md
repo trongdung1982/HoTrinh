@@ -133,9 +133,9 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   cột và hình dạng dữ liệu không khớp một lá đơn xin đổi vai của người ĐÃ ở
   trong cây. Dựng thêm một tab mới cần sửa prototype trước (luật HTML tĩnh ở
   trên) — không phải việc một phiên tự quyết được, nên chọn chỗ có sẵn.
-- **Tab Sao lưu: nút *"Sao lưu ngay"* vẫn mờ** (b119) — nay CÓ đường: máy sao
-  lưu làm web app từ b155d (`sb.js` `goiMaySaoLuu`, hàng rào vé QTHT), chỉ là
-  chưa nối việc `sao-luu-ngay`. Nối thì thêm một nhánh ở `SaoLuu.gs` `doPost`. *Lịch sử sao lưu* đi đường NGƯỢC (b147):
+- **Tab Sao lưu: nút *"Sao lưu ngay"*** (b155e) gọi máy sao lưu (web app,
+  `sb.js` `goiMaySaoLuu`, hàng rào vé QTHT) chạy `saoLuuNgay`. Chỉ mờ khi
+  `cau-hinh.js` chưa có `SAO_LUU_WEB_APP`. Chạy 1–5 phút; nút đổi chữ suốt lúc ấy. *Lịch sử sao lưu* đi đường NGƯỢC (b147):
   `SaoLuu.gs` tự báo vào nhật ký, trang đọc nhật ký (`so-tay/nhat-ky-he-thong.md`). Đừng tưởng
   thêm khoá bí mật hay Edge Function là "cho gọn" — xem `sao-luu/SaoLuu.gs`
   đã đâm vào đúng bức tường ấy một lần rồi.
