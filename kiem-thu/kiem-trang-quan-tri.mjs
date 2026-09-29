@@ -127,6 +127,8 @@ const SQL_14 = boGhiChu(doc('../luoc-do/14-loi-moi.sql'));
 const SQL_16 = boGhiChu(doc('../luoc-do/16-thung-rac-cay.sql'));
 const SQL_17 = boGhiChu(doc('../luoc-do/17-quyen-tao-cay.sql'));
 const SQL_18 = boGhiChu(doc('../luoc-do/18-hai-chu-ky.sql'));
+// `60` (b161c) giữ hai tên MỚI của `16`: xoa_cay · tra_lai_cay.
+const SQL_16_60 = SQL_16 + '\n' + boGhiChu(doc('../luoc-do/60-doi-ten-ham-xoa-cay.sql'));
 
 /** Tên file có thật ở gốc repo, giữ nguyên chữ hoa chữ thường. */
 const FILE_GOC = readdirSync(resolve(DAY, '..'));
@@ -681,8 +683,8 @@ console.log('\nPHẦN F2 — thùng rác gia phả');
 
 // Năm cửa của `16`, đối chiếu CHỮ KÝ SQL — bẫy số 1, khác file.
 const CUA_16 = [
-  { js: 'xinXoaCay',    sql: 'xin_xoa_cay' },
-  { js: 'huyXinXoaCay', sql: 'huy_xin_xoa_cay' },
+  { js: 'xoaCay',       sql: 'xoa_cay' },
+  { js: 'traLaiCay',    sql: 'tra_lai_cay' },
   { js: 'duyetXoaCay',  sql: 'duyet_xoa_cay' },
   { js: 'phucHoiCay',   sql: 'phuc_hoi_cay' },
   { js: 'donThungRac',  sql: 'don_thung_rac' },
@@ -693,13 +695,13 @@ for (const c of CUA_16) {
        new RegExp('export\\s+async\\s+function\\s+' + c.js + '\\b').test(JS_SB),
        'không thấy');
 
-  const lech = lechThamSo(JS_SB, SQL_16, c.sql);
+  const lech = lechThamSo(JS_SB, SQL_16_60, c.sql);
   kiem('  ' + c.sql + '() — tên tham số khớp chữ ký SQL',
        lech !== null && lech.length === 0,
        lech === null ? 'không tìm thấy lời gọi hoặc chữ ký' : lech.join('; '));
 
   kiem('  ' + c.sql + '() được cấp cho authenticated',
-       coCapQuyen(SQL_16, c.sql), 'thiếu grant execute … to authenticated');
+       coCapQuyen(SQL_16_60, c.sql), 'thiếu grant execute … to authenticated');
 
   kiem('  màn hình gọi ' + c.js + '()',
        // b118c: khối Thùng rác dời sang tab của khu Quản trị hệ thống.

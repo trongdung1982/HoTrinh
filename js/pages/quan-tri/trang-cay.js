@@ -6,12 +6,13 @@
 //            hộp hỏi đổi quyền dùng chung với trang một tài khoản.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-goi-y · o-bang
-// Phiên bản: 1.5.0 · Cập nhật: 27/09/2026 (b130) — tab *Vòng đời* đổi tên
-//            *Chuyển quyền sở hữu / xóa*; `wireTabsTrangCay` tự tính đường
-//            dẫn thay vì gọi `ctx.hashMuc` (trang Mời gia nhập dùng chung tab
-//            nhưng `muc: []` không có `hashMuc` hợp lệ). Lịch sử: `git log -p`.
+// Phiên bản: 1.5.1 · Cập nhật: 30/09/2026 (b161c) — gọi xoaCay/traLaiCay (tên mới, luoc-do/60)
+//            Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
+//
+// ⚠ `wireTabsTrangCay` tự tính đường dẫn thay vì gọi `ctx.hashMuc` (trang Mời
+//   gia nhập dùng chung tab nhưng `muc: []` không có `hashMuc` hợp lệ).
 //
 // ⚠ **Cây lấy theo MÃ trong địa chỉ, không bao giờ theo `phien.treeId`.**
 //   Luật 5a: mã sai thì nói "không thấy", KHÔNG rơi về cây đang mở.
@@ -28,7 +29,7 @@ import {
   layDanhSachGiaPha, dsThanhVien, coTheQuanTri, chonGiaPha,
   doiVaiThanhVien, datTinCayThanhVien, goThanhVien,
   doiChuCay, duyetThanhVien, tuChoiThanhVien, timNguoiTrongCay, timTaiKhoan,
-  xinXoaCay, huyXinXoaCay, duyetXoaCay,
+  xoaCay, traLaiCay, duyetXoaCay,
   dsXinDoiVai, duyetXinDoiVai,
 } from '../../services/sb.js';
 import { duongDan } from './trang-chi-tiet.js';
@@ -623,7 +624,7 @@ function veVongDoi(noi, cay, phien, napLai) {
     bTra.addEventListener('click', async () => {
       const kq = await hoi({ tua: 'Trả lại cho chủ',
         chu: 'Mở lại ' + cumCay(c) + ' cho chủ gia phả — gia phả hết ẩn, dùng bình thường như trước.',
-        nutOk: 'Trả lại', lam: () => huyXinXoaCay(cay.fileId) });
+        nutOk: 'Trả lại', lam: () => traLaiCay(cay.fileId) });
       if (kq) napLai();
     });
     const bDuyet = laQT ? nut('Duyệt đưa vào thùng rác', 'danger')
@@ -647,7 +648,7 @@ function veVongDoi(noi, cay, phien, napLai) {
           '"vẫn dùng được trong lúc chờ". Quản trị hệ thống sẽ trả lại cho bạn nếu nhầm, hoặc duyệt ' +
           'đưa hẳn vào thùng rác.',
         oNhap: { nhieuDong: true, goiY: 'Vì sao xoá? Ví dụ: dựng nhầm, đã gộp vào cây khác.' },
-        nutOk: 'Xoá ngay', kieuOk: 'danger', lam: (lyDo) => xinXoaCay(cay.fileId, lyDo) });
+        nutOk: 'Xoá ngay', kieuOk: 'danger', lam: (lyDo) => xoaCay(cay.fileId, lyDo) });
       if (kq) napLai();
     });
     dongList(ul, 'Xóa gia phả', 'Đang dùng bình thường.', bXoa);

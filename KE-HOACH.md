@@ -27,6 +27,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 | Điểm dừng | Bấm gì |
 |---|---|
 | **b161a** Kho ảnh KÍN *(sau khi dán `59`)* | Ctrl+F5. Mở cây có ảnh (Nguyễn Phúc Giáo hoặc `TH957`): ảnh trên sơ đồ, thẻ chi tiết, bản lớn khi bấm ảnh vẫn hiện như cũ. Bấm phải một ảnh → *Mở ảnh trong thẻ mới* → địa chỉ có đoạn `token=` → xoá hết từ dấu `?` trở đi rồi Enter: trang báo lỗi, KHÔNG ra ảnh (đó là kho đã kín). ⚙ Cài đặt → *Xuất ảnh* PNG: ảnh người vẫn có trong file. *Quản trị hệ thống → Dữ liệu mồ côi → Quét*: cột ảnh xem trước hiện được |
+| **b161c** Đổi tên hàm xoá / trả lại cây *(sau khi dán `60`)* | ⚠ Dùng cây thử, rồi trả lại. Ctrl+F5 → *Quản trị → Gia phả* → dòng cây thử `T388` → *Xoá* → gõ lý do → *Xoá ngay*: hộp báo xong, cây biến khỏi danh sách. *Quản trị hệ thống → Thùng rác* (hoặc chỗ liệt kê cây đang chờ) → dòng `T388` → *Trả lại* → cây về lại danh sách của bạn. *Nhật ký* có hai dòng tương ứng |
 | **b161b** Bỏ nút *Quay về gia phả mặc định* | Ctrl+F5 → ⚙ Cài đặt → *Chọn gia phả*: danh sách cây hiện, bấm một cây khác → hộp hỏi → *Mở gia phả này* → tải lại vào cây ấy. KHÔNG có nút *Quay về gia phả mặc định*, KHÔNG có *Dữ liệu mới* |
 | **b160** Bỏ ô Đời · nhập lại Bảng phẳng · Liên hệ qua GEDCOM | ⚠ Bước 3 DỰNG một gia phả thật — thử xong thì xoá. Ctrl+F5. ① Sơ đồ → mở một người → *Sửa*: KHÔNG còn ô *Đời thứ mấy*, khối ấy chỉ còn *Chi / nhánh*; sửa gì đó → *Lưu* → trang chi tiết vẫn hiện Đời như cũ. ② Cây thử `TH957` → *Danh sách người* → *Xuất Excel ▾* → *Bảng phẳng* → tải file. ③ ⚙ Cài đặt → *Nhập GEDCOM/Excel* → chọn file vừa tải → bản xem trước ghi đúng số người, có dòng "Đọc theo khuôn Bảng phẳng…" → tên `Thu b160` → *Tạo gia phả mới và ghi vào đó*. Đạt khi sơ đồ `Thu b160` giống `TH957` (vợ chồng, con, thứ tự con). Xong: *Quản trị → Gia phả* → xoá `Thu b160`. ④ ⚙ Cài đặt → *Xuất GEDCOM* → bỏ dấu *Ẩn chi tiết người còn sống* → tải → mở bằng Notepad: người có số điện thoại có dòng `1 _LIENHE …` |
 | **b159d Gỡ Chọn nhiều để xoá** | Ctrl+F5. Trang sơ đồ → *Danh sách người*: chân chỉ còn *Thùng rác (n)*, *Rà soát*, *Đóng* — KHÔNG còn *Chọn nhiều để xoá*. Cùng thế ở *Các gia đình* (Cài đặt). Bấm một dòng vẫn mở hồ sơ; *Thùng rác* vẫn chọn/khôi phục/xoá hẳn được như cũ |
@@ -65,6 +66,10 @@ dán lại* — đọc TRƯỚC khi dán lại bất cứ file nào.
 (mã JS đã đẩy trước, chạy được cả hai phía). Dán xong thì Ctrl+F5 mọi tab đang
 mở app, không thì ảnh hiện bóng người tới khi tải lại.
 
+**`60-doi-ten-ham-xoa-cay.sql` — CHƯA DÁN. ĐƯỢC dán ngay**, độc lập với `59`
+(thứ tự giữa hai file không quan trọng). ⚠ Mã JS đã gọi tên MỚI: chưa dán
+`60` thì hai nút *Xoá gia phả* / *Trả lại cho chủ* báo "chưa dán luoc-do/60".
+
 ---
 
 ## Việc kế tiếp — MỘT PHIÊN MỘT BƯỚC
@@ -100,7 +105,6 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **`di-doi/sinh-sql-di-doi.mjs` lạc hậu từ `26`** — SQL nó sinh còn gắn `tree_id` vào bốn bảng dùng chung. Ba cây đã di dời xong nên chưa có việc; chạy sẽ lỗi to tiếng | đầu chính file ấy |
 | Bảng cố ý CHƯA sao lưu: hai bảng nhật ký (`42`, tự có thùng rác 120 ngày) · `bao_trung_nguoi` (`48`, mất chỉ mất đơn đang chờ) · `ban_sao_luu_da_ghi` (`54`, sổ dấu vân tay). Muốn vào thì sửa `sao_luu_bang_he_thong()` + `SaoLuu.gs` cùng lúc | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
 | ⚠ **Bảng/cột mới mang MÃ NGƯỜI phải vào `gop_hai_nguoi()` mục 5** (`48`) — sót thì gộp để lại mã thua ở đó, im lặng | `so-tay/luu-du-lieu.md` đầu file |
-| ⚠ **Hai hàm của `16` LỆCH NGHĨA với tên** (`xin_xoa_cay` ẩn cây NGAY; `huy_xin_xoa_cay` = trả lại cho chủ). Giữ tên cũ là cố ý; đổi tên là một bước riêng | `luoc-do/23-bon-luat-moi.sql` khối đầu |
 | ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **b127b chưa bấm thật**: thẻ người kéo sang `T388` phải đủ vợ/con | — |
 | ⚠ **Ô gợi ý trên điện thoại thật chưa ai bấm lại** | `so-tay/o-goi-y.md` |

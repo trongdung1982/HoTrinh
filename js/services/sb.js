@@ -5,7 +5,7 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.52.0 · Cập nhật: 30/09/2026 (b161a) — kho ảnh kín: `kyAnh()` xin
+// Phiên bản: 0.53.0 · Cập nhật: 30/09/2026 (b161c) — xoaCay/traLaiCay (luoc-do/60); b161a: `kyAnh()` xin
 //            chữ ký (luoc-do/59). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/mo-app.md (layPhien — HAI đường phải đồng bộ)
 // ============================================================
@@ -1445,34 +1445,38 @@ export async function roiCay(treeId) {
  *
  * ⚠⚠ ĐỔI SO VỚI TRƯỚC b118b: nộp là cây **ẩn ngay** — `co_the_xem_cay()` đóng
  *   cửa từ giây này, không còn "vẫn dùng được trong lúc chờ Quản trị hệ thống
- *   duyệt". Đường lùi duy nhất là `huyXinXoaCay()`, và từ b118b chỉ Quản trị
- *   hệ thống bấm được nút ấy — không còn là "rút đơn của mình".
+ *   duyệt". Đường lùi duy nhất là `traLaiCay()`, và chỉ Quản trị hệ thống
+ *   bấm được nút ấy.
+ * Tên cũ `xin_xoa_cay` / `xinXoaCay` — đổi ở b161c (`luoc-do/60`).
  */
-export async function xinXoaCay(treeId, lyDo = '') {
+export async function xoaCay(treeId, lyDo = '') {
   const k = layKhach();
   if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
-  const { data, error } = await k.rpc('xin_xoa_cay', {
+  const { data, error } = await k.rpc('xoa_cay', {
     p_tree: treeId, p_ly_do: String(lyDo || ''),
   });
-  if (error) return { ok: false, loi: cauLoi(error) };
+  if (error) return { ok: false, loi: loiDoiTen(error) };
   return data || { ok: false, loi: 'Máy chủ không trả lời.' };
 }
 
 /**
- * Trả lại gia phả cho chủ — tên hàm còn giữ từ bản cũ (`rút đơn`) nhưng nghĩa
- * đã lệch từ b118b: đây không còn là chủ cây tự rút đơn của mình, mà là
- * **Quản trị hệ thống đảo ngược một việc đã có hiệu lực**. Chỉ Quản trị hệ
- * thống gọi được — chủ cây bấm sẽ bị máy chủ từ chối.
- *
- * Đã vào thùng rác (chữ ký thứ hai đã ký) thì đường về là `phucHoiCay()`,
- * không phải hàm này.
+ * Trả lại gia phả cho chủ — **Quản trị hệ thống đảo ngược một lần xoá đã có
+ * hiệu lực**. Chủ cây bấm sẽ bị máy chủ từ chối. Đã vào thùng rác (chữ ký
+ * thứ hai đã ký) thì đường về là `phucHoiCay()`, không phải hàm này.
+ * Tên cũ `huy_xin_xoa_cay` / `huyXinXoaCay` — đổi ở b161c (`luoc-do/60`).
  */
-export async function huyXinXoaCay(treeId) {
+export async function traLaiCay(treeId) {
   const k = layKhach();
   if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
-  const { data, error } = await k.rpc('huy_xin_xoa_cay', { p_tree: treeId });
-  if (error) return { ok: false, loi: cauLoi(error) };
+  const { data, error } = await k.rpc('tra_lai_cay', { p_tree: treeId });
+  if (error) return { ok: false, loi: loiDoiTen(error) };
   return data || { ok: false, loi: 'Máy chủ không trả lời.' };
+}
+
+/** Máy chủ chưa có tên mới = chưa dán `60` — nói thẳng thay vì câu tiếng Anh. */
+function loiDoiTen(error) {
+  return /Could not find the function/i.test((error && error.message) || '')
+    ? 'Máy chủ chưa có hàm này — chưa dán luoc-do/60.' : cauLoi(error);
 }
 
 /**

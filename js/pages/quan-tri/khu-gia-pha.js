@@ -6,8 +6,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, utils/id, quan-tri/trang-chi-tiet ·
 //            quan-tri/hop-thoai · quan-tri/o-bang · quan-tri/khu-bao-trung
-// Phiên bản: 1.5.0 · Cập nhật: 28/09/2026 (b150) — cột *Thông tin công khai*
-//            mở trang `#gia-pha/cong-khai/<mã>`. Lịch sử: `git log -p`.
+// Phiên bản: 1.5.1 · Cập nhật: 30/09/2026 (b161c) — gọi xoaCay/traLaiCay (tên mới, luoc-do/60)
+//            Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -23,7 +23,7 @@
 import {
   layDanhSachGiaPha, datChoNguoiLaThayTen, chonGiaPha, xinVaoCay, taoGiaPhaMoi,
   nhanLoiMoi, tuChoiLoiMoi, rutDonXinVao, roiCay, dsThanhVien,
-  xinXoaCay, huyXinXoaCay, xinDoiVai, demChoKiemDuyet, dsCongKhaiTaiKhoan,
+  xoaCay, traLaiCay, xinDoiVai, demChoKiemDuyet, dsCongKhaiTaiKhoan,
 } from '../../services/sb.js';
 import { sinhMaCay } from '../../utils/id.js';
 import { duongDan } from './trang-chi-tiet.js';
@@ -285,7 +285,7 @@ function oCayHienThi(c, phien, chu) {
 /**
  * Cột *Xóa*. Từ `23` (b118c) — luật 4: xoá có hiệu lực NGAY, gia phả ẩn với
  * mọi người (trừ Quản trị hệ thống) từ giây bấm. *Rút đơn* chỉ còn dành cho
- * Quản trị hệ thống — chủ cây không tự trả lại được nữa (`huyXinXoaCay()`
+ * Quản trị hệ thống — chủ cây không tự trả lại được nữa (`traLaiCay()`
  * đổi tập người gọi ở b118c).
  */
 function oXoaCay(c, duocDieuHanh, laQT, napLai) {
@@ -298,7 +298,7 @@ function oXoaCay(c, duocDieuHanh, laQT, napLai) {
         tua: 'Trả lại cho chủ',
         chu: 'Mở lại “' + (c.ten || 'gia phả này') + '” — hết ẩn, dùng bình thường như trước.',
         nutOk: 'Trả lại',
-        lam: () => huyXinXoaCay(c.fileId),
+        lam: () => traLaiCay(c.fileId),
       });
       if (kq) napLai();
     });
@@ -316,7 +316,7 @@ function oXoaCay(c, duocDieuHanh, laQT, napLai) {
       oNhap: { nhieuDong: true, goiY: 'Vì sao xoá? Ví dụ: dựng nhầm, đã gộp vào cây khác.' },
       nutOk: 'Xoá ngay',
       kieuOk: 'danger',
-      lam: (lyDo) => xinXoaCay(c.fileId, lyDo),
+      lam: (lyDo) => xoaCay(c.fileId, lyDo),
     });
     if (kq) napLai();
   });

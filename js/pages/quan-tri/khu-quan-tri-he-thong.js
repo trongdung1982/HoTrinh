@@ -6,7 +6,7 @@
 //            sửa quan hệ · Đơn Hồ sơ cá nhân · Dữ liệu mồ côi.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · quan-tri/trang-chi-tiet, hop-thoai, o-bang, khu-*
-// Phiên bản: 1.18.0 · Cập nhật: 29/09/2026 (b159c) — tab Dữ liệu mồ côi.
+// Phiên bản: 1.18.1 · Cập nhật: 30/09/2026 (b161c) — gọi traLaiCay (tên mới, luoc-do/60).
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -29,7 +29,7 @@
 import {
   layDanhSachGiaPha, layCayMacDinh, datCayMacDinh, docTruongCongKhai, datTruongCongKhai,
   dsTaiKhoanHeThong, dsThanhVien,
-  duyetXoaCay, huyXinXoaCay, phucHoiCay, donThungRac, xoaAnhThat,
+  duyetXoaCay, traLaiCay, phucHoiCay, donThungRac, xoaAnhThat,
   datQuanTriHeThong, datDuocTaoCay, xoaTaiKhoan, khoaTaiKhoan, moKhoaTaiKhoan,
   coMaySaoLuu,
 } from '../../services/sb.js';
@@ -887,7 +887,7 @@ function veThungRac(sec, kq, napLai) {
         tua: 'Khôi phục lại cho chủ cây',
         chu: 'Bỏ đơn xin xoá “' + c.ten + '”? Cây giữ nguyên, chủ cây có thể xin lại.',
         nutOk: 'Bỏ đơn',
-        lam: () => huyXinXoaCay(c.fileId),
+        lam: () => traLaiCay(c.fileId),
       });
       if (r) napLai();
     });

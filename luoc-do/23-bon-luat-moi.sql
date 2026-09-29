@@ -25,6 +25,7 @@
 --      · cây chủ vừa xoá **hiện lại cho cả họ đọc** — im lặng.
 --    Chép gọn:  `11`/`14`/`16`/`18`/`20`  →  `23`
 --
+-- ✓ ĐÃ ĐỔI TÊN ở `60` (b161c, 30/09/2026): `xoa_cay()` · `tra_lai_cay()`.
 -- ⚠ TÊN HAI HÀM NAY HƠI LỆCH NGHĨA, và nói ra thay vì lặng lẽ để đó:
 --   `xin_xoa_cay()` không còn là "xin" — nó ẩn cây ngay. `huy_xin_xoa_cay()`
 --   không còn là người nộp rút đơn — nay chỉ Quản trị hệ thống gọi được, và

@@ -238,7 +238,8 @@ người mở tay hoặc xoá hẳn; 60 ngày chỉ là lúc cánh cửa xoá h�
 
 ### Đổi luật ở SQL là đổi hành vi của nút đang chạy, không phải lỗi
 
-`23` giữ tên `xin_xoa_cay()` · `huy_xin_xoa_cay()` nhưng đổi hẳn nghĩa, và
+`23` giữ tên `xin_xoa_cay()` · `huy_xin_xoa_cay()` nhưng đổi hẳn nghĩa *(tên
+đã đổi thành `xoa_cay()` · `tra_lai_cay()` ở `60`, b161c — thân giữ nguyên)*, và
 `dat_quan_tri_he_thong(x, true)` nay **không bật cờ nữa** — nó gửi lời mời.
 Màn hình cũ đọc `ok:true` rồi vẽ *"đã bật"* là **nói dối**, và không có gì báo
 lỗi. Bảng bốn nút ấy nằm ở mục `b118c` của `KE-HOACH.md`; dán `23` lên máy chủ
