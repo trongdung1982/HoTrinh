@@ -68,8 +68,10 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử mười bảy
-điểm dừng ở trên trước (ba điểm b151 trước tiên). ⚠ b145 và phần khách của
+**Chưa đặt bước kế tiếp.** Trước hết: dán `56` (mục SQL trên). Rồi bấm thử
+mười bảy điểm dừng ở trên (ba điểm b151 trước tiên). Việc mã lớn còn lại nằm
+ở *Còn treo* — ứng viên nặng nhất: bản giả `sb.js` cho 12 bài Chrome đường
+LƯU (để bộ kiểm gác được đường ghi của nhánh này). ⚠ b145 và phần khách của
 b150 Claude KHÔNG đo REST được: cần đặt cây mặc định = cờ Quản trị hệ thống,
 hai tài khoản thử không có — phải bấm tay bằng tài khoản của bạn.
 
