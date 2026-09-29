@@ -10,6 +10,19 @@
 | Vai `sao_luu` · bảng hệ thống · cây mới tự có máy sao lưu · báo kết quả vào nhật ký (b147) | `luoc-do/05` · `44` · `45` · `49` |
 | Bảng nào đã/chưa sao lưu | `kiem-thu/kiem-sao-luu.mjs` |
 | **Khôi phục**: JSON → một file SQL | `sao-luu/khoi-phuc.mjs` |
+| **Ảnh** (b154): chép sang Drive `Anh/<mã cây>/` mỗi đêm · tải ngược lên `khoiPhucAnh` | `SaoLuu.gs` mục ẢNH · phép 14–16 của `kiem-sao-luu.mjs` |
+
+## Ảnh — ba điều cố ý
+
+- Drive **không xoá theo** app (app xoá ảnh là xoá thật, `xoaAnhThat()`), nên
+  khôi phục dữ liệu về hôm qua vẫn có ảnh. Đổi lại `Anh` chỉ lớn lên, và
+  `khoiPhucAnh` đưa cả ảnh đã xoá về kho (mồ côi, không hiện ở đâu).
+- Số ảnh báo nhật ký nằm ở `demBao`, **không** ở `banSao.dem` — dem ấy vào
+  `DEM_LAN_TRUOC` để so sụt giảm, "chưa chép" giảm là tin tốt.
+- Khôi phục cần tài khoản GHI (`ghi_anh` = `co_the_sua()`), vai `sao_luu`
+  không ghi được: chủ dự án điền tạm `EMAIL_/MAT_KHAU_KHOI_PHUC` rồi xoá.
+  ⚠ Chưa chạy thật trên Supabase — cửa `/object/authenticated/` và tải lên
+  mới đo bằng máy chủ giả.
 | Đo khôi phục trọn vòng (36 phép) | `../kiem-thu/ban-thu-sql/do-b142b.mjs` *(ngoài repo)* |
 
 ## Khôi phục làm gì — và cố ý KHÔNG làm gì

@@ -247,13 +247,9 @@ còn ảnh thì không.
 Câu hỏi cho chủ dự án: *ảnh chân dung trong họ có cần kín bằng dữ liệu không,
 hay để công khai theo đường dẫn khó đoán là chấp nhận được?*
 
-### ⚠ Và ảnh còn một chỗ hở thứ hai: sao lưu không chép ảnh
+### Sao lưu ảnh — đã vá ở b154
 
-`sao-luu/SaoLuu.gs` **chỉ liệt kê** tệp trong kho (tên, dung lượng) chứ không
-tải về. Nghĩa là ảnh vẫn nằm đúng **một chỗ duy nhất**, và mất chỗ ấy là mất
-hẳn — trong khi dữ liệu chữ thì đêm nào cũng có một bản trên Drive.
-
-Hôm nay chưa có tấm ảnh thật nào nên chưa mất gì. Danh sách trong bản sao lưu
-tồn tại đúng để lỗ hổng này **đo được**: mở file, đọc `dem.anh`, đó là số tấm
-chưa được chép đi đâu. Chép ảnh về Drive là việc riêng — chép từng phần, mỗi
-lần chạy một ít, vì trigger Apps Script chỉ có 6 phút.
+`sao-luu/SaoLuu.gs` 0.7.0 chép ảnh sang Drive (`Anh/<mã cây>/`) mỗi đêm một
+ít, và `khoiPhucAnh` tải ngược lên. Đọc qua cửa `/object/authenticated/`, nên
+đổi kho sang kín ở câu hỏi trên KHÔNG làm hỏng sao lưu. Chi tiết:
+`so-tay/sao-luu.md`.

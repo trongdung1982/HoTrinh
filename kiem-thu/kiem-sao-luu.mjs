@@ -46,6 +46,10 @@ const PHIEU_THU = 'eyJhbGciOiJIUzI1NiJ9.PHIEU_GIA_KHONG_CO_THAT.chu-ky-gia';
 // nó vào ô khoá công khai thì bị chặn ngay, không gọi mạng lần nào.
 const KHOA_BI_MAT_THU = 'sb_secret_KHOA_GIA_KHONG_CO_THAT_0123456789';
 const URL_THU = 'https://thunghiem.supabase.co';
+// Tài khoản KHÔI PHỤC ảnh (b154) — khác tài khoản sao lưu, phiếu khác.
+const EMAIL_KP = 'khoi-phuc@thunghiem.test';
+const MAT_KHAU_KP = 'mat-khau-khoi-phuc-gia-9876543210';
+const PHIEU_KP = 'eyJhbGciOiJIUzI1NiJ9.PHIEU_KHOI_PHUC_GIA.chu-ky-gia';
 const LUC_THU = new Date('2026-09-03T10:30:00Z');   // 17:30 giờ Việt Nam
 
 let dat = 0;
@@ -80,10 +84,30 @@ function dungMoiTruong(kichBan = {}) {
           return traLoi(401, '{"message":"khoa cong khai sai"}');
         }
         const gui = JSON.parse(opt.payload);
+        if (gui.email === EMAIL_KP && gui.password === MAT_KHAU_KP) {
+          return traLoi(200, JSON.stringify({ access_token: PHIEU_KP }));
+        }
         if (gui.email !== EMAIL_THU || gui.password !== MAT_KHAU_THU) {
           return traLoi(400, '{"error":"invalid_grant"}');
         }
         return traLoi(200, JSON.stringify({ access_token: PHIEU_THU }));
+      }
+
+      // ---- Tải ảnh LÊN kho (khoiPhucAnh, b154) ----
+      // Chỉ phiếu của tài khoản KHÔI PHỤC ghi được; phiếu sao lưu bị từ chối
+      // như RLS thật (vai `sao_luu` không qua `ghi_anh`). Đứng trước phép kiểm
+      // phiếu chung vì phiếu ở đây là phiếu khác.
+      if (duong.startsWith('/storage/v1/object/anh/') && opt.method === 'post') {
+        const ten = decodeURIComponent(duong.slice('/storage/v1/object/anh/'.length));
+        if (opt.headers.Authorization !== 'Bearer ' + PHIEU_KP) {
+          return traLoi(400, '{"statusCode":"403","message":"new row violates row-level security policy"}');
+        }
+        if (khoAnhThat[ten] !== undefined) {
+          return traLoi(400, '{"statusCode":"409","error":"Duplicate","message":"The resource already exists"}');
+        }
+        khoAnhThat[ten] = Buffer.from(opt.payload).toString();
+        nhatKy.taiLen.push(ten);
+        return traLoi(200, '{"Key":"anh/' + ten + '"}');
       }
 
       // Khoá công khai nói "khách của project nào", phiếu nói "đã đăng nhập
@@ -141,20 +165,54 @@ function dungMoiTruong(kichBan = {}) {
 
       if (duong.startsWith('/storage/v1/object/list/')) {
         const than = JSON.parse(opt.payload);
-        const muc = khoAnh[than.prefix] || [];
+        const muc = khoAnh[than.prefix] || lietKeTuKhoThat(than.prefix);
         return traLoi(200, JSON.stringify(
           muc.slice(than.offset, than.offset + than.limit)));
+      }
+
+      // ---- Tải ảnh VỀ (b154) — `anhHong` = những đường dẫn trả 404 ----
+      if (duong.startsWith('/storage/v1/object/authenticated/anh/')) {
+        const ten = decodeURIComponent(duong.slice('/storage/v1/object/authenticated/anh/'.length));
+        nhatKy.taiVe.push(ten);
+        if ((kichBan.anhHong || []).includes(ten) || khoAnhThat[ten] === undefined) {
+          return traLoi(404, '{"message":"Object not found"}');
+        }
+        return traLoi(200, khoAnhThat[ten], {}, taoBlob(khoAnhThat[ten]));
       }
 
       return traLoi(404, '{"message":"khong co duong nay"}');
     }
   };
 
-  function traLoi(ma, chu, dau = {}) {
+  function traLoi(ma, chu, dau = {}, blob = null) {
     return {
       getResponseCode: () => ma,
       getContentText: () => chu,
-      getHeaders: () => dau
+      getHeaders: () => dau,
+      getBlob: () => blob
+    };
+  }
+
+  // Kho ảnh "thật" của máy chủ giả: đường dẫn → nội dung. Liệt kê được suy ra
+  // từ đây khi kịch bản không đưa `khoAnh` dựng sẵn.
+  const khoAnhThat = Object.assign({}, kichBan.khoAnhThat || {});
+  nhatKy.taiVe = [];
+  nhatKy.taiLen = [];
+  function lietKeTuKhoThat(tienTo) {
+    const ds = Object.keys(khoAnhThat).sort();
+    if (tienTo === '') {
+      return [...new Set(ds.map((d) => d.split('/')[0]))].map((c) => ({ name: c, id: null }));
+    }
+    return ds.filter((d) => d.startsWith(tienTo)).map((d) => ({
+      name: d.slice(tienTo.length), id: 'o-' + d,
+      metadata: { size: khoAnhThat[d].length }, updated_at: 'x' }));
+  }
+  function taoBlob(noiDung, ten = '') {
+    return {
+      _noiDung: noiDung, _ten: ten,
+      setName(t) { this._ten = t; return this; },
+      getContentType: () => 'image/jpeg',
+      getBytes() { return [...Buffer.from(this._noiDung)]; }
     };
   }
 
@@ -164,19 +222,38 @@ function dungMoiTruong(kichBan = {}) {
       _ten: ten, _noiDung: noiDung, _thungRac: false,
       getName() { return this._ten; },
       getSize() { return this._noiDung.length; },
-      setTrashed(v) { this._thungRac = v; }
+      setTrashed(v) { this._thungRac = v; },
+      isTrashed() { return this._thungRac; },
+      getBlob() { return taoBlob(this._noiDung, this._ten); }
     };
   }
+  // ⚠ `getFiles()` của Drive thật trả CẢ tệp trong thùng rác — nên bản giả
+  //   cũng trả, và mã phải tự hỏi `isTrashed()`. Riêng hàm `duyet()` cuối bài
+  //   lọc bỏ để các phép cũ đếm file như trước.
   function taoThuMuc(ten) {
     const tep = [];
+    const con = [];
     return {
-      _ten: ten, _tep: tep,
-      createFile(t, n) { const f = taoFile(t, n); tep.push(f); return f; },
+      _ten: ten, _tep: tep, _con: con,
+      getName() { return ten; },
+      createFile(t, n) {
+        const f = typeof t === 'string' ? taoFile(t, n) : taoFile(t._ten, t._noiDung);
+        tep.push(f); return f;
+      },
       getFiles() {
-        const con = tep.filter((f) => !f._thungRac);
+        let i = 0;
+        return { hasNext: () => i < tep.length, next: () => tep[i++] };
+      },
+      getFoldersByName(t) {
+        const ds = con.filter((c) => c._ten === t);
+        let i = 0;
+        return { hasNext: () => i < ds.length, next: () => ds[i++] };
+      },
+      getFolders() {
         let i = 0;
         return { hasNext: () => i < con.length, next: () => con[i++] };
-      }
+      },
+      createFolder(t) { const c = taoThuMuc(t); con.push(c); return c; }
     };
   }
   const thuMucCo = kichBan.thuMuc || taoThuMuc('Sao luu gia pha (Supabase)');
@@ -239,7 +316,8 @@ function dungMoiTruong(kichBan = {}) {
   // Đồng hồ đứng yên, để tên file sinh ra là con số đoán trước được.
   const NgayThat = Date;
   function NgayGia(...a) { return a.length ? new NgayThat(...a) : new NgayThat(LUC_THU); }
-  NgayGia.now = () => LUC_THU.getTime();
+  // `dongHo` = đồng hồ chạy (b154, đo giới hạn thời gian của phần chép ảnh).
+  NgayGia.now = kichBan.dongHo || (() => LUC_THU.getTime());
 
   const ten = ['UrlFetchApp', 'DriveApp', 'PropertiesService', 'MailApp',
                'Session', 'Logger', 'ScriptApp', 'Utilities', 'Date'];
@@ -247,12 +325,12 @@ function dungMoiTruong(kichBan = {}) {
                Session, Logger, ScriptApp, Utilities, NgayGia];
 
   const nap = new Function(...ten, NGUON_GS + `
-    return { kiemTraKetNoi, saoLuuNgay, datLichSaoLuu, goLichSaoLuu,
+    return { kiemTraKetNoi, saoLuuNgay, datLichSaoLuu, goLichSaoLuu, khoiPhucAnh,
              gomSaoLuu_, docBang_, docKhoAnh_, donBanCu_, docCauHinh_,
              THU_TU_DOC, BANG_HE_THONG, KHUON_TEN_FILE };
   `);
 
-  return { api: nap(...gia), nhatKy, thuMuc: thuMucCo, kho, lich, taoThuMuc, taoFile };
+  return { api: nap(...gia), nhatKy, thuMuc: thuMucCo, kho, lich, taoThuMuc, taoFile, khoAnhThat };
 }
 
 // ============================================================
@@ -715,6 +793,142 @@ const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac', 'bao_trung_nguoi'];
        dongLenh.includes('/auth/v1/admin') ? 'VẪN CÒN' : 'sạch');
 }
 
+// ---- 14. Ảnh: chép sang Drive, không chép lại, không xoá theo (b154) --
+//
+// ⚠ Lỗ b154: trước bản 0.7.0 sao lưu chỉ LIỆT KÊ ảnh — mất kho Supabase là
+//   mất hẳn. Và app xoá ảnh là xoá thật, nên Drive tuyệt đối không xoá theo.
+{
+  const C1 = '00000000-0000-4000-8000-0000000000a1';
+  const C2 = '00000000-0000-4000-8000-0000000000a2';
+  const kho = {
+    [C1 + '/anh_P1_1.jpg']: 'ANH-MOT', [C1 + '/anh_P1_1_lon.jpg']: 'ANH-MOT-LON',
+    [C2 + '/anh_P9_2.jpg']: 'ANH-HAI'
+  };
+  const a = dungMoiTruong({ duLieu: cayGia(), khoAnhThat: kho });
+  a.api.saoLuuNgay();
+  const d1 = anhTrenDrive(a.thuMuc, C1);
+  const d2 = anhTrenDrive(a.thuMuc, C2);
+  kiem('chép đủ 3 ảnh vào Anh/<mã cây>/, đúng tên, đúng nội dung',
+       d1['anh_P1_1.jpg'] === 'ANH-MOT' && d1['anh_P1_1_lon.jpg'] === 'ANH-MOT-LON' &&
+       d2['anh_P9_2.jpg'] === 'ANH-HAI' && Object.keys(d1).length === 2,
+       JSON.stringify({ d1, d2 }));
+  const b0 = a.nhatKy.baoCao[0] || {};
+  kiem('báo nhật ký: chép thêm 3, còn 0; file JSON vẫn đúng một ở gốc',
+       b0.dem && b0.dem.anh_chep_them === 3 && b0.dem.anh_chua_chep === 0 && !b0.canhBao &&
+       [...duyet(a.thuMuc)].length === 1,
+       JSON.stringify(b0.dem));
+  kiem('số ảnh KHÔNG vào DEM_LAN_TRUOC (kẻo "chưa chép" giảm bị báo sụt)',
+       !('anh_chua_chep' in JSON.parse(a.kho.DEM_LAN_TRUOC)), a.kho.DEM_LAN_TRUOC);
+  kiem('đọc ảnh qua cửa authenticated, không qua đường công khai',
+       a.nhatKy.goi.some((u) => u.includes('/storage/v1/object/authenticated/anh/')) &&
+       !a.nhatKy.goi.some((u) => u.includes('/object/public/')), '');
+
+  // Đêm hai: kho mất một tấm (app xoá thật), thêm một tấm, một tấm bị tải đè.
+  delete kho[C2 + '/anh_P9_2.jpg'];
+  kho[C1 + '/anh_P1_3.jpg'] = 'ANH-BA';
+  kho[C1 + '/anh_P1_1.jpg'] = 'ANH-MOT-DA-DOI';
+  const b = dungMoiTruong({ duLieu: cayGia(), khoAnhThat: kho, thuMuc: a.thuMuc });
+  b.api.saoLuuNgay();
+  kiem('đêm hai chỉ tải tấm mới + tấm đổi cỡ, không tải lại tấm đã có',
+       b.nhatKy.taiVe.length === 2 && b.nhatKy.taiVe.includes(C1 + '/anh_P1_3.jpg') &&
+       b.nhatKy.taiVe.includes(C1 + '/anh_P1_1.jpg'),
+       b.nhatKy.taiVe.join(' '));
+  const e1 = anhTrenDrive(a.thuMuc, C1);
+  kiem('tấm bị tải đè: Drive giữ bản MỚI, một bản (bản cũ vào thùng rác)',
+       e1['anh_P1_1.jpg'] === 'ANH-MOT-DA-DOI' && Object.keys(e1).length === 3, JSON.stringify(e1));
+  kiem('tấm app đã xoá khỏi kho: Drive VẪN GIỮ',
+       anhTrenDrive(a.thuMuc, C2)['anh_P9_2.jpg'] === 'ANH-HAI', '');
+}
+
+// ---- 15. Ảnh: hết giờ thì dừng, ảnh hỏng không làm hỏng bản sao lưu ---
+{
+  const C = '00000000-0000-4000-8000-0000000000b1';
+  const kho = {};
+  for (let i = 1; i <= 10; i++) kho[C + '/a' + String(i).padStart(2, '0') + '.jpg'] = 'X' + i;
+  // Mỗi lần hỏi giờ trôi 40 giây: được vài tấm thì chạm 270 giây.
+  let t = LUC_THU.getTime();
+  const a = dungMoiTruong({ duLieu: cayGia(), khoAnhThat: kho, dongHo: () => (t += 40000) });
+  a.api.saoLuuNgay();
+  const b0 = a.nhatKy.baoCao[0] || {};
+  const n1 = Object.keys(anhTrenDrive(a.thuMuc, C)).length;
+  kiem('hết giờ: dừng giữa chừng, báo số còn lại, file JSON vẫn ghi',
+       n1 > 0 && n1 < 10 && b0.dem.anh_chua_chep === 10 - n1 && b0.ok === true &&
+       [...duyet(a.thuMuc)].length === 1,
+       `chép ${n1} · báo ${JSON.stringify(b0.dem && b0.dem.anh_chua_chep)}`);
+  const b = dungMoiTruong({ duLieu: cayGia(), khoAnhThat: kho, thuMuc: a.thuMuc });
+  b.api.saoLuuNgay();
+  kiem('đêm sau chép nốt phần còn lại, không tải lại phần đã có',
+       Object.keys(anhTrenDrive(a.thuMuc, C)).length === 10 && b.nhatKy.taiVe.length === 10 - n1,
+       `${b.nhatKy.taiVe.length} lượt tải`);
+
+  const h = dungMoiTruong({ duLieu: cayGia(), khoAnhThat: { [C + '/a.jpg']: 'A', [C + '/b.jpg']: 'B' },
+                            anhHong: [C + '/a.jpg'] });
+  let nem = false;
+  try { h.api.saoLuuNgay(); } catch (e) { nem = true; }
+  const bh = h.nhatKy.baoCao[0] || {};
+  kiem('một ảnh 404: không ném, tấm kia vẫn chép, báo cảnh báo nêu tên tấm hỏng',
+       !nem && anhTrenDrive(h.thuMuc, C)['b.jpg'] === 'B' && bh.dem.anh_chua_chep === 1 &&
+       /Chép ảnh: .*a\.jpg/.test(bh.canhBao || '') && h.nhatKy.thu.length === 0,
+       `nem=${nem} · ${JSON.stringify(bh).slice(0, 160)}`);
+
+  const k = dungMoiTruong({ duLieu: cayGia() });
+  k.api.saoLuuNgay();
+  kiem('kho trống: không dựng thư mục Anh', !k.thuMuc._con.length, '');
+}
+
+// ---- 16. Khôi phục ảnh (b154) ------------------------------------------
+{
+  const C = '00000000-0000-4000-8000-0000000000c1';
+  const D = '00000000-0000-4000-8000-0000000000c2';
+  const kho = { [C + '/p.jpg']: 'P', [C + '/q.jpg']: 'Q', [D + '/r.jpg']: 'R' };
+  const a = dungMoiTruong({ duLieu: cayGia(), khoAnhThat: kho });
+  a.api.saoLuuNgay();
+
+  // Kho mất sạch, trừ một tấm.
+  const kp = { EMAIL_KHOI_PHUC: EMAIL_KP, MAT_KHAU_KHOI_PHUC: MAT_KHAU_KP };
+  const b = dungMoiTruong({ duLieu: cayGia(), khoAnhThat: { [C + '/q.jpg']: 'Q' },
+                            thuMuc: a.thuMuc, thuocTinh: kp });
+  const ket = b.api.khoiPhucAnh();
+  kiem('khôi phục: tải lên đúng 2 tấm thiếu, bỏ qua tấm kho còn, nội dung đúng',
+       b.nhatKy.taiLen.length === 2 && b.khoAnhThat[C + '/p.jpg'] === 'P' &&
+       b.khoAnhThat[D + '/r.jpg'] === 'R' && /tải lên 2 tấm, 1 tấm kho đã có/.test(ket),
+       ket.split('\n')[0]);
+  kiem('khôi phục xong: nhắc xoá hai dòng mật khẩu, không lộ mật khẩu',
+       /XONG/.test(ket) && !ket.includes(MAT_KHAU_KP) &&
+       !b.nhatKy.log.join('\n').includes(MAT_KHAU_KP), '');
+  kiem('chạy lại lần hai: không tải gì nữa',
+       /tải lên 0 tấm, 3 tấm kho đã có/.test(dungMoiTruong({ duLieu: cayGia(),
+         khoAnhThat: b.khoAnhThat, thuMuc: a.thuMuc, thuocTinh: kp }).api.khoiPhucAnh()), '');
+
+  const chi = dungMoiTruong({ duLieu: cayGia(), thuMuc: a.thuMuc,
+                              thuocTinh: Object.assign({ KHOI_PHUC_CAY: D }, kp) });
+  chi.api.khoiPhucAnh();
+  kiem('KHOI_PHUC_CAY: chỉ tải ảnh của đúng cây ấy',
+       chi.nhatKy.taiLen.length === 1 && chi.nhatKy.taiLen[0] === D + '/r.jpg',
+       chi.nhatKy.taiLen.join(' '));
+
+  const thieu = dungMoiTruong({ duLieu: cayGia(), thuMuc: a.thuMuc });
+  let loi = '';
+  try { thieu.api.khoiPhucAnh(); } catch (e) { loi = e.message; }
+  kiem('chưa điền tài khoản khôi phục: dừng, câu lỗi nêu đúng hai ô, không gọi mạng',
+       /EMAIL_KHOI_PHUC/.test(loi) && /MAT_KHAU_KHOI_PHUC/.test(loi) && thieu.nhatKy.goi.length === 0,
+       loi.slice(0, 80));
+
+  // Điền nhầm tài khoản SAO LƯU vào ô khôi phục: máy chủ từ chối (vai chỉ đọc).
+  const nham = dungMoiTruong({ duLieu: cayGia(), thuMuc: a.thuMuc,
+    thuocTinh: { EMAIL_KHOI_PHUC: EMAIL_THU, MAT_KHAU_KHOI_PHUC: MAT_KHAU_THU } });
+  const ketNham = nham.api.khoiPhucAnh();
+  kiem('tài khoản không ghi được ảnh: báo "bị từ chối", còn lại 3 tấm, bảo chạy lại',
+       /bị từ chối/.test(ketNham) && /còn 3 tấm/.test(ketNham) && nham.nhatKy.taiLen.length === 0,
+       ketNham.replace(/\n/g, ' / ').slice(0, 160));
+
+  const trong = dungMoiTruong({ duLieu: cayGia(), thuocTinh: kp });
+  let loiTrong = '';
+  try { trong.api.khoiPhucAnh(); } catch (e) { loiTrong = e.message; }
+  kiem('Drive chưa có ảnh nào: nói thẳng, không tạo thư mục',
+       /chưa có thư mục/.test(loiTrong) && !trong.thuMuc._con.length, loiTrong.slice(0, 80));
+}
+
 // ------------------------------------------------------------
 console.log('\n' + (hong === 0 ? 'TẤT CẢ ĐẠT' : 'CÓ PHÉP HỎNG') +
             ' — ' + dat + ' đạt, ' + hong + ' hỏng.');
@@ -728,5 +942,14 @@ function kiem(ten, dieuKien, chiTiet) {
 
 function* duyet(thuMuc) {
   const it = thuMuc.getFiles();
-  while (it.hasNext()) yield it.next();
+  while (it.hasNext()) { const f = it.next(); if (!f.isTrashed()) yield f; }
+}
+
+/** Tệp (chưa vào thùng rác) trong `Anh/<cay>/` của thư mục sao lưu → { tên: nội dung }. */
+function anhTrenDrive(thuMuc, cay) {
+  const anh = thuMuc._con.find((c) => c._ten === 'Anh');
+  const tm = anh && anh._con.find((c) => c._ten === cay);
+  const ra = {};
+  if (tm) for (const f of duyet(tm)) ra[f.getName()] = f._noiDung;
+  return ra;
 }

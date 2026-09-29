@@ -8,11 +8,14 @@
 //            Google, không nằm trong trình duyệt, không import file nào của repo.
 // Phụ thuộc: Script Properties — SUPABASE_URL · KHOA_CONG_KHAI ·
 //            EMAIL_SAO_LUU · MAT_KHAU_SAO_LUU (bắt buộc),
-//            THU_MUC_DRIVE · SO_BAN_GIU (tuỳ chọn)
+//            THU_MUC_DRIVE · SO_BAN_GIU (tuỳ chọn) ·
+//            EMAIL_KHOI_PHUC · MAT_KHAU_KHOI_PHUC · KHOI_PHUC_CAY (chỉ điền
+//            tạm khi chạy `khoiPhucAnh`, xong thì xoá)
 //            SQL — luoc-do/05-sao-luu.sql phải chạy trước
-// Phiên bản: 0.6.0 · Cập nhật: 28/09/2026 (b147) — báo kết quả mỗi lần chạy
-//            vào Nhật ký hệ thống (`ghi_sao_luu_dem()`, `luoc-do/49`); hỏng
-//            ở bước ấy thì bỏ qua, không làm hỏng bản sao lưu
+// Phiên bản: 0.7.0 · Cập nhật: 29/09/2026 (b154) — chép ẢNH sang Drive
+//            (thư mục con `Anh/<mã cây>/`), mỗi đêm một ít; `khoiPhucAnh`
+//            tải ngược lên. Ảnh trên Drive KHÔNG xoá theo app.
+// Sổ tay   : so-tay/sao-luu.md
 // ============================================================
 //
 // ⚠ ĐÂY KHÔNG PHẢI dự án Apps Script cũ. Dự án cũ (`giapha/gas/`) vẫn đang
@@ -103,8 +106,17 @@ var TEN_THU_MUC_MAC_DINH = 'Sao luu gia pha (Supabase)';
 var SO_BAN_GIU_MAC_DINH = 30;
 var KHUON_TEN_FILE = 'giapha-sao-luu-';
 
+// Ảnh (b154). Apps Script cắt mọi lượt chạy ở 6 phút; chép ảnh dừng ở 4,5
+// phút TÍNH TỪ ĐẦU LƯỢT (gồm cả lúc đọc bảng), phần còn lại để đêm sau.
+// Dừng nửa chừng không hỏng gì: đêm sau so lại với Drive rồi chép tiếp.
+var TEN_THU_MUC_ANH = 'Anh';
+var GIAY_CHEP_ANH_TOI_DA = 270;
+// Hỏng liền năm tấm thì thôi thử — gần như chắc là hỏng chung (mất quyền,
+// mạng), thử tiếp chỉ đốt thời gian của lượt chạy.
+var SO_LOI_LIEN_TIEP_TOI_DA = 5;
+
 // ============================================================
-// BA VIỆC CHỦ DỰ ÁN BẤM — không có việc thứ tư
+// BA VIỆC CHỦ DỰ ÁN BẤM — cộng `khoiPhucAnh` (mục ẢNH), chỉ dùng ngày mất ảnh
 // ============================================================
 
 /**
@@ -184,11 +196,26 @@ function saoLuuNgay() {
               '\nVà bản sao lưu cũ CHƯA bị dọn — lần này bỏ qua bước dọn.');
     }
 
+    // Ảnh chép SAU khi file JSON đã nằm yên trên Drive: hỏng hay hết giờ ở
+    // đây thì bản sao lưu dữ liệu chữ vẫn nguyên.
+    var anh = chepAnhAnToan_(cauHinh, thuMuc, banSao.khoAnh.tep);
+
     var ketQua = 'Đã ghi ' + ten + ' (' + file.getSize() + ' byte). ' +
-                 'Xoá ' + daXoa + ' bản cũ.';
+                 'Xoá ' + daXoa + ' bản cũ. Ảnh: chép thêm ' + anh.chepThem +
+                 ', còn ' + anh.chuaChep + ' tấm chưa chép' +
+                 (anh.loi ? ' — ' + anh.loi : '') + '.';
+    // ⚠ Số ảnh KHÔNG vào `banSao.dem`: `nhoDemLanNay_` đã cất dem ấy để so
+    //   sụt giảm đêm sau, mà "chưa chép" từ 300 về 0 là tin tốt, không phải
+    //   dữ liệu mất.
+    var demBao = {};
+    Object.keys(banSao.dem).forEach(function (k) { demBao[k] = banSao.dem[k]; });
+    demBao.anh_chep_them = anh.chepThem;
+    demBao.anh_chua_chep = anh.chuaChep;
     baoNhatKy_(cauHinh, {
       ok: true, tenFile: ten, soByte: file.getSize(), daXoa: daXoa,
-      canhBao: loiCanhBao || '', thieu: banSao.thieuSoVoiMayChu || '', dem: banSao.dem
+      canhBao: [loiCanhBao || '', anh.loi ? 'Chép ảnh: ' + anh.loi : '']
+        .filter(Boolean).join('\n'),
+      thieu: banSao.thieuSoVoiMayChu || '', dem: demBao
     });
     Logger.log(ketQua);
     return ketQua;
@@ -285,8 +312,9 @@ function gomSaoLuu_(cauHinh) {
     //   khoá bí mật (nó chỉ giữ bản băm). Khôi phục sang một project khác thì
     //   mọi người phải đặt lại mật khẩu — dữ liệu gia phả về đủ, đường vào thì
     //   không.
-    khongChua: 'Mật khẩu tài khoản (Supabase không cho đọc) và tệp ảnh gốc ' +
-               '(chỉ có danh sách trong khoAnh).',
+    khongChua: 'Mật khẩu tài khoản (Supabase không cho đọc) và tệp ảnh ' +
+               '(ảnh chép riêng vào thư mục con "' + TEN_THU_MUC_ANH +
+               '" cạnh file này; khoAnh chỉ là danh sách).',
     dem: dem,
     bang: bang,
     nguoiDung: nguoiDung,
@@ -513,14 +541,23 @@ function goi_(cauHinh, url, viec, than) {
  */
 function dangNhap_(cauHinh) {
   if (cauHinh.phieu) return cauHinh.phieu;
+  cauHinh.phieu = xinPhieu_(cauHinh, cauHinh.email, cauHinh.matKhau,
+    'Không đăng nhập được tài khoản sao lưu. ' +
+    'Kiểm EMAIL_SAO_LUU và MAT_KHAU_SAO_LUU trong Script Properties. ' +
+    'Tài khoản này tạo ở Supabase → Authentication → Users, và phải được ' +
+    'thêm vào bảng tree_members với role = sao_luu — xem luoc-do/05-sao-luu.sql.');
+  return cauHinh.phieu;
+}
 
+/** Đổi email + mật khẩu lấy phiếu. `cauLoi` là câu nói khi đăng nhập hỏng. */
+function xinPhieu_(cauHinh, email, matKhau, cauLoi) {
   var res = UrlFetchApp.fetch(
     cauHinh.url + '/auth/v1/token?grant_type=password',
     {
       method: 'post',
       contentType: 'application/json',
       headers: { apikey: cauHinh.khoaCongKhai },
-      payload: JSON.stringify({ email: cauHinh.email, password: cauHinh.matKhau }),
+      payload: JSON.stringify({ email: email, password: matKhau }),
       muteHttpExceptions: true
     });
 
@@ -529,10 +566,7 @@ function dangNhap_(cauHinh) {
   if (ma < 200 || ma >= 300) {
     // ⚠ Không chép `chu` nguyên văn vào câu lỗi: thân phản hồi của cửa đăng
     //   nhập có thể vọng lại email vừa gửi lên.
-    throw new Error('Không đăng nhập được tài khoản sao lưu (mã ' + ma + '). ' +
-      'Kiểm EMAIL_SAO_LUU và MAT_KHAU_SAO_LUU trong Script Properties. ' +
-      'Tài khoản này tạo ở Supabase → Authentication → Users, và phải được ' +
-      'thêm vào bảng tree_members với role = sao_luu — xem luoc-do/05-sao-luu.sql.');
+    throw new Error(cauLoi + ' (mã ' + ma + ')');
   }
 
   var duLieu;
@@ -541,9 +575,7 @@ function dangNhap_(cauHinh) {
     throw new Error('Cửa đăng nhập trả về thứ không có access_token. ' +
                     'Kiểm KHOA_CONG_KHAI có đúng project không.');
   }
-
-  cauHinh.phieu = duLieu.access_token;
-  return cauHinh.phieu;
+  return duLieu.access_token;
 }
 
 function goiTho_(cauHinh, url, viec, themDau, than) {
@@ -643,6 +675,198 @@ function donBanCu_(thuMuc, soBanGiu) {
     daXoa++;
   });
   return daXoa;
+}
+
+// ============================================================
+// ẢNH — chép sang Drive mỗi đêm, tải ngược lên khi cần (b154)
+// ============================================================
+//
+// Drive giữ `Anh/<mã cây>/<tên tệp>` — đúng đường dẫn trong kho Supabase, nên
+// khôi phục là tải về đúng chỗ cũ, không cần bảng tra nào.
+//
+// ⚠ Ảnh trên Drive KHÔNG BAO GIỜ bị xoá theo app. App xoá ảnh là xoá THẬT
+//   khỏi kho (`xoaAnhThat()`: dọn thùng rác, xoá hẳn gia phả) — nên nếu Drive
+//   xoá theo thì khôi phục dữ liệu về hôm qua sẽ có người mà mất ảnh. Cái giá:
+//   thư mục `Anh` chỉ lớn lên. Ảnh đã nén (bản nhỏ 400px + bản lớn 1600px),
+//   15 GB của Drive là rất xa.
+//
+// ⚠ Đọc ảnh qua cửa `/object/authenticated/` bằng phiếu của vai `sao_luu`
+//   (luật `liet_ke_anh`, `luoc-do/05`), KHÔNG qua đường công khai — để ngày
+//   kho ảnh chuyển sang kín (`KIEN-TRUC.md` mục 7) thì sao lưu vẫn chạy.
+
+/** Như `chepAnhSangDrive_` nhưng KHÔNG BAO GIỜ ném — ảnh hỏng không kéo bản sao lưu chữ theo. */
+function chepAnhAnToan_(cauHinh, thuMucGoc, dsTep) {
+  try {
+    return chepAnhSangDrive_(cauHinh, thuMucGoc, dsTep);
+  } catch (e) {
+    return { chepThem: 0, chuaChep: dsTep.length,
+             loi: String(e && e.message ? e.message : e).slice(0, 300) };
+  }
+}
+
+/**
+ * Chép những tấm Drive chưa có (hoặc có mà khác cỡ — app tải đè cùng tên).
+ * Trả `{ chepThem, chuaChep, loi }`; `chuaChep` gồm tấm hỏng + tấm để đêm sau.
+ */
+function chepAnhSangDrive_(cauHinh, thuMucGoc, dsTep) {
+  var kq = { chepThem: 0, chuaChep: 0, loi: '' };
+  if (!dsTep.length) return kq;
+
+  var goc = thuMucCon_(thuMucGoc, TEN_THU_MUC_ANH, true);
+  var theoCay = {};
+  var loiLienTiep = 0;
+
+  for (var i = 0; i < dsTep.length; i++) {
+    var t = dsTep[i];
+    var cat = t.ten.indexOf('/');
+    var cay = t.ten.slice(0, cat);
+    var ten = t.ten.slice(cat + 1);
+    if (!theoCay[cay]) theoCay[cay] = docThuMucAnh_(thuMucCon_(goc, cay, true));
+    var o = theoCay[cay];
+    var cu = o.co[ten];
+    // Kho không báo cỡ (0) thì tin tên: chép lại mỗi đêm vì một con số thiếu
+    // là đốt hết thời gian của lượt chạy.
+    if (cu && (!t.byte || cu.getSize() === t.byte)) continue;
+
+    if (hetGio_(cauHinh) || loiLienTiep >= SO_LOI_LIEN_TIEP_TOI_DA) { kq.chuaChep++; continue; }
+    try {
+      var blob = taiAnhVe_(cauHinh, t.ten).setName(ten);
+      var moi = o.thuMuc.createFile(blob);
+      if (cu) cu.setTrashed(true);   // bản đè cũ vào thùng rác Drive, còn 30 ngày
+      o.co[ten] = moi;
+      kq.chepThem++;
+      loiLienTiep = 0;
+    } catch (e) {
+      kq.chuaChep++;
+      loiLienTiep++;
+      if (!kq.loi) kq.loi = t.ten + ': ' + String(e && e.message ? e.message : e).slice(0, 250);
+    }
+  }
+  return kq;
+}
+
+function taiAnhVe_(cauHinh, duong) {
+  var url = cauHinh.url + '/storage/v1/object/authenticated/' + cauHinh.khoAnh + '/' +
+            duong.split('/').map(encodeURIComponent).join('/');
+  return goiTho_(cauHinh, url, 'tải ảnh ' + duong).getBlob();
+}
+
+function hetGio_(cauHinh) {
+  return Date.now() - cauHinh.batDauMs > GIAY_CHEP_ANH_TOI_DA * 1000;
+}
+
+/** Thư mục con theo tên; `taoNeuThieu` false thì trả `null` khi chưa có. */
+function thuMucCon_(cha, ten, taoNeuThieu) {
+  var co = cha.getFoldersByName(ten);
+  if (co.hasNext()) return co.next();
+  return taoNeuThieu ? cha.createFolder(ten) : null;
+}
+
+/** `{ thuMuc, co: { tên tệp → File } }` — bỏ qua tệp đang nằm thùng rác. */
+function docThuMucAnh_(thuMuc) {
+  var co = {};
+  var it = thuMuc.getFiles();
+  while (it.hasNext()) {
+    var f = it.next();
+    if (f.isTrashed()) continue;
+    co[f.getName()] = f;
+  }
+  return { thuMuc: thuMuc, co: co };
+}
+
+/**
+ * KHÔI PHỤC ẢNH — tải những tấm có trên Drive mà kho Supabase đang thiếu.
+ * Chạy sau khi đã khôi phục dữ liệu chữ (`sao-luu/khoi-phuc.mjs`), hoặc bất cứ
+ * lúc nào thấy ảnh mất. Tấm đã có trong kho thì bỏ qua, nên chạy lại bao nhiêu
+ * lần cũng được — hết giờ thì bấm chạy lại, nó làm tiếp phần còn thiếu.
+ *
+ * ⚠ Cần một tài khoản GHI ĐƯỢC ảnh, vì vai `sao_luu` cố ý không ghi được gì:
+ *   điền tạm EMAIL_KHOI_PHUC + MAT_KHAU_KHOI_PHUC (Quản trị hệ thống, hoặc
+ *   Quản trị gia phả của đúng cây cần khôi phục — luật `ghi_anh`, `02-rls`).
+ *   Xong thì XOÁ hai dòng ấy. KHOI_PHUC_CAY (mã cây, uuid) để trống = mọi cây.
+ * ⚠ Cây đang nằm thùng rác thì máy chủ từ chối (`co_the_sua()` = false) —
+ *   phục hồi cây trong app trước.
+ * ⚠ Tải lên cả ảnh app đã cố ý xoá (Drive không xoá theo). Chúng nằm trong
+ *   kho mà không ai trỏ tới: tốn chỗ, không hiện ở đâu.
+ */
+function khoiPhucAnh() {
+  var cauHinh = docCauHinh_();
+  var kho = PropertiesService.getScriptProperties();
+  var email = (kho.getProperty('EMAIL_KHOI_PHUC') || '').trim();
+  var matKhau = kho.getProperty('MAT_KHAU_KHOI_PHUC') || '';
+  var chiCay = (kho.getProperty('KHOI_PHUC_CAY') || '').trim();
+  if (!email || !matKhau) {
+    throw new Error('Chưa điền tài khoản khôi phục. Mở Project Settings → ' +
+      'Script Properties, thêm EMAIL_KHOI_PHUC và MAT_KHAU_KHOI_PHUC của một ' +
+      'tài khoản Quản trị hệ thống. Chạy xong thì xoá hai dòng ấy.');
+  }
+
+  var goc = thuMucCon_(layThuMuc_(cauHinh), TEN_THU_MUC_ANH, false);
+  if (!goc) throw new Error('Trên Drive chưa có thư mục "' + TEN_THU_MUC_ANH +
+    '" — sao lưu đêm chưa chép tấm ảnh nào, không có gì để khôi phục.');
+
+  // Tấm nào kho đang có: hỏi bằng tài khoản SAO LƯU (luật `liet_ke_anh` chỉ
+  // cho vai ấy và Quản trị hệ thống liệt kê).
+  var coSan = {};
+  docKhoAnh_(cauHinh).tep.forEach(function (t) { coSan[t.ten] = true; });
+
+  var phieuGhi = xinPhieu_(cauHinh, email, matKhau,
+    'Không đăng nhập được tài khoản khôi phục. Kiểm EMAIL_KHOI_PHUC và ' +
+    'MAT_KHAU_KHOI_PHUC trong Script Properties.');
+
+  var kq = { taiLen: 0, daCo: 0, conLai: 0, loi: '' };
+  var loiLienTiep = 0;
+  var cacCay = goc.getFolders();
+  while (cacCay.hasNext()) {
+    var thuMucCay = cacCay.next();
+    var cay = thuMucCay.getName();
+    if (chiCay && cay !== chiCay) continue;
+    var tep = docThuMucAnh_(thuMucCay).co;
+    Object.keys(tep).forEach(function (ten) {
+      var duong = cay + '/' + ten;
+      if (coSan[duong]) { kq.daCo++; return; }
+      if (hetGio_(cauHinh) || loiLienTiep >= SO_LOI_LIEN_TIEP_TOI_DA) { kq.conLai++; return; }
+      var loi = taiAnhLen_(cauHinh, phieuGhi, duong, tep[ten].getBlob());
+      if (loi === '') { kq.taiLen++; loiLienTiep = 0; return; }
+      if (loi === 'da_co') { kq.daCo++; loiLienTiep = 0; return; }
+      kq.conLai++;
+      loiLienTiep++;
+      if (!kq.loi) kq.loi = duong + ': ' + loi;
+    });
+  }
+
+  var ket = 'Khôi phục ảnh: tải lên ' + kq.taiLen + ' tấm, ' + kq.daCo +
+            ' tấm kho đã có sẵn, còn ' + kq.conLai + ' tấm chưa tải.' +
+            (kq.loi ? '\nLỗi đầu tiên: ' + kq.loi : '') +
+            (kq.conLai ? '\nBấm chạy lại khoiPhucAnh để làm tiếp.'
+                       : '\nXONG. Nhớ xoá EMAIL_KHOI_PHUC và MAT_KHAU_KHOI_PHUC.');
+  Logger.log(ket);
+  return ket;
+}
+
+/** Tải một tấm lên kho. Trả '' nếu được, 'da_co' nếu kho đã có tấm cùng tên, còn lại là câu lỗi. */
+function taiAnhLen_(cauHinh, phieu, duong, blob) {
+  var url = cauHinh.url + '/storage/v1/object/' + cauHinh.khoAnh + '/' +
+            duong.split('/').map(encodeURIComponent).join('/');
+  var res = UrlFetchApp.fetch(url, {
+    method: 'post',
+    headers: { apikey: cauHinh.khoaCongKhai, Authorization: 'Bearer ' + phieu,
+               'x-upsert': 'false' },
+    contentType: blob.getContentType() || 'image/jpeg',
+    payload: blob.getBytes(),
+    muteHttpExceptions: true
+  });
+  var ma = res.getResponseCode();
+  if (ma >= 200 && ma < 300) return '';
+  var than = '';
+  try { than = String(res.getContentText() || '').slice(0, 200); } catch (e) { than = ''; }
+  if (ma === 409 || /already exists|Duplicate/i.test(than)) return 'da_co';
+  if (ma === 401 || ma === 403 || /row-level security/i.test(than)) {
+    return 'bị từ chối — tài khoản khôi phục phải là Quản trị hệ thống (hoặc ' +
+           'Quản trị gia phả của cây này), và cây không được nằm thùng rác. ' +
+           'Máy chủ nói: ' + than;
+  }
+  return 'mã ' + ma + ': ' + than;
 }
 
 // ============================================================
@@ -756,6 +980,7 @@ function docCauHinh_() {
     khoAnh: (kho.getProperty('KHO_ANH') || 'anh').trim(),
     thuMucId: (kho.getProperty('THU_MUC_DRIVE') || '').trim(),
     soBanGiu: Number(kho.getProperty('SO_BAN_GIU')) || SO_BAN_GIU_MAC_DINH,
+    batDauMs: bay.getTime(),
     taoLuc: bay.toISOString(),
     taoLucVn: Utilities.formatDate(bay, 'Asia/Ho_Chi_Minh', 'dd/MM/yyyy HH:mm'),
     dauThoiGian: Utilities.formatDate(bay, 'Asia/Ho_Chi_Minh', 'yyyy-MM-dd-HHmm')

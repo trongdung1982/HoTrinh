@@ -1,8 +1,9 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 29/09/2026 06:23 · **b153a (trang sơ đồ theo tông màu) XONG MÃ ·
-b152 (công khai theo từng người áp cả cho vai `xem`) XONG MÃ. ⚠ `53` CHƯA
-DÁN — được dán, xem mục SQL.** Mười bảy điểm dừng dưới chưa bấm thử.*
+*Cập nhật 29/09/2026 · **b154 (sao lưu ảnh sang Drive + khôi phục) XONG MÃ —
+thay `SaoLuu.gs` 0.7.0, không SQL.** **b153a (trang sơ đồ theo tông màu) XONG MÃ ·
+b152 (công khai theo từng người áp cả cho vai `xem`) XONG MÃ, `53` đã dán
+29/09.** Mười tám điểm dừng dưới chưa bấm thử.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -27,7 +28,8 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b152** Công khai theo từng người — cả vai Xem | ⚠ Dán `53` trước (mục SQL). Ctrl+F5. Cần một người CÓ tài khoản gắn, ở cây thử `TH957` (ví dụ người của bạn): *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia* → dòng `TH957` → cột *Thông tin công khai* → tắt *Quê quán* + *Tiểu sử* → *Lưu*. Mời `khach@io.vn` vào `TH957` vai **Khách** (`xem`), đăng nhập `khach@io.vn` → mở `TH957` → bấm người của bạn: KHÔNG thấy quê quán, tiểu sử. Người khác vẫn đủ như cũ (người còn sống vẫn bị lược như b148). Đăng nhập lại tài khoản của bạn: thấy đủ. Xong: bật lại hai trường, gỡ vai của `khach@io.vn` |
+| **b154** Sao lưu ảnh sang Drive | Thay mã `SaoLuu.gs` 0.7.0 (`sao-luu/HUONG-DAN-SAO-LUU.md` mục *Khi SaoLuu.gs có bản mới* — KHÔNG có SQL). Chạy `saoLuuNgay` → nhật ký ra *"Ảnh: chép thêm N, còn 0 tấm chưa chép"* → Drive → *Sao luu gia pha (Supabase)* → **Anh** có thư mục cây, trong có ảnh. *Quản trị hệ thống → Sao lưu*: dòng mới ghi *"Ảnh: đủ trên Drive"*. Khôi phục (tuỳ, trên cây thử): xoá một ảnh của `TH957` trong app, dọn thùng rác → làm mục *Khôi phục ảnh* của hướng dẫn → ảnh hiện lại. ⚠ Chưa chạy trên Supabase thật: phải đo cửa `/object/authenticated/` và tải lên |
+| **b152** Công khai theo từng người — cả vai Xem | ✓ `53` đã dán. Ctrl+F5. Cần một người CÓ tài khoản gắn, ở cây thử `TH957` (ví dụ người của bạn): *Quản trị → Tài khoản* → bảng *Các gia phả tôi đang tham gia* → dòng `TH957` → cột *Thông tin công khai* → tắt *Quê quán* + *Tiểu sử* → *Lưu*. Mời `khach@io.vn` vào `TH957` vai **Khách** (`xem`), đăng nhập `khach@io.vn` → mở `TH957` → bấm người của bạn: KHÔNG thấy quê quán, tiểu sử. Người khác vẫn đủ như cũ (người còn sống vẫn bị lược như b148). Đăng nhập lại tài khoản của bạn: thấy đủ. Xong: bật lại hai trường, gỡ vai của `khach@io.vn` |
 | **Tông màu** (trang Quản trị) | Ctrl+F5 → *Quản trị* → thanh trái có nút **🎨 Tông màu** ngay trên *← Về trang sơ đồ* → bấm → bảng 10 tông mở sang phải nút → chọn *Đêm hoài cổ* → cả trang tối lại, chữ đọc được → tải lại trang (F5) → vẫn tông ấy. Chọn *Kem tối giản (mặc định)* → về y như cũ. Điện thoại: ☰ → *Tông màu* → bảng đứng giữa màn hình. **b153a — trang sơ đồ**: để tông *Đêm hoài cổ* → *← Về trang sơ đồ* → nền, nút tròn, Cài đặt, thẻ chi tiết, form Sửa, Danh sách người đều tối theo; ô người trên sơ đồ vẫn sáng (cố ý — không đổi `render.js`). Chọn lại *Kem tối giản* → trang sơ đồ y hệt trước |
 | **Cột Nội dung thao tác** (Kiểm duyệt) | Ctrl+F5 → *Quản trị → Kiểm duyệt*: cột *Nội dung thao tác* đọc thành câu, không còn một chữ mỗi dòng. Tab *Đã từ chối & hoàn tác*: cột *Lý do từ chối* cũng vậy |
 | **b151a** Nhập tạo gia phả mới | ⚠ Bước này DỰNG một gia phả thật trên máy chủ — thử xong thì xoá nó. Cần tài khoản được phép tạo cây. Ctrl+F5 → ⚙ Cài đặt → *Nhập GEDCOM/Excel* → chọn `tai-lieu/My Family Tree.ged` → ô *Tên gia phả mới* gõ `Thu b151` → *Tạo gia phả mới và ghi vào đó*. Đạt khi: hộp báo ghi xong 6 người, KHÔNG báo "Mã mới vừa cấp đã có bản ghi khác giữ"; sơ đồ hiện đủ 6 người, 2 gia đình; *Danh sách người* cho thấy mã người là số lớn (không phải `P0001`…`P0006`). Xong: *Quản trị → Gia phả* → xoá `Thu b151` |
@@ -154,11 +156,8 @@ CHỖ** `luu_cay()` · `tu_choi_thay_doi()` · `gop_hai_nguoi()` — dán lại
 `26`/`28`/`32`/`47`/`48`/`50`/`51` thì PHẢI dán lại `52` (`so-tay/phan-quyen.md`).
 Dán lại nhiều lần được. Tự kiểm 6/6 phải ĐẠT. Bàn thử: `do-b150b.mjs` 32/32.
 
-**`53` (b152) — ⚠ CHƯA DÁN · ĐƯỢC DÁN NGAY** (đứng sau `52`, đã dán).
-Supabase → *SQL Editor* → *New query* → dán NGUYÊN file
-`luoc-do/53-cong-khai-vai-xem.sql` → *Run* → bảng cuối phải ra **ĐẠT cả 4
-dòng**. Chưa dán thì app chạy y như hôm nay (vai `xem` chưa theo cài đặt
-riêng). Không đổi cột, không đổi tên/tham số hàm app gọi (`doc_cay` ·
+**`53` (b152) — ĐÃ DÁN lên THẬT 29/09, tự kiểm 4/4 ĐẠT** (chủ dự án báo).
+Không đổi cột, không đổi tên/tham số hàm app gọi (`doc_cay` ·
 `doc_ho_so_nguoi`) → không cần Ctrl+F5 cho SQL. Một hàm mới khoá kín
 `an_bot_rieng` · ⚠ bản ĐỨNG CUỐI của `doc_cay()` · `ds_nguoi_xem_duoc()` ·
 `ds_nguoi_bi_che()` · `doc_ho_so_nguoi()` — dán lại `47`/`50`/`51`/`52`
@@ -177,8 +176,10 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 28/09 08:04 chỉ có cây NTB; file SQL khôi phục chứa cả gia phả, KHÔNG thả vào
 `supabase/`.
 
-**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử mười bảy
-điểm dừng ở trên trước (`53` dán trước, rồi b152 và ba điểm b151).
+**Chưa đặt bước kế tiếp** — chọn từ *Sau đó* dưới đây, hoặc bấm thử mười tám
+điểm dừng ở trên trước (b154 và b152 trước, rồi ba điểm b151). Việc Claude
+tự đo được bằng REST (b152 · b148 · b145 · b150 phần khách) đã đề xuất 29/09,
+chưa làm.
 
 ⚠ **b152 — ba điều Claude Code tự chốt thay (chủ dự án ngủ), xem lại khi dậy**:
 ① vai `xem` thấy = nhóm NGƯỜI bật, KHÔNG giao với nhóm của CÂY (tab *Cây mặc
@@ -229,7 +230,6 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | **Dọn ghi chú đầu file `person-edit.js`** (212 dòng, trần 30) — chủ dự án hoãn 29/09/2026. Tám file `pages/` khác sửa ở b153a cũng còn nợ (`do-gon.mjs --tat-ca`) | `QUY-TAC-GON.md` D1 |
 | Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
 | ⚠ **`tree_members.person_id` vẫn là cột chết từ b126** — `duyet_thanh_vien()` (đơn xin vào cây) vẫn GHI vào đó; từ b132 không hàm đọc nào dùng nó nữa. Bỏ hẳn cột là một bước riêng | `so-tay/luu-mot-dong-quan-tri.md` |
-| ⚠ **Sao lưu KHÔNG chép ảnh** — chỉ liệt kê. Ảnh vẫn nằm đúng một chỗ | `KIEN-TRUC.md` mục 7 |
 | Repo vệ tinh `LeVanTrac` · `NguyenQuang` kẹt Pages từ 28/09 08:12 (push dồn → deploy giẫm nhau). Chủ dự án bảo **treo** — app chưa xong; lần push sau thường tự gỡ | `.github/workflows/dong-bo-sang-levantrac.yml` |
 | Hai màn hình chưa mở được (bỏ chọn gia phả · quyền ảnh) | `KIEN-TRUC.md` mục 6 |
 | Tháo giàn giáo `tuong-thich.js` — mốc **1 file** (b149: `chon-gia-pha`), chỉ được giảm. Nối màn ấy (hoặc bỏ hẳn nút *Bỏ chọn*) là về 0, xoá file | `KIEN-TRUC.md` mục 4 |

@@ -8,7 +8,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb (demDuLieu · dsNhatKyHeThong) · o-bang
 // Sổ tay   : so-tay/trang-quan-tri.md · so-tay/sao-luu.md
-// Phiên bản: 0.2.0 · Cập nhật: 28/09/2026 (b147)
+// Phiên bản: 0.3.0 · Cập nhật: 29/09/2026 (b154)
 // ============================================================
 //
 // ⚠ CHỈ ĐỌC. Không có nút Khôi phục — máy chủ chưa khôi phục được, và vẽ nút
@@ -41,6 +41,18 @@ function kichCo(n) {
   if (n < 1024) return n + ' byte';
   if (n < 1024 * 1024) return (n / 1024).toFixed(0) + ' KB';
   return (n / 1024 / 1024).toFixed(1).replace('.', ',') + ' MB';
+}
+
+/**
+ * Dòng ảnh dưới cỡ file (b154, `SaoLuu.gs` 0.7.0 báo `anh_chua_chep`). Bản
+ * cũ không báo số ấy → '' (ô không vẽ thêm gì).
+ */
+function cauAnh(c) {
+  const d = c.dem || {};
+  if (typeof d.anh_chua_chep !== 'number') return '';
+  return d.anh_chua_chep
+    ? 'Ảnh: còn ' + d.anh_chua_chep + ' tấm chưa chép sang Drive'
+    : 'Ảnh: đủ trên Drive' + (typeof d.anh === 'number' ? ' (' + d.anh + ' tấm)' : '');
 }
 
 /** Câu phụ dưới huy hiệu kết quả: lỗi / thiếu / cảnh báo, cắt ngắn. */
@@ -89,7 +101,7 @@ export async function veLichSuSaoLuu(sec) {
       td(span('name', ngayGio(d.luc))),
       td(huyHieu(chu, kieu), phu ? span('sub', phu) : ''),
       td(span('sub', d.doiTuong)),
-      td(span('sub', kichCo(c.so_byte))),
+      td(span('sub', kichCo(c.so_byte)), cauAnh(c) ? span('sub', cauAnh(c)) : ''),
       // Hành động: không mở được file trên Drive từ trình duyệt — ô để trống.
       td(),
     );

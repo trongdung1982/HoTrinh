@@ -308,12 +308,11 @@ Chạy hàm **`goLichSaoLuu`**. Lịch tự động tắt; sao lưu bấm tay v�
 
 ### Khi `SaoLuu.gs` có bản mới — thay mã, KHÔNG làm lại từ đầu
 
-*(Lần gần nhất: bản **0.6.0**, 28/09/2026 — mỗi lần chạy tự báo kết quả vào
-**Nhật ký hệ thống**, nên trang *Quản trị hệ thống → Sao lưu & khôi phục*
-hiện được bảng *Lịch sử sao lưu* và thẻ *Sao lưu* ở Tổng quan. Kèm SQL `49`.
-Bản trước: 0.5.0 — đối chiếu số dòng với máy chủ, kèm SQL `45`.)*
+*(Lần gần nhất: bản **0.7.0**, 29/09/2026 — **chép ảnh sang Drive**, xem
+mục *Ảnh* ngay dưới. **Không có SQL nào phải dán**: bỏ qua bước 1, làm bước
+2 → 5. Bản trước: 0.6.0 — báo kết quả vào Nhật ký hệ thống, kèm SQL `49`.)*
 
-1. **Dán SQL trước:** Supabase → SQL Editor → dán cả file
+1. **Dán SQL trước** *(chỉ khi bản mới kèm SQL — 0.7.0 thì KHÔNG)*: Supabase → SQL Editor → dán cả file
    `luoc-do/49-nhat-ky-sao-luu.sql` → **Run**. Bảng cuối phải ra **ĐẠT** ở
    ba dòng. *(Máy chủ chưa có `45` thì dán `45` trước — bảng cuối của nó phải
    ĐẠT bốn dòng, dòng 3 là "không".)*
@@ -334,6 +333,54 @@ Bản trước: 0.5.0 — đối chiếu số dòng với máy chủ, kèm SQL `
 
 ---
 
+## Ảnh (từ bản 0.7.0)
+
+**Sao lưu làm gì với ảnh.** Mỗi lần `saoLuuNgay` chạy, sau khi ghi xong file
+JSON, nó chép những tấm ảnh Drive **chưa có** vào thư mục con **`Anh`**,
+nằm ngay trong thư mục *Sao luu gia pha (Supabase)*. Trong `Anh` mỗi gia phả
+một thư mục, tên là mã cây (một chuỗi dài như `3f2a…-…`).
+
+- Mỗi đêm chép tối đa khoảng **4 phút rưỡi** (Apps Script cắt mọi lượt chạy ở
+  6 phút). Nhiều ảnh quá thì đêm sau chép tiếp phần còn lại.
+- Ảnh app đã xoá **vẫn nằm lại trên Drive**. Cố ý: khôi phục dữ liệu về hôm
+  qua thì ảnh của hôm qua phải còn.
+- Tự kiểm: bảng *Lịch sử sao lưu* (hoặc nhật ký Apps Script) có dòng
+  **`anh_chua_chep`**. Nó về **0** là mọi ảnh đã có bản trên Drive.
+
+**Lần đầu sau khi thay mã:** chạy `saoLuuNgay` một lần. Nhật ký Apps Script
+ra dòng cuối kiểu *"Ảnh: chép thêm 12, còn 0 tấm chưa chép."* Mở Drive →
+*Sao luu gia pha (Supabase)* → **Anh**: thấy thư mục các cây, trong có ảnh.
+Ra *"còn N tấm chưa chép"* kèm một câu lỗi thì chép câu ấy gửi Claude Code.
+
+### Khôi phục ảnh — hàm `khoiPhucAnh`
+
+Dùng khi ảnh trên app mất (hoặc sau khi khôi phục dữ liệu từ file JSON). Nó
+tải lên những tấm **có trên Drive mà kho Supabase đang thiếu**. Tấm còn thì
+bỏ qua, nên chạy thừa không hại gì.
+
+Tài khoản sao lưu cố ý **không ghi được gì**, nên việc này cần tài khoản của
+bạn (Quản trị hệ thống), điền **tạm**:
+
+1. `script.google.com` → dự án sao lưu → **Project Settings** (bánh răng) →
+   **Script Properties** → **Edit script properties** → **Add script property**
+   hai lần:
+   - `EMAIL_KHOI_PHUC` = email đăng nhập app của bạn
+   - `MAT_KHAU_KHOI_PHUC` = mật khẩu ấy
+
+   *(Chỉ muốn khôi phục một gia phả: thêm `KHOI_PHUC_CAY` = tên thư mục của
+   cây ấy trong `Anh`.)* → **Save script properties**.
+2. Về **Editor** → chọn hàm **`khoiPhucAnh`** → **Run**.
+3. Đọc dòng nhật ký: *"tải lên N tấm, M tấm kho đã có sẵn, còn 0 tấm chưa
+   tải. XONG."* Ra *"còn … Bấm chạy lại"* thì bấm **Run** lần nữa (hết giờ,
+   nó làm tiếp). Ra *"bị từ chối"* thì tài khoản ấy không phải Quản trị hệ
+   thống, hoặc gia phả đang nằm thùng rác (phục hồi nó trong app trước).
+4. **Xoá** hai dòng `EMAIL_KHOI_PHUC`, `MAT_KHAU_KHOI_PHUC` (và
+   `KHOI_PHUC_CAY` nếu có) → **Save script properties**. Đừng để mật khẩu
+   của bạn nằm lại trong dự án này.
+5. Mở app, Ctrl + F5: ảnh hiện lại.
+
+---
+
 ## ⚠ Ba điều bản sao lưu này KHÔNG làm — nói thẳng để không ai tưởng nhầm
 
 **1. Không chứa mật khẩu.** Supabase không cho đọc mật khẩu ra, kể cả bằng khoá
@@ -341,16 +388,15 @@ bí mật. File có danh sách ai có tài khoản (email, ngày tạo), nhưng 
 dựng lại hệ thống thì mọi người sẽ phải **đặt lại mật khẩu**. Dữ liệu gia phả
 về đủ; đường vào thì không.
 
-**2. Không chép ảnh về.** File chỉ **liệt kê** ảnh đang có — tên và dung lượng.
-Ảnh gốc vẫn chỉ nằm một chỗ duy nhất là kho Supabase. Hôm nay chưa có tấm ảnh
-thật nào nên chưa mất gì, nhưng ngày bắt đầu gắn ảnh thì đây thành lỗ hổng
-thật. Mở file sao lưu, tìm dòng `"anh":` trong khối `"dem"` — con số ấy chính
-là số tấm ảnh **chưa được chép đi đâu cả**.
+**2. Ảnh không nằm trong file JSON.** Từ bản 0.7.0 ảnh có bản sao trên Drive
+(thư mục `Anh`, mục *Ảnh* ở trên), nhưng nó là **một bản duy nhất, luôn mới
+nhất** — không có "ảnh của ngày 12" như file JSON. Tấm bị tải đè thì Drive chỉ
+giữ bản mới (bản cũ vào thùng rác Drive, còn 30 ngày).
 
 **3. Khôi phục: đã làm thật một lần, 28/09/2026.** Script đổ ngược
 `sao-luu/khoi-phuc.mjs` đổi file JSON thành một file SQL; dán vào SQL Editor,
-19 bảng về khớp bản chụp từng dòng. Ảnh và mật khẩu thì không về — hai điều
-trên vẫn đúng.
+19 bảng về khớp bản chụp từng dòng. Mật khẩu thì không về. Ảnh về bằng một
+bước riêng: hàm `khoiPhucAnh` (mục *Ảnh*) — **chưa chạy thật lần nào**.
 
 ---
 
@@ -365,7 +411,7 @@ File JSON có khuôn thế này:
   "dem":  { "persons": 681, ... },        ← số dòng từng bảng, để đối chiếu
   "bang": { "trees": [...], "persons": [...], ... },   ← chép thô từng bảng
   "nguoiDung": [ ... ],                   ← ai có tài khoản
-  "khoAnh":    { "tep": [ ... ] }         ← danh sách ảnh (không có ảnh)
+  "khoAnh":    { "tep": [ ... ] }         ← danh sách ảnh (ảnh ở thư mục Anh)
 }
 ```
 
