@@ -32,7 +32,7 @@ file. ⚠ `KE-HOACH.md` **hết trần** (b131) — gọn bằng kỷ luật "xo
 | Đụng di dời dữ liệu vào bảng | `di-doi/HUONG-DAN-DI-DOI.md` · `di-doi/sinh-sql-di-doi.mjs` |
 | Thêm/nâng cấp thư viện | `js/vendor/DOC-VENDOR.md` — và **hỏi chủ dự án trước** |
 | **Gặp lỗi / điều đáng chú ý** · dọn rác · ghi chú đầu file · phép 10 báo LỖI | `QUY-TAC-GON.md` mục 4–5 · `so-tay/` · đo: `node kiem-thu/do-gon.mjs` |
-| Xuất/nhập GEDCOM, Excel | `../tai-lieu/CAU-TRUC-DU-LIEU_V06.md` mục *Ánh xạ GEDCOM* · ⚠ Đời (lưu, `luoc-do/40`), xuất Excel: `so-tay/xuat-excel.md` |
+| Xuất/nhập GEDCOM, Excel | `so-tay/nhap-xuat.md` · `../tai-lieu/CAU-TRUC-DU-LIEU_V06.md` mục *Ánh xạ* · ⚠ Đời (lưu, `luoc-do/40`), xuất Excel: `so-tay/xuat-excel.md` |
 | Hướng dẫn chủ dự án bấm gì | `HUONG-DAN-DUNG-BANG.md` |
 | Mở app tại chỗ, cài máy thứ hai, dùng `gh` | `../MAY-THU-HAI.md` *(ngoài repo)* |
 | Muốn biết vì sao chuyển nhà | `BAT-DAU.md` (chứng cứ gốc, không sửa) |

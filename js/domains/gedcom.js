@@ -3,8 +3,8 @@
 // Vai trò  : Xuất gia phả ra GEDCOM 5.5.1, và ĐỌC file .ged thành bản xem trước
 // Lớp      : domains — HÀM THUẦN, không chạm DOM, không gọi services
 // Phụ thuộc: utils/date, utils/text, utils/id, utils/graph, config, domains/union
-// Phiên bản: 1.15.1 · Cập nhật: 28/09/2026 22:39
-// Sổ tay   : so-tay/luu-du-lieu.md (Kho mã)
+// Phiên bản: 1.16.0 · Cập nhật: 29/09/2026 23:05
+// Sổ tay   : so-tay/luu-du-lieu.md (Kho mã) · so-tay/nhap-xuat.md
 // ============================================================
 //
 // XUẤT: GEDCOM 5.5.1. Cũ hơn 7.0 nhưng gần như mọi phần mềm gia phả đọc được.
@@ -78,7 +78,7 @@
 //   thiếu.
 // - **Mặc định ẩn chi tiết người `living: true`.** Ẩn nghĩa là: giữ TÊN CHÍNH,
 //   giới tính, và mọi mối nối gia đình — bỏ ngày sinh/mất, nơi chốn, nghề
-//   nghiệp, ghi chú, ảnh, tên phụ, ngày giỗ. Giữ tên vì cây mất tên là cây vô
+//   nghiệp, liên hệ, ghi chú, ảnh, tên phụ, ngày giỗ. Giữ tên vì cây mất tên là cây vô
 //   nghĩa; bỏ phần còn lại vì đó mới là thứ riêng tư. Người bị ẩn mang
 //   `1 RESN privacy` — đúng thẻ mà 5.5.1 dựng cho việc này, nên phần mềm nhận
 //   biết là *cố ý giấu*, không phải *dữ liệu thiếu*.
@@ -540,7 +540,9 @@ const TRUONG_NGUOI = [
     dat: (p, m) => { p.residence = chu(m.residence); } },
   { truong: 'nationality', nhan: 'Dân tộc',    doc: (p) => chu(p.nationality),
     dat: (p, m) => { p.nationality = chu(m.nationality); } },
-  { truong: 'doi',         nhan: 'Đời',        doc: (p) => soDoiCua(p),
+  { truong: 'contact',     nhan: 'Liên hệ',    doc: (p) => chu(p.contact),
+    dat: (p, m) => { p.contact = chu(m.contact); } },
+  { truong: 'doi',        nhan: 'Đời',        doc: (p) => soDoiCua(p),
     dat: (p, m) => datVn(p, m, 'generation') },
   { truong: 'chi',         nhan: 'Chi / nhánh', doc: (p) => chu(p.vn && p.vn.branch),
     dat: (p, m) => datVn(p, m, 'branch') },
@@ -2649,6 +2651,7 @@ function docNguoi(r, gom) {
     religion: '',
     residence: '',
     nationality: '',
+    contact: '',
     living: true,
     photoFileId: '',
     note: '',
@@ -2687,6 +2690,7 @@ function docNguoi(r, gom) {
       case 'EDUC': n.dung = true; p.education = giaTriChu(n); break;
       case 'RELI': n.dung = true; p.religion = giaTriChu(n); break;
       case 'NATI': n.dung = true; p.nationality = giaTriChu(n); break;
+      case '_LIENHE': n.dung = true; p.contact = giaTriChu(n); break;
       case 'NOTE': n.dung = true; p.note = gopChu(p.note, giaTriChu(n)); break;
       case '_DOI': {
         n.dung = true;
@@ -3416,6 +3420,9 @@ function veNguoi(ds, p, giauChiTiet, dsLamVo, dsLamCon, anhTheoChu) {
     themDong(ds, 1, 'RELI', p.religion);
     veNoiChon(ds, 'RESI', p.residence);
     themDong(ds, 1, 'NATI', p.nationality);
+    // Liên hệ (b150b, `persons.contact`): chữ tự do — số điện thoại lẫn email
+    // — nên không vào `PHON`/`EMAIL` chuẩn (hai thẻ ấy đòi đúng một loại).
+    themDong(ds, 1, '_LIENHE', p.contact);
     themDong(ds, 1, 'NOTE', p.note);
 
     const vn = p.vn && typeof p.vn === 'object' ? p.vn : {};

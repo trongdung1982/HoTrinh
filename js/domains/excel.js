@@ -6,7 +6,8 @@
 //            mới" đã có (`mergeImported(tree, kq, {che:'moi'})`).
 // Lớp      : domains — được gọi bởi: pages · được phép gọi: utils, config
 // Phụ thuộc: utils/date · vendor/xlsx.mjs (SheetJS), đọc `.xlsb`/`.xlsx`
-// Phiên bản: 0.3.0 · Cập nhật: 01/09/2026 21:10
+// Phiên bản: 0.4.0 · Cập nhật: 29/09/2026 23:10
+// Sổ tay   : so-tay/nhap-xuat.md
 // ============================================================
 //
 // ⚠ HÀM `parseExcel` KHÔNG THUẦN TUYỆT ĐỐI như `parseGedcom`: nó nạp một thư
@@ -57,7 +58,17 @@ const COT = {
   idMoi: 'ID mới', idCha: 'ID cha', idMe: 'ID me',
   ps1: 'ID phối ngẫu 1', ps2: 'ID phối ngẫu 2',
   soThuTuHonNhan: 'Số thứ tự hôn nhân', soThuTuCon: 'Số thứ tự con',
+  // Bảy cột KHÔNG có trong khuôn mẫu — file nào có (chép từ bản Xuất Excel,
+  // `pages/quan-tri/xuat-excel.js`) thì đọc, không có thì thôi.
+  title: 'Chức tước', occupation: 'Nghề nghiệp', education: 'Học vấn',
+  religion: 'Tôn giáo', residence: 'Nơi ở', nationality: 'Dân tộc', contact: 'Liên hệ',
 };
+// Tên thứ hai của cùng một cột. "ID me" không dấu là tên gốc của khuôn, nhưng
+// người điền gõ "ID mẹ" là chuyện tự nhiên — trước b160 cột ấy bị bỏ qua IM
+// LẶNG, cả file mất hết mẹ mà bản xem trước vẫn báo đọc được.
+const COT_TEN_KHAC = { idMe: ['ID mẹ'] };
+const COT_THONG_TIN = ['title', 'occupation', 'education', 'religion', 'residence',
+  'nationality', 'contact'];
 
 // ============================================================
 // Thư viện đọc Excel — nằm trong repo, nạp chậm
@@ -117,7 +128,11 @@ export async function parseExcel(arrayBuffer) {
 
   const header = hang[0];
   const idx = {};
-  for (const [k, ten] of Object.entries(COT)) idx[k] = header.indexOf(ten);
+  const tieuDe = header.map((c) => chu(c));
+  for (const [k, ten] of Object.entries(COT)) {
+    idx[k] = [ten, ...(COT_TEN_KHAC[k] || [])].map((t) => tieuDe.indexOf(t))
+      .find((i) => i >= 0) ?? -1;
+  }
   if (idx.idMoi === -1) {
     return ketQuaLoi('Không tìm thấy cột "ID mới" — đây có phải đúng khuôn ' +
       'file gia phả một bảng không?');
@@ -203,6 +218,15 @@ function coGiaTriO(r, i) {
 }
 function chu(v) { return v === null || v === undefined ? '' : String(v).trim(); }
 
+/** Ô có/không: `true`/`false`, chuỗi "TRUE"/"FALSE", hoặc chữ trong hai danh sách. Khác thì `null`. */
+function docCo(v, chuCo, chuKhong) {
+  if (v === true || v === false) return v;
+  const t = chu(v).toLowerCase();
+  if (t === 'true' || chuCo.includes(t)) return true;
+  if (t === 'false' || chuKhong.includes(t)) return false;
+  return null;
+}
+
 /** Ô ngày kiểu " __/__/____" hoặc " __/__" — chỗ trống của khuôn Excel, không phải chữ. */
 function laNgayTrong(s) {
   return s === '' || s.indexOf('_') >= 0;
@@ -250,10 +274,13 @@ function docDongNguoi(r, idx, rawId) {
   ));
   if (bietDanh) names.push(Object.assign({ type: 'thuong_goi' }, tachHoTen(bietDanh)));
 
-  const gioiTinhO = layO(r, idx.gioiTinh);
+  // Khuôn ghi TRUE/FALSE, nhưng ô định dạng chữ cho ra chuỗi "TRUE", và người
+  // điền hay gõ "Nam"/"Nữ", "Còn sống"/"Đã mất" (đúng chữ bản Xuất Excel ghi).
+  const gioiTinhO = docCo(layO(r, idx.gioiTinh), ['nam'], ['nữ', 'nu']);
   const sex = gioiTinhO === true ? 'M' : gioiTinhO === false ? 'F' : 'U';
 
-  const tinhTrangO = layO(r, idx.tinhTrang);
+  const tinhTrangO = docCo(layO(r, idx.tinhTrang), ['còn sống', 'con song', 'sống'],
+    ['đã mất', 'da mat', 'mất']);
   const living = tinhTrangO === true ? true : tinhTrangO === false ? false : true;
 
   const maSoCu = chu(layO(r, idx.maSoCu));
@@ -278,8 +305,12 @@ function docDongNguoi(r, idx, rawId) {
   const soThuTuHonNhanRaw = layO(r, idx.soThuTuHonNhan);
   const soThuTuConRaw = layO(r, idx.soThuTuCon);
 
+  const thongTin = {};
+  for (const k of COT_THONG_TIN) thongTin[k] = chu(layO(r, idx[k]));
+
   return {
     rawId, doi,
+    thongTin,
     names,
     sex,
     living,
@@ -400,8 +431,7 @@ function dungNguoi(p, id) {
     birth: Object.assign({}, p.birth, { place: p.birthPlace || p.birth.place }),
     death: p.death,
     burialPlace: p.burialPlace,
-    title: '', occupation: '', education: '', religion: '', residence: '',
-    nationality: '',
+    ...p.thongTin,
     living: p.living,
     photoFileId: '',
     note: p.note,

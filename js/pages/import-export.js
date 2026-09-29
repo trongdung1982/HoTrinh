@@ -4,8 +4,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, pages/form-ghep-doi, domains/{gedcom,excel}, services/{sb,repo},
 //            utils/{date,text}, config
-// Phiên bản: 1.9.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
-// Sổ tay   : so-tay/luu-du-lieu.md (Kho mã)
+// Phiên bản: 1.9.2 · Cập nhật: 29/09/2026 23:15
+// Sổ tay   : so-tay/luu-du-lieu.md (Kho mã) · so-tay/nhap-xuat.md
 // ============================================================
 //
 // Hai màn hình, hai chiều của cùng một cửa:
@@ -138,7 +138,7 @@ export function openXuatGedcom() {
 
     giaiThichAn.textContent = hopChon.checked
       ? 'Người còn sống vẫn giữ tên và mối nối gia đình, nhưng bỏ ngày ' +
-        'sinh, nơi chốn, nghề nghiệp, ghi chú và ảnh.'
+        'sinh, nơi chốn, nghề nghiệp, liên hệ, ghi chú và ảnh.'
       : 'Bỏ dấu chọn thì file mang đầy đủ ngày tháng và ghi chú của MỌI ' +
         'người, kể cả người còn sống. Chỉ làm vậy khi file này không đi ra ' +
         'khỏi tay bạn.';
