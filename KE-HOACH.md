@@ -26,6 +26,8 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b161a** Kho ảnh KÍN *(sau khi dán `59`)* | Ctrl+F5. Mở cây có ảnh (Nguyễn Phúc Giáo hoặc `TH957`): ảnh trên sơ đồ, thẻ chi tiết, bản lớn khi bấm ảnh vẫn hiện như cũ. Bấm phải một ảnh → *Mở ảnh trong thẻ mới* → địa chỉ có đoạn `token=` → xoá hết từ dấu `?` trở đi rồi Enter: trang báo lỗi, KHÔNG ra ảnh (đó là kho đã kín). ⚙ Cài đặt → *Xuất ảnh* PNG: ảnh người vẫn có trong file. *Quản trị hệ thống → Dữ liệu mồ côi → Quét*: cột ảnh xem trước hiện được |
+| **b161b** Bỏ nút *Quay về gia phả mặc định* | Ctrl+F5 → ⚙ Cài đặt → *Chọn gia phả*: danh sách cây hiện, bấm một cây khác → hộp hỏi → *Mở gia phả này* → tải lại vào cây ấy. KHÔNG có nút *Quay về gia phả mặc định*, KHÔNG có *Dữ liệu mới* |
 | **b160** Bỏ ô Đời · nhập lại Bảng phẳng · Liên hệ qua GEDCOM | ⚠ Bước 3 DỰNG một gia phả thật — thử xong thì xoá. Ctrl+F5. ① Sơ đồ → mở một người → *Sửa*: KHÔNG còn ô *Đời thứ mấy*, khối ấy chỉ còn *Chi / nhánh*; sửa gì đó → *Lưu* → trang chi tiết vẫn hiện Đời như cũ. ② Cây thử `TH957` → *Danh sách người* → *Xuất Excel ▾* → *Bảng phẳng* → tải file. ③ ⚙ Cài đặt → *Nhập GEDCOM/Excel* → chọn file vừa tải → bản xem trước ghi đúng số người, có dòng "Đọc theo khuôn Bảng phẳng…" → tên `Thu b160` → *Tạo gia phả mới và ghi vào đó*. Đạt khi sơ đồ `Thu b160` giống `TH957` (vợ chồng, con, thứ tự con). Xong: *Quản trị → Gia phả* → xoá `Thu b160`. ④ ⚙ Cài đặt → *Xuất GEDCOM* → bỏ dấu *Ẩn chi tiết người còn sống* → tải → mở bằng Notepad: người có số điện thoại có dòng `1 _LIENHE …` |
 | **b159d Gỡ Chọn nhiều để xoá** | Ctrl+F5. Trang sơ đồ → *Danh sách người*: chân chỉ còn *Thùng rác (n)*, *Rà soát*, *Đóng* — KHÔNG còn *Chọn nhiều để xoá*. Cùng thế ở *Các gia đình* (Cài đặt). Bấm một dòng vẫn mở hồ sơ; *Thùng rác* vẫn chọn/khôi phục/xoá hẳn được như cũ |
 | **Bảng tài khoản chờ xóa đã chuyển chỗ** | Ctrl+F5 → *Quản trị → Quản trị hệ thống → Sổ tài khoản*: bảng cuối trang không còn. Sang tab *Thùng rác*: bảng *Danh sách tài khoản chờ xóa (Lưu giữ 60 ngày)* nằm trên cùng, ghi "Chưa có ở máy chủ" (xoá mềm 60 ngày chưa làm — việc cũ b118b) |
@@ -58,6 +60,10 @@ kéo theo file nào, bản nào đứng cuối): **`so-tay/phan-quyen.md`** mụ
 dán lại* — đọc TRƯỚC khi dán lại bất cứ file nào.
 
 **`01` → `58` — ĐÃ DÁN lên THẬT cả** (`57`, `58` ngày 29/09/2026, chủ dự án báo).
+
+**`59-kho-anh-kin.sql` — CHƯA DÁN.** ĐƯỢC dán ngay, không kéo file nào theo
+(mã JS đã đẩy trước, chạy được cả hai phía). Dán xong thì Ctrl+F5 mọi tab đang
+mở app, không thì ảnh hiện bóng người tới khi tải lại.
 
 ---
 
@@ -105,8 +111,5 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
 | ⚠ **`tree_members.person_id` vẫn là cột chết từ b126** — `duyet_thanh_vien()` (đơn xin vào cây) vẫn GHI vào đó; không hàm đọc nào dùng nó nữa. Bỏ hẳn cột là một bước riêng | `so-tay/luu-mot-dong-quan-tri.md` |
 | Repo vệ tinh `LeVanTrac` · `NguyenQuang` kẹt Pages từ 28/09 08:12 (push dồn → deploy giẫm nhau). Chủ dự án bảo **treo** — app chưa xong; lần push sau thường tự gỡ | `.github/workflows/dong-bo-sang-levantrac.yml` |
-| Hai màn hình chưa mở được (bỏ chọn gia phả · quyền ảnh) | `KIEN-TRUC.md` mục 6 |
-| Tháo giàn giáo `tuong-thich.js` — mốc **1 file** (`chon-gia-pha`), chỉ được giảm. Nối màn ấy (hoặc bỏ hẳn nút *Bỏ chọn*) là về 0, xoá file | `KIEN-TRUC.md` mục 4 |
-| Đổi tên ba vết sẹo (`driveFileId` · `driveThumbUrl` · `tuong-thich`) | `KIEN-TRUC.md` mục 4 |
-| **Ảnh: kho công khai hay kho kín?** Hiện công khai — đường dẫn khó đoán, nhưng *"khó đoán"* không phải *"được bảo vệ"*. Sao lưu ảnh không phụ thuộc câu trả lời | `KIEN-TRUC.md` mục 7 |
+| Đổi tên hai vết sẹo (`driveFileId` · `driveThumbUrl`) | `KIEN-TRUC.md` mục 4 |
 | **`branches` / `branch_access` dựng từ `01-bang.sql` nay KHÔNG dùng** — luật đi theo trực hệ, không chia chi *(chốt 04/09/2026)* | `06-quyen-truc-he.sql` mục 2 |

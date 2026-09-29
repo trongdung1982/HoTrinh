@@ -67,8 +67,7 @@ supabase/  (= gốc repo giapha-supabase)
     ├── services/
     │   ├── sb.js           ← cầu nối duy nhất xuống Supabase
     │   ├── hinh-dang.js    ← dòng ⇄ cây, và so hai cây ra khác biệt
-    │   ├── repo.js         ← viết lại, giữ nguyên chữ ký
-    │   └── tuong-thich.js  ← ⚠ giàn giáo tạm, đích đến là XOÁ
+    │   └── repo.js         ← viết lại, giữ nguyên chữ ký
     └── vendor/             ← thư viện người khác, chép nguyên, KHÔNG sửa
 ```
 
@@ -99,23 +98,21 @@ bắt buộc**: hai tài khoản thật, mỗi tài khoản một nhánh, xác n
 
 ---
 
-## 4. Ba vết sẹo có chủ ý — đừng "sửa" lẻ
+## 4. Hai vết sẹo có chủ ý — đừng "sửa" lẻ
 
-Cả ba là chỗ **tên gọi nói dối về nội dung**. Cả ba cố ý giữ, vì sửa chúng
+Cả hai là chỗ **tên gọi nói dối về nội dung**. Cả hai cố ý giữ, vì sửa chúng
 nghĩa là chạm vào `domains/`.
 
 | Vết | Nói dối chỗ nào | Vì sao giữ |
 |---|---|---|
 | Cột `drive_file_id`, trường `driveFileId` | Không còn Drive nào; giá trị nay là đường dẫn kho Supabase | `domains/media.js`, `gedcom.js`, `excel.js` và bảy màn hình đọc/ghi trường này ở hơn ba mươi chỗ |
-| Hàm `driveThumbUrl()` | Dựng URL Supabase, và **bỏ qua tham số `size`** | Tám chỗ gọi, một trong đó là `domains/render.js` |
-| File `services/tuong-thich.js` | Là giàn giáo, không phải kiến trúc | Hai màn hình chưa làm (`backup` · `chon-gia-pha`) còn `import` nó — từ bảy (03/09) |
+| Hàm `driveThumbUrl()` | Tra URL có chữ ký (kho kín, mục 7), và **bỏ qua tham số `size`** | Tám chỗ gọi, một trong đó là `domains/render.js` |
 
-Đổi tên cả ba là **một việc riêng**, một phiên riêng, có bước đổi dữ liệu và
+Đổi tên cả hai là **một việc riêng**, một phiên riêng, có bước đổi dữ liệu và
 có bộ kiểm chạy lại. Đừng để nó lẻn vào một lần sửa khác.
 
-⚠ `/kiem-tra` có một phép đếm số màn hình còn dựa vào `tuong-thich.js` —
-**mốc 03/09/2026 là 7**. Con số ấy chỉ được giảm. Tăng là dấu hiệu ai đó đang
-xây tiếp lên giàn giáo thay vì tháo nó.
+*(Vết thứ ba — giàn giáo `services/tuong-thich.js` — đã tháo và xoá ở b161b,
+30/09/2026: màn cuối cùng dựa vào nó, `chon-gia-pha`, nay gọi thẳng `sb.js`.)*
 
 ---
 
@@ -193,14 +190,9 @@ thấy app gọi tới `di-doi/` là ranh giới đã vỡ.
 24/08/2026, trước khi có quyết định giữ bản Apps Script chạy tiếp cho người
 trong họ. **Gỡ deploy hôm nay là tắt app của cả họ.** Không làm.
 
-**Hai màn hình chưa mở được** *(màn Sao lưu cũ đã xoá ở b149 — nút trong Cài
-đặt sang tab Sao lưu của `QuanTri.html`)* — mọi hàm chúng gọi đều ném lỗi có câu chữ đàng
-hoàng, **không giả vờ thành công**:
-
-| Màn hình | Vì sao |
-|---|---|
-| Bỏ chọn gia phả | Nền này **không có** "gia phả mặc định" để quay về |
-| Mở quyền xem ảnh | Không còn nỗi khổ ấy — kho Supabase một luật cho cả kho |
+**Màn hình thời Drive chưa làm lại — BỎ HẲN** (chủ dự án chốt 30/09/2026,
+b161b): *Bỏ chọn gia phả* (không có ích thực dụng) và *Mở quyền xem ảnh*
+(kho Supabase một luật cho cả kho — mục 7). Màn Sao lưu cũ đã xoá ở b149.
 
 ✓ **Dựng gia phả mới — XONG 08/09/2026 (b104).** Hàm `security definer` ấy nay
 có tên: `tao_gia_pha_moi()` trong `luoc-do/12-tao-cay.sql`, và lối vào là nút
