@@ -63,10 +63,11 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
   `DUOI=1 node ../kiem-thu/xem-b128b.mjs … ` (DUOI = số đời dưới).
 
 ## Bộ kiểm — cái bẫy
-- ⚠ `kiem-buoc-80.mjs` chạy trong CHROME nên `--import ./sang-supabase.mjs`
-  KHÔNG tác dụng — nó đo `giapha/` đóng băng dù báo xanh. Đo mã mới bằng
-  `../kiem-thu/kiem-buoc-80-sb.mjs [moi|cu]`. Nhóm 9b (bắt khuỷu) nay lỗi thời:
-  HỎNG ở đó là đúng luật mới; mọi nhóm khác phải 0.
+- ⚠ Bộ kiểm ở `../kiem-thu/` nhắm thẳng `giapha/` ĐÓNG BĂNG. Đo nhánh này
+  bằng **`node kiem-thu/chay-supabase.mjs`** (b158): móc `sang-supabase.mjs`
+  đổi cả `import`, `fs` lẫn máy chủ giả của bài Chrome sang `supabase/js/`.
+  Trong đó `kiem-buoc-80.mjs` đo cách xếp CŨ, `kiem-buoc-80-sb.mjs moi` đo BA
+  KHỐI. Nhóm 9b (bắt khuỷu) tự tắt khi `LAYOUT.xepBaKhoi` — luật cũ.
 
 ## Vì sao làm thế này
 - Khối tính TỪ DƯỚI LÊN, mỗi khối trả điểm nối cạnh dưới (`noi`) → khối trên
