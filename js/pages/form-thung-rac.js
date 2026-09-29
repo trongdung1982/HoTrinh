@@ -5,7 +5,8 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: pages/form-nen.js (nền dùng chung), state,
 //            domains/{person,union,purge}, services/{repo,sb}, utils/date
-// Phiên bản: 1.0.3 · Cập nhật: 29/09/2026 20:25 — câu Dọn thùng rác nói đúng nhánh Supabase
+// Phiên bản: 1.1.0 · Cập nhật: 30/09/2026 (b161e) — lần dọn CHỜ DUYỆT không xoá file ảnh
+//            (từ chối thì ảnh còn); câu cảnh báo nói đúng khi nào hoàn tác được
 // ============================================================
 //
 // Tách khỏi `person-edit.js` ngày 27/08/2026 (bước 48, đợt 2 của
@@ -288,8 +289,11 @@ export function donThungRac(xuLy = {}, chiNhung = null) {
   const chan = moHopTrang('chon', xuLy,
                           Array.isArray(chiNhung) ? 'Xoá vĩnh viễn' : 'Dọn cả thùng rác',
                           'Xoá vĩnh viễn  ·  ' + moTaKePurge(ke));
+  // Đo b161e: lần dọn của người được TỰ DUYỆT không hoàn tác được; của người
+  // sửa thường thì vào hàng chờ, và người quản lý Từ chối là mọi thứ về lại.
   hienNhan('Xoá vĩnh viễn ' + moTaKePurge(ke) + '. KHÔNG hoàn tác được từ ' +
-           'trong app.', true, cauKeKhiDonRac(ke));
+           'trong app — trừ khi lần dọn phải chờ duyệt: bị từ chối thì mọi thứ về lại.',
+           true, cauKeKhiDonRac(ke));
 
   chan.append(
     nutChanXoa('Xoá vĩnh viễn', true, () => chayDonThungRac(xuLy, chiNhung)),
@@ -397,14 +401,22 @@ async function chayDonThungRac(xuLy, chiNhung) {
     return;
   }
 
-  // BƯỚC 4 — và chỉ tới đây mới được chạm vào file trên Drive.
-  const anh = await donAnhTrenDrive(ke.fileIds);
+  // BƯỚC 4 — và chỉ tới đây mới được chạm vào file trong kho.
+  // ⚠ Lần dọn CHỜ DUYỆT (người sửa thường) thì KHÔNG xoá file: người quản lý
+  //   Từ chối là bản ghi ảnh về lại, file phải còn đó (đo b161e). Duyệt xong
+  //   thì file thành file thừa — tab *Dữ liệu mồ côi* của QTHT dọn.
+  const choDuyet = ketQua.trangThai === 'cho';
+  const anh = choDuyet ? null : await donAnhTrenDrive(ke.fileIds);
 
   if (xuLy && xuLy.onDaLuu) xuLy.onDaLuu();
   if (!N.lopPhu) return;
 
-  baoXongMotViec('Đã xoá vĩnh viễn ' + moTaKePurge(ke) + '.',
-                 cauKetQuaDonRac(ketQua, ke, anh));
+  const cau = cauKetQuaDonRac(ketQua, ke, anh);
+  if (choDuyet) {
+    cau.unshift('Lần dọn đang chờ người quản lý duyệt. Ảnh giữ nguyên trong kho tới lúc ấy; ' +
+                'bị từ chối thì mọi thứ về lại như cũ.');
+  }
+  baoXongMotViec((choDuyet ? 'Đã gửi xoá vĩnh viễn ' : 'Đã xoá vĩnh viễn ') + moTaKePurge(ke) + '.', cau);
 }
 
 /**
