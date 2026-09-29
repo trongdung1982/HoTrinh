@@ -7,6 +7,7 @@
 --            dán lại, và không file nào khác kéo nó.
 -- Đi cặp   : `js/services/sb.js` `layPhien()` — chưa dán file này thì app tự
 --            về đường cũ (từng câu), không hỏng gì.
+-- Sổ tay   : so-tay/mo-app.md
 -- Đo       : ../kiem-thu/ban-thu-sql/do-b157b.mjs
 -- Phiên bản: 0.1.0 · Cập nhật: 29/09/2026 (b157b)
 -- ============================================================

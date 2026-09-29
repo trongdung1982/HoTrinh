@@ -26,6 +26,7 @@ file. ⚠ `KE-HOACH.md` **hết trần** (b131) — gọn bằng kỷ luật "xo
 | Duyệt/gắn tài khoản, hỏi "sao tôi không sửa được" | `HUONG-DAN-PHAN-QUYEN.md` |
 | Đụng cách VẼ sơ đồ, dâu/rể | ⚠⚠ **`so-tay/ve-so-do.md`** (đè `QUY-TAC-VE`) · vẽ `chiMucVe()`, thẻ/form `state.index` · `../tai-lieu/QUY-TAC-VE_V14.md` |
 | Đụng thẻ người · thẻ gia đình · menu vòng tròn | `so-tay/the-thong-tin.md` |
+| **Lúc mở app** · `layPhien` · `mo_phien` | ⚠ `so-tay/mo-app.md` (hai đường phải đồng bộ) |
 | Đụng ảnh | `KIEN-TRUC.md` mục 7 ⚠ có câu chưa chốt |
 | Đụng sao lưu, **khôi phục** | ⚠ `so-tay/sao-luu.md` *(bản đồ file)* |
 | Đụng di dời dữ liệu vào bảng | `di-doi/HUONG-DAN-DI-DOI.md` · `di-doi/sinh-sql-di-doi.mjs` |
@@ -62,8 +63,6 @@ file. ⚠ `KE-HOACH.md` **hết trần** (b131) — gọn bằng kỷ luật "xo
 
 - ⚠ Mọi file thả vào `supabase/` **đều đi lên mạng**, và lịch sử git giữ lại
   cả bản đã xoá sau này. Hỏi câu ấy trước khi thêm file.
-  *(Bảng so `supabase/` với `../tai-lieu/` ở `CLAUDE.md` mục 10 — không
-  chép bản thứ hai về đây.)*
 
 ## Lệnh
 

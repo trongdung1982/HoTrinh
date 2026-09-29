@@ -5,7 +5,7 @@
 //            services/hinh-dang, utils, state
 // Phụ thuộc: services/sb.js, services/hinh-dang.js, utils/graph.js, state.js
 // Phiên bản: 0.11.0 · Cập nhật: 29/09/2026 (b157) — đọc cây sẵn từ layPhien, xin mã chạy ngầm
-// Sổ tay   : so-tay/luu-du-lieu.md
+// Sổ tay   : so-tay/luu-du-lieu.md · so-tay/mo-app.md (khoiTao · napCay)
 // ============================================================
 //
 // ═══ RANH GIỚI ĐỔI KHO LƯU TRỮ ═══

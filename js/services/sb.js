@@ -7,7 +7,7 @@
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
 // Phiên bản: 0.48.0 · Cập nhật: 29/09/2026 (b157b) — `layPhien()` hỏi gói
 //            `mo_phien()` (`55`), chưa có thì đi đường cũ. Lịch sử: `git log -p`.
-// Sổ tay   : so-tay/luu-du-lieu.md
+// Sổ tay   : so-tay/luu-du-lieu.md · so-tay/mo-app.md (layPhien — HAI đường phải đồng bộ)
 // ============================================================
 //
 // ĐÂY LÀ RANH GIỚI GIỮA TRÌNH DUYỆT VÀ MÁY CHỦ — đúng vai `services/gas.js`
