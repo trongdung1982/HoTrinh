@@ -404,7 +404,6 @@ Ai gõ thẳng địa chỉ cũng mở được trang, và cũng chỉ nhận v�
 |---|---|---|---|
 | `ds_thanh_vien` | `p_tree` | `table(user_id, email, role, person_id, person_name, approved, tin_cay, xin_luc, loi_nhan, added_at)` | 2 hạng quản trị |
 | `doi_vai_thanh_vien` | `p_tree, p_user_id, p_role` | `jsonb` | chỉ `quan_tri_he_thong` |
-| `gan_nguoi_cho_thanh_vien` | `p_tree, p_user_id, p_person_id` | `jsonb` | chỉ `quan_tri_he_thong` |
 | `dat_tin_cay_thanh_vien` | `p_tree, p_user_id, p_tin_cay` | `jsonb` | chỉ `quan_tri_he_thong` |
 | `go_thanh_vien` | `p_tree, p_user_id` | `jsonb` | chỉ `quan_tri_he_thong` |
 

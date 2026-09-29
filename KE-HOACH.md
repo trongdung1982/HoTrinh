@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 30/09/2026 06:33 · Hai mươi sáu điểm dừng chưa bấm thử · SQL đã dán hết tới `61`.*
+*Cập nhật 30/09/2026 · Hai mươi bảy điểm dừng chưa bấm thử · SQL đã dán tới `61`, `62` chờ dán.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -26,6 +26,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b162a** Thôi đọc cột gắn cũ *(sau khi dán `62`)* | Ctrl+F5. *Quản trị hệ thống → Tài khoản* → mở một tài khoản ĐÃ gắn người → *Mời vào gia phả* một cây họ chưa vào: mời được như cũ. Cây có đơn xin vào đang chờ → *Duyệt*: hộp KHÔNG còn ô "Mã người trong sơ đồ", duyệt xong người ấy vào cây. Khu *Tài khoản* → *Đề xuất gắn*: gõ tên một người đã có tài khoản giữ → dòng gợi ý mờ, ghi "đã gắn cho <email đúng người đang giữ>" |
 | **b161a** Kho ảnh KÍN *(sau khi dán `59`)* | Ctrl+F5. Mở cây có ảnh (Nguyễn Phúc Giáo hoặc `TH957`): ảnh trên sơ đồ, thẻ chi tiết, bản lớn khi bấm ảnh vẫn hiện như cũ. Bấm phải một ảnh → *Mở ảnh trong thẻ mới* → địa chỉ có đoạn `token=` → xoá hết từ dấu `?` trở đi rồi Enter: trang báo lỗi, KHÔNG ra ảnh (đó là kho đã kín). ⚙ Cài đặt → *Xuất ảnh* PNG: ảnh người vẫn có trong file. *Quản trị hệ thống → Dữ liệu mồ côi → Quét*: cột ảnh xem trước hiện được |
 | **b161e** Dọn thùng rác bởi người sửa thường | Ctrl+F5. Tài khoản thử `thu-h9@…` (vai *sửa*, không tự duyệt) mở cây thử `TH957` → xoá một người CÓ ẢNH trong trực hệ của mình → *Danh sách người* → *Thùng rác* → tích người ấy → *Xoá vĩnh viễn*: hộp báo "Đã gửi xoá vĩnh viễn…" + dòng "đang chờ người quản lý duyệt". Đăng nhập tài khoản của bạn → *Kiểm duyệt* → *Từ chối* dòng ấy → người về lại thùng rác, ảnh VẪN hiện |
 | **b161d** Dọn cặp mồ côi *(sau khi dán `61`)* | Ctrl+F5 → *Quản trị hệ thống → Dữ liệu mồ côi → Quét*. Bảng *Người không thuộc cây nào*: người có vợ/chồng cũng ngoài mọi cây nay tích được (trước bị khoá); người có vợ/chồng còn trong một cây vẫn khoá, di chuột lên ô tích đọc lý do. Tích vài người → *Xoá vĩnh viễn*: hộp báo "Đã xoá n cặp không còn ai thuộc cây nào"; file thừa không còn báo "không xoá được". *Nhật ký* có dòng "… người · … cặp · … ảnh" |
@@ -64,6 +65,11 @@ dán lại* — đọc TRƯỚC khi dán lại bất cứ file nào.
 
 **`01` → `61` — ĐÃ DÁN lên THẬT cả** (`59` · `60` · `61` ngày 30/09/2026, chủ dự án báo).
 
+**`62` — CHƯA DÁN. ĐƯỢC dán ngay, một mình** (b162a — thôi đọc/ghi
+`tree_members.person_id`; bỏ `gan_nguoi_cho_thanh_vien()`). Trình duyệt mới
+chạy được với cả máy chủ trước lẫn sau `62`, không cần thứ tự. Đo:
+`do-b162a.mjs` 35/35.
+
 ⚠ Bản cuối mới: `xoa_cay()` · `tra_lai_cay()` ở `60` (tên cũ đã xoá); `don_mo_coi_he_thong()`
 · `ds_nguoi_mo_coi()` · luật `xoa_anh` ở `61`; luật `xem_anh` + kho kín ở `59`.
 
@@ -89,13 +95,11 @@ thấy đủ (như b148). Muốn khác thì một chỗ ở `53`.
 
 ### Việc mã đã chốt (30/09/2026) — theo thứ tự
 
-1. **b162a — các hàm còn đọc `tree_members.person_id` chuyển sang `tai_khoan.person_id`**
-   (khuôn vá của b132: join `tai_khoan` → `tree_persons`). Sửa lỗi thật: ô
-   tìm tài khoản/tìm người có thể hiện người CŨ; *Từ chối* ở Kiểm duyệt có
-   thể chặn nhầm/để lọt việc xoá người đang gắn. Đụng `tu_choi_thay_doi()`
-   (bản cuối `52`) + `gop_hai_nguoi()` — đọc *Chuỗi dán lại* trước. Opus.
-2. **b162b — bỏ hẳn cột `tree_members.person_id`**, sau khi không hàm nào đụng.
-3. **Sau cùng mọi việc:** đưa hai bảng nhật ký vào sao lưu (xem *Còn treo*).
+1. **b162b — bỏ hẳn cột `tree_members.person_id`** (SAU khi `62` đã dán —
+   từ `62` không hàm nào đụng nó). Còn phải xem: sao lưu/khôi phục chép
+   `tree_members` theo cột (`05`/`44`/`45`/`54`), chỉ mục
+   `tree_members_person_uniq` (`06`), `sb-gia.mjs`. Opus.
+2. **Sau cùng mọi việc:** đưa hai bảng nhật ký vào sao lưu (xem *Còn treo*).
 
 *(Chủ dự án bỏ 30/09: đổi tên `driveFileId`/`driveThumbUrl` · sửa `sinh-sql-di-doi.mjs` (cất vào `luu-tru/`) · xoá `branches`/`branch_access`
 — bảng trống vô hại, xoá phải sửa sao lưu + khôi phục + gộp người. Tạo tài
@@ -118,6 +122,5 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |
 | Nợ ghi chú đầu file còn 14 khoản (nặng nhất `export-image.js` 140 dòng · `review.js` 99) — trả khi chạm tới file ấy, không đi rà riêng | `do-gon.mjs --tat-ca` · `QUY-TAC-GON.md` D1 |
 | Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
-| ⚠ **`tree_members.person_id` KHÔNG chết hẳn** (đo bàn thử 30/09, b161): 3 hàm GHI (`duyet_thanh_vien` · `gan_nguoi_cho_thanh_vien` · `moi_vao_cay`), 3 hàm ĐỌC (`tu_choi_thay_doi` — chặn xoá người đang gắn thành viên · `tim_tai_khoan` · `tim_nguoi_trong_cay` — hai hàm này có thể đang đọc dữ liệu cũ từ b126), `gop_hai_nguoi` sửa nó. Bỏ cột = viết lại `tu_choi_thay_doi` (bản cuối `52`) + `gop_hai_nguoi` — chuỗi dán lại dài, làm khi có chủ dự án | `so-tay/luu-mot-dong-quan-tri.md` |
 | Repo vệ tinh `LeVanTrac` · `NguyenQuang` kẹt Pages từ 28/09 08:12 (push dồn → deploy giẫm nhau). Chủ dự án bảo **treo** — app chưa xong; lần push sau thường tự gỡ | `.github/workflows/dong-bo-sang-levantrac.yml` |
 | **`branches` / `branch_access` dựng từ `01-bang.sql` nay KHÔNG dùng** — luật đi theo trực hệ, không chia chi *(chốt 04/09/2026)*. GIỮ, không xoá (chủ dự án 30/09): trống, vô hại; sao lưu · khôi phục · `gop_hai_nguoi` còn nhắc tới | `06-quyen-truc-he.sql` mục 2 |

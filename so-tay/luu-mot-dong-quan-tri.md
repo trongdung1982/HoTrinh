@@ -79,6 +79,16 @@ kiểm chứng ngược bằng cách đọc thẳng `tree_members.person_id` sau
 chắc nó vẫn còn giá trị CŨ — chứng minh phép thử bắt được lỗi thật, không
 phải trùng hợp.
 
+⚠⚠ **b162a (`luoc-do/62`): cắt nốt mọi hàm còn đọc/ghi cột chết.** Lỗi
+nặng nhất không phải hàm đọc mà hàm GHI: hộp *Duyệt đơn* (trang Cây) có ô
+"Mã người" → `duyet_thanh_vien()` ghi vào `tree_members.person_id`, trả `ok`
+— người duyệt tưởng đã gắn, thật ra KHÔNG gắn gì (quyền sửa đọc `tai_khoan`).
+Không chuyển sang ghi `tai_khoan` từ đó: gắn là cửa của tài khoản, có luật
+hai chữ ký (`36`/`39`); để quản trị cây gắn ở đây là đi vòng luật ấy. Nay
+duyệt/mời kèm mã thì máy chủ TỪ CHỐI thành tiếng; hộp bỏ ô. Bài học: hàm ghi
+vào cột chết là lỗi im lặng tệ hơn hàm đọc — tìm cả `update`/`insert`, đừng
+chỉ tìm `tm.person_id`. Đo: `do-b162a.mjs` (35/35, có kiểm chứng ngược K1–K4).
+
 ⚠⚠ **Bảng *Các gia phả tôi đang tham gia* (khu Tài khoản, `#thanh-vien`)
 KHÔNG đi qua hai hàm trên** — nó đọc `ds_gia_pha()`, và cột *"Tôi được gắn
 với ai trong sơ đồ?"* từng chép `phien.maNguoiGan` (một mã chung, b126d) cho

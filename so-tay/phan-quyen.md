@@ -35,8 +35,15 @@ Dán lại file bên trái thì phải dán tiếp các file bên phải, đúng
 
 - `11`/`10`→`14`→`16`→`18`→**`23`** · `13`/`14`→`15`→`20`→**`23`** · `08`→`18`
   · `08`/`10`→**`43`** (bản cuối `ds_kiem_duyet()`)
-- `21`/`13`/`18`/`27`→**`29`** — `29` giữ bản cuối của `duyet_de_xuat_gan()` và
-  `gan_nguoi_cho_thanh_vien()`.
+- `21`/`13`/`18`/`27`→**`29`** — `29` giữ bản cuối của `duyet_de_xuat_gan()`
+  (nay `39` đè). `gan_nguoi_cho_thanh_vien()` đã BỎ ở `62`.
+- ⚠ **`14`/`15`/`18`/`27`/`28`/`29`/`32`/`48`/`52` → `62`**: `62` giữ bản cuối
+  `tim_tai_khoan()` · `tim_nguoi_trong_cay()` · `moi_vao_cay()` ·
+  `duyet_thanh_vien()`, VÁ TẠI CHỖ `tu_choi_thay_doi()` · `gop_hai_nguoi()`,
+  và xoá `gan_nguoi_cho_thanh_vien()`. Quên `62` là hàm ấy đọc/ghi lại cột
+  chết `tree_members.person_id` — ô tìm hiện người cũ, duyệt đơn "gắn" mà
+  không gắn, gộp người vấp chỉ mục. Im lặng. (`52`→`62`: vá của `62` neo
+  trên bản đã có `contact`.)
 - `03`/`06`/`08`/`13`→`25`→`27`→`28`→**`32`** — `28` giữ bản cuối của
   `tu_choi_thay_doi()` (khác `27` chín chỗ: dán lại `27` sau `28` là mất cả
   chín, **không một lời báo**); ⚠ **`32` giữ bản cuối của `luu_cay()`** (rào
@@ -92,7 +99,8 @@ cân: `THIET-KE-NHIEU-CAY.md` 11.10.
   ấy" — đúng cái nhầm 11.10 cảnh báo, và nó bỏ chữ ký thứ hai ở MỌI cây.
 - Phải nới **cả hai lớp**: `duyet_de_xuat_gan()` (cửa thứ tám) và
   `gan_nguoi_cho_thanh_vien()` — cửa thứ tám cố ý đi qua hàm sau, nới một lớp
-  là hỏng nửa vời, kèm câu từ chối nói về chuyện khác.
+  là hỏng nửa vời, kèm câu từ chối nói về chuyện khác. *(Từ `39` cửa thứ tám
+  đi qua `gan_nguoi_tai_khoan()`; `gan_nguoi_cho_thanh_vien()` bỏ ở `62`.)*
 - `tu_choi_de_xuat_gan()` **không** nới: tự rút đơn đã là đường có sẵn.
 - Trình duyệt hỏi `sb.laQuanTriCay()`, KHÔNG suy từ `coTheQuanTri()` — hàm ấy
   bật cho cả QTHT.

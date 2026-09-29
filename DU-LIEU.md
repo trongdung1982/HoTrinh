@@ -150,7 +150,9 @@ Mã cũ nằm rải ở 11 hàm, 2 luật RLS, 1 ràng buộc và chính dữ li
 việc đổi phải dán lại năm file chứ không phải một. Gặp `chu` ở đâu trong lịch
 sử git thì đọc là `quan_tri_he_thong`.
 
-Tài khoản muốn sửa phải **gắn với một mã người** (`tree_members.person_id`) và
+Tài khoản muốn sửa phải **gắn với một mã người** (`tai_khoan.person_id` — từ
+b126 gắn là chuyện của tài khoản; `tree_members.person_id` là cột chết, `62`
+cắt mọi hàm còn đụng nó) và
 **được duyệt** (`approved`). Duyệt rồi thì sửa được **trực hệ** của người
 ấy: lên chỉ đường thẳng — bố mẹ, ông bà, cụ, **không** rẽ ngang sang bác/chú;
 xuống toàn bộ con cháu; cộng vợ/chồng của những người ấy. Chưa gắn → chỉ xem.

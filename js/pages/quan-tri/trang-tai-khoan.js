@@ -6,8 +6,7 @@
 //            tin cậy · gỡ · duyệt đơn, cộng mời vào cây khác và đổi họ tên.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/hop-thoai · trang-cay · khu-quan-tri-he-thong · o-bang
-// Phiên bản: 1.2.0 · Cập nhật: 28/09/2026 (b150) — cột *Thông tin công khai*
-//            mở trang đặt hộ `#quan-tri-he-thong/cong-khai/<tk>~<cây>`.
+// Phiên bản: 1.2.1 · Cập nhật: 30/09/2026 06:50 (b162a) — moiVaoCay bỏ đối số mã người
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -127,7 +126,7 @@ export async function mountTrangTaiKhoan(sec, ctx) {
         { ma: 'vai', nhan: 'Quyền khi tham gia', chon: CHON_VAI, giaTri: 'sua' },
       ],
       nutOk: 'Gửi lời mời',
-      lam: (v) => (v.cay ? moiVaoCay(v.cay, tk.email, v.vai, '')
+      lam: (v) => (v.cay ? moiVaoCay(v.cay, tk.email, v.vai)
         : { ok: false, loi: 'Chưa chọn gia phả — lời mời phải nói rõ mời vào cây nào.' }),
     });
     if (r) napLai();

@@ -5,7 +5,7 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.54.0 · Cập nhật: 30/09/2026 (b161d) — donMoCoiHeThong trả `honNhan`
+// Phiên bản: 0.55.0 · Cập nhật: 30/09/2026 06:50 (b162a) — duyệt/mời không gửi mã người
 //            (luoc-do/61); b161c xoaCay/traLaiCay (60); b161a kyAnh (59).
 //            Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/mo-app.md (layPhien — HAI đường phải đồng bộ)
@@ -1372,14 +1372,13 @@ export async function trangThaiCuaToi(treeId = null) {
  * @param {string} treeId
  * @param {string} email
  * @param {string} [vai] 'quan_tri' · 'sua' · 'xem' (mặc định)
- * @param {string} [maNguoi] mã người gắn sẵn, có thể bỏ trống
+ * Lời mời không mang mã người (`luoc-do/62`) — gắn là việc của tài khoản.
  */
-export async function moiVaoCay(treeId, email, vai = 'xem', maNguoi = '') {
+export async function moiVaoCay(treeId, email, vai = 'xem') {
   const k = layKhach();
   if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
   const { data, error } = await k.rpc('moi_vao_cay', {
-    p_tree: treeId, p_email: String(email || ''), p_vai: vai,
-    p_ma_nguoi: maNguoi ? String(maNguoi) : null,
+    p_tree: treeId, p_email: String(email || ''), p_vai: vai, p_ma_nguoi: null,
   });
   if (error) return { ok: false, loi: cauLoi(error) };
   return data || { ok: false, loi: 'Máy chủ không trả lời.' };
@@ -1535,12 +1534,15 @@ export async function dsChoDuyet(treeId) {
   return error ? [] : (data || []);
 }
 
-/** Duyệt một đơn: gắn mã người và bật cờ. Hàm máy chủ có từ b93. */
-export async function duyetThanhVien(treeId, email, personId) {
+/**
+ * Duyệt một đơn: bật cờ. KHÔNG gắn mã người — gắn là việc của tài khoản
+ * (`luoc-do/62`); máy chủ từ chối nếu nhận mã.
+ */
+export async function duyetThanhVien(treeId, email) {
   const k = layKhach();
   if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
   const { data, error } = await k.rpc('duyet_thanh_vien', {
-    p_tree: treeId, p_email: email, p_person_id: personId || null, p_duyet: true,
+    p_tree: treeId, p_email: email, p_person_id: null, p_duyet: true,
   });
   if (error) return { ok: false, loi: cauLoi(error) };
   return data || { ok: false, loi: 'Máy chủ không trả lời.' };

@@ -6,7 +6,7 @@
 //            hộp hỏi đổi quyền dùng chung với trang một tài khoản.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-goi-y · o-bang
-// Phiên bản: 1.5.1 · Cập nhật: 30/09/2026 (b161c) — gọi xoaCay/traLaiCay (tên mới, luoc-do/60)
+// Phiên bản: 1.5.2 · Cập nhật: 30/09/2026 06:50 (b162a) — hộp Duyệt đơn bỏ ô mã người
 //            Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
@@ -249,11 +249,10 @@ export async function hoiDuyetDon(t, cay, napLai) {
     tua: 'Duyệt đơn xin gia nhập',
     chu: 'Duyệt là cấp quyền ĐỌC ' + cumCay(cay) + ' cho ' + t.email + ', và chỉ cây ấy.' +
       (t.loiNhan ? ' Lời nhắn: “' + t.loiNhan + '”.' : '') +
-      ' Gắn mã người thì họ sửa được nhánh của người ấy; để trống thì chỉ xem.',
-    truong: [{ ma: 'ma', nhan: 'Mã người trong sơ đồ', goiY: 'P0012 — để trống thì chỉ xem',
-      ganVao: goiYNguoi(cay.treeId) }],
+      ' Gắn tài khoản với một người trong sơ đồ là việc riêng, làm sau ở cột Tài khoản ' +
+      'của bảng Người.',
     nutOk: 'Duyệt',
-    lam: (v) => duyetThanhVien(cay.treeId, t.email, v.ma.trim()),
+    lam: () => duyetThanhVien(cay.treeId, t.email),
   });
   if (kq) napLai();
 }

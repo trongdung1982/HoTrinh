@@ -4,8 +4,7 @@
 //            `#tree-invite` của prototype quantri3. Địa chỉ `#gia-pha/moi/<mã cây>`.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/{o-goi-y,hop-thoai,o-bang,trang-cay}
-// Phiên bản: 0.2.0 · Cập nhật: 27/09/2026 (b130) — thanh tab ngang (bị thiếu
-//            từ b129, sửa theo báo cáo chủ dự án), dùng chung `wireTabsTrangCay`.
+// Phiên bản: 0.2.1 · Cập nhật: 30/09/2026 06:50 (b162a) — moiVaoCay bỏ đối số mã người
 // ============================================================
 //
 // ⚠ **Cây lấy theo MÃ trong địa chỉ, không bao giờ theo `phien.treeId`** —
@@ -107,7 +106,7 @@ export async function mountTrangMoi(sec, ctx) {
     bGui.disabled = true;
     const chuCu = bGui.textContent;
     bGui.textContent = 'Đang mời…';
-    const r = await moiVaoCay(cay.fileId, email, oVai.value, '');
+    const r = await moiVaoCay(cay.fileId, email, oVai.value);
     bGui.disabled = false;
     bGui.textContent = chuCu;
     if (!r.ok) { oLoi.textContent = r.loi || 'Không mời được.'; oLoi.hidden = false; return; }
