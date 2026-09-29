@@ -39,7 +39,7 @@
   <!-- `?v=` = khớp Phiên bản đầu quan-tri.css — đổi CSS thì đổi cả số này,
        không thì trình duyệt/CDN có thể phục vụ bản cũ đã cache (b122d,
        chủ dự án báo "chưa thấy đổi gì" dù đã đẩy lên GitHub). -->
-  <link rel="stylesheet" href="quan-tri.css?v=1.1.9">
+  <link rel="stylesheet" href="quan-tri.css?v=1.2.0">
   <!-- Tông màu — KHÔNG có trong quantri3. Nạp SAU quan-tri.css để đè biến:
        tong-mau.css = mười khối biến (dùng chung với trang sơ đồ),
        phoi-mau.css = luật đè riêng trang này + nút chọn. -->
@@ -496,8 +496,9 @@
 <div class="panel-head"><h3>Đối chiếu dữ liệu</h3><span class="muted">5 số đếm · so bản sao lưu gần nhất với cơ sở dữ liệu hiện tại</span></div>
 <table><thead><tr><th>Bảng dữ liệu</th><th>Bản sao lưu</th><th>Hiện tại trên DB</th><th>Chênh lệch</th><th>Ý nghĩa</th></tr></thead><tbody id="sl-doi-chieu-tbody"></tbody></table>
 <div style="padding:16px;border-top:1px solid var(--line);background:#faf8f5;display:flex;align-items:center;justify-content:space-between">
-<span class="muted" style="font-size:12px">Khôi phục chưa sẵn sàng trên giao diện — chỉ kích hoạt khi quy trình đã chạy thử an toàn.</span>
-<button class="btn danger" disabled title="Chức năng khôi phục đang bị khóa bảo vệ an toàn">Khởi tạo quy trình khôi phục dữ liệu...</button>
+<span class="muted" style="font-size:12px" id="kp-ghi-chu">Chọn một file sao lưu tải về từ thư mục "Sao luu gia pha (Supabase)" trên Drive. Chỉ nhận file máy sao lưu ghi ra, không mở ra sửa.</span>
+<button class="btn danger" id="btn-khoi-phuc">Khởi tạo quy trình khôi phục dữ liệu...</button>
+<input type="file" id="kp-chon-file" accept=".json,application/json" hidden>
 </div>
 </div>
 </div>

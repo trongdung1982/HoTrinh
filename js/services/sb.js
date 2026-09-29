@@ -5,8 +5,8 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.45.0 · Cập nhật: 28/09/2026 (b150b) — Đời lấy từ `doc_cay` (`52`);
-//            ba cửa thông tin công khai của tài khoản (`51`). Lịch sử: `git log -p`.
+// Phiên bản: 0.46.0 · Cập nhật: 29/09/2026 (b155) — `xemTruocKhoiPhuc` ·
+//            `khoiPhucBanSao` (`54`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md
 // ============================================================
 //
@@ -1414,6 +1414,42 @@ export async function demDuLieu(treeId) {
       changeLog: Number(r.change_log) || 0,
     },
   };
+}
+
+/**
+ * Xem trước một file sao lưu trước khi khôi phục (`xem_truoc_khoi_phuc`,
+ * `luoc-do/54`, b155). Không đổi gì trên máy chủ.
+ *
+ * ⚠ `noiDung` = NGUYÊN VĂN file đọc từ đĩa. Đừng `JSON.parse` rồi `stringify`
+ *   lại: máy chủ so dấu vân tay SHA-256 trên từng byte, lệch một dấu cách là
+ *   bị từ chối như file sửa tay.
+ * @returns {Promise<{ok:boolean, loi?:string, tenFile?:string, taoLucVn?:string,
+ *   dem?:Object<string,number>, demHienTai?:Object<string,number>}>}
+ */
+export async function xemTruocKhoiPhuc(noiDung) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('xem_truoc_khoi_phuc', { p_noi_dung: noiDung });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  if (!data || !data.ok) return { ok: false, loi: (data && data.loi) || 'Máy chủ từ chối file này.' };
+  return { ok: true, tenFile: data.ten_file, taoLucVn: data.tao_luc_vn,
+           dem: data.dem || {}, demHienTai: data.dem_hien_tai || {} };
+}
+
+/**
+ * KHÔI PHỤC TOÀN PHẦN từ file sao lưu (`khoi_phuc_ban_sao`, `luoc-do/54`).
+ * Xoá sạch 19 bảng rồi đổ lại bản chụp, một giao dịch — hỏng thì không đổi gì.
+ * Cùng luật `noiDung` NGUYÊN VĂN như `xemTruocKhoiPhuc`.
+ * @returns {Promise<{ok:boolean, loi?:string, tenFile?:string, taoLucVn?:string,
+ *   baoCao?:Array<{muc:string, chi_tiet:string, ket_qua:string}>}>}
+ */
+export async function khoiPhucBanSao(noiDung) {
+  const k = layKhach();
+  if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
+  const { data, error } = await k.rpc('khoi_phuc_ban_sao', { p_noi_dung: noiDung });
+  if (error) return { ok: false, loi: cauLoi(error) };
+  if (!data || !data.ok) return { ok: false, loi: (data && data.loi) || 'Máy chủ từ chối khôi phục.' };
+  return { ok: true, tenFile: data.ten_file, taoLucVn: data.tao_luc_vn, baoCao: data.bao_cao || [] };
 }
 
 /**

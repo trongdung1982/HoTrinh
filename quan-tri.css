@@ -179,3 +179,7 @@ th.kd-chon, td.kd-chon{ width:30px; padding:0 0 0 14px; }
 [data-kd-pane="tu_choi"] th:nth-child(4), [data-kd-pane="tu_choi"] th:nth-child(6){ width:200px; }
 /* Hộp kết quả dài (nhiều lý do khác nhau) không được tràn mép trên màn hình. */
 .modal-box{ max-height:calc(100vh - 32px); overflow-y:auto; }
+/* b155 — nút Khôi phục (không có trong quantri3 dạng chạy được): giữ một dòng;
+   chỗ hẹp thì xuống hàng dưới dòng hướng dẫn thay vì bóp cả hai. */
+#btn-khoi-phuc{ white-space:nowrap; flex-shrink:0; }
+div:has(> #btn-khoi-phuc){ flex-wrap:wrap; gap:10px; }

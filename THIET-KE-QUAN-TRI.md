@@ -283,6 +283,9 @@ thấy thiếu ông nội mình.
 Giá phải trả: **một hàm RPC rẻ** trả 5 con số. Không phá luật *"trang Quản trị
 không nạp cả cây"* — nó trả năm số, không trả 681 dòng.
 
+✓ **Mở ngày 29/09/2026 (b155)** — máy chủ đã khôi phục được (`luoc-do/54`,
+chỉ nhận file có dấu vân tay máy sao lưu). Luật dưới giữ làm lý do lịch sử.
+
 ⚠ **KHÔNG vẽ nút "Khôi phục" khi máy chủ chưa khôi phục được.** Đây là chỗ
 ChatGPT nói đúng và phải giữ nguyên: *"không giả vờ giải quyết bằng giao diện"*.
 Hôm nay chưa ai thử khôi phục lần nào — có file sao lưu **không** đồng nghĩa

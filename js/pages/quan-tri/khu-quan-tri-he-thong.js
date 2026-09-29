@@ -8,8 +8,8 @@
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-bang ·
 //            khu-sao-luu · khu-de-nghi-quan-he · khu-ho-so-don · khu-nhat-ky ·
 //            khu-tao-tai-khoan · khu-bao-trung
-// Phiên bản: 1.14.0 · Cập nhật: 28/09/2026 (b150b) — tab Cây mặc định đủ mười
-//            nhóm (`luoc-do/52`). Lịch sử: `git log -p`.
+// Phiên bản: 1.15.0 · Cập nhật: 29/09/2026 (b155) — gắn nút Khôi phục ở tab
+//            Sao lưu (`khu-sao-luu.js`). Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -37,7 +37,7 @@ import {
 } from '../../services/sb.js';
 import { duongDan } from './trang-chi-tiet.js';
 import { hoi, bao } from './hop-thoai.js';
-import { veKhuSaoLuu, veLichSuSaoLuu } from './khu-sao-luu.js';
+import { veKhuSaoLuu, veLichSuSaoLuu, ganNutKhoiPhuc } from './khu-sao-luu.js';
 import { veKhuDeNghiQuanHe } from './khu-de-nghi-quan-he.js';
 import { veKhuDuyetBaoTrung } from './khu-bao-trung.js';
 import { veKhuHoSoDon } from './khu-ho-so-don.js';
@@ -97,6 +97,7 @@ export async function mountKhuQuanTriHeThong(sec, phien) {
   veThungRac(sec, kq, napLai);
   veKhuSaoLuu(sec, dsSong);
   veLichSuSaoLuu(sec);
+  ganNutKhoiPhuc(sec);
   veKhuDeNghiQuanHe(sec);
   veKhuDuyetBaoTrung(sec);
   veKhuHoSoDon(sec);
@@ -142,7 +143,8 @@ function veChuaCo(sec) {
   const LY_SL = 'Lịch sử dưới đây là những gì máy sao lưu đêm (Apps Script) tự báo về Nhật ký hệ thống — ' +
     'trình duyệt không đọc thẳng được Google Drive. File sao lưu nằm trong thư mục "Sao lưu gia phả ' +
     '(Supabase)" trên Drive. Bảng Đối chiếu dữ liệu bên dưới đọc SỐNG từ cơ sở dữ liệu — cột "Bản sao lưu" ' +
-    'phải tự mở file sao lưu mới nhất ra so bằng mắt.';
+    'phải tự mở file sao lưu mới nhất ra so bằng mắt. Muốn quay về một bản sao lưu: tải file ấy từ ' +
+    'Drive về máy rồi bấm nút khôi phục ở cuối trang.';
   dat('sl-chua-co', LY_SL);
   mo('#btn-sao-luu-ngay', 'Nút này cần gọi Apps Script từ trình duyệt, mà dự án sao lưu không có địa ' +
     'chỉ web để gọi tới — chạy hàm saoLuuNgay tại script.google.com.');

@@ -140,6 +140,12 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   thêm khoá bí mật hay Edge Function là "cho gọn" — xem `sao-luu/SaoLuu.gs`
   đã đâm vào đúng bức tường ấy một lần rồi.
 
+- **Nút Khôi phục (b155)** — nút `disabled` của quantri3 ở chân *Đối chiếu dữ
+  liệu* nay chạy: chọn file → `xemTruocKhoiPhuc` → hộp gõ `KHÔI PHỤC` →
+  `khoiPhucBanSao` → nạp lại trang. Gửi NGUYÊN VĂN `f.text()` (máy chủ so dấu
+  vân tay từng byte). Hộp chọn file không bấm được bằng `?bam=`, nên ảnh
+  `kq-kp-sao-luu*` chỉ chụp nút; hộp xác nhận chưa có ảnh.
+
 **Tông màu (29/09/2026)** — 10 bảng màu Antigravity dựng cho khung b101
 (chủ dự án duyệt 06/09), chuyển sang biến quantri3 (`--bg` `--paper` `--ink`
 `--accent`…) + biến `--pm-*` cho thanh trái. ⚠ Mặc định = KHÔNG có
