@@ -15,6 +15,9 @@
 
 ## Khôi phục từ nút — HAI đường (chủ dự án chốt 29/09/2026)
 
+**ĐẠT trên app thật 29/09/2026** (chủ dự án bấm, đường web app: danh sách →
+khôi phục → Khôi phục ảnh). Hàng rào web app đo thật bằng REST cùng ngày.
+
 1. **Chọn file trong máy** (ổ Google Drive for desktop) — luôn có.
 2. **Máy sao lưu làm web app** (`SaoLuu.gs` `doPost`, địa chỉ ở `cau-hinh.js`
    `SAO_LUU_WEB_APP`): liệt kê bản trên Drive → tải nguyên văn → khôi phục →
