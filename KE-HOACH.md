@@ -1,7 +1,7 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 29/09/2026 · **b155 (nút Khôi phục trên trang Quản trị) XONG MÃ —
-`54` CHƯA DÁN + `SaoLuu.gs` 0.8.0 chưa thay.** **b154 (sao lưu ảnh sang Drive + khôi phục) — `SaoLuu.gs`
+*Cập nhật 29/09/2026 · **b155 (nút Khôi phục, hai đường) XONG MÃ — `54` đã
+dán, `SaoLuu.gs` 0.9.0 + web app đã triển khai; chưa bấm thử khôi phục.** **b154 (sao lưu ảnh sang Drive + khôi phục) — `SaoLuu.gs`
 0.7.0 đã thay, sao lưu ĐẠT; khôi phục ảnh chưa chạy thật.** **b153a (trang sơ đồ theo tông màu) XONG MÃ ·
 b152 (công khai theo từng người áp cả cho vai `xem`) XONG MÃ, `53` đã dán
 29/09.** Mười chín điểm dừng dưới chưa bấm thử.*
@@ -166,11 +166,10 @@ Không đổi cột, không đổi tên/tham số hàm app gọi (`doc_cay` ·
 thì PHẢI dán lại `53` (`so-tay/phan-quyen.md`). Dán lại nhiều lần được.
 Bàn thử: `do-b152.mjs` 29/29.
 
-**`54` (b155a) — ⚠ CHƯA DÁN · ĐƯỢC DÁN NGAY** (đứng sau `42`/`45`/`49`, đã dán).
-Supabase → *SQL Editor* → *New query* → dán NGUYÊN file
-`luoc-do/54-khoi-phuc-tu-nut.sql` → *Run* → bảng cuối **ĐẠT cả 4 dòng**. Rồi
-thay `SaoLuu.gs` **0.9.0** cùng buổi (báo dấu vân tay + web app) và chạy `saoLuuNgay`
-một lần — từ file ấy trở đi nút Khôi phục mới nhận. Bảng mới
+**`54` (b155a) — ĐÃ DÁN lên THẬT 29/09** (đo REST: `xem_truoc_khoi_phuc` có,
+từ chối tài khoản không QTHT). `SaoLuu.gs` **0.9.0** đã thay, web app đã triển
+khai (địa chỉ trong `cau-hinh.js`; đo thật: không vé / vé giả / vé không QTHT
+đều bị từ chối, CORS mở). Nút chỉ nhận file ghi TỪ 0.8.0 trở đi. Bảng mới
 `ban_sao_luu_da_ghi` + bốn hàm (`ghi_bam_sao_luu` · `xem_truoc_khoi_phuc` ·
 `khoi_phuc_ban_sao` · `kiem_file_sao_luu_` khoá kín). Không định nghĩa lại hàm
 nào của file khác → không kéo chuỗi dán lại. ⚠ Thân khôi phục là BẢN THỨ HAI
