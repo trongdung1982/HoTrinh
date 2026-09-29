@@ -68,7 +68,8 @@ export const KHO_ANH = 'anh';
 //        dòng Web app → chép "Web app URL" (dạng https://script.google.com/macros/s/…/exec).
 // Địa chỉ này để lộ cũng không sao: máy sao lưu chỉ làm việc cho người đăng
 // nhập app bằng tài khoản Quản trị hệ thống (`sao-luu/SaoLuu.gs` mục WEB APP).
-export const SAO_LUU_WEB_APP = '';
+export const SAO_LUU_WEB_APP =
+  'https://script.google.com/macros/s/AKfycbxVVlefVjay3c4mCAuPRjRgBZ8CxF8DpfQTX4V0SAJB-kdJEOhDd0EUCZxdyAXJKTNDow/exec';
 
 // ------------------------------------------------------------
 // Kiểm nhanh — để lỗi hiện ra bằng tiếng người, ngay lúc mở app
