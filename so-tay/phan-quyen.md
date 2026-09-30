@@ -22,12 +22,14 @@ Liên quan: `THIET-KE-NHIEU-CAY.md` mục 11 · `DU-LIEU.md` mục 2 · `HUONG-D
   neo nguyên văn: bàn thử khớp 1, máy THẬT khớp 0 (30/09) — bản trên máy thật
   khác chữ mà không ai biết khác ở đâu. Bàn thử dựng từ file, máy thật mang
   lịch sử dán; neo nguyên văn là đặt cược rằng hai bên giống nhau từng dấu cách.
-- ⚠⚠ **Không viết `select … into x` NGOÀI thân hàm** (trong khối `do $$`, trong
-  chuỗi chữ). SQL Editor của Supabase rà văn bản SAU khi chạy, tưởng câu ấy
-  tạo bảng `x`, đi hỏi RLS → màn hình báo *"relation "x" does not exist"* dù
-  file ĐÃ CHẠY XONG và đã lưu. Lần dán `62` (30/09) báo *"relation public"*
-  mà thật ra vào đủ. Trong thân `create function … $$` thì không sao (`60`,
-  `61` có). Dùng `x := (select …)`. Gặp câu báo nêu tên một BIẾN là dấu hiệu.
+- ⚠⚠ **NGOÀI thân hàm không được có chữ in-to liền + một tên** — trong khối
+  `do $$`, trong câu `select` thường, và KỂ CẢ trong chuỗi chữ / mẫu tìm
+  (`'insert in-to public[.]…'`). SQL Editor của Supabase rà văn bản SAU khi
+  chạy, tưởng câu ấy tạo bảng tên đó, đi hỏi RLS → màn hình báo *"relation
+  "public" does not exist"* dù file ĐÃ CHẠY XONG và đã lưu, và không hiện
+  kết quả. Dán `62` (30/09) và hai câu chẩn đoán đều dính. Trong thân `create
+  function … $$` thì không sao (`60`, `61` có). Dùng `x := (select …)`; mẫu
+  tìm viết `i[n]to`. Câu báo nêu tên lạ, không CONTEXT = dấu hiệu.
 - **`drop function` xoá cả `grant`.** Dựng lại hàm đã có thì chép theo cả dòng
   `grant`, không thì nó rơi về mặc định Postgres *ai cũng gọi được, kể cả `anon`*.
 - **`05` phải đứng TRƯỚC `06`.** `05` đặt lại ràng buộc vai **thiếu `quan_tri`**

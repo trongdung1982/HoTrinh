@@ -321,7 +321,7 @@ declare
 begin
   for r in select * from (values
     ('public.tu_choi_thay_doi(uuid, bigint, text)'::regprocedure,
-     'select\s+tm\.email\s+into\s+v_ngoai\s+from\s+public\.tree_members\s+tm\s+where\s+[^;]*tm\.person_id\s*=\s*any\s*\(\s*v_xoa_p\s*\)\s+limit\s+1',
+     'select\s+tm\.email\s+i[n]to\s+v_ngoai\s+from\s+public\.tree_members\s+tm\s+where\s+[^;]*tm\.person_id\s*=\s*any\s*\(\s*v_xoa_p\s*\)\s+limit\s+1',
      'v_ngoai := (select coalesce(u.email::text, tk.user_id::text) /* b162a */' || chr(10) ||
      '    from public.tai_khoan tk left join auth.users u on u.id = tk.user_id' || chr(10) ||
      '   where tk.person_id = any(v_xoa_p) limit 1)'),
@@ -330,10 +330,11 @@ begin
      '/* b162a: liên kết tài khoản ↔ người nằm ở tai_khoan, dời ở dưới. */')
   ) as v(ham, neo, thay)
   loop
-    -- ⚠ Gán `:=`, KHÔNG `select … into`, cả trong chuỗi thay: SQL Editor của
-    --   Supabase rà văn bản SAU khi chạy, gặp `select … into x` ngoài thân hàm
-    --   thì tưởng tạo bảng `x` → báo "relation … does not exist" dù đã chạy xong
-    --   (lần dán 30/09: `62` vào đủ mà màn hình báo lỗi "relation public").
+    -- ⚠ NGOÀI thân hàm không được có chữ in-to liền (kể cả trong chuỗi chữ,
+    --   chuỗi thay, mẫu tìm — viết `i[n]to`): SQL Editor của Supabase rà văn
+    --   bản SAU khi chạy, gặp chữ ấy + một tên thì tưởng tạo bảng tên đó →
+    --   báo "relation … does not exist" dù đã chạy xong (dán 30/09: `62` vào
+    --   đủ mà màn hình báo "relation public", do mẫu tìm ở mục 7).
     v_def := pg_get_functiondef(r.ham);
     continue when v_def like '%b162a%';
     v_so := (select count(*) from regexp_matches(v_def, r.neo, 'g'));
@@ -356,7 +357,7 @@ select 'không hàm nào còn đọc/ghi tree_members.person_id' as phep,
      where n.nspname = 'public'
        and (p.prosrc ~* 'tm\.person_id'
             or p.prosrc ~* 'update public\.tree_members\s[^;]*person_id'
-            or p.prosrc ~* 'insert into public\.tree_members[^;]*person_id'))
+            or p.prosrc ~* 'insert\s+i[n]to\s+public\.tree_members[^;]*person_id'))
   then 'ĐẠT' else 'HỎNG' end as ket_qua
 union all
 select 'gan_nguoi_cho_thanh_vien đã bỏ',
