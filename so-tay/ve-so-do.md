@@ -31,6 +31,15 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
   dày hơn — hàng dọc: bề rộng RIÊNG từng ô (`oHang().rieng` → `RIENG` ở
   layout, `layDai` cộng dồn bề rộng), hàng ngang: khung cao theo `nguoi.day`.
   Đo: 120px → 9/681 tên xuống dòng; tên trung vị 88px, 90% ≤ 103px.
+  NÉT (chủ dự án 30/09): vợ chồng kề nhau nối bằng VÒNG CUNG trên đầu ô
+  (chân cung ở 3/4 ô phía trong — tâm nóc ô để nét cha mẹ cắm xuống; vợ thứ
+  k cung cao hơn, lồng nhau; `O_CHU.cungCao/cungBuoc/cungTran`). Con LUÔN
+  treo dưới ô CHA (`layout.js chaCua()`), kể cả ông nhiều vợ — chủ dự án
+  chọn thế dù không còn nhìn ra con bà nào; CHỈ con riêng của mẹ (union không
+  có cha trong dải) treo dưới mẹ. Ông nhiều vợ: mọi chùm cùng một điểm thả
+  nên cha đứng giữa cả đàn con, không giãn dải. Thanh ngang gom con không hạ
+  quá `vGap − cungCao − 3` để khỏi đâm vào cung. Cặp RỜI nhau (cưới trong
+  họ) vẫn nét võng/chéo như chế độ ảnh.
 - ⚠ **Không gãy chữ Z** (chủ dự án bác §9b/b85e, 25/09/2026): điểm thả của MỌI
   chùm nằm TRONG khoảng các con — chùm một con thì thẳng trên đầu con, cả ở
   khối con cháu (`khoiDuoi`, `xepDai`) lẫn khối tổ tiên (`treoToTien`). Đo:

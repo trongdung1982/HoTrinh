@@ -3,7 +3,7 @@
 // Vai trò  : Tính TOẠ ĐỘ các ô người, đường nối và nốt cụt. Không vẽ gì cả.
 // Lớp      : domains — HÀM THUẦN. Không gọi services, không chạm DOM.
 // Phụ thuộc: config (LAYOUT, PHOTO) · domains/union.js · domains/render.js (VE)
-// Phiên bản: 2.3.0 · Cập nhật: 30/09/2026 18:30
+// Phiên bản: 2.4.0 · Cập nhật: 30/09/2026 19:08
 // ⚠ Chỉ còn MỘT cách xếp: BA KHỐI `datBaKhoi()` (mục 4b, b128b). Cách cũ
 //   `datMoiKhoi()` đã gỡ 30/09/2026. Ô rộng/cao THEO HÀNG khi có `tuyChon.oHang` (chế độ chữ).
 // Sổ tay   : so-tay/ve-so-do.md
@@ -150,6 +150,9 @@ let KHONG_ANH = false;
 let KHE    = LAYOUT.hGap;        // giữa hai người không phải vợ chồng
 let KHE_VC = LAYOUT.spouseGap;   // giữa hai vợ chồng đứng kề nhau
 let KHE_DOC = LAYOUT.vGap;       // giữa hai hàng
+// Chế độ chữ: vợ chồng nối bằng VÒNG CUNG trên đầu ô, con treo dưới ô CHA
+// (`chaCua()`) — `{cao, buoc, tran}` từ O_CHU. Chế độ ảnh: null.
+let CUNG = null;
 const rongHang = (m) => (HANG && HANG.has(m) ? HANG.get(m).w : RONG);
 const netHang  = (m) => (HANG && HANG.has(m) ? HANG.get(m).net : MUC_NET);
 // Ô RIÊNG một bề rộng (`oHang` trả `rieng: Map(id → w)`) thắng bề rộng của hàng.
@@ -205,6 +208,7 @@ export function computeLayout(index, focusPersonId, visibleSet, scope, stubPoint
   KHE     = khe.hGap      ?? LAYOUT.hGap;
   KHE_VC  = khe.spouseGap ?? LAYOUT.spouseGap;
   KHE_DOC = khe.vGap      ?? LAYOUT.vGap;
+  CUNG = KHONG_ANH ? { cao: khe.cungCao ?? 6, buoc: khe.cungBuoc ?? 3, tran: khe.cungTran ?? 12 } : null;
 
   const rong = {
     nodes: [], unions: [], links: [], stubs: [],
@@ -813,7 +817,8 @@ function layDai(ct, neoId) {
   banDoi.forEach((bd, i) => {
     const x = huong > 0 ? mep + KHE_VC : mep - KHE_VC - wS[i];
     dx.set(bd.spouseId, x);
-    khe.set(bd.unionId, huong > 0 ? mep + KHE_VC / 2 : mep - KHE_VC / 2);
+    if (CUNG) khe.set(bd.unionId, chaCua(ct, neoId, bd.spouseId) === neoId ? dxP + w / 2 : x + wS[i] / 2);
+    else khe.set(bd.unionId, huong > 0 ? mep + KHE_VC / 2 : mep - KHE_VC / 2);
     mep = huong > 0 ? x + wS[i] : x;
     mucNet.set(bd.unionId, i);
   });
@@ -867,6 +872,16 @@ function tinhHuong(ct, neoId, banDoi) {
 function gioiTinh(ct, id) {
   const p = ct.index.personById.get(id);
   return (p && p.sex) || 'U';
+}
+
+/**
+ * Chế độ chữ: con của cặp `neoId` + `spouseId` treo dưới ô NÀO — luôn là CHA
+ * (chủ dự án 30/09/2026). Không ai là nam (cặp đồng giới, thiếu giới tính)
+ * thì người neo dải. Con riêng của mẹ không đi qua đây: union ấy không có bạn
+ * đời trong dải, treo từ tâm ô mẹ như cũ.
+ */
+function chaCua(ct, neoId, spouseId) {
+  return gioiTinh(ct, neoId) !== 'M' && gioiTinh(ct, spouseId) === 'M' ? spouseId : neoId;
 }
 
 // ============================================================
@@ -1095,7 +1110,9 @@ function khoiDuoi(ct, neoId) {
     const bd = dai.banDoi.find((b) => b.unionId === uid);
     if (!bd) { viTriKhe.set(uid, { o: oX.indexOf(neoId) }); continue; }
     const j = oX.indexOf(bd.spouseId);
-    viTriKhe.set(uid, { khe: dai.huong > 0 ? j - 1 : j });
+    // Chế độ chữ: thả từ TÂM Ô CHA, không từ khe giữa hai vợ chồng.
+    if (CUNG) viTriKhe.set(uid, { o: oX.indexOf(chaCua(ct, neoId, bd.spouseId)) });
+    else viTriKhe.set(uid, { khe: dai.huong > 0 ? j - 1 : j });
   }
   // Union RIÊNG của người được hấp thụ (U0180: bà P0313 có con ghi một mình
   // bà) cũng thuộc dải này — thả từ tâm ô bà, như `dungDiemTreo()` kiểu 'don'.
@@ -1158,7 +1175,10 @@ function khoiDuoi(ct, neoId) {
     p = p0.map((v) => v + dau.lo - kheTu(p0, dau.unionId));
   } else {
     const lMuon = (dau.tam + cuoi.tam) / 2 - (kheTu(p0, dau.unionId) + kheTu(p0, cuoi.unionId)) / 2;
-    p = xepDai(p0, chum, viTriKhe, kheTu, lMuon);
+    // Chế độ chữ, mọi chùm cùng thả từ MỘT ô cha (ông nhiều vợ): không có
+    // cách giãn dải nào cho mỗi chùm một điểm thả — cha đứng giữa cả đàn con.
+    const motCho = CUNG && new Set(chum.map((c) => kheTu(p0, c.unionId))).size === 1;
+    p = motCho ? p0.map((v) => v + lMuon) : xepDai(p0, chum, viTriKhe, kheTu, lMuon);
   }
   oX.forEach((id, j) => themO(ct, kq, id, p[j]));
   kq.neoX = p[oX.indexOf(neoId)] + w / 2;
@@ -1640,7 +1660,8 @@ function nhipThanhNgang(ct, t, neXuong) {
  */
 function xepMucThanhNgang(ct, unions, neXuong) {
   // Trần: mép TRÊN của nốt cụt hướng lên mọc từ hàng dưới, trừ 2px hở.
-  const tran = KHONG_ANH ? KHE_DOC - 4   // chế độ chữ không có nốt cụt
+  // Chế độ chữ không có nốt cụt, nhưng có VÒNG CUNG vợ chồng đội trên đầu ô.
+  const tran = KHONG_ANH ? KHE_DOC - CUNG.cao - 3
     : KHE_DOC - LAYOUT.stubLength - LAYOUT.stubRadius - 2;
 
   const theoHang = new Map();              // busY gốc -> các thanh ngang cùng mức
@@ -1688,13 +1709,15 @@ function dungDiemTreo(ct, stubPoints) {
       const dai = ct.dai.get(neoId);
       const nut = ct.nodeById.get(neoId);
       x    = nut.x - dai.dxP + dai.khe.get(uid);
-      y    = nut.y + netNut(nut) - (dai.mucNet.get(uid) || 0) * dai.buocNet;
+      // Chế độ chữ: thả từ TRONG ô cha (nền ô che đoạn đầu) — không có nét
+      // vợ chồng ngang giữa ô nào để treo vào nữa.
+      y    = CUNG ? nut.y + 1 : nut.y + netNut(nut) - (dai.mucNet.get(uid) || 0) * dai.buocNet;
       busY = nut.y + nut.h + LAYOUT.khoangSatChu;
       kieu = dai.n > 0 ? 'khe' : 'don';
     } else if (u.partners.length === 1) {
       const nut = ct.nodeById.get(u.partners[0]);
       x    = nut.x + nut.w / 2;
-      y    = nut.y + netNut(nut);
+      y    = CUNG ? nut.y + 1 : nut.y + netNut(nut);
       busY = nut.y + nut.h + LAYOUT.khoangSatChu;
       kieu = 'don';
       neoId = u.partners[0];
@@ -1844,6 +1867,18 @@ function themNetVoChong(ct, links, uid, aId, bId) {
     const dai   = ct.dai.get(neoId);
     const neo   = ct.nodeById.get(neoId);
     const kia   = neoId === aId ? b : a;
+    if (CUNG) {
+      // VÒNG CUNG trên đầu hai ô (chủ dự án 30/09/2026). Chân cung ở 3/4 ô
+      // phía trong, không ở tâm: tâm nóc ô là chỗ nét từ cha mẹ cắm xuống.
+      // Vợ thứ k cung cao hơn, các cung lồng nhau thay vì cắt nhau.
+      const muc = dai.mucNet.get(uid) || 0;
+      const x1 = neo.x + neo.w * (dai.huong > 0 ? 0.75 : 0.25);
+      const x2 = kia.x + kia.w * (dai.huong > 0 ? 0.25 : 0.75);
+      links.push({ kind: 'spouse', relation: null, unionId: uid, from: neoId, to: kia.id,
+                   points: [[x1, neo.y], [x2, kia.y]], netDai: false, cheo: false,
+                   cung: Math.min(CUNG.tran, CUNG.cao + muc * CUNG.buoc) });
+      return;
+    }
     const y     = neo.y + netNut(neo) - (dai.mucNet.get(uid) || 0) * dai.buocNet;
     // Nét chạy từ MÉP VÒNG ẢNH sang mép vòng ảnh, không từ mép ô sang mép ô.
     //

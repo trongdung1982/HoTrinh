@@ -3,7 +3,7 @@
 // Vai trò  : Hằng số hiển thị phía trình duyệt.
 // Lớp      : config — không gọi file nào khác
 // Phụ thuộc: (không)
-// Phiên bản: 0.27.0 · Cập nhật: 30/09/2026 18:30
+// Phiên bản: 0.28.0 · Cập nhật: 30/09/2026 19:08
 // ============================================================
 //
 // LƯU Ý: file này KHÔNG phải nơi bạn điền cấu hình. Mọi thứ cần điền nằm ở
@@ -439,6 +439,15 @@ export const O_CHU = {
   hGap:      12,
   spouseGap:  8,
   vGap:      28,
+
+  // Nối vợ chồng = VÒNG CUNG trên đầu hai ô; con treo dưới ô CHA, chỉ con
+  // riêng của mẹ mới treo dưới mẹ (chủ dự án 30/09/2026). Vợ thứ k cung cao
+  // `cungCao + k × cungBuoc`, kẹp ở `cungTran`. ⚠ Cung nằm trong khe `vGap`
+  // cùng thanh ngang gom con của hàng trên (hàng trên + 12px trở xuống) —
+  // tăng `cungTran` quá `vGap − 12 − 3` là cung đâm vào thanh ngang ấy.
+  cungCao:   6,
+  cungBuoc:  3,
+  cungTran: 12,
 };
 
 // Bốn con số điều khiển tập người được vẽ. Xem KE-HOACH_V08.

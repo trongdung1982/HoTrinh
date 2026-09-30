@@ -3,7 +3,7 @@
 // Vai trò  : Vẽ SVG từ kết quả layout. Chỉ vẽ, không tính toạ độ sơ đồ.
 // Lớp      : domains — được gọi bởi: pages · được phép gọi: utils, config
 // Phụ thuộc: config (LAYOUT, PHOTO, O_CHU), utils/text, utils/image, utils/avatar
-// Phiên bản: 1.11.0 · Cập nhật: 30/09/2026 18:30 — ô chữ: tên xuống dòng
+// Phiên bản: 1.12.0 · Cập nhật: 30/09/2026 19:08 — chế độ chữ: nét vợ chồng vòng cung
 // ============================================================
 //
 // Đây là file sẽ sửa nhiều nhất khi chỉnh giao diện. Giữ nó chỉ chứa việc vẽ,
@@ -727,6 +727,22 @@ function renderLink(link) {
 
   const laCon  = link.kind === 'child';
   const conNuoi = laCon && link.relation && link.relation !== 'birth';
+
+  // Chế độ chữ: nét vợ chồng là VÒNG CUNG cao `cung` px trên đầu hai ô
+  // (layout tính). Bézier bậc hai: đỉnh cao đúng `cung` khi điểm điều khiển
+  // cao gấp đôi.
+  if (link.cung > 0) {
+    const [[x1, y1], [x2, y2]] = link.points;
+    return tao('path', {
+      d: 'M' + x1 + ',' + y1 + ' Q' + (x1 + x2) / 2 + ',' + (Math.min(y1, y2) - 2 * link.cung) +
+         ' ' + x2 + ',' + y2,
+      fill: 'none',
+      stroke: VE.net,
+      'stroke-width': VE.dayNetVo,
+      'stroke-opacity': link.netDai ? VE.moNetDai : 1,
+      'stroke-linecap': 'round',
+    });
+  }
 
   return tao('polyline', {
     points: link.points.map((p) => p[0] + ',' + p[1]).join(' '),
