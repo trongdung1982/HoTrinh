@@ -30,7 +30,6 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 | **b161a** Kho ảnh KÍN *(sau khi dán `59`)* | Ctrl+F5. Mở cây có ảnh (Nguyễn Phúc Giáo hoặc `TH957`): ảnh trên sơ đồ, thẻ chi tiết, bản lớn khi bấm ảnh vẫn hiện như cũ. Bấm phải một ảnh → *Mở ảnh trong thẻ mới* → địa chỉ có đoạn `token=` → xoá hết từ dấu `?` trở đi rồi Enter: trang báo lỗi, KHÔNG ra ảnh (đó là kho đã kín). ⚙ Cài đặt → *Xuất ảnh* PNG: ảnh người vẫn có trong file. *Quản trị hệ thống → Dữ liệu mồ côi → Quét*: cột ảnh xem trước hiện được |
 | **b161e** Dọn thùng rác bởi người sửa thường | Ctrl+F5. Tài khoản thử `thu-h9@…` (vai *sửa*, không tự duyệt) mở cây thử `TH957` → xoá một người CÓ ẢNH trong trực hệ của mình → *Danh sách người* → *Thùng rác* → tích người ấy → *Xoá vĩnh viễn*: hộp báo "Đã gửi xoá vĩnh viễn…" + dòng "đang chờ người quản lý duyệt". Đăng nhập tài khoản của bạn → *Kiểm duyệt* → *Từ chối* dòng ấy → người về lại thùng rác, ảnh VẪN hiện |
 | **b161d** Dọn cặp mồ côi *(sau khi dán `61`)* | Ctrl+F5 → *Quản trị hệ thống → Dữ liệu mồ côi → Quét*. Bảng *Người không thuộc cây nào*: người có vợ/chồng cũng ngoài mọi cây nay tích được (trước bị khoá); người có vợ/chồng còn trong một cây vẫn khoá, di chuột lên ô tích đọc lý do. Tích vài người → *Xoá vĩnh viễn*: hộp báo "Đã xoá n cặp không còn ai thuộc cây nào"; file thừa không còn báo "không xoá được". *Nhật ký* có dòng "… người · … cặp · … ảnh" |
-| **1d** Xuất ở chế độ Chữ *(không sửa mã — đo ở `so-tay/xuat-anh.md`)* | Ctrl+F5. Bấm nút mờ dưới 🔍 cho hiện chữ **Chữ**. ⚙ Cài đặt → *Xuất ảnh* PNG: file ra đúng sơ đồ chữ, chữ dọc đọc được. Xuất PDF nhiều trang (chữ cao 5 mm, A3 ngang): số trang hộp báo trước = số trang trong file. Đóng Cài đặt → bấm một ô chữ DỌC: người ấy ra giữa; bấm lại ô ấy: vòng tròn mở → bấm tâm vòng (chữ *Thông tin*): thẻ chi tiết hiện đủ, có ảnh như chế độ Ảnh |
 | **Cột Nội dung thao tác** (Kiểm duyệt) | Ctrl+F5 → *Quản trị → Kiểm duyệt*: cột *Nội dung thao tác* đọc thành câu, không còn một chữ mỗi dòng. Tab *Đã từ chối & hoàn tác*: cột *Lý do từ chối* cũng vậy |
 
 ---
@@ -64,7 +63,7 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-Bấm thử sáu điểm dừng ở trên (1d · b161a · b161d · b161e · b162a — `59`/`61`/`62`
+Bấm thử năm điểm dừng ở trên (b161a · b161d · b161e · b162a — `59`/`61`/`62`
 đã dán 30/09). Việc mã còn lại
 ở *Còn treo* đều cần chủ dự án quyết trước. ⚠ Đặt cây mặc định cần cờ Quản
 trị hệ thống — hai tài khoản thử không có, phải bấm tay bằng tài khoản của bạn.
