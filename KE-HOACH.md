@@ -85,11 +85,13 @@ thấy đủ (như b148). Muốn khác thì một chỗ ở `53`.
    (gáy sách) · ẩn hàng ngày giỗ · giữ màu giới/sống-mất bằng gạch màu mép ô.
    - **1a — CHỜ CHỦ DỰ ÁN XEM** bảng + ảnh phác (`../kiem-thu/chu-*.png`).
      Đã có: `layout.js` nhận ô theo hàng (`oHang`), `domains/so-do-chu.js`
-     chọn ngang/dọc. Ba câu hỏi còn treo: luật "đủ rộng" chặt (không tăng
-     bề ngang chút nào) làm sơ đồ nhỏ gần như toàn dọc · có hạ `vGap`/`hGap`
-     riêng chế độ chữ không · chữ dọc bám ĐÁY ô.
-   - **1b** Tinh chỉnh theo ý chủ dự án sau 1a (khe, luật đủ rộng, nốt cụt
-     sát đáy ô chữ). Chế độ Ảnh vẫn phải giống từng byte — `chup-bo-cuc.mjs`.
+     chọn ngang/dọc. **Chế độ chữ KHÔNG có nốt cụt** (chủ dự án 30/09).
+     Ba câu hỏi còn treo: luật "đủ rộng" chặt (không tăng bề ngang chút
+     nào) làm sơ đồ nhỏ gần như toàn dọc · có hạ `vGap`/`hGap` riêng chế độ
+     chữ không (hết nốt cụt thì `hGap` không còn bị nốt ngang chặn) · chữ
+     dọc bám ĐÁY ô.
+   - **1b** Tinh chỉnh theo ý chủ dự án sau 1a (khe, luật đủ rộng). Chế độ
+     Ảnh vẫn phải giống từng byte — `chup-bo-cuc.mjs`.
    - **1c** `render.js` vẽ ô chữ; nút Ảnh/Chữ. Điểm dừng: chụp hình.
    - **1d** Xuất ảnh/PDF + thẻ chi tiết ở chế độ Chữ.
 2. **Sau cùng mọi việc:** đưa hai bảng nhật ký vào sao lưu (xem *Còn treo*).

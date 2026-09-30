@@ -14,6 +14,9 @@
 // lúc mọi hàng dọc thì nhận. Thử hàng ít người trước. Không viết cách xếp thứ
 // hai — mọi luật chỗ đứng, nét, nốt cụt vẫn ở `layout.js`.
 //
+// ⚠ KHÔNG NỐT CỤT (chủ dự án 30/09/2026): gọi layout với `stubPoints = []`,
+// nên mất cả nốt lẫn đoạn thanh ngang kéo dài chừa chỗ cho nốt.
+//
 // `doRong(chuoi, coChu)` do nơi gọi đưa vào: trình duyệt đo bằng canvas
 // (`beRong()` ở render.js), bài kiểm đo bằng bảng Chrome chụp sẵn. Hàm thuần.
 
@@ -25,7 +28,7 @@ import { computeLayout } from './layout.js';
  * @returns {{layout:object, hang:Map<number,{ngang:boolean,w:number,h:number,net:number,soNguoi:number}>,
  *            soLanXep:number}}
  */
-export function xepCheDoChu(index, focus, visible, scope, stubs, doRong) {
+export function xepCheDoChu(index, focus, visible, scope, doRong) {
   const chu = new Map();                   // id → {ten, nam, dai}
   const doChu = (id) => {
     if (chu.has(id)) return chu.get(id);
@@ -61,7 +64,7 @@ export function xepCheDoChu(index, focus, visible, scope, stubs, doRong) {
   const xep = () => {
     hang = new Map();
     soLanXep++;
-    return computeLayout(index, focus, visible, scope, stubs, { oHang });
+    return computeLayout(index, focus, visible, scope, [], { oHang });
   };
   const beNgang = (l) => l.bounds.maxX - l.bounds.minX;
 
