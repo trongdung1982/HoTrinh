@@ -307,33 +307,39 @@ drop function if exists public.gan_nguoi_cho_thanh_vien(uuid, uuid, text);
 --   gắn). Toàn phần mềm, như bản cũ: bỏ người ra khỏi sơ đồ là mất liên kết.
 -- `gop_hai_nguoi`: bỏ dòng dời mã ở `tree_members` — `tai_khoan` đã được hàm
 --   này dời riêng, ngay dưới.
+-- ⚠ Neo là BIỂU THỨC CHÍNH QUY, không phải chuỗi nguyên văn: lần dán đầu lên
+--   THẬT (30/09) neo nguyên văn khớp 0 lần dù bàn thử khớp 1 — bản trên máy
+--   thật khác chữ/khoảng trắng. Neo nay chịu khoảng trắng bất kỳ và điều kiện
+--   thêm trước `tm.person_id` (bản `25` có `tm.tree_id = p_tree and`). Khớp
+--   ≠ 1 thì câu DỪNG in nguyên đoạn mã đang chạy quanh `tree_members`.
 do $$
 declare
   r      record;
   v_def  text;
   v_so   integer;
+  v_doan text;
 begin
   for r in select * from (values
     ('public.tu_choi_thay_doi(uuid, bigint, text)'::regprocedure,
-     'select tm.email into v_ngoai' || chr(10) ||
-     '    from public.tree_members tm' || chr(10) ||
-     '   where tm.person_id = any(v_xoa_p)',
+     'select\s+tm\.email\s+into\s+v_ngoai\s+from\s+public\.tree_members\s+tm\s+where\s+[^;]*tm\.person_id\s*=\s*any\s*\(\s*v_xoa_p\s*\)',
      'select coalesce(u.email::text, tk.user_id::text) into v_ngoai  -- b162a' || chr(10) ||
      '    from public.tai_khoan tk left join auth.users u on u.id = tk.user_id' || chr(10) ||
      '   where tk.person_id = any(v_xoa_p)'),
     ('public.gop_hai_nguoi(text, text, uuid)'::regprocedure,
-     'update public.tree_members   set person_id       = p_giu where person_id       = p_thua;',
+     'update\s+public\.tree_members\s+set\s+person_id\s*=\s*p_giu\s+where\s+person_id\s*=\s*p_thua\s*;',
      '-- b162a: liên kết tài khoản ↔ người nằm ở tai_khoan, dời ở dưới.')
   ) as v(ham, neo, thay)
   loop
     v_def := pg_get_functiondef(r.ham);
     continue when v_def like '%b162a%';
-    v_so := (length(v_def) - length(replace(v_def, r.neo, ''))) / length(r.neo);
+    select count(*) into v_so from regexp_matches(v_def, r.neo, 'g');
     if v_so <> 1 then
-      raise exception 'DỪNG: chỗ neo của % khớp % lần (phải đúng 1) — bản đứng cuối đã đổi, sửa luoc-do/62.',
-        r.ham, v_so;
+      select string_agg(m[1], E'\n  ··· ') into v_doan
+        from regexp_matches(v_def, '([^;]{0,160}tree_members[^;]{0,200})', 'g') m;
+      raise exception 'DỪNG: chỗ neo của % khớp % lần (phải đúng 1) — sửa luoc-do/62. Mã đang chạy quanh tree_members: %',
+        r.ham, v_so, coalesce(v_doan, '(không có chữ tree_members)');
     end if;
-    execute replace(v_def, r.neo, r.thay);
+    execute regexp_replace(v_def, r.neo, r.thay);
   end loop;
 end $$;
 

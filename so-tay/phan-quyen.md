@@ -17,6 +17,11 @@ Liên quan: `THIET-KE-NHIEU-CAY.md` mục 11 · `DU-LIEU.md` mục 2 · `HUONG-D
   dòng thì `select` trả `null`, và `null` trong `and`/`or` cho ra `null` chứ
   không cho ra `false`. Lỗ leo quyền 04/09 sinh ra đúng từ đó, 57 phép kiểm báo
   xanh suốt.
+- **Vá tại chỗ (đọc `pg_get_functiondef` → thay → `execute`): neo bằng biểu
+  thức chính quy chịu khoảng trắng, và câu DỪNG in đoạn mã đang chạy.** `62`
+  neo nguyên văn: bàn thử khớp 1, máy THẬT khớp 0 (30/09) — bản trên máy thật
+  khác chữ mà không ai biết khác ở đâu. Bàn thử dựng từ file, máy thật mang
+  lịch sử dán; neo nguyên văn là đặt cược rằng hai bên giống nhau từng dấu cách.
 - **`drop function` xoá cả `grant`.** Dựng lại hàm đã có thì chép theo cả dòng
   `grant`, không thì nó rơi về mặc định Postgres *ai cũng gọi được, kể cả `anon`*.
 - **`05` phải đứng TRƯỚC `06`.** `05` đặt lại ràng buộc vai **thiếu `quan_tri`**
