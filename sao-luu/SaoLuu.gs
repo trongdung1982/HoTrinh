@@ -408,7 +408,8 @@ function soVoiMayChu_(demDoc, demThat) {
   return 'Đối chiếu với máy chủ: THIẾU — máy sao lưu không được thấy hết dữ liệu:\n\n' +
          loi.join('\n') + '\n\n' +
          'Thường do một cây chưa có tài khoản sao lưu. Dán lại luoc-do/45-sao-luu-du-cay.sql ' +
-         '(nó bù cho mọi cây) rồi chạy lại saoLuuNgay.';
+         '(nó bù cho mọi cây) rồi chạy lại saoLuuNgay. Thiếu ở persons · unions · ' +
+         'union_children · media mà cây đủ thì là dữ liệu mồ côi — dán luoc-do/67.';
 }
 
 /**

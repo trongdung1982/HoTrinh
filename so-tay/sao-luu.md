@@ -10,6 +10,7 @@
 | Vai `sao_luu` · bảng hệ thống · cây mới tự có máy sao lưu · báo kết quả vào nhật ký (b147) | `luoc-do/05` · `44` · `45` · `49` |
 | **Hai bảng nhật ký hệ thống** (b166): ngăn RIÊNG `nhatKy`, khôi phục KHÔNG đổ lại | `luoc-do/65` · `SaoLuu.gs` `BANG_NHAT_KY` · đo `../kiem-thu/ban-thu-sql/do-b166.mjs` |
 | `tree_persons` đọc qua hàm, không REST (b166b — *Bẫy đã gặp*) | `luoc-do/66` · `SaoLuu.gs` `DOC_QUA_HAM` · cùng bài đo, nhóm T |
+| Máy sao lưu thấy dữ liệu mồ côi (b166c — *Bẫy đã gặp*) | `luoc-do/67` · cùng bài đo, nhóm M |
 | Bảng nào đã/chưa sao lưu | `kiem-thu/kiem-sao-luu.mjs` |
 | **Khôi phục**: JSON → một file SQL | `sao-luu/khoi-phuc.mjs` |
 | **Khôi phục từ nút** (b155a): chỉ QTHT, chỉ file có dấu vân tay máy sao lưu báo | `luoc-do/54` · đo `../kiem-thu/ban-thu-sql/do-b155a.mjs` (33 phép) |
@@ -118,6 +119,12 @@ ghi — nên đầu file SQL đặt `timezone = 'UTC'`. Bỏ dòng ấy là báo
   file thiếu `doi`, khôi phục đặt Đời về trống cho MỌI người, im lặng.
   **Lần sau `revoke`/`grant select (…)` trên bảng thuộc `THU_TU_DOC`: thêm
   bảng ấy vào `DOC_QUA_HAM` cùng lúc.**
+- ⚠⚠ **Dữ liệu MỒ CÔI nằm ngoài tầm RLS của máy sao lưu** (b166c,
+  30/09/2026). Luật đọc bốn bảng dùng chung đi theo cây; người/cặp đã ra
+  khỏi mọi cây thì máy sao lưu không thấy → file tự khai THIẾU → nút Khôi
+  phục từ chối, bản cũ không được dọn. Vá: `67` thêm luật đọc riêng
+  `doc_*_sao_luu` (khuôn `05` mục 3). **Luật đọc mới đi theo cây ở bảng
+  thuộc `THU_TU_DOC`: hỏi "máy sao lưu còn thấy đủ không" cùng lúc.**
 
 - ⚠ **Xoá một cột = mọi bản sao lưu chụp TRƯỚC đó không khôi phục được**
   (b162b, `63` xoá `tree_members.person_id`). Bước so từng dòng (3c ở
