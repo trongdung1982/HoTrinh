@@ -12,6 +12,11 @@ Liên quan: đường NHẬP Excel là `domains/excel.js` (sheet `DuLieu`) — k
 - **Hai khuôn, bấm là tải**: *Xuất Excel ▾* mở menu (`.action-menu` của
   quantri3) — *Bảng phẳng* hoặc *Hai sheet (Người + Gia đình)*. Không có ô chọn
   riêng cạnh nút.
+- **Hai cửa, một mã** (b163, chủ dự án 30/09/2026): trang sơ đồ ⚙ Cài đặt →
+  *Xuất dữ liệu ▾* → GEDCOM · Bảng phẳng · Hai sheet. Cùng `xuatExcelNguoi()`,
+  `tree-view.js` `xuatExcelCay()` đưa `state.tree` + `state.doi` (không đọc lại
+  mạng như trang Quản trị — `repo` đã đọc lại Đời sau mỗi lần Lưu). Đổi khuôn
+  thì hai cửa đổi theo, đừng dựng khuôn riêng cho trang sơ đồ.
 - **Bảng phẳng NẠP LẠI được** qua màn Nhập (chủ dự án 29/09/2026, b160 —
   `so-tay/nhap-xuat.md`); khuôn hai sheet thì chưa, chỉ để xem, báo cáo.
   Không có cột "Mã số" (mã Excel thời trước app); `ID` là `p.id` thật.

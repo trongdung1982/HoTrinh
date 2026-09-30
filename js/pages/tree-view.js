@@ -5,8 +5,8 @@
 // Phụ thuộc: state, domains/{bloodline,layout,render,union},
 //            utils/{text,glyph,graph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
-//            chon-gia-pha,import-export,export-image}
-// Phiên bản: 1.46.0 · Cập nhật: 29/09/2026 (b159d) — bỏ onGomRac của Danh sách người/gia đình
+//            chon-gia-pha,import-export,export-image,quan-tri/xuat-excel}
+// Phiên bản: 1.47.0 · Cập nhật: 30/09/2026 13:40 (b163) — Cài đặt: Xuất Excel hai khuôn; bỏ onMoSaoLuu
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (nút Cũ/Mới · dâu/rể)
 // ============================================================
 //
@@ -38,6 +38,7 @@ import { openSettings, closeSettings } from './settings.js';
 import { openChonGiaPha, closeChonGiaPha } from './chon-gia-pha.js';
 import { openXuatGedcom, closeXuatGedcom, openNhapGedcom, closeNhapGedcom }
   from './import-export.js';
+import { xuatExcelNguoi } from './quan-tri/xuat-excel.js';
 import { xuatAnhPNG, inSoDo, xuatAnhDoPhanGiaiCao, xuatPdfDoPhanGiaiCao, docCoSoDo,
          xuatPdfNhieuTrang, xemTruocNhieuTrang }
   from './export-image.js';
@@ -848,6 +849,18 @@ function veHopNut() {
  * sơ đồ không vẽ ra (bước 24). Nó neo vào `vungSoDo` như mọi nút khác, nên vẫn
  * còn đó cả khi sơ đồ không vẽ được gì — đúng lúc cần nó nhất.
  */
+/** Nút *Xuất dữ liệu → Excel* của Cài đặt — cả cây đang mở, không chỉ phần đang vẽ. */
+function xuatExcelCay(kieu) {
+  const cay = state.tree || {};
+  const hauTo = kieu === 'hai-sheet' ? '_NguoiGiaDinh' : '_BangPhang';
+  const d = new Date();
+  const p2 = (n) => String(n).padStart(2, '0');
+  const ten = 'DanhSachNguoi_' + ((state.phien && state.phien.maCay) || 'GiaPha') + hauTo + '_' +
+    p2(d.getDate()) + '-' + p2(d.getMonth() + 1) + '-' + d.getFullYear();
+  // `state.doi` = Đời đã lưu, `repo` đọc lại sau mỗi lần Lưu.
+  return xuatExcelNguoi(cay.persons || [], cay.unions || [], ten, kieu, state.doi || new Map());
+}
+
 function veHopNutTrenPhai() {
   const hop = document.createElement('div');
   hop.style.cssText =
@@ -857,22 +870,19 @@ function veHopNutTrenPhai() {
     nutTron('⚙', 'Cài đặt', () => openSettings({
       onDoiHienThi: () => refresh(),
 
-      // Hai cửa mới (22/08/2026). Cùng lối với `onMoSaoLuu` ngay dưới: ĐÓNG
+      // Hai cửa mới (22/08/2026). Cùng lối với `onMoChonGiaPha` dưới: ĐÓNG
       // Cài đặt trước rồi mới mở màn hình kia — hai lớp phủ cùng z-index 30,
       // chồng nhau thì cái mở sau nằm dưới và người dùng bấm vào khoảng không.
       onDanhSachNguoi:   () => { closeSettings(); moDanhSachNguoi(); },
       onDanhSachGiaDinh: () => { closeSettings(); moDanhSachGiaDinh(); },
-      // Sao lưu chạy nền ngoài app (Apps Script mỗi đêm); chỗ xem là tab Sao
-      // lưu của trang Quản trị, chỉ Quản trị hệ thống vào được. Người khác
-      // không có nút — `null` thì Cài đặt không vẽ khối ấy (chốt 28/09, b149).
-      onMoSaoLuu: (state.phien && state.phien.laQuanTriHeThong)
-        ? () => { window.location.href = 'QuanTri.html?tab=sao-luu#quan-tri-he-thong'; }
-        : null,
       // Việc 9b. Cùng lối: đóng Cài đặt TRƯỚC — và ở đây còn một lý do nữa,
       // đổi cây xong là `location.reload()`, nên đừng để lại lớp phủ nào.
       onMoChonGiaPha: () => { closeSettings(); openChonGiaPha(); },
       // Việc 10. Cùng lối, cùng lý do lớp phủ.
       onMoXuatGedcom: () => { closeSettings(); openXuatGedcom(); },
+      // b163 — hai khuôn Excel của *Danh sách người* (Quản trị), tải NGAY,
+      // không đóng Cài đặt (lỗi hiện tại chỗ, như `onXuatAnhPng`).
+      onXuatExcel: (kieu) => xuatExcelCay(kieu),
       onMoNhapGedcom: () => { closeSettings(); openNhapGedcom(); },
       // Việc 12. KHÔNG đóng Cài đặt trước — khác bốn callback trên, đây
       // không mở lớp phủ thứ hai nào, kết quả (link tải PNG) hiện NGAY

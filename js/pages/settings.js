@@ -1,10 +1,10 @@
 // ============================================================
 // giapha · js/pages/settings.js
 // Vai trò  : Màn hình Cài đặt — người trung tâm mặc định, tuỳ chọn hiển thị,
-//            đường sang Chọn gia phả · Sao lưu & khôi phục · Xuất/Nhập GEDCOM
+//            đường sang Chọn gia phả · Xuất dữ liệu (GEDCOM/Excel) · Nhập
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, services/sb, utils/text, pages/export-image
-// Phiên bản: 1.36.1 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
+// Phiên bản: 1.37.0 · Cập nhật: 30/09/2026 13:40 (b163) — Xuất dữ liệu ▾ ba khuôn; gỡ khối Sao lưu
 // ============================================================
 //
 // Màn hình này tồn tại vì MỘT việc: đặt và bỏ người trung tâm mặc định của
@@ -80,7 +80,7 @@ let khoiMacDinh = null;
  * Mở màn hình Cài đặt.
  *
  * @param {{onDoiMacDinh?:function, onDoiHienThi?:function,
- *          onMoChonGiaPha?:function, onMoSaoLuu?:function,
+ *          onMoChonGiaPha?:function, onXuatExcel?:function,
  *          onMoXuatGedcom?:function, onDanhSachNguoi?:function,
  *          onDanhSachGiaDinh?:function, onXuatAnhPng?:function,
  *          onInSoDo?:function, onXuatAnhDpi?:function,
@@ -90,8 +90,9 @@ let khoiMacDinh = null;
  *        vòng tròn thì một trong hai sẽ thấy hàm của file kia là `undefined`.
  *        `onDoiHienThi` chạy sau khi đổi một công tắc trong khối Hiển thị —
  *        nơi gọi phải VẼ LẠI sơ đồ, vì công tắc ngày giỗ đổi cả chiều cao ô.
- *        `onMoChonGiaPha` mở màn hình Chọn gia phả, `onMoSaoLuu` sang tab Sao
- *        lưu của trang Quản trị (chỉ Quản trị hệ thống; `null` = ẩn khối), `onMoXuatGedcom` mở màn hình Xuất GEDCOM, hai
+ *        `onMoChonGiaPha` mở màn hình Chọn gia phả, `onMoXuatGedcom` mở màn
+ *        hình Xuất GEDCOM, `onXuatExcel(kieu)` (`'phang'`|`'hai-sheet'`) tải
+ *        file Excel NGAY, trả `Promise<{ok, loi}>`, hai
  *        `onDanhSach*` mở hai danh sách của khối Quản lý gia phả. `onXuatAnhPng`
  *        (việc 12) trả về `Promise<{blob, tenFile}>` — dựng ảnh PNG của sơ đồ
  *        đang hiện, KHÔNG tự tải về (xem `export-image.js`). `onInSoDo` mở
@@ -157,16 +158,16 @@ export function openSettings(xuLy = {}) {
   }
   hop.append(tieuDe);
 
-  // ⚠ HAI KHỐI ĐÃ DỜI HẲN SANG TRANG QUẢN TRỊ, và thứ tự dời KHÔNG theo thứ
+  // ⚠ BA KHỐI ĐÃ DỜI HẲN SANG TRANG QUẢN TRỊ, và thứ tự dời KHÔNG theo thứ
   //   tự trong kế hoạch — nó theo *khu bên kia đã viết xong chưa*:
   //
   //     · **Đơn chờ duyệt**  → khu 2 `#thanh-vien`, viết xong b106. Dời.
   //     · **Duyệt nội dung** → khu 3 `#kiem-duyet`, viết xong b98.  Dời.
   //
-  //   ⚠ **Sao lưu vẫn ở lại** — khu 4 là b108. Đúng cùng một luật, và luật ấy
-  //   rút ra từ chính việc *Đơn chờ duyệt* phải nằm lại ba bước liền: **khối
-  //   chỉ được gỡ khi khu bên kia đã viết xong, không phải khi kế hoạch nói
-  //   tới nó.** Gỡ sớm là cắt một chức năng đang có mà không mở gì thay thế.
+  //     · **Sao lưu & khôi phục** → tab Sao lưu `#quan-tri-he-thong`. Dời b163.
+  //
+  //   Luật: **khối chỉ được gỡ khi khu bên kia đã viết xong, không phải khi
+  //   kế hoạch nói tới nó.** Gỡ sớm là cắt một chức năng đang có.
   //
   //   ⚠ **Khối Gia phả KHÔNG theo luật trên — nó ở lại có chủ ý (b113,
   //   14/09/2026), dù khu 1 `#gia-pha` đã viết xong từ b103.** Từng bị gỡ
@@ -178,7 +179,6 @@ export function openSettings(xuLy = {}) {
   veKhoiMacDinh(hop);
   veKhoiHienThi(hop);
   veKhoiChonGiaPha(hop);
-  veKhoiSaoLuu(hop);
   veKhoiXuat(hop);
   veKhoiNhap(hop);
   veKhoiPhien(hop);
@@ -424,67 +424,76 @@ function veKhoiChonGiaPha(vao) {
 }
 
 // ============================================================
-// Khối "Sao lưu & khôi phục" — việc 7
-// ============================================================
-//
-// Chỉ MỘT cái nút, sang tab Sao lưu của `QuanTri.html` (b149). Sao lưu chạy
-// nền mỗi đêm ngoài app; chỉ Quản trị hệ thống xem được lịch sử, nên người
-// khác KHÔNG thấy khối này — `tree-view.js` truyền `onMoSaoLuu = null`.
-
-function veKhoiSaoLuu(vao) {
-  if (!xuLyNgoai.onMoSaoLuu) return null;
-
-  const khoi = document.createElement('div');
-  khoi.style.cssText = 'margin-top:20px';
-  khoi.append(veNhanKhoi('Sao lưu & khôi phục'));
-
-  // Không có dòng giải thích: tên nút đã nói đủ, và màn hình mở ra giải thích
-  // lại lần nữa (chủ dự án bỏ 28/08/2026). `margin-top:4px` giữ đúng khoảng
-  // cách nhãn–nút của mấy khối bên cạnh, chỗ dòng giải thích từng chiếm.
-  const b = nut('Mở Sao lưu (trang Quản trị)', false, true,
-                () => xuLyNgoai.onMoSaoLuu());
-  b.style.marginTop = '4px';
-  khoi.append(b);
-
-  vao.append(khoi);
-  return khoi;
-}
-
-// ============================================================
 // Khối "Xuất dữ liệu" — việc 10
 // ============================================================
 //
-// Đứng NGAY SAU *Sao lưu & khôi phục*, và đứng cạnh nhau là có chủ ý: cả hai
-// đều là *mang gia phả ra khỏi app*. Nhưng chúng khác nhau ở đúng một điều mà
-// người dùng cần phân biệt được, nên chữ trên nút phải nói ra:
+// ⚠ Khối *Sao lưu & khôi phục* đã GỠ khỏi đây (b163, chủ dự án 30/09/2026):
+//   sao lưu + khôi phục nằm ở `QuanTri.html` tab Sao lưu, chạy được rồi.
 //
-// - **Sao lưu** cất một bản Ở LẠI TRÊN DRIVE, để hôm nào lỡ tay thì lấy về.
-// - **Xuất GEDCOM** đưa một bản RA KHỎI DRIVE, sang phần mềm khác, sang máy
-//   khác — và app không biết gì về nó nữa.
+// MỘT nút *Xuất dữ liệu ▾* mở ba lựa chọn: GEDCOM · Excel bảng phẳng · Excel
+// hai sheet (chủ dự án 30/09) — cùng hai khuôn Excel của *Danh sách người*
+// ở trang Quản trị (`quan-tri/xuat-excel.js`), không phải khuôn riêng.
+// Hai callback độc lập: thiếu `onXuatExcel` thì chỉ còn dòng GEDCOM.
 //
-// ⚠ Nút này KHÔNG mờ với người chỉ có quyền xem, cùng lý lẽ của nút *Sao lưu*:
-// xuất là việc CHỈ ĐỌC, nó không sửa một chữ nào trong gia phả.
+// ⚠ Nút này KHÔNG mờ với người chỉ có quyền xem: xuất là việc CHỈ ĐỌC, nó
+// không sửa một chữ nào trong gia phả.
 
 function veKhoiXuat(vao) {
-  if (!xuLyNgoai.onMoXuatGedcom && !xuLyNgoai.onXuatAnhPng && !xuLyNgoai.onInSoDo
-      && !xuLyNgoai.onXuatAnhDpi) return null;
+  if (!xuLyNgoai.onMoXuatGedcom && !xuLyNgoai.onXuatExcel && !xuLyNgoai.onXuatAnhPng
+      && !xuLyNgoai.onInSoDo && !xuLyNgoai.onXuatAnhDpi) return null;
 
   const khoi = document.createElement('div');
   khoi.style.cssText = 'margin-top:20px';
   khoi.append(veNhanKhoi('Xuất dữ liệu'));
 
-  if (xuLyNgoai.onMoXuatGedcom) {
-    const b = nut('Xuất ra file GEDCOM (.ged)', false, true,
-                  () => xuLyNgoai.onMoXuatGedcom());
-    b.dataset.viec = 'xuat-gedcom';
-    b.style.marginTop = '4px';
-    khoi.append(b);
-  }
+  if (xuLyNgoai.onMoXuatGedcom || xuLyNgoai.onXuatExcel) veNutXuatDuLieu(khoi);
 
   veKhoiXuatAnh(khoi);
 
   vao.append(khoi);
   return khoi;
+}
+
+/** Nút *Xuất dữ liệu ▾* + ba lựa chọn mọc ngay dưới (bấm lại thì gập). */
+function veNutXuatDuLieu(khoi) {
+  const chon = document.createElement('div');
+  chon.hidden = true;
+  chon.style.cssText = 'margin-top:6px;padding-left:12px;border-left:2px solid var(--sd-vien,#e6e0d8)';
+  const ketQua = document.createElement('div');
+  ketQua.style.cssText = 'font-size:12px;line-height:1.5;margin-top:6px';
+
+  const chinh = nut('Xuất dữ liệu ▾', false, true, () => { chon.hidden = !chon.hidden; });
+  chinh.dataset.viec = 'xuat-du-lieu';
+  chinh.style.marginTop = '4px';
+
+  const muc = (chu, viec, lam) => {
+    const b = nut(chu, false, true, lam);
+    b.dataset.viec = viec;
+    b.style.marginTop = '6px';
+    chon.append(b);
+    return b;
+  };
+  if (xuLyNgoai.onMoXuatGedcom) {
+    muc('GEDCOM (.ged) — sang phần mềm gia phả khác', 'xuat-gedcom',
+        () => xuLyNgoai.onMoXuatGedcom());
+  }
+  if (xuLyNgoai.onXuatExcel) {
+    const excel = (kieu) => async () => {
+      for (const b of chon.querySelectorAll('button')) b.disabled = true;
+      ketQua.style.color = 'var(--sd-chu-phu,#8a8078)';
+      ketQua.textContent = 'Đang tạo file…';
+      let kq;
+      try { kq = await xuLyNgoai.onXuatExcel(kieu); }
+      catch (e) { kq = { ok: false, loi: e && e.message ? e.message : String(e) }; }
+      for (const b of chon.querySelectorAll('button')) b.disabled = false;
+      ketQua.style.color = kq && kq.ok ? 'var(--sd-chu-phu,#8a8078)' : 'var(--sd-do,#8a3a2a)';
+      ketQua.textContent = kq && kq.ok ? '' : ((kq && kq.loi) || 'Không tạo được file.');
+    };
+    muc('Excel — Bảng phẳng (.xlsx), nhập lại được', 'xuat-excel-phang', excel('phang'));
+    muc('Excel — 2 sheet Người + Gia đình (.xlsx)', 'xuat-excel-hai-sheet', excel('hai-sheet'));
+  }
+  chon.append(ketQua);
+  khoi.append(chinh, chon);
 }
 
 // ------------------------------------------------------------
@@ -505,7 +514,7 @@ function veKhoiXuatAnh(khoi) {
   const chu = document.createElement('div');
   chu.textContent = 'Ảnh và PDF dưới đây chỉ chụp đúng PHẦN SƠ ĐỒ ĐANG HIỆN '
                    + 'trên màn hình (theo đúng phạm vi đời đang chọn) — không '
-                   + 'phải toàn bộ gia phả như file GEDCOM ở trên.';
+                   + 'phải toàn bộ gia phả như Xuất dữ liệu ở trên.';
   chu.style.cssText = 'font-size:12px;line-height:1.5;color:var(--sd-chu-phu,#8a8078);margin-top:10px';
   khoi.append(chu);
 
