@@ -13,6 +13,9 @@
 --   đọc thẳng (dựng cả gói rồi bỏ), đo trên cây 681 người: xem `do-b158.mjs`.
 -- ⚠ Cột mới thêm vào `tree_persons` sau này: `authenticated` KHÔNG tự đọc
 --   được (quyền theo cột). Muốn đọc thì thêm vào câu `grant select (…)` dưới.
+-- ⚠⚠ Máy sao lưu cũng là `authenticated`: file này làm REST `select=*` của
+--   nó bị từ chối → sao lưu đêm HỎNG từ lúc dán (b166b). Vá: `66` +
+--   `SaoLuu.gs` 0.12.0 đọc qua hàm `sao_luu_tree_persons()`.
 -- ⚠ Hàm/view `security invoker` nào đọc `tree_persons.doi` sẽ báo
 --   `permission denied` — lúc viết file này không có cái nào (mục 3 tự kiểm).
 -- JS      : `sb.js` `docDoi()` gọi `doc_doi_cay`, còn đường đọc thẳng khi máy

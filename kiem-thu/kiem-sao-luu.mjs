@@ -154,6 +154,16 @@ function dungMoiTruong(kichBan = {}) {
           cau_hinh: [{ chi_mot_dong: true }], tai_khoan: [{ user_id: 'u1' }, { user_id: 'u2' }],
           doi_ma_toan_cuc: [], de_xuat_gan_nguoi: [], de_nghi_quan_he: [], de_xuat_dong_ho: [] } }));
       }
+      // `tree_persons` (`luoc-do/66`, b166b). Máy thật từ `56` từ chối REST
+      // `select=*` (quyền theo cột) — giả y vậy, để mã quay lại đường REST
+      // là bài đỏ. `tpHong` = chưa dán `66`.
+      if (duong === '/rest/v1/rpc/sao_luu_tree_persons') {
+        if (kichBan.tpHong) return traLoi(404, '{"message":"function not found"}');
+        return traLoi(200, JSON.stringify({ ok: true, dong: duLieu.tree_persons || [] }));
+      }
+      if (duong === '/rest/v1/tree_persons') {
+        return traLoi(401, '{"code":"42501","message":"permission denied for table tree_persons"}');
+      }
       // Hai bảng nhật ký (`luoc-do/65`, b166). `nkHTHong` = chưa dán `65`.
       if (duong === '/rest/v1/rpc/sao_luu_nhat_ky') {
         if (kichBan.nkHTHong) return traLoi(404, '{"message":"function not found"}');
@@ -418,11 +428,13 @@ function cayGia({ soNguoi = 5, soNhatKy = 3 } = {}) {
     sources: [],
     change_log: [],
     imports: [],
-    user_settings: [{ user_id: 'u1', tree_id: cay, focus_person_id: 'P0001' }]
+    user_settings: [{ user_id: 'u1', tree_id: cay, focus_person_id: 'P0001' }],
+    tree_persons: []
   };
   for (let i = 1; i <= soNguoi; i++) {
     d.persons.push({ tree_id: cay, id: 'P' + String(i).padStart(4, '0'),
                      names: [{ type: 'chinh', full: 'Người ' + i }] });
+    d.tree_persons.push({ tree_id: cay, person_id: 'P' + String(i).padStart(4, '0'), doi: i });
   }
   for (let i = 1; i <= soNhatKy; i++) {
     d.change_log.push({ id: i, tree_id: cay, action: 'sua', target: 'P0001' });
@@ -495,6 +507,29 @@ const CHUA_SAO_LUU = ['bao_trung_nguoi', 'ban_sao_luu_da_ghi'];
   kiem('hàm hệ thống hỏng → vẫn đủ bảng gia phả, file mang loiBangHeThong',
        ban.dem.persons === 5 && ban.loiBangHeThong !== '' && !('tai_khoan' in ban.bang),
        'persons=' + ban.dem.persons + ' · loi=' + String(ban.loiBangHeThong).slice(0, 60));
+}
+
+// ---- 3d. tree_persons qua hàm `66` (b166b) ---------------------------
+//
+// ⚠ Từ `56` REST từ chối `select=*` trên `tree_persons`; đọc hai cột được
+//   phép thì mất `doi` → khôi phục xoá sạch Đời. Máy chủ giả từ chối REST y vậy.
+{
+  const a = dungMoiTruong({ duLieu: cayGia({ soNguoi: 5 }) });
+  const ban = a.api.gomSaoLuu_(a.api.docCauHinh_());
+  const tp = ban.bang.tree_persons || [];
+  kiem('tree_persons đọc qua hàm: đủ dòng, CÓ cột doi (Đời không mất khi khôi phục)',
+       tp.length === 5 && tp.every((d) => typeof d.doi === 'number') && ban.dem.tree_persons === 5 &&
+       !a.nhatKy.goi.some((u) => /\/rest\/v1\/tree_persons/.test(u)),
+       `${tp.length} dòng · doi=${tp.map((d) => d.doi).join(',')}`);
+  kiem('kiemTraKetNoi đếm tree_persons qua hàm, không LỖI',
+       /tree_persons: 5 dòng/.test(a.api.kiemTraKetNoi()), '');
+
+  const h = dungMoiTruong({ duLieu: cayGia({ soNguoi: 5 }), tpHong: true });
+  let nem = '';
+  try { h.api.saoLuuNgay(); } catch (e) { nem = e.message; }
+  kiem('chưa dán 66: NÉM, gửi thư, chỉ vào luoc-do/66, không để file dở',
+       /luoc-do\/66/.test(nem) && h.nhatKy.thu.length === 1 && [...duyet(h.thuMuc)].length === 0,
+       `nem=${nem.slice(0, 80)} · ${h.nhatKy.thu.length} thư`);
 }
 
 // ---- 3c. Nhật ký hệ thống (b166, `luoc-do/65`) -----------------------

@@ -8,7 +8,8 @@
 |---|---|
 | Sao lưu đêm (Apps Script, chủ dự án dán tay) | `sao-luu/SaoLuu.gs` · hướng dẫn `sao-luu/HUONG-DAN-SAO-LUU.md` |
 | Vai `sao_luu` · bảng hệ thống · cây mới tự có máy sao lưu · báo kết quả vào nhật ký (b147) | `luoc-do/05` · `44` · `45` · `49` |
-| **Hai bảng nhật ký hệ thống** (b166): ngăn RIÊNG `nhatKy`, khôi phục KHÔNG đổ lại | `luoc-do/65` · `SaoLuu.gs` `BANG_NHAT_KY` · đo `../kiem-thu/ban-thu-sql/do-b166.mjs` (19 phép) |
+| **Hai bảng nhật ký hệ thống** (b166): ngăn RIÊNG `nhatKy`, khôi phục KHÔNG đổ lại | `luoc-do/65` · `SaoLuu.gs` `BANG_NHAT_KY` · đo `../kiem-thu/ban-thu-sql/do-b166.mjs` |
+| `tree_persons` đọc qua hàm, không REST (b166b — *Bẫy đã gặp*) | `luoc-do/66` · `SaoLuu.gs` `DOC_QUA_HAM` · cùng bài đo, nhóm T |
 | Bảng nào đã/chưa sao lưu | `kiem-thu/kiem-sao-luu.mjs` |
 | **Khôi phục**: JSON → một file SQL | `sao-luu/khoi-phuc.mjs` |
 | **Khôi phục từ nút** (b155a): chỉ QTHT, chỉ file có dấu vân tay máy sao lưu báo | `luoc-do/54` · đo `../kiem-thu/ban-thu-sql/do-b155a.mjs` (33 phép) |
@@ -106,6 +107,17 @@ dòng khớp chưa đủ. Nó dựa vào `to_jsonb` in ngày giờ đúng dạng
 ghi — nên đầu file SQL đặt `timezone = 'UTC'`. Bỏ dòng ấy là báo lệch oan.
 
 ## Bẫy đã gặp
+
+- ⚠⚠ **Thu quyền đọc trên một bảng có sao lưu = sao lưu đêm HỎNG** (b166b,
+  30/09/2026). `56` thu quyền cột `tree_persons.doi` của `authenticated` để
+  che Đời với vai `xem`; máy sao lưu cũng là `authenticated` → REST
+  `select=*` bị từ chối (`42501`), mọi đêm từ lúc dán đều hỏng. Bàn thử KHÔNG
+  bắt được vì nó `grant all` lại sau chuỗi dán — bài đo phải thu lại đúng
+  quyền cột như máy thật (`do-b166.mjs` phép T1 tái hiện). Vá: `66` + hằng
+  `DOC_QUA_HAM` ở `SaoLuu.gs`. ⚠ Đừng vá bằng cách đọc hai cột được phép:
+  file thiếu `doi`, khôi phục đặt Đời về trống cho MỌI người, im lặng.
+  **Lần sau `revoke`/`grant select (…)` trên bảng thuộc `THU_TU_DOC`: thêm
+  bảng ấy vào `DOC_QUA_HAM` cùng lúc.**
 
 - ⚠ **Xoá một cột = mọi bản sao lưu chụp TRƯỚC đó không khôi phục được**
   (b162b, `63` xoá `tree_members.person_id`). Bước so từng dòng (3c ở

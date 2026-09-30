@@ -308,12 +308,13 @@ Chạy hàm **`goLichSaoLuu`**. Lịch tự động tắt; sao lưu bấm tay v�
 
 ### Khi `SaoLuu.gs` có bản mới — thay mã, KHÔNG làm lại từ đầu
 
-*(Lần gần nhất: bản **0.11.0**, 30/09/2026 — chép thêm **hai bảng nhật ký
-hệ thống** vào file sao lưu, ở ngăn riêng `nhatKy`. **Kèm SQL `65`**: bước 1
-dán `luoc-do/65-sao-luu-nhat-ky.sql`, bảng cuối **ĐẠT cả 3 dòng**. Bản trước:
-0.9.0 — dấu vân tay + web app, kèm `54`; 0.7.0 — chép ảnh sang Drive.)*
+*(Lần gần nhất: bản **0.12.0**, 30/09/2026 — sửa lỗi sao lưu hỏng từ khi
+dán `56` (*"permission denied for table tree_persons"*). **Kèm SQL `66`**:
+bước 1 dán `luoc-do/66-sao-luu-tree-persons.sql`, bảng cuối **ĐẠT cả 3
+dòng**. Bản trước: 0.11.0 — chép hai bảng nhật ký hệ thống, kèm `65`; 0.9.0
+— dấu vân tay + web app, kèm `54`; 0.7.0 — chép ảnh sang Drive.)*
 
-1. **Dán SQL trước** *(chỉ khi bản mới kèm SQL — 0.11.0 kèm `65`)*: Supabase →
+1. **Dán SQL trước** *(chỉ khi bản mới kèm SQL — 0.12.0 kèm `66`)*: Supabase →
    SQL Editor → **New query** → dán cả file SQL ấy → **Run**. Bảng cuối phải
    ra **ĐẠT** mọi dòng.
 2. `script.google.com` → mở dự án **Sao luu gia pha Supabase** → bấm vào ô

@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 30/09/2026 · Sáu điểm dừng chưa bấm thử · SQL đã dán hết tới `64`, `65` CHƯA dán.*
+*Cập nhật 30/09/2026 · Sáu điểm dừng chưa bấm thử · SQL đã dán hết tới `65`, `66` CHƯA dán — ⚠ sao lưu đêm HỎNG tới khi dán.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -26,7 +26,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
-| **b166** Nhật ký hệ thống vào sao lưu | ① Dán `luoc-do/65-sao-luu-nhat-ky.sql` → bảng cuối **ĐẠT 3/3**. ② Thay mã `SaoLuu.gs` bằng bản 0.11.0 — `sao-luu/HUONG-DAN-SAO-LUU.md` mục *Khi `SaoLuu.gs` có bản mới* (nhớ **New version** cho web app). ③ Chạy `kiemTraKetNoi`: có hai dòng `nhat_ky_he_thong: … dòng` · `nhat_ky_lo_rac: … dòng`. ④ App → *Quản trị hệ thống → Sao lưu & khôi phục* → *Sao lưu ngay* → *Lịch sử sao lưu* dòng mới ghi **Đạt**, không phải "có cảnh báo" |
+| **b166 + b166b** Nhật ký vào sao lưu · vá sao lưu hỏng từ `56` *(`65` đã dán, `SaoLuu.gs` 0.11.0 đã thay — `kiemTraKetNoi` báo "permission denied for table tree_persons")* | ① Dán `luoc-do/66-sao-luu-tree-persons.sql` → bảng cuối **ĐẠT 3/3**. ② Thay mã `SaoLuu.gs` bằng bản **0.12.0** — `sao-luu/HUONG-DAN-SAO-LUU.md` mục *Khi `SaoLuu.gs` có bản mới* (nhớ **New version** cho web app). ③ Chạy `kiemTraKetNoi`: không còn lỗi; có dòng `tree_persons: … dòng` và hai dòng `nhat_ky_he_thong` · `nhat_ky_lo_rac`; dòng cuối `ĐỦ`. ④ App → *Quản trị hệ thống → Sao lưu & khôi phục* → *Sao lưu ngay* → *Lịch sử sao lưu* dòng mới ghi **Đạt**, không phải "có cảnh báo" |
 | **b162a** Thôi đọc cột gắn cũ *(`62` đã dán)* | Ctrl+F5. *Quản trị hệ thống → Tài khoản* → mở một tài khoản ĐÃ gắn người → *Mời vào gia phả* một cây họ chưa vào: mời được như cũ. Cây có đơn xin vào đang chờ → *Duyệt*: hộp KHÔNG còn ô "Mã người trong sơ đồ", duyệt xong người ấy vào cây. Khu *Tài khoản* → *Đề xuất gắn*: gõ tên một người đã có tài khoản giữ → dòng gợi ý mờ, ghi "đã gắn cho <email đúng người đang giữ>" |
 | **b161a** Kho ảnh KÍN *(sau khi dán `59`)* | Ctrl+F5. Mở cây có ảnh (Nguyễn Phúc Giáo hoặc `TH957`): ảnh trên sơ đồ, thẻ chi tiết, bản lớn khi bấm ảnh vẫn hiện như cũ. Bấm phải một ảnh → *Mở ảnh trong thẻ mới* → địa chỉ có đoạn `token=` → xoá hết từ dấu `?` trở đi rồi Enter: trang báo lỗi, KHÔNG ra ảnh (đó là kho đã kín). ⚙ Cài đặt → *Xuất ảnh* PNG: ảnh người vẫn có trong file. *Quản trị hệ thống → Dữ liệu mồ côi → Quét*: cột ảnh xem trước hiện được |
 | **b161e** Dọn thùng rác bởi người sửa thường | Ctrl+F5. Tài khoản thử `thu-h9@…` (vai *sửa*, không tự duyệt) mở cây thử `TH957` → xoá một người CÓ ẢNH trong trực hệ của mình → *Danh sách người* → *Thùng rác* → tích người ấy → *Xoá vĩnh viễn*: hộp báo "Đã gửi xoá vĩnh viễn…" + dòng "đang chờ người quản lý duyệt". Đăng nhập tài khoản của bạn → *Kiểm duyệt* → *Từ chối* dòng ấy → người về lại thùng rác, ảnh VẪN hiện |
@@ -53,9 +53,12 @@ sao lưu chụp trước `63` thôi khôi phục được — chủ dự án ch�
 
 **`64` + `55` 0.2.0 — ĐÃ DÁN** 30/09/2026 (chủ dự án báo đạt; b145 bấm thử đạt).
 
-**`65` — CHƯA DÁN. ĐƯỢC dán ngay**, TRƯỚC khi thay `SaoLuu.gs` 0.11.0 (thay
-mã trước thì mỗi đêm báo "có cảnh báo" cho tới lúc dán — vô hại). Trình duyệt
-không gọi hàm này; chỉ máy sao lưu gọi. Đã đo bàn thử: `do-b166.mjs` 19/19.
+**`65` — ĐÃ DÁN** 30/09/2026 (chủ dự án báo đạt).
+
+**`66` — CHƯA DÁN. ĐƯỢC dán ngay**, TRƯỚC khi thay `SaoLuu.gs` 0.12.0.
+⚠ Sao lưu đêm HỎNG từ lúc dán `56` tới khi xong cặp này (`so-tay/sao-luu.md`
+*Bẫy đã gặp*). Trình duyệt không gọi hàm này; chỉ máy sao lưu gọi. Bàn thử:
+`do-b166.mjs` 29/29 (nhóm T tái hiện đúng lỗi rồi mới đo bản vá).
 
 ⚠ Bản cuối mới: `xoa_cay()` · `tra_lai_cay()` ở `60` (tên cũ đã xoá); `don_mo_coi_he_thong()`
 · `ds_nguoi_mo_coi()` · luật `xoa_anh` ở `61`; luật `xem_anh` + kho kín ở `59`.
@@ -68,7 +71,7 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-Bấm thử sáu điểm dừng ở trên (b166 cần dán `65` trước; b161a · b161d · b161e
+Bấm thử sáu điểm dừng ở trên (**b166b trước tiên** — sao lưu đêm đang hỏng; b161a · b161d · b161e
 · b162a — `59`/`61`/`62` đã dán 30/09). Không còn việc mã nào đã chốt; việc
 ở *Còn treo* đều cần chủ dự án quyết trước. ⚠ Đặt cây mặc định cần cờ Quản
 trị hệ thống — hai tài khoản thử không có, phải bấm tay bằng tài khoản của bạn.

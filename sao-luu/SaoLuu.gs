@@ -12,7 +12,9 @@
 //            EMAIL_KHOI_PHUC · MAT_KHAU_KHOI_PHUC · KHOI_PHUC_CAY (chỉ điền
 //            tạm khi chạy `khoiPhucAnh`, xong thì xoá)
 //            SQL — luoc-do/05-sao-luu.sql phải chạy trước
-// Phiên bản: 0.11.0 · Cập nhật: 30/09/2026 (b166) — chép hai bảng nhật ký
+// Phiên bản: 0.12.0 · Cập nhật: 30/09/2026 (b166b) — `tree_persons` đọc qua
+//            hàm `sao_luu_tree_persons()` (`luoc-do/66`): từ `56` REST từ chối
+//            `select=*`, sao lưu đêm hỏng. 0.11.0: chép hai bảng nhật ký
 //            hệ thống vào ngăn riêng `nhatKy` (`luoc-do/65`). 0.10.0: web app
 //            thêm việc `sao-luu-ngay` (nút Sao lưu ngay). 0.9.0: WEB APP (`doPost`) —
 //            liệt kê/tải bản sao lưu + khôi phục ảnh, chỉ QTHT.
@@ -491,8 +493,29 @@ function docNhatKy_(cauHinh) {
 // ĐỌC TỪ SUPABASE
 // ============================================================
 
+// Bảng REST không cho `select=*` → đọc qua hàm máy sao lưu (b166b). `luoc-do/56`
+// chỉ cho `authenticated` đọc hai cột `tree_id` · `person_id` của `tree_persons`;
+// đọc hai cột ấy thì file thiếu `doi`, khôi phục xoá sạch Đời — nên hàm `66`
+// trả trọn cột. Hàm hỏng thì NÉM như REST hỏng: thiếu bảng này là bản không
+// khôi phục được, không phải "ghi được mà thiếu một phần".
+var DOC_QUA_HAM = { tree_persons: 'sao_luu_tree_persons' };
+
 /** Đọc trọn một bảng, đi theo trang cho tới hết. */
 function docBang_(cauHinh, ten) {
+  if (DOC_QUA_HAM[ten]) {
+    var kq, loi = '';
+    try {
+      kq = goi_(cauHinh, cauHinh.url + '/rest/v1/rpc/' + DOC_QUA_HAM[ten], 'đọc bảng ' + ten, {});
+      if (!kq || kq.ok !== true || !Array.isArray(kq.dong)) loi = (kq && kq.loi) || JSON.stringify(kq).slice(0, 200);
+    } catch (e) {
+      loi = e && e.message ? e.message : String(e);
+    }
+    if (loi) {
+      throw new Error('Không đọc được bảng ' + ten + ' qua hàm ' + DOC_QUA_HAM[ten] +
+                      ' (đã dán luoc-do/66 chưa?): ' + loi);
+    }
+    return kq.dong;
+  }
   var tatCa = [];
   var offset = 0;
   for (;;) {
@@ -510,6 +533,7 @@ function docBang_(cauHinh, ten) {
 
 /** Đếm số dòng mà không tải cả bảng về. Dùng cho `kiemTraKetNoi`. */
 function demDong_(cauHinh, ten) {
+  if (DOC_QUA_HAM[ten]) return docBang_(cauHinh, ten).length;
   var url = cauHinh.url + '/rest/v1/' + ten + '?select=*&limit=1';
   var res = goiTho_(cauHinh, url, 'đếm bảng ' + ten, { Prefer: 'count=exact' });
   // PostgREST trả tổng số ở header `content-range`, khuôn `0-0/681`.
