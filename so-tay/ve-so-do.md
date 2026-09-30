@@ -62,9 +62,9 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
   (`canVaoKhoangTrong()`) — P0185 vẫn đúng vì nó hết chỗ trống.
 - **Union riêng của người được hấp thụ** (con ghi một mình mẹ, U0180) không
   thuộc dải nào → rơi lưới an toàn. Cách mới cho dải nhận union ấy.
-- **LỖI DỮ LIỆU trông như lỗi vẽ** — U0180: Hạt, Thu ghi là con bà Hồi mà
-  lấy chính con trai bà (U0108, U0109). Không cách xếp nào cho điểm thả nằm
-  trong khoảng hai cô. Còn chờ chủ dự án sửa dữ liệu — đừng vá bằng mã.
+- **LỖI DỮ LIỆU trông như lỗi vẽ** — U0180: Hạt, Thu từng ghi nhầm là con bà Hồi mà
+  lấy chính con trai bà (U0108, U0109). Chủ dự án đã sửa dữ liệu (01/10/2026),
+  không phải lỗi thuật toán vẽ.
 
 - **Nốt cụt mọc sai hướng** — P0413 (U0182, hôn nhân chỉ một mình ông, con
   ẩn): mọc NGANG như thiếu vợ. Luật chủ dự án: nốt mọc theo hướng sơ đồ sẽ vẽ
