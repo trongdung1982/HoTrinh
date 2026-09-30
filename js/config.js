@@ -3,7 +3,7 @@
 // Vai trò  : Hằng số hiển thị phía trình duyệt.
 // Lớp      : config — không gọi file nào khác
 // Phụ thuộc: (không)
-// Phiên bản: 0.26.0 · Cập nhật: 30/09/2026 18:07
+// Phiên bản: 0.27.0 · Cập nhật: 30/09/2026 18:30
 // ============================================================
 //
 // LƯU Ý: file này KHÔNG phải nơi bạn điền cấu hình. Mọi thứ cần điền nằm ở
@@ -426,6 +426,12 @@ export const O_CHU = {
     gio: { co: 9.5, cao: 11 },
   },
   le:       4,     // lề trong ô, bốn phía
+
+  // CHIỀU DÀI ô (theo hướng chữ chạy) = bề rộng TÊN CHUẨN: ba chữ, mỗi chữ
+  // sáu chữ cái, hai khoảng trắng (chủ dự án 30/09/2026). Tên dài hơn thì
+  // XUỐNG DÒNG — ô ấy dày thêm một dòng, chấp nhận to hơn ô khác. Cả hàng tên
+  // đều ngắn hơn thì ô chỉ dài bằng tên dài nhất hàng, không kéo thêm.
+  tenChuan: 'Nguyễn Thượng Phương',
 
   // Khe riêng chế độ chữ (chủ dự án 30/09/2026) — chế độ ảnh vẫn 28 · 16 · 38.
   // Hẹp được vì chế độ chữ KHÔNG có nốt cụt: 28/38 cũ là chỗ cho nốt mọc ra.

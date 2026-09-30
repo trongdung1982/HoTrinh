@@ -4,7 +4,7 @@
 //            và kích thước ô từng hàng; xếp chỗ vẫn là `computeLayout()`.
 // Lớp      : domains — được gọi bởi: pages · được phép gọi: utils, config
 // Phụ thuộc: domains/layout.js · utils/text.js · config (O_CHU)
-// Phiên bản: 0.4.0 · Cập nhật: 30/09/2026 18:07
+// Phiên bản: 0.5.0 · Cập nhật: 30/09/2026 18:30
 // Sổ tay   : so-tay/ve-so-do.md
 // ============================================================
 //
@@ -25,47 +25,78 @@ import { dongOChu } from '../utils/text.js';
 import { computeLayout } from './layout.js';
 
 /**
+ * Ngắt TÊN thành nhiều dòng, mỗi dòng không dài quá `tran` — ngắt ở khoảng
+ * trắng, tham lam từ trái. Một chữ đơn dài quá trần thì để nguyên dòng ấy
+ * (render bóp bằng `textLength`).
+ */
+function ngatTen(ten, co, tran, doRong) {
+  const tu = String(ten).split(/\s+/).filter(Boolean);
+  if (tu.length <= 1) return [String(ten)];
+  const ra = [];
+  let dong = tu[0];
+  for (let i = 1; i < tu.length; i++) {
+    const thu = dong + ' ' + tu[i];
+    if (doRong(thu, co) <= tran) dong = thu;
+    else { ra.push(dong); dong = tu[i]; }
+  }
+  ra.push(dong);
+  return ra;
+}
+
+/**
  * @param {function} doRong   `(chuoi, coChu) → px`
  * @param {boolean} hienGio   công tắc ngày giỗ — thêm dòng "Giỗ: …" cho ai có
- * @returns {{layout:object, hang:Map<number,{ngang:boolean,w:number,h:number,net:number,soNguoi:number}>,
+ * @returns {{layout:object,
+ *            hang:Map<number,{ngang:boolean,w:number,h:number,net:number,soNguoi:number}>,
+ *            nguoi:Map<string,{dong:Array<{loai,chu}>, day:number}>,
  *            soLanXep:number}}
+ *   `nguoi` — dòng ĐÃ NGẮT của từng ô và bề DÀY riêng của ô (chiều vuông góc
+ *   với chữ). `render.js` vẽ đúng các dòng này, không tự ngắt lại.
  */
 export function xepCheDoChu(index, focus, visible, scope, doRong, hienGio) {
-  const chu = new Map();                   // id → {loai:Set, dai}
+  const tran = doRong(O_CHU.tenChuan, O_CHU.dong.ten.co);
+  const nguoi = new Map();
   const doChu = (id) => {
-    if (chu.has(id)) return chu.get(id);
-    const dong = dongOChu(index.personById.get(id), id, hienGio);
-    let dai = 0;
-    for (const d of dong) dai = Math.max(dai, doRong(d.chu, O_CHU.dong[d.loai].co));
-    const v = { loai: dong.map((d) => d.loai), dai };
-    chu.set(id, v);
+    if (nguoi.has(id)) return nguoi.get(id);
+    const dong = [];
+    for (const d of dongOChu(index.personById.get(id), id, hienGio)) {
+      if (d.loai !== 'ten') { dong.push(d); continue; }
+      for (const s of ngatTen(d.chu, O_CHU.dong.ten.co, tran, doRong)) dong.push({ loai: 'ten', chu: s });
+    }
+    let dai = 0, day = 2 * O_CHU.le;
+    for (const d of dong) {
+      dai = Math.max(dai, doRong(d.chu, O_CHU.dong[d.loai].co));
+      day += O_CHU.dong[d.loai].cao;
+    }
+    const v = { dong, dai, day };
+    nguoi.set(id, v);
     return v;
   };
 
   const ngang = new Set();
   let hang = new Map();
   const oHang = (m, ids) => {
-    // Bề DÀY hàng = đủ chỗ cho mọi loại dòng CÓ ở ít nhất một ô; từng ô tự
-    // căn giữa số dòng thật của nó trong bề dày ấy (render.js).
-    let dai = 0;
-    const loai = new Set();
+    // CHIỀU DÀI chung cả hàng = dòng dài nhất, trần là tên chuẩn. BỀ DÀY riêng
+    // từng ô: hàng dọc → mỗi ô một bề rộng (`rieng`); hàng ngang → layout lấy
+    // ô dày nhất làm cao hàng, render vẽ khung theo bề dày riêng.
+    let dai = 0, dayMax = 0;
     for (const id of ids) {
       const v = doChu(id);
       if (v.dai > dai) dai = v.dai;
-      for (const l of v.loai) loai.add(l);
+      if (v.day > dayMax) dayMax = v.day;
     }
-    let beDay = 2 * O_CHU.le;
-    for (const l of loai) beDay += O_CHU.dong[l].cao;
-    const beDai = Math.ceil(dai) + 2 * O_CHU.le;
-    const o = ngang.has(m)
-      ? { ngang: true,  w: beDai, h: beDay }
-      : { ngang: false, w: beDay, h: beDai };
+    const beDai = Math.ceil(Math.min(dai, tran)) + 2 * O_CHU.le;
+    let o;
+    if (ngang.has(m)) {
+      o = { ngang: true, w: beDai, h: dayMax };
+    } else {
+      o = { ngang: false, w: dayMax, h: beDai, rieng: new Map(ids.map((id) => [id, doChu(id).day])) };
+    }
     o.net = o.h / 2;
     o.soNguoi = ids.length;
     hang.set(m, o);
     return o;
   };
-
 
   let soLanXep = 0;
   const xep = () => {
@@ -90,5 +121,5 @@ export function xepCheDoChu(index, focus, visible, scope, doRong, hienGio) {
     if (beNgang(l) <= W0 + 0.5) { layout = l; hangChot = hang; }
     else ngang.delete(d.m);
   }
-  return { layout, hang: hangChot, soLanXep };
+  return { layout, hang: hangChot, nguoi, soLanXep };
 }

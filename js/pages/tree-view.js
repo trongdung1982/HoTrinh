@@ -6,7 +6,7 @@
 //            utils/{text,glyph,graph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
 //            chon-gia-pha,import-export,export-image,quan-tri/xuat-excel}
-// Phiên bản: 1.49.0 · Cập nhật: 30/09/2026 18:07 — nút Ảnh/Chữ
+// Phiên bản: 1.49.1 · Cập nhật: 30/09/2026 18:30 — nút Ảnh/Chữ
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (dâu/rể)
 // ============================================================
 //
@@ -276,6 +276,7 @@ export function refresh() {
     const kq = xepCheDoChu(index, focus, visible, state.scope, beRong, hienGio.hienNgayGio);
     layout = kq.layout;
     hienGio.hangChu = kq.hang;
+    hienGio.nguoiChu = kq.nguoi;
   } else {
     const stubs = findStubPoints(index, visible, state.scope);
     layout = computeLayout(index, focus, visible, state.scope, stubs, hienGio);

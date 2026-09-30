@@ -3,7 +3,7 @@
 // Vai trò  : Tính TOẠ ĐỘ các ô người, đường nối và nốt cụt. Không vẽ gì cả.
 // Lớp      : domains — HÀM THUẦN. Không gọi services, không chạm DOM.
 // Phụ thuộc: config (LAYOUT, PHOTO) · domains/union.js · domains/render.js (VE)
-// Phiên bản: 2.2.0 · Cập nhật: 30/09/2026 17:15
+// Phiên bản: 2.3.0 · Cập nhật: 30/09/2026 18:30
 // ⚠ Chỉ còn MỘT cách xếp: BA KHỐI `datBaKhoi()` (mục 4b, b128b). Cách cũ
 //   `datMoiKhoi()` đã gỡ 30/09/2026. Ô rộng/cao THEO HÀNG khi có `tuyChon.oHang` (chế độ chữ).
 // Sổ tay   : so-tay/ve-so-do.md
@@ -152,7 +152,9 @@ let KHE_VC = LAYOUT.spouseGap;   // giữa hai vợ chồng đứng kề nhau
 let KHE_DOC = LAYOUT.vGap;       // giữa hai hàng
 const rongHang = (m) => (HANG && HANG.has(m) ? HANG.get(m).w : RONG);
 const netHang  = (m) => (HANG && HANG.has(m) ? HANG.get(m).net : MUC_NET);
-const rongId   = (ct, id) => rongHang(ct.muc.get(id));
+// Ô RIÊNG một bề rộng (`oHang` trả `rieng: Map(id → w)`) thắng bề rộng của hàng.
+let RIENG = null;
+const rongId   = (ct, id) => (RIENG && RIENG.has(id) ? RIENG.get(id) : rongHang(ct.muc.get(id)));
 const netNut   = (nut) => netHang(nut.gen);
 /**
  * Khoảng từ MÉP Ô tới MÉP VÒNG ẢNH theo chiều ngang (vòng ảnh nằm giữa ô) —
@@ -197,6 +199,7 @@ export function computeLayout(index, focusPersonId, visibleSet, scope, stubPoint
     ? LAYOUT.nodeHeightNgayGio
     : LAYOUT.nodeHeight;
   HANG = null;
+  RIENG = null;
   KHONG_ANH = !!(tuyChon && typeof tuyChon.oHang === 'function');
   const khe = (KHONG_ANH && tuyChon.khe) || {};
   KHE     = khe.hGap      ?? LAYOUT.hGap;
@@ -226,7 +229,7 @@ export function computeLayout(index, focusPersonId, visibleSet, scope, stubPoint
       id,
       x: viTriX.has(id) ? viTriX.get(id) : 0,
       y: yHang ? yHang.get(gen) : gen * (CAO + KHE_DOC),
-      w: rongHang(gen),
+      w: rongId(ct, id),
       h: HANG ? HANG.get(gen).h : CAO,
       kind: visibleSet.get(id) || 'full',
       gen,
@@ -261,7 +264,12 @@ function dungHang(ct, oHang) {
     theoDoi.get(m).push(id);
   }
   HANG = new Map();
-  for (const [m, ids] of theoDoi) HANG.set(m, oHang(m, ids));
+  RIENG = new Map();
+  for (const [m, ids] of theoDoi) {
+    const o = oHang(m, ids);
+    HANG.set(m, o);
+    if (o.rieng) for (const [id, w] of o.rieng) RIENG.set(id, w);
+  }
 
   const yHang = new Map();
   const ds = [...theoDoi.keys()].sort((a, b) => a - b);
@@ -778,7 +786,6 @@ function layDai(ct, neoId) {
   if (ct.dai.has(neoId)) return ct.dai.get(neoId);
 
   const w        = rongId(ct, neoId);
-  const buoc     = w + KHE_VC;
   const dsUnion  = (ct.unionLamVo.get(neoId) || []).filter((uid) => ct.unionHT.has(uid));
   const banDoi   = [];
   for (const uid of dsUnion) {
@@ -791,16 +798,23 @@ function layDai(ct, neoId) {
 
   const huong = tinhHuong(ct, neoId, banDoi);
   const n     = banDoi.length;
-  const dxP   = huong > 0 ? 0 : n * buoc;
+  // Ô mỗi người một bề rộng (chế độ chữ: tên dài xuống dòng thì ô dày hơn) —
+  // nên CỘNG DỒN từ ô người neo ra, không nhân `(i + 1) × bước`. Ô bằng nhau
+  // (chế độ ảnh) thì ra đúng từng số như phép nhân cũ: toàn số nguyên.
+  const wS    = banDoi.map((bd) => rongId(ct, bd.spouseId));
+  let tong = 0;
+  for (const v of wS) tong += v + KHE_VC;
+  const dxP   = huong > 0 ? 0 : tong;
 
   const dx     = new Map([[neoId, dxP]]);
   const khe    = new Map();
   const mucNet = new Map();
+  let mep = huong > 0 ? w : dxP;            // mép ngoài của ô vừa đặt
   banDoi.forEach((bd, i) => {
-    dx.set(bd.spouseId, dxP + huong * (i + 1) * buoc);
-    khe.set(bd.unionId, huong > 0
-      ? i * buoc + w + KHE_VC / 2
-      : dxP - KHE_VC / 2 - i * buoc);
+    const x = huong > 0 ? mep + KHE_VC : mep - KHE_VC - wS[i];
+    dx.set(bd.spouseId, x);
+    khe.set(bd.unionId, huong > 0 ? mep + KHE_VC / 2 : mep - KHE_VC / 2);
+    mep = huong > 0 ? x + wS[i] : x;
     mucNet.set(bd.unionId, i);
   });
   for (const uid of dsUnion) {
@@ -817,7 +831,7 @@ function layDai(ct, neoId) {
 
   const kq = {
     neoId, huong, n, dx, khe, mucNet, dxP, buocNet,
-    rong: (n + 1) * buoc - KHE_VC,
+    rong: w + tong,
     thuTuUnion: dsUnion,
     banDoi,
   };
@@ -863,10 +877,10 @@ function gioiTinh(ct, id) {
 function deChoNay(ct, viTri, k, x) {
   for (const it of k.items) {
     const m = ct.muc.get(it.id);
-    const w = rongHang(m), t = it.x + x, p = t + w;
+    const t = it.x + x, p = t + rongId(ct, it.id);
     for (const [kh, xk] of viTri) {
       if (ct.muc.get(kh) !== m) continue;
-      if (t < xk + w + KHE && xk < p + KHE) return true;
+      if (t < xk + rongId(ct, kh) + KHE && xk < p + KHE) return true;
     }
   }
   return false;
@@ -931,13 +945,13 @@ function deLenNhau(ct, viTriX, cum, d) {
     const x = viTriX.get(id);
     if (x === undefined) continue;
     const m = ct.muc.get(id);
-    const w = rongHang(m), t = x + d, p = t + w;
+    const t = x + d, p = t + rongId(ct, id);
     for (const kh of ct.dsNguoi) {
       if (cum.has(kh)) continue;
       if (ct.muc.get(kh) !== m) continue;
       const xk = viTriX.get(kh);
       if (xk === undefined) continue;
-      if (t < xk + w + KHE && xk < p + KHE) return true;
+      if (t < xk + rongId(ct, kh) + KHE && xk < p + KHE) return true;
     }
   }
   return false;
@@ -1095,9 +1109,10 @@ function khoiDuoi(ct, neoId) {
     }
   }
   const w = rongId(ct, neoId);
+  const wO = oX.map((id) => rongId(ct, id));      // mỗi ô một bề rộng (chế độ chữ)
   const kheTu = (p, uid) => {
     const v = viTriKhe.get(uid);
-    return v.khe !== undefined ? (p[v.khe] + w + p[v.khe + 1]) / 2 : p[v.o] + w / 2;
+    return v.khe !== undefined ? (p[v.khe] + wO[v.khe] + p[v.khe + 1]) / 2 : p[v.o] + wO[v.o] / 2;
   };
 
   const chum = [];
@@ -1164,7 +1179,7 @@ function khoiDuoi(ct, neoId) {
     const dx = new Map(), khe = new Map();
     oX.forEach((id, j) => dx.set(id, p[j] - p[0]));
     for (const uid of dai.thuTuUnion) khe.set(uid, kheTu(p, uid) - p[0]);
-    ct.dai.set(neoId, { ...dai, dx, khe, dxP: dx.get(neoId), rong: p[p.length - 1] - p[0] + w });
+    ct.dai.set(neoId, { ...dai, dx, khe, dxP: dx.get(neoId), rong: p[p.length - 1] - p[0] + wO[wO.length - 1] });
   }
   return kq;
 }

@@ -26,6 +26,11 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
   THẬT: dòng trống không chừa chỗ. ⚠ Dòng nào có chỉ ở `utils/text.dongOChu()`
   — nơi ĐO (`so-do-chu.js`) và nơi VẼ cùng gọi; tự ghép chuỗi ở một bên là
   chữ tràn ô. Chụp bằng mã app thật: `../kiem-thu/xem-che-do-chu.mjs`.
+  CHIỀU DÀI ô (chủ dự án 30/09): trần = bề rộng `O_CHU.tenChuan` (3 chữ × 6
+  chữ cái = 120px); tên dài hơn XUỐNG DÒNG ở `so-do-chu.js ngatTen()`, ô ấy
+  dày hơn — hàng dọc: bề rộng RIÊNG từng ô (`oHang().rieng` → `RIENG` ở
+  layout, `layDai` cộng dồn bề rộng), hàng ngang: khung cao theo `nguoi.day`.
+  Đo: 120px → 9/681 tên xuống dòng; tên trung vị 88px, 90% ≤ 103px.
 - ⚠ **Không gãy chữ Z** (chủ dự án bác §9b/b85e, 25/09/2026): điểm thả của MỌI
   chùm nằm TRONG khoảng các con — chùm một con thì thẳng trên đầu con, cả ở
   khối con cháu (`khoiDuoi`, `xepDai`) lẫn khối tổ tiên (`treoToTien`). Đo:

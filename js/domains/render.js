@@ -3,7 +3,7 @@
 // Vai trò  : Vẽ SVG từ kết quả layout. Chỉ vẽ, không tính toạ độ sơ đồ.
 // Lớp      : domains — được gọi bởi: pages · được phép gọi: utils, config
 // Phụ thuộc: config (LAYOUT, PHOTO, O_CHU), utils/text, utils/image, utils/avatar
-// Phiên bản: 1.10.0 · Cập nhật: 30/09/2026 18:07 — ô chế độ CHỈ CHỮ (renderOChu)
+// Phiên bản: 1.11.0 · Cập nhật: 30/09/2026 18:30 — ô chữ: tên xuống dòng
 // ============================================================
 //
 // Đây là file sẽ sửa nhiều nhất khi chỉnh giao diện. Giữ nó chỉ chứa việc vẽ,
@@ -216,6 +216,7 @@ export const VE = {
  *        hoặc để lại một khoảng trống không ai giải thích được.
  *        `hangChu` — chế độ CHỈ CHỮ: `hang` do `xepCheDoChu()` trả (đời →
  *        ngang/dọc). Có nó thì ô vẽ bằng `renderOChu()`, không ảnh.
+ *        `nguoiChu` — `nguoi` của `xepCheDoChu()`: các dòng ĐÃ NGẮT từng ô.
  */
 export function renderTree(svgEl, layout, index, handlers, tuyChon) {
   if (!svgEl) return;
@@ -259,7 +260,8 @@ export function renderTree(svgEl, layout, index, handlers, tuyChon) {
     const person = index && index.personById ? index.personById.get(node.id) : null;
     const hangChu = tuyChon && tuyChon.hangChu;
     const el = hangChu
-      ? renderOChu(node, person, node.kind, hangChu.get(node.gen), hienGio)
+      ? renderOChu(node, person, node.kind, hangChu.get(node.gen),
+                   tuyChon.nguoiChu && tuyChon.nguoiChu.get(node.id), hienGio)
       : renderPersonNode(node, person, node.kind, hienGio);
     if (!el) continue;
     if (xuLy.onChonNguoi) {
@@ -397,10 +399,14 @@ function renderPersonNode(node, person, kind, hienGio) {
  *
  * @param {{ngang:boolean}} o   hàng của ô, từ `xepCheDoChu()`
  */
-function renderOChu(node, person, kind, o, hienGio) {
+function renderOChu(node, person, kind, o, oNguoi, hienGio) {
   const g = tao('g', { 'data-id': node.id });
   const laBien = kind === 'edge';
-  const { x, y, w, h } = node;
+  const { x, y, w } = node;
+  const ngang = !o || o.ngang;
+  // Hàng ngang: layout cho cả hàng cao bằng ô DÀY nhất; ô này chỉ cao bằng
+  // bề dày của chính nó (tên xuống dòng thì dày hơn) — khung bám đỉnh hàng.
+  const h = ngang && oNguoi ? oNguoi.day : node.h;
 
   g.append(tao('rect', {
     x, y, width: w, height: h, rx: 3,
@@ -409,12 +415,12 @@ function renderOChu(node, person, kind, o, hienGio) {
     'stroke-width': node.laTrungTam ? 2 : 1,
     'stroke-dasharray': laBien && !node.laTrungTam ? VE.motNetOBien : null,
   }));
-  const ngang = !o || o.ngang;
   g.append(tao('rect', ngang
     ? { x, y, width: 3, height: h, fill: mauVien(person) }
     : { x, y: y + h - 3, width: w, height: 3, fill: mauVien(person) }));
 
-  const dong = dongOChu(person, node.id, hienGio);
+  const goc = dongOChu(person, node.id, hienGio);
+  const dong = oNguoi ? oNguoi.dong : goc;
   const mau = { ten: laBien ? VE.chuPhu : VE.chuChinh, nam: VE.chuPhu, gio: VE.chuGioMau };
   let tong = 0;
   for (const d of dong) tong += O_CHU.dong[d.loai].cao;
@@ -445,9 +451,9 @@ function renderOChu(node, person, kind, o, hienGio) {
     g.append(t);
   }
 
-  const ten = dong[0].chu;
+  const ten = goc[0].chu;
   const nhan = tao('title');
-  nhan.textContent = dong.map((d) => d.chu).join('  ·  ') +
+  nhan.textContent = goc.map((d) => d.chu).join('  ·  ') +
                      (laBien ? '  —  nhánh của người này không được vẽ tiếp' : '');
   g.append(nhan);
   g.setAttribute('aria-label', ten);
