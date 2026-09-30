@@ -25,6 +25,13 @@ phả — chữ trên nút ở `settings.js` phải nói rõ.
   bấm gốc đã qua, trình duyệt ÂM THẦM chặn tải. Hiện link thật cho người dùng
   bấm lần hai — cùng lý do với Xuất GEDCOM (`import-export.js`).
 - Khổ lớn (nhiều mét) đi đường IN (vector), không đi đường CHỤP (canvas).
+- **Chế độ CHỈ CHỮ xuất chung đường, không sửa gì** (1d, đo 30/09/2026):
+  ba đường chỉ đọc `viewBox` + nhân bản `<svg>`, sơ đồ chữ không có `<image>`
+  nên không chờ nạp ảnh; phông nằm ở `font-family` của `<svg>` gốc nên chữ
+  DỌC ra đúng phông. ⚠ Khổ giấy tính theo `VE.chuTen` (11) — trùng
+  `O_CHU.dong.ten.co` là CỐ Ý; đổi một bên thì chế độ Chữ in sai chiều cao
+  chữ, im lặng. Đo: `../kiem-thu/kiem-xuat-che-do-chu.mjs <59|681> <tâm> <đời>`
+  (PNG · PNG DPI · PDF nhiều trang · bấm ô ngang/dọc) — mở ảnh ra nhìn.
 
 ## Sự cố đã gặp
 
