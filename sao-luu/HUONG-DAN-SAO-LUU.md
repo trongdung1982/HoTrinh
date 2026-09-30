@@ -308,22 +308,23 @@ Chạy hàm **`goLichSaoLuu`**. Lịch tự động tắt; sao lưu bấm tay v�
 
 ### Khi `SaoLuu.gs` có bản mới — thay mã, KHÔNG làm lại từ đầu
 
-*(Lần gần nhất: bản **0.9.0**, 29/09/2026 — mỗi file ghi ra kèm **dấu vân
-tay** để nút *Khôi phục* trên trang Quản trị nhận nó, và chạy được làm **web
-app** (mục *Máy sao lưu làm web app*, tuỳ chọn). **Kèm SQL `54`**: bước 1 dán
-`luoc-do/54-khoi-phuc-tu-nut.sql`, bảng cuối **ĐẠT cả 4 dòng**. Bản trước:
-0.7.0 — chép ảnh sang Drive, mục *Ảnh*.)*
+*(Lần gần nhất: bản **0.11.0**, 30/09/2026 — chép thêm **hai bảng nhật ký
+hệ thống** vào file sao lưu, ở ngăn riêng `nhatKy`. **Kèm SQL `65`**: bước 1
+dán `luoc-do/65-sao-luu-nhat-ky.sql`, bảng cuối **ĐẠT cả 3 dòng**. Bản trước:
+0.9.0 — dấu vân tay + web app, kèm `54`; 0.7.0 — chép ảnh sang Drive.)*
 
-1. **Dán SQL trước** *(chỉ khi bản mới kèm SQL — 0.9.0 kèm `54`)*: Supabase →
-   SQL Editor → **New query** → dán cả file
-   `luoc-do/54-khoi-phuc-tu-nut.sql` → **Run**. Bảng cuối phải ra **ĐẠT** cả
-   bốn dòng.
+1. **Dán SQL trước** *(chỉ khi bản mới kèm SQL — 0.11.0 kèm `65`)*: Supabase →
+   SQL Editor → **New query** → dán cả file SQL ấy → **Run**. Bảng cuối phải
+   ra **ĐẠT** mọi dòng.
 2. `script.google.com` → mở dự án **Sao luu gia pha Supabase** → bấm vào ô
    soạn thảo → **Ctrl + A** → **Delete**.
 3. Chép lại mã mới đúng như **Bước 5** (Notepad hoặc GitHub) → **Ctrl + V** →
    bấm **đĩa mềm** (Save). Bốn giá trị cấu hình và lịch tự động **giữ
-   nguyên**, không phải làm lại.
-4. Chọn hàm **`kiemTraKetNoi`** → **Run**. Dòng cuối nhật ký phải là
+   nguyên**, không phải làm lại. ⚠ Đã làm mục *Máy sao lưu làm web app* thì
+   thêm: **Deploy** → **Manage deployments** → bút chì → *Version*: **New
+   version** → **Deploy** — không thì nút *Sao lưu ngay* vẫn chạy mã cũ.
+4. Chọn hàm **`kiemTraKetNoi`** → **Run**. Có hai dòng `nhat_ky_he_thong: …
+   dòng` và `nhat_ky_lo_rac: … dòng` (ra `LỖI` ở đó thì `65` chưa dán). Dòng cuối nhật ký phải là
    **`Đối chiếu với máy chủ: ĐỦ`**. Ra **`THIẾU`** kèm tên bảng thì còn cây
    chưa có tài khoản sao lưu — chạy lại bước 1. Ra **`LỖI`** thì bước 1 chưa
    chạy; bản sao lưu vẫn ghi bình thường, chỉ không tự đối chiếu được.
@@ -437,6 +438,10 @@ giữ bản mới (bản cũ vào thùng rác Drive, còn 30 ngày).
 `sao-luu/khoi-phuc.mjs` đổi file JSON thành một file SQL; dán vào SQL Editor,
 19 bảng về khớp bản chụp từng dòng. Mật khẩu thì không về. Ảnh về bằng một
 bước riêng: hàm `khoiPhucAnh` (mục *Ảnh*) — **chưa chạy thật lần nào**.
+**Nhật ký hệ thống** (từ bản 0.11.0) có trong file, ở ngăn `nhatKy`, nhưng
+khôi phục **cố ý không đổ lại**: khôi phục về hôm qua mà xoá nhật ký thì mất
+luôn dấu vết của việc làm sau hôm qua. Bản trong file là để còn, ngày mất cả
+project.
 
 ---
 

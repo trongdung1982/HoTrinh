@@ -4,8 +4,8 @@
 //            Script — bằng cách chạy CHÍNH file ấy trong Node, với một
 //            Supabase giả và một Google Drive giả.
 // Chạy     : cd supabase/kiem-thu && node kiem-sao-luu.mjs
-// Phiên bản: 0.4.0 · Cập nhật: 28/09/2026 (b142a) — phép 11b: đối chiếu số
-//            dòng đọc được với số thật của máy chủ
+// Phiên bản: 0.5.0 · Cập nhật: 30/09/2026 (b166) — phép 3c: nhật ký hệ thống
+//            ở ngăn riêng `nhatKy`, file vẫn qua `kiemFile` của khôi phục
 // ============================================================
 //
 // ═══ VÌ SAO BÀI KIỂM NÀY TỒN TẠI ═══
@@ -153,6 +153,15 @@ function dungMoiTruong(kichBan = {}) {
         return traLoi(200, JSON.stringify(kichBan.heThong || { ok: true, bang: {
           cau_hinh: [{ chi_mot_dong: true }], tai_khoan: [{ user_id: 'u1' }, { user_id: 'u2' }],
           doi_ma_toan_cuc: [], de_xuat_gan_nguoi: [], de_nghi_quan_he: [], de_xuat_dong_ho: [] } }));
+      }
+      // Hai bảng nhật ký (`luoc-do/65`, b166). `nkHTHong` = chưa dán `65`.
+      if (duong === '/rest/v1/rpc/sao_luu_nhat_ky') {
+        if (kichBan.nkHTHong) return traLoi(404, '{"message":"function not found"}');
+        return traLoi(200, JSON.stringify({ ok: true, bang: {
+          nhat_ky_lo_rac: [{ id: 1, mo_ta: '1 dòng', so_dong: 1 }],
+          nhat_ky_he_thong: [{ id: 1, loai: 'backup', su_kien: 'bat_dau_nhat_ky', lo_rac: 1 },
+                             { id: 2, loai: 'auth', su_kien: 'dang_nhap', lo_rac: null },
+                             { id: 3, loai: 'backup', su_kien: 'xoa_nhat_ky', lo_rac: null }] } }));
       }
       // Số dòng thật (`luoc-do/45`, b142a). Mặc định = đúng số dòng máy chủ giả
       // có, tức đọc đủ. `demThat` đè từng bảng để giả cảnh RLS giấu bớt dòng;
@@ -385,7 +394,7 @@ function dungMoiTruong(kichBan = {}) {
   const nap = new Function(...ten, NGUON_GS + `
     return { kiemTraKetNoi, saoLuuNgay, datLichSaoLuu, goLichSaoLuu, khoiPhucAnh, doGet, doPost,
              gomSaoLuu_, docBang_, docKhoAnh_, donBanCu_, docCauHinh_,
-             THU_TU_DOC, BANG_HE_THONG, KHUON_TEN_FILE };
+             THU_TU_DOC, BANG_HE_THONG, BANG_NHAT_KY, KHUON_TEN_FILE };
   `);
 
   return { api: nap(...gia), nhatKy, thuMuc: thuMucCo, kho, lich, taoThuMuc, taoFile, khoAnhThat };
@@ -442,7 +451,9 @@ console.log('KIỂM SAO LƯU — chạy thẳng sao-luu/SaoLuu.gs trong Node\n')
 // b155a: `ban_sao_luu_da_ghi` (`54`) — sổ dấu vân tay; khôi phục về hôm qua
 //   KHÔNG được xoá dấu của các bản ghi sau hôm qua, nên nó đứng ngoài cả sao
 //   lưu lẫn 19 bảng khôi phục.
-const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac', 'bao_trung_nguoi', 'ban_sao_luu_da_ghi'];
+// b166: hai bảng nhật ký đã vào (`BANG_NHAT_KY`, qua hàm `65`) — ngăn riêng
+//   `nhatKy`, khôi phục không đổ lại.
+const CHUA_SAO_LUU = ['bao_trung_nguoi', 'ban_sao_luu_da_ghi'];
 {
   const thuMuc = dirname(FILE_SQL);
   const trongSql = [];
@@ -454,7 +465,7 @@ const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac', 'bao_trung_nguoi', '
   }
   trongSql.sort();
   const { api } = dungMoiTruong();
-  const trongGs = [...Object.keys(api.THU_TU_DOC), ...api.BANG_HE_THONG].sort();
+  const trongGs = [...Object.keys(api.THU_TU_DOC), ...api.BANG_HE_THONG, ...api.BANG_NHAT_KY].sort();
   const thieu = trongSql.filter((t) => !trongGs.includes(t) && !CHUA_SAO_LUU.includes(t));
   const thua = trongGs.filter((t) => !trongSql.includes(t));
   kiem('mọi bảng của luoc-do/ đều được sao lưu, không thừa bảng nào',
@@ -484,6 +495,43 @@ const CHUA_SAO_LUU = ['nhat_ky_he_thong', 'nhat_ky_lo_rac', 'bao_trung_nguoi', '
   kiem('hàm hệ thống hỏng → vẫn đủ bảng gia phả, file mang loiBangHeThong',
        ban.dem.persons === 5 && ban.loiBangHeThong !== '' && !('tai_khoan' in ban.bang),
        'persons=' + ban.dem.persons + ' · loi=' + String(ban.loiBangHeThong).slice(0, 60));
+}
+
+// ---- 3c. Nhật ký hệ thống (b166, `luoc-do/65`) -----------------------
+//
+// ⚠ Ngăn RIÊNG `nhatKy`: khôi phục (`54` · `khoi-phuc.mjs`) từ chối bảng lạ
+//   trong `bang` — nhật ký lọt vào đó là mọi bản sao lưu mới hết khôi phục được.
+{
+  const a = dungMoiTruong({ duLieu: cayGia({ soNguoi: 5 }) });
+  const ban = a.api.gomSaoLuu_(a.api.docCauHinh_());
+  const nk = ban.nhatKy || {};
+  kiem('nhật ký vào ngăn riêng nhatKy: đủ hai bảng, kể cả dòng trong thùng rác',
+       Array.isArray(nk.nhat_ky_he_thong) && nk.nhat_ky_he_thong.length === 3 &&
+       Array.isArray(nk.nhat_ky_lo_rac) && nk.nhat_ky_lo_rac.length === 1 &&
+       nk.nhat_ky_he_thong.some((d) => d.lo_rac !== null) && ban.loiNhatKy === '',
+       JSON.stringify(Object.keys(nk)) + ' · loi=' + ban.loiNhatKy);
+  kiem('nhật ký KHÔNG nằm trong ngăn bang (khôi phục sẽ từ chối bảng lạ)',
+       a.api.BANG_NHAT_KY.every((t) => !(t in ban.bang)), Object.keys(ban.bang).join(','));
+  kiem('số đếm nhật ký có trong dem (so sụt giảm · báo nhật ký sao lưu)',
+       ban.dem.nhat_ky_he_thong === 3 && ban.dem.nhat_ky_lo_rac === 1,
+       `he_thong=${ban.dem.nhat_ky_he_thong} lo_rac=${ban.dem.nhat_ky_lo_rac}`);
+  const { kiemFile } = await import('../sao-luu/khoi-phuc.mjs');
+  const loiKp = kiemFile(JSON.parse(JSON.stringify(ban)));
+  kiem('file mang nhật ký VẪN qua kiemFile của khoi-phuc.mjs (cùng luật `54`)',
+       loiKp.length === 0, loiKp.join(' | ').slice(0, 160));
+
+  const h = dungMoiTruong({ duLieu: cayGia({ soNguoi: 5 }), nkHTHong: true });
+  let nem = false;
+  try { h.api.saoLuuNgay(); } catch (e) { nem = true; }
+  const f = [...duyet(h.thuMuc)][0];
+  const noi = f ? JSON.parse(f._noiDung) : {};
+  const b0 = h.nhatKy.baoCao[0] || {};
+  kiem('chưa dán 65: vẫn ghi file đủ gia phả, mang loiNhatKy, không ném',
+       !nem && noi.dem && noi.dem.persons === 5 && noi.loiNhatKy !== '' &&
+       Object.keys(noi.nhatKy || {}).length === 0,
+       `nem=${nem} · loi=${String(noi.loiNhatKy).slice(0, 60)}`);
+  kiem('chưa dán 65: lần chạy báo "có cảnh báo" chỉ vào luoc-do/65',
+       /luoc-do\/65/.test(b0.canhBao || ''), String(b0.canhBao).slice(0, 120));
 }
 
 // ---- 3. Bản sao lưu có đủ mọi phần -----------------------------------

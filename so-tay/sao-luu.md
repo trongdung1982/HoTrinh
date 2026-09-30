@@ -8,6 +8,7 @@
 |---|---|
 | Sao lưu đêm (Apps Script, chủ dự án dán tay) | `sao-luu/SaoLuu.gs` · hướng dẫn `sao-luu/HUONG-DAN-SAO-LUU.md` |
 | Vai `sao_luu` · bảng hệ thống · cây mới tự có máy sao lưu · báo kết quả vào nhật ký (b147) | `luoc-do/05` · `44` · `45` · `49` |
+| **Hai bảng nhật ký hệ thống** (b166): ngăn RIÊNG `nhatKy`, khôi phục KHÔNG đổ lại | `luoc-do/65` · `SaoLuu.gs` `BANG_NHAT_KY` · đo `../kiem-thu/ban-thu-sql/do-b166.mjs` (19 phép) |
 | Bảng nào đã/chưa sao lưu | `kiem-thu/kiem-sao-luu.mjs` |
 | **Khôi phục**: JSON → một file SQL | `sao-luu/khoi-phuc.mjs` |
 | **Khôi phục từ nút** (b155a): chỉ QTHT, chỉ file có dấu vân tay máy sao lưu báo | `luoc-do/54` · đo `../kiem-thu/ban-thu-sql/do-b155a.mjs` (33 phép) |
@@ -73,6 +74,10 @@ khớp. Hệ quả: file ghi trước 0.8.0 phải đi đường `khoi-phuc.mjs`
   chừng thì không gì bị đổi (đã đo: N1–N3).
 - Không đụng `auth.users` (mật khẩu không có trong bản sao lưu) và hai bảng
   nhật ký hệ thống — chỉ thêm một dòng `backup / Khôi phục từ bản sao lưu`.
+  Từ b166 file CÓ nhật ký, nhưng ở ngăn `nhatKy`, ngoài `bang`: khôi phục về
+  hôm qua mà truncate nhật ký là xoá dấu vết việc làm sau hôm qua — gồm cả
+  việc phá dữ liệu. ⚠ Đưa nhật ký vào `bang` = cả hai đường khôi phục báo
+  "Bảng lạ" với MỌI bản mới (phép 3c của `kiem-sao-luu.mjs` canh chỗ này).
 - Tắt đúng những trigger người dùng đang bật, đổ xong bật lại đúng những cái
   ấy. **Khoá ngoại vẫn gác** — thứ tự cha→con ở hằng `THU_TU`.
 - Cột máy chủ có mà bản sao lưu không có → nhận **mặc định**, không phải

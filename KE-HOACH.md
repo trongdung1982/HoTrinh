@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 30/09/2026 · Năm điểm dừng chưa bấm thử · SQL đã dán hết tới `64`.*
+*Cập nhật 30/09/2026 · Sáu điểm dừng chưa bấm thử · SQL đã dán hết tới `64`, `65` CHƯA dán.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -26,6 +26,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 
 | Điểm dừng | Bấm gì |
 |---|---|
+| **b166** Nhật ký hệ thống vào sao lưu | ① Dán `luoc-do/65-sao-luu-nhat-ky.sql` → bảng cuối **ĐẠT 3/3**. ② Thay mã `SaoLuu.gs` bằng bản 0.11.0 — `sao-luu/HUONG-DAN-SAO-LUU.md` mục *Khi `SaoLuu.gs` có bản mới* (nhớ **New version** cho web app). ③ Chạy `kiemTraKetNoi`: có hai dòng `nhat_ky_he_thong: … dòng` · `nhat_ky_lo_rac: … dòng`. ④ App → *Quản trị hệ thống → Sao lưu & khôi phục* → *Sao lưu ngay* → *Lịch sử sao lưu* dòng mới ghi **Đạt**, không phải "có cảnh báo" |
 | **b162a** Thôi đọc cột gắn cũ *(`62` đã dán)* | Ctrl+F5. *Quản trị hệ thống → Tài khoản* → mở một tài khoản ĐÃ gắn người → *Mời vào gia phả* một cây họ chưa vào: mời được như cũ. Cây có đơn xin vào đang chờ → *Duyệt*: hộp KHÔNG còn ô "Mã người trong sơ đồ", duyệt xong người ấy vào cây. Khu *Tài khoản* → *Đề xuất gắn*: gõ tên một người đã có tài khoản giữ → dòng gợi ý mờ, ghi "đã gắn cho <email đúng người đang giữ>" |
 | **b161a** Kho ảnh KÍN *(sau khi dán `59`)* | Ctrl+F5. Mở cây có ảnh (Nguyễn Phúc Giáo hoặc `TH957`): ảnh trên sơ đồ, thẻ chi tiết, bản lớn khi bấm ảnh vẫn hiện như cũ. Bấm phải một ảnh → *Mở ảnh trong thẻ mới* → địa chỉ có đoạn `token=` → xoá hết từ dấu `?` trở đi rồi Enter: trang báo lỗi, KHÔNG ra ảnh (đó là kho đã kín). ⚙ Cài đặt → *Xuất ảnh* PNG: ảnh người vẫn có trong file. *Quản trị hệ thống → Dữ liệu mồ côi → Quét*: cột ảnh xem trước hiện được |
 | **b161e** Dọn thùng rác bởi người sửa thường | Ctrl+F5. Tài khoản thử `thu-h9@…` (vai *sửa*, không tự duyệt) mở cây thử `TH957` → xoá một người CÓ ẢNH trong trực hệ của mình → *Danh sách người* → *Thùng rác* → tích người ấy → *Xoá vĩnh viễn*: hộp báo "Đã gửi xoá vĩnh viễn…" + dòng "đang chờ người quản lý duyệt". Đăng nhập tài khoản của bạn → *Kiểm duyệt* → *Từ chối* dòng ấy → người về lại thùng rác, ảnh VẪN hiện |
@@ -52,6 +53,10 @@ sao lưu chụp trước `63` thôi khôi phục được — chủ dự án ch�
 
 **`64` + `55` 0.2.0 — ĐÃ DÁN** 30/09/2026 (chủ dự án báo đạt; b145 bấm thử đạt).
 
+**`65` — CHƯA DÁN. ĐƯỢC dán ngay**, TRƯỚC khi thay `SaoLuu.gs` 0.11.0 (thay
+mã trước thì mỗi đêm báo "có cảnh báo" cho tới lúc dán — vô hại). Trình duyệt
+không gọi hàm này; chỉ máy sao lưu gọi. Đã đo bàn thử: `do-b166.mjs` 19/19.
+
 ⚠ Bản cuối mới: `xoa_cay()` · `tra_lai_cay()` ở `60` (tên cũ đã xoá); `don_mo_coi_he_thong()`
 · `ds_nguoi_mo_coi()` · luật `xoa_anh` ở `61`; luật `xem_anh` + kho kín ở `59`.
 
@@ -63,22 +68,21 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-Bấm thử năm điểm dừng ở trên (b161a · b161d · b161e · b162a — `59`/`61`/`62`
-đã dán 30/09). Việc mã còn lại
+Bấm thử sáu điểm dừng ở trên (b166 cần dán `65` trước; b161a · b161d · b161e
+· b162a — `59`/`61`/`62` đã dán 30/09). Không còn việc mã nào đã chốt; việc
 ở *Còn treo* đều cần chủ dự án quyết trước. ⚠ Đặt cây mặc định cần cờ Quản
 trị hệ thống — hai tài khoản thử không có, phải bấm tay bằng tài khoản của bạn.
 ⚠ Sau b165 (sửa `layout.js`) bộ `../kiem-thu/chay-supabase.mjs` mới chạy 54
 bài (đều ĐẠT) thì bị dừng vì máy thiếu bộ nhớ — chạy TRỌN lại đầu phiên sau.
+Lần hai (30/09, chạy nền, `--max-old-space-size=8192`) dừng sớm hơn, ở bài
+24 — Claude Code tắt lệnh nền khi máy cạn RAM. Đừng nâng trần bộ nhớ; đóng
+bớt ứng dụng rồi chạy tiền cảnh: `! node kiem-thu/chay-supabase.mjs`.
 
 ⚠ **b152 — ba điều Claude Code tự chốt thay (chủ dự án ngủ), chờ chủ dự án
 xem lại**: ① vai `xem` thấy = nhóm NGƯỜI bật, KHÔNG giao với nhóm của CÂY (tab
 *Cây mặc định* chỉ cho khách) · ② người còn sống: giao luật b148 với cài đặt
 riêng — chặt hơn thắng · ③ người xem có quyền sửa ở cây khác chứa người ấy thì
 thấy đủ (như b148). Muốn khác thì một chỗ ở `53`.
-
-### Việc mã đã chốt (30/09/2026) — theo thứ tự
-
-1. **Sau cùng mọi việc:** đưa hai bảng nhật ký vào sao lưu (xem *Còn treo*).
 
 *(Chủ dự án bỏ 30/09: đổi tên `driveFileId`/`driveThumbUrl` · sửa `sinh-sql-di-doi.mjs` (cất vào `luu-tru/`) · xoá `branches`/`branch_access`
 — bảng trống vô hại, xoá phải sửa sao lưu + khôi phục + gộp người. Tạo tài
@@ -93,7 +97,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 
 | Việc | Ghi ở đâu |
 |---|---|
-| **(Làm SAU CÙNG mọi việc — chủ dự án 30/09)** Bảng cố ý CHƯA sao lưu: hai bảng nhật ký (`42`, tự có thùng rác 120 ngày) · `bao_trung_nguoi` (`48`, mất chỉ mất đơn đang chờ) · `ban_sao_luu_da_ghi` (`54`, sổ dấu vân tay). Muốn vào thì sửa `sao_luu_bang_he_thong()` + `SaoLuu.gs` cùng lúc | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
+| Bảng cố ý CHƯA sao lưu: `bao_trung_nguoi` (`48`, mất chỉ mất đơn đang chờ) · `ban_sao_luu_da_ghi` (`54`, sổ dấu vân tay — khôi phục không được xoá dấu của bản ghi sau). Nhật ký hệ thống đã vào từ b166 (`65`) nhưng khôi phục KHÔNG đổ lại — `so-tay/sao-luu.md` | `kiem-thu/kiem-sao-luu.mjs` hằng `CHUA_SAO_LUU` |
 | ⚠ **Bảng/cột mới mang MÃ NGƯỜI phải vào `gop_hai_nguoi()` mục 5** (`48`) — sót thì gộp để lại mã thua ở đó, im lặng | `so-tay/luu-du-lieu.md` đầu file |
 | ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **b127b chưa bấm thật**: thẻ người kéo sang `T388` phải đủ vợ/con | — |

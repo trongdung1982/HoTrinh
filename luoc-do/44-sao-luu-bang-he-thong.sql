@@ -30,8 +30,8 @@
 --   — cùng mức với cái họ đã đọc được hôm nay (mọi người của mọi cây), và vẫn
 --   KHÔNG ghi được gì.
 --
--- ⚠ Hai bảng nhật ký (`42`) cố ý KHÔNG chép: nhật ký không cần để khôi phục
---   app chạy lại, và nó tự có thùng rác 120 ngày.
+-- ⚠ Hai bảng nhật ký (`42`) KHÔNG đi qua hàm này — từ b166 chúng có hàm
+--   riêng `sao_luu_nhat_ky()` ở `65`, vào ngăn riêng `nhatKy` của file.
 
 begin;
 

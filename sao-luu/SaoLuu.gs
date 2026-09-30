@@ -12,8 +12,9 @@
 //            EMAIL_KHOI_PHUC · MAT_KHAU_KHOI_PHUC · KHOI_PHUC_CAY (chỉ điền
 //            tạm khi chạy `khoiPhucAnh`, xong thì xoá)
 //            SQL — luoc-do/05-sao-luu.sql phải chạy trước
-// Phiên bản: 0.10.0 · Cập nhật: 29/09/2026 (b155e) — web app thêm việc
-//            `sao-luu-ngay` (nút Sao lưu ngay). 0.9.0: WEB APP (`doPost`) —
+// Phiên bản: 0.11.0 · Cập nhật: 30/09/2026 (b166) — chép hai bảng nhật ký
+//            hệ thống vào ngăn riêng `nhatKy` (`luoc-do/65`). 0.10.0: web app
+//            thêm việc `sao-luu-ngay` (nút Sao lưu ngay). 0.9.0: WEB APP (`doPost`) —
 //            liệt kê/tải bản sao lưu + khôi phục ảnh, chỉ QTHT.
 //            0.8.0: báo dấu vân tay SHA-256 mỗi file ghi (`luoc-do/54`).
 //            Ảnh (b154): chép sang Drive `Anh/<mã cây>/`, `khoiPhucAnh` tải
@@ -61,7 +62,7 @@
 //   thừa. `kiem-thu/kiem-sao-luu.mjs` phép 1 đọc thẳng CẢ thư mục SQL ấy và so
 //   với bảng dưới đây, nên ngày ai đó thêm một bảng mà quên sao lưu nó thì bộ
 //   kiểm đỏ ngay, chứ không phải phát hiện vào ngày cần khôi phục. Bảng cố ý
-//   CHƯA sao lưu (hai bảng nhật ký) nêu đích danh ở `CHUA_SAO_LUU` của bộ kiểm.
+//   CHƯA sao lưu nêu đích danh ở `CHUA_SAO_LUU` của bộ kiểm.
 //
 // Vì sao phải nêu cột sắp thứ tự: đọc theo trang (`limit`/`offset`) mà không
 // sắp thứ tự thì Postgres không hứa hai trang liên tiếp không trùng nhau và
@@ -104,6 +105,17 @@ var THU_TU_DOC = {
 var BANG_HE_THONG = ['cau_hinh', 'tai_khoan', 'doi_ma_toan_cuc',
                      'de_xuat_gan_nguoi', 'de_nghi_quan_he', 'de_xuat_dong_ho'];
 
+// ------------------------------------------------------------
+// Hai bảng NHẬT KÝ HỆ THỐNG — qua `sao_luu_nhat_ky()` (`luoc-do/65`, b166)
+// ------------------------------------------------------------
+// ⚠ Ghi vào ngăn RIÊNG `nhatKy`, KHÔNG vào `bang`. Khôi phục (`luoc-do/54` ·
+//   `khoi-phuc.mjs`) chỉ đổ ngăn `bang` và từ chối bảng lạ trong đó; nhật ký
+//   thì cố ý không đổ lại — khôi phục về hôm qua không được xoá dấu vết việc
+//   làm sau hôm qua. Bản chép ở đây là để CÒN, ngày mất cả project.
+// ⚠ Hỏng (chưa dán `65`) thì bản sao lưu vẫn ghi, file mang `loiNhatKy`, và
+//   lần chạy báo "có cảnh báo" cho tới khi dán.
+var BANG_NHAT_KY = ['nhat_ky_lo_rac', 'nhat_ky_he_thong'];
+
 var SO_DONG_MOI_TRANG = 1000;
 var TEN_THU_MUC_MAC_DINH = 'Sao luu gia pha (Supabase)';
 var SO_BAN_GIU_MAC_DINH = 30;
@@ -144,6 +156,14 @@ function kiemTraKetNoi() {
   } else {
     BANG_HE_THONG.forEach(function (bang) {
       dong.push('  ' + bang + ': ' + heThong.bang[bang].length + ' dòng');
+    });
+  }
+  var nhatKy = docNhatKy_(cauHinh);
+  if (nhatKy.loi) {
+    dong.push('  (hai bảng nhật ký): LỖI — ' + nhatKy.loi);
+  } else {
+    BANG_NHAT_KY.forEach(function (bang) {
+      dong.push('  ' + bang + ': ' + nhatKy.bang[bang].length + ' dòng');
     });
   }
   var nguoi = docNguoiDung_(cauHinh);
@@ -219,7 +239,9 @@ function saoLuuNgay() {
     demBao.anh_chua_chep = anh.chuaChep;
     baoNhatKy_(cauHinh, {
       ok: true, tenFile: ten, soByte: file.getSize(), daXoa: daXoa,
-      canhBao: [loiCanhBao || '', anh.loi ? 'Chép ảnh: ' + anh.loi : '', loiDau]
+      canhBao: [loiCanhBao || '', anh.loi ? 'Chép ảnh: ' + anh.loi : '', loiDau,
+                banSao.loiNhatKy ? 'Chưa chép được nhật ký hệ thống (đã dán luoc-do/65 chưa?): ' +
+                                   banSao.loiNhatKy : '']
         .filter(Boolean).join('\n'),
       thieu: banSao.thieuSoVoiMayChu || '', dem: demBao
     });
@@ -301,6 +323,15 @@ function gomSaoLuu_(cauHinh) {
     });
   }
 
+  var nhatKy = {};
+  var docNk = docNhatKy_(cauHinh);
+  if (!docNk.loi) {
+    BANG_NHAT_KY.forEach(function (ten) {
+      nhatKy[ten] = docNk.bang[ten];
+      dem[ten] = docNk.bang[ten].length;
+    });
+  }
+
   var nguoiDung = docNguoiDung_(cauHinh);
   dem.nguoiDung = nguoiDung.length;
 
@@ -327,6 +358,9 @@ function gomSaoLuu_(cauHinh) {
     khoAnh: khoAnh,
     // Trống = sáu bảng hệ thống đã chép đủ. Có chữ = thiếu cả sáu, lý do đây.
     loiBangHeThong: heThong.loi || '',
+    // Hai bảng nhật ký — ngăn RIÊNG, khôi phục không đổ lại (xem BANG_NHAT_KY).
+    nhatKy: nhatKy,
+    loiNhatKy: docNk.loi || '',
     // Số dòng THẬT trên máy chủ lúc bắt đầu chép (`luoc-do/45`). Trống thì
     // `loiDemThat` nói vì sao không đối chiếu được.
     demMayChu: demThat.dem || null,
@@ -427,6 +461,25 @@ function docBangHeThong_(cauHinh) {
       return { loi: (kq && kq.loi) || 'Máy chủ không trả sáu bảng hệ thống.' };
     }
     var thieu = BANG_HE_THONG.filter(function (t) { return !Array.isArray(kq.bang[t]); });
+    if (thieu.length) return { loi: 'Máy chủ thiếu bảng: ' + thieu.join(', ') };
+    return { bang: kq.bang };
+  } catch (e) {
+    return { loi: String(e && e.message ? e.message : e).slice(0, 300) };
+  }
+}
+
+/**
+ * Hai bảng nhật ký hệ thống, qua `sao_luu_nhat_ky()` (`luoc-do/65`).
+ * KHÔNG ném lỗi — trả `{loi}` để bản sao lưu gia phả vẫn ghi được.
+ */
+function docNhatKy_(cauHinh) {
+  try {
+    var url = cauHinh.url + '/rest/v1/rpc/sao_luu_nhat_ky';
+    var kq = goi_(cauHinh, url, 'đọc nhật ký hệ thống', {});
+    if (!kq || kq.ok !== true || !kq.bang) {
+      return { loi: (kq && kq.loi) || 'Máy chủ không trả nhật ký hệ thống.' };
+    }
+    var thieu = BANG_NHAT_KY.filter(function (t) { return !Array.isArray(kq.bang[t]); });
     if (thieu.length) return { loi: 'Máy chủ thiếu bảng: ' + thieu.join(', ') };
     return { bang: kq.bang };
   } catch (e) {
