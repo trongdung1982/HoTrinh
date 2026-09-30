@@ -67,6 +67,8 @@ Bấm thử năm điểm dừng ở trên (b161a · b161d · b161e · b162a — 
 đã dán 30/09). Việc mã còn lại
 ở *Còn treo* đều cần chủ dự án quyết trước. ⚠ Đặt cây mặc định cần cờ Quản
 trị hệ thống — hai tài khoản thử không có, phải bấm tay bằng tài khoản của bạn.
+⚠ Sau b165 (sửa `layout.js`) bộ `../kiem-thu/chay-supabase.mjs` mới chạy 54
+bài (đều ĐẠT) thì bị dừng vì máy thiếu bộ nhớ — chạy TRỌN lại đầu phiên sau.
 
 ⚠ **b152 — ba điều Claude Code tự chốt thay (chủ dự án ngủ), chờ chủ dự án
 xem lại**: ① vai `xem` thấy = nhóm NGƯỜI bật, KHÔNG giao với nhóm của CÂY (tab

@@ -32,6 +32,9 @@ phả — chữ trên nút ở `settings.js` phải nói rõ.
   `O_CHU.dong.ten.co` là CỐ Ý; đổi một bên thì chế độ Chữ in sai chiều cao
   chữ, im lặng. Đo: `../kiem-thu/kiem-xuat-che-do-chu.mjs <59|681> <tâm> <đời>`
   (PNG · PNG DPI · PDF nhiều trang · bấm ô ngang/dọc) — mở ảnh ra nhìn.
+  ⚠ Bài Chrome đọc lại blob ảnh: dùng `new Image()` + blob URL, KHÔNG
+  `createImageBitmap()` — dưới `--virtual-time-budget` nó treo mãi, trang
+  không báo lỗi, `<pre>` kết quả trống (b165 tưởng xuất PNG treo).
 
 ## Sự cố đã gặp
 
