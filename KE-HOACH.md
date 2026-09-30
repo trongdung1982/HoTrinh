@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 30/09/2026 · Hai mươi bảy điểm dừng chưa bấm thử · SQL đã dán hết tới `63`.*
+*Cập nhật 30/09/2026 · Năm điểm dừng chưa bấm thử · SQL đã dán hết tới `64`.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -30,7 +30,6 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 | **b161a** Kho ảnh KÍN *(sau khi dán `59`)* | Ctrl+F5. Mở cây có ảnh (Nguyễn Phúc Giáo hoặc `TH957`): ảnh trên sơ đồ, thẻ chi tiết, bản lớn khi bấm ảnh vẫn hiện như cũ. Bấm phải một ảnh → *Mở ảnh trong thẻ mới* → địa chỉ có đoạn `token=` → xoá hết từ dấu `?` trở đi rồi Enter: trang báo lỗi, KHÔNG ra ảnh (đó là kho đã kín). ⚙ Cài đặt → *Xuất ảnh* PNG: ảnh người vẫn có trong file. *Quản trị hệ thống → Dữ liệu mồ côi → Quét*: cột ảnh xem trước hiện được |
 | **b161e** Dọn thùng rác bởi người sửa thường | Ctrl+F5. Tài khoản thử `thu-h9@…` (vai *sửa*, không tự duyệt) mở cây thử `TH957` → xoá một người CÓ ẢNH trong trực hệ của mình → *Danh sách người* → *Thùng rác* → tích người ấy → *Xoá vĩnh viễn*: hộp báo "Đã gửi xoá vĩnh viễn…" + dòng "đang chờ người quản lý duyệt". Đăng nhập tài khoản của bạn → *Kiểm duyệt* → *Từ chối* dòng ấy → người về lại thùng rác, ảnh VẪN hiện |
 | **b161d** Dọn cặp mồ côi *(sau khi dán `61`)* | Ctrl+F5 → *Quản trị hệ thống → Dữ liệu mồ côi → Quét*. Bảng *Người không thuộc cây nào*: người có vợ/chồng cũng ngoài mọi cây nay tích được (trước bị khoá); người có vợ/chồng còn trong một cây vẫn khoá, di chuột lên ô tích đọc lý do. Tích vài người → *Xoá vĩnh viễn*: hộp báo "Đã xoá n cặp không còn ai thuộc cây nào"; file thừa không còn báo "không xoá được". *Nhật ký* có dòng "… người · … cặp · … ảnh" |
-| **b161c + b161f** Xoá / trả lại cây · nút ⚙ ở màn khởi động *(lần thử 30/09 kẹt ở "Không mở được gia phả" khi cây đang mở bị xoá — vá b161f)* | ⚠ Dùng cây thử, rồi trả lại. Ctrl+F5 → sơ đồ mở cây thử `T388` (để nó là cây đang mở) → *Quản trị → Gia phả* → dòng `T388` → *Xoá* → gõ lý do → *Xoá ngay*: hộp báo xong, cây biến khỏi danh sách. Mở `index.html`: ngay từ màn "Đang mở gia phả…" đã có nút tròn **⚙** góc trên phải; màn báo lỗi/cây đã xoá vẫn còn nút ấy → bấm → Cài đặt chỉ có *Gia phả* + *Tài khoản* → *Chọn gia phả khác* → chọn một cây → tải lại vào cây ấy, sơ đồ mở. Rồi *Quản trị hệ thống → Thùng rác* → dòng `T388` → *Trả lại* → cây về lại danh sách. *Nhật ký* có hai dòng tương ứng |
 | **Cột Nội dung thao tác** (Kiểm duyệt) | Ctrl+F5 → *Quản trị → Kiểm duyệt*: cột *Nội dung thao tác* đọc thành câu, không còn một chữ mỗi dòng. Tab *Đã từ chối & hoàn tác*: cột *Lý do từ chối* cũng vậy |
 
 ---
@@ -64,7 +63,7 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-Bấm thử các điểm dừng ở trên (ba điểm b151 và b161a–e trước tiên — `59`/`60`/`61`
+Bấm thử năm điểm dừng ở trên (b161a · b161d · b161e · b162a — `59`/`61`/`62`
 đã dán 30/09). Việc mã còn lại
 ở *Còn treo* đều cần chủ dự án quyết trước. ⚠ Đặt cây mặc định cần cờ Quản
 trị hệ thống — hai tài khoản thử không có, phải bấm tay bằng tài khoản của bạn.
@@ -96,6 +95,7 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Bảng/cột mới mang MÃ NGƯỜI phải vào `gop_hai_nguoi()` mục 5** (`48`) — sót thì gộp để lại mã thua ở đó, im lặng | `so-tay/luu-du-lieu.md` đầu file |
 | ⚠ **b106 chưa nghiệm thu bằng mắt**: gắn mã người · vai `sua` xem `pham_vi_sua()` đúng chưa | `nhat-ky/b106-khu-tai-khoan.md` |
 | ⚠ **b127b chưa bấm thật**: thẻ người kéo sang `T388` phải đủ vợ/con | — |
+| **Cây đang mở bị xoá bằng `xoa_cay()` (`60`) ra màn lỗi chung** ("Không mở được gia phả…"), không ra màn "Gia phả này đã bị xoá" có tên cây — `tin_thung_rac()` không báo `daXoa`? Chưa đo. Không chặn: nút ⚙ ở màn khởi động (b161f) đã là lối thoát | `so-tay/mo-app.md` |
 | ⚠ **Ô gợi ý trên điện thoại thật chưa ai bấm lại** | `so-tay/o-goi-y.md` |
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |
 | Nợ ghi chú đầu file còn 14 khoản (nặng nhất `export-image.js` 140 dòng · `review.js` 99) — trả khi chạm tới file ấy, không đi rà riêng | `do-gon.mjs --tat-ca` · `QUY-TAC-GON.md` D1 |
