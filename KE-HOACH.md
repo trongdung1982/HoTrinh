@@ -83,11 +83,13 @@ thấy đủ (như b148). Muốn khác thì một chỗ ở `53`.
    thật để bớt khoảng trắng. Dùng lại kỹ thuật BA KHỐI, không viết cách xếp
    thứ hai. Ba mặc định tự chọn, chủ dự án chưa bác: chữ dọc đọc từ dưới lên
    (gáy sách) · ẩn hàng ngày giỗ · giữ màu giới/sống-mất bằng gạch màu mép ô.
-   - **1a** Phép thử: hàm đo chữ + xếp thử ô hẹp → bảng "hàng nào ngang/dọc,
-     cao bao nhiêu" cho cây 59 và 681. Điểm dừng: chủ dự án xem bảng.
-   - **1b** `layout.js`: ô rộng/cao riêng từng ô, hàng cao riêng từng hàng
-     (thay `RONG`/`CAO` cố định). Chế độ Ảnh phải ra giống từng byte —
-     `../kiem-thu/chup-bo-cuc.mjs` trước/sau rồi `cmp`.
+   - **1a — CHỜ CHỦ DỰ ÁN XEM** bảng + ảnh phác (`../kiem-thu/chu-*.png`).
+     Đã có: `layout.js` nhận ô theo hàng (`oHang`), `domains/so-do-chu.js`
+     chọn ngang/dọc. Ba câu hỏi còn treo: luật "đủ rộng" chặt (không tăng
+     bề ngang chút nào) làm sơ đồ nhỏ gần như toàn dọc · có hạ `vGap`/`hGap`
+     riêng chế độ chữ không · chữ dọc bám ĐÁY ô.
+   - **1b** Tinh chỉnh theo ý chủ dự án sau 1a (khe, luật đủ rộng, nốt cụt
+     sát đáy ô chữ). Chế độ Ảnh vẫn phải giống từng byte — `chup-bo-cuc.mjs`.
    - **1c** `render.js` vẽ ô chữ; nút Ảnh/Chữ. Điểm dừng: chụp hình.
    - **1d** Xuất ảnh/PDF + thẻ chi tiết ở chế độ Chữ.
 2. **Sau cùng mọi việc:** đưa hai bảng nhật ký vào sao lưu (xem *Còn treo*).

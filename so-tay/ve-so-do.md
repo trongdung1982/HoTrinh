@@ -8,6 +8,12 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
   `datMoiKhoi()` + bốn lượt vá cùng nút Cũ/Mới đã gỡ 30/09/2026 theo yêu cầu
   chủ dự án — đọc lại bằng `git log -p`. Gỡ xong, 2.220 sơ đồ (cây 59 + 681,
   ba nấc đời) ra giống từng byte: `../kiem-thu/chup-bo-cuc.mjs`.
+- **Chế độ CHỈ CHỮ** (việc 1, 30/09/2026): `domains/so-do-chu.js` chọn hàng
+  ngang/dọc rồi gọi `computeLayout(..., {oHang})` — layout hỏi `rongHang()` ·
+  `netHang()` · `nut.w/h` thay cho `RONG`/`CAO`/`MUC_NET`. ⚠ Sửa `layout.js`
+  thì giữ nguyên HÌNH phép tính và chạy `chup-bo-cuc.mjs` trước/sau + `cmp`:
+  chế độ ảnh phải giống từng byte. Đo: `../kiem-thu/do-che-do-chu.mjs` (bảng
+  bề rộng chữ chụp từ Chrome) · nhìn: `../kiem-thu/xem-che-do-chu.mjs`.
 - ⚠ **Không gãy chữ Z** (chủ dự án bác §9b/b85e, 25/09/2026): điểm thả của MỌI
   chùm nằm TRONG khoảng các con — chùm một con thì thẳng trên đầu con, cả ở
   khối con cháu (`khoiDuoi`, `xepDai`) lẫn khối tổ tiên (`treoToTien`). Đo:

@@ -3,7 +3,7 @@
 // Vai trò  : Hằng số hiển thị phía trình duyệt.
 // Lớp      : config — không gọi file nào khác
 // Phụ thuộc: (không)
-// Phiên bản: 0.23.0 · Cập nhật: 30/09/2026 16:06
+// Phiên bản: 0.24.0 · Cập nhật: 30/09/2026 16:38
 // ============================================================
 //
 // LƯU Ý: file này KHÔNG phải nơi bạn điền cấu hình. Mọi thứ cần điền nằm ở
@@ -412,6 +412,18 @@ export const LAYOUT = {
   // Cách ngang giữa hai KHỐI gốc rời nhau (hai gia đình không nối với nhau
   // trong cùng một sơ đồ). Rộng hơn hGap để mắt tách được hai khối.
   blockGap:    56,
+};
+
+// Ô của chế độ CHỈ CHỮ (việc 1, 30/09/2026) — tên + năm sinh–năm mất, không
+// ảnh. Chữ NGANG: hai dòng chồng nhau. Chữ DỌC (quay 90°): hai dòng ấy thành
+// hai CỘT đứng cạnh nhau, nên `dongTen`/`dongNam` vừa là cao một dòng ngang
+// vừa là rộng một cột dọc. Ai chọn ngang/dọc: `domains/so-do-chu.js`.
+export const O_CHU = {
+  chuTen:  11,     // cỡ chữ tên — bằng `VE.chuTen` của ô có ảnh
+  chuNam:  9.5,    // cỡ chữ năm — bằng `VE.chuNam`
+  dongTen: 13,
+  dongNam: 11,
+  le:       4,     // lề trong ô, bốn phía
 };
 
 // Bốn con số điều khiển tập người được vẽ. Xem KE-HOACH_V08.

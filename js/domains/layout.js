@@ -3,9 +3,9 @@
 // Vai trò  : Tính TOẠ ĐỘ các ô người, đường nối và nốt cụt. Không vẽ gì cả.
 // Lớp      : domains — HÀM THUẦN. Không gọi services, không chạm DOM.
 // Phụ thuộc: config (LAYOUT, PHOTO) · domains/union.js · domains/render.js (VE)
-// Phiên bản: 2.0.0 · Cập nhật: 30/09/2026 16:06
+// Phiên bản: 2.1.0 · Cập nhật: 30/09/2026 16:38
 // ⚠ Chỉ còn MỘT cách xếp: BA KHỐI `datBaKhoi()` (mục 4b, b128b). Cách cũ
-//   `datMoiKhoi()` + bốn lượt vá đã gỡ 30/09/2026 — muốn đọc: `git log -p`.
+//   `datMoiKhoi()` đã gỡ 30/09/2026. Ô rộng/cao THEO HÀNG khi có `tuyChon.oHang` (chế độ chữ).
 // Sổ tay   : so-tay/ve-so-do.md
 // ============================================================
 //
@@ -132,16 +132,30 @@ let CAO = LAYOUT.nodeHeight;
 const MUC_NET = PHOTO.leTrenO + PHOTO.banKinhTrenO;
 
 /**
- * Khoảng từ MÉP Ô tới MÉP VÒNG ẢNH theo chiều ngang — 26px với ô rộng 120 và
- * vòng ảnh bán kính 34. Vòng ảnh nằm giữa ô nên hai bên bằng nhau.
+ * HÌNH HỌC THEO HÀNG — chế độ CHỈ CHỮ (việc 1, 30/09/2026).
  *
- * Dùng để nét vợ chồng chạm được vào khuôn mặt, xem `themNetVoChong()`.
+ * `null` = chế độ ẢNH: mọi hàng `RONG × CAO`, nét vợ chồng ở `MUC_NET`, đúng
+ * từng pixel như trước. Có giá trị thì là `Map(đời → {w, h, net})` do
+ * `tuyChon.oHang` trả về, và MỌI phép đo dưới đây hỏi hàng của người ấy thay
+ * vì hằng số. Đặt lại ở đầu mỗi `computeLayout()`, như `CAO`.
  *
- * ⚠ Tính từ `PHOTO.banKinhTrenO`, đừng gõ lại con số: bán kính đổi ở bước 80
- * (26 → 34) và nếu chỗ này còn giữ 40 thì nét vợ chồng dừng lại cách khuôn mặt
- * 14px, trôi lơ lửng giữa hai ô mà không có gì báo lỗi.
+ * ⚠ Giữ nguyên HÌNH phép tính khi thay hằng số (`(a + b) / 2 + w / 2`, không
+ * viết lại thành `(a + w/2 + b + w/2) / 2`): chế độ ảnh phải ra giống TỪNG
+ * BYTE — gác bằng `../kiem-thu/chup-bo-cuc.mjs`.
  */
-const LE_ANH = RONG / 2 - PHOTO.banKinhTrenO;
+let HANG = null;
+let KHONG_ANH = false;
+const rongHang = (m) => (HANG && HANG.has(m) ? HANG.get(m).w : RONG);
+const netHang  = (m) => (HANG && HANG.has(m) ? HANG.get(m).net : MUC_NET);
+const rongId   = (ct, id) => rongHang(ct.muc.get(id));
+const netNut   = (nut) => netHang(nut.gen);
+/**
+ * Khoảng từ MÉP Ô tới MÉP VÒNG ẢNH theo chiều ngang (vòng ảnh nằm giữa ô) —
+ * để nét vợ chồng chạm được vào khuôn mặt, xem `themNetVoChong()`. Không ảnh
+ * thì 0: nét chạm mép ô chữ. ⚠ Tính từ `PHOTO.banKinhTrenO`, đừng gõ lại con
+ * số — bán kính đổi ở bước 80 và nét từng trôi lơ lửng cách mặt 14px.
+ */
+const leAnh    = (nut) => (KHONG_ANH ? 0 : nut.w / 2 - PHOTO.banKinhTrenO);
 
 /**
  * Bố trí toàn bộ sơ đồ quanh một người trung tâm.
@@ -161,11 +175,13 @@ const LE_ANH = RONG / 2 - PHOTO.banKinhTrenO;
  * @param {Map<string,'full'|'edge'>} visibleSet   từ computeVisibleSet
  * @param {object} [scope]                   chưa dùng — giữ cho khớp chữ ký
  * @param {Array<object>} [stubPoints]       từ findStubPoints
- * @param {{hienNgayGio?:boolean}} [tuyChon]
+ * @param {{hienNgayGio?:boolean, oHang?:function}} [tuyChon]
  *        `hienNgayGio` — CHỪA CHỖ cho hàng ngày giỗ, tức mọi ô cao thêm một
  *        hàng chữ. Phải khớp với cờ cùng tên đưa vào `renderTree()`: chỗ này
  *        chừa chỗ, chỗ kia vẽ. Lệch nhau thì hàng giỗ hoặc tràn ra khỏi ô,
  *        hoặc để lại một khoảng trống không ai giải thích được.
+ *        `oHang(đời, [personId]) → {w, h, net}` — chế độ CHỈ CHỮ: kích thước
+ *        ô từng hàng, gọi SAU khi biết đời. Có nó thì bỏ vòng ảnh — xem `HANG`.
  * @returns {{nodes:Array, unions:Array, links:Array, stubs:Array,
  *            bounds:{minX:number,minY:number,maxX:number,maxY:number}}}
  */
@@ -174,6 +190,8 @@ export function computeLayout(index, focusPersonId, visibleSet, scope, stubPoint
   CAO = (tuyChon && tuyChon.hienNgayGio)
     ? LAYOUT.nodeHeightNgayGio
     : LAYOUT.nodeHeight;
+  HANG = null;
+  KHONG_ANH = !!(tuyChon && typeof tuyChon.oHang === 'function');
 
   const rong = {
     nodes: [], unions: [], links: [], stubs: [],
@@ -187,6 +205,7 @@ export function computeLayout(index, focusPersonId, visibleSet, scope, stubPoint
 
   ganMucDoi(ct);
   hapThuCapTrongHo(ct);            // PHẢI sau ganMucDoi — nó cần biết đời
+  const yHang = KHONG_ANH ? dungHang(ct, tuyChon.oHang) : null;
   const viTriX = datBaKhoi(ct);
 
   const nodes = [];
@@ -196,9 +215,9 @@ export function computeLayout(index, focusPersonId, visibleSet, scope, stubPoint
     const nut = {
       id,
       x: viTriX.has(id) ? viTriX.get(id) : 0,
-      y: gen * (CAO + LAYOUT.vGap),
-      w: RONG,
-      h: CAO,
+      y: yHang ? yHang.get(gen) : gen * (CAO + LAYOUT.vGap),
+      w: rongHang(gen),
+      h: HANG ? HANG.get(gen).h : CAO,
       kind: visibleSet.get(id) || 'full',
       gen,
       laTrungTam: id === focusPersonId,
@@ -217,6 +236,31 @@ export function computeLayout(index, focusPersonId, visibleSet, scope, stubPoint
   const stubs  = dungNotCut(ct, unions, stubPoints);
 
   return { nodes, unions, links, stubs, bounds: tinhBounds(nodes, links, stubs) };
+}
+
+/**
+ * Chế độ CHỈ CHỮ: hỏi `oHang` kích thước ô từng hàng, ghi vào `HANG`, trả
+ * `Map(đời → y nóc hàng)`. Hàng cao khác nhau nên `y` CỘNG DỒN, không nhân.
+ * Đời trống ở giữa (hiếm) vẫn giữ một khe `vGap`, không để hai hàng dính nhau.
+ */
+function dungHang(ct, oHang) {
+  const theoDoi = new Map();
+  for (const id of ct.dsNguoi) {
+    const m = ct.muc.get(id) || 0;
+    if (!theoDoi.has(m)) theoDoi.set(m, []);
+    theoDoi.get(m).push(id);
+  }
+  HANG = new Map();
+  for (const [m, ids] of theoDoi) HANG.set(m, oHang(m, ids));
+
+  const yHang = new Map();
+  const ds = [...theoDoi.keys()].sort((a, b) => a - b);
+  let y = 0;
+  for (let m = ds[0]; m <= ds[ds.length - 1]; m++) {
+    yHang.set(m, y);
+    y += (HANG.has(m) ? HANG.get(m).h : 0) + LAYOUT.vGap;
+  }
+  return yHang;
 }
 
 /**
@@ -723,7 +767,8 @@ function hapThuCapTrongHo(ct) {
 function layDai(ct, neoId) {
   if (ct.dai.has(neoId)) return ct.dai.get(neoId);
 
-  const buoc     = RONG + LAYOUT.spouseGap;
+  const w        = rongId(ct, neoId);
+  const buoc     = w + LAYOUT.spouseGap;
   const dsUnion  = (ct.unionLamVo.get(neoId) || []).filter((uid) => ct.unionHT.has(uid));
   const banDoi   = [];
   for (const uid of dsUnion) {
@@ -744,20 +789,20 @@ function layDai(ct, neoId) {
   banDoi.forEach((bd, i) => {
     dx.set(bd.spouseId, dxP + huong * (i + 1) * buoc);
     khe.set(bd.unionId, huong > 0
-      ? i * buoc + RONG + LAYOUT.spouseGap / 2
+      ? i * buoc + w + LAYOUT.spouseGap / 2
       : dxP - LAYOUT.spouseGap / 2 - i * buoc);
     mucNet.set(bd.unionId, i);
   });
   for (const uid of dsUnion) {
     if (khe.has(uid)) continue;
-    khe.set(uid, dxP + RONG / 2);
+    khe.set(uid, dxP + w / 2);
     mucNet.set(uid, 0);
   }
 
   // Độ cao mỗi nấc — chia đều, đừng cộng dồn. Cộng dồn cứng 8px thì đến người
   // thứ tư nét tràn ra khỏi khung.
   const buocNet = n > 1
-    ? Math.min(LAYOUT.spouseStepMax, (MUC_NET - LAYOUT.spouseStepPadTop) / (n - 1))
+    ? Math.min(LAYOUT.spouseStepMax, (netHang(ct.muc.get(neoId)) - LAYOUT.spouseStepPadTop) / (n - 1))
     : 0;
 
   const kq = {
@@ -808,10 +853,10 @@ function gioiTinh(ct, id) {
 function deChoNay(ct, viTri, k, x) {
   for (const it of k.items) {
     const m = ct.muc.get(it.id);
-    const t = it.x + x, p = t + RONG;
+    const w = rongHang(m), t = it.x + x, p = t + w;
     for (const [kh, xk] of viTri) {
       if (ct.muc.get(kh) !== m) continue;
-      if (t < xk + RONG + LAYOUT.hGap && xk < p + LAYOUT.hGap) return true;
+      if (t < xk + w + LAYOUT.hGap && xk < p + LAYOUT.hGap) return true;
     }
   }
   return false;
@@ -850,14 +895,14 @@ function canChumConVaoGiua(ct, viTriX) {
     const xa = viTriX.get(u.partners[0]);
     const xb = viTriX.get(u.partners[1]);
     if (xa === undefined || xb === undefined) continue;
-    const giua = (xa + xb) / 2 + RONG / 2;
+    const giua = (xa + xb) / 2 + rongId(ct, u.partners[0]) / 2;
 
     let trai = Infinity, phai = -Infinity;
     for (const id of ids) {
       const x = viTriX.get(id);
       if (x === undefined) continue;
       if (x < trai) trai = x;
-      if (x + RONG > phai) phai = x + RONG;
+      if (x + rongId(ct, id) > phai) phai = x + rongId(ct, id);
     }
     if (!Number.isFinite(trai)) continue;
 
@@ -876,13 +921,13 @@ function deLenNhau(ct, viTriX, cum, d) {
     const x = viTriX.get(id);
     if (x === undefined) continue;
     const m = ct.muc.get(id);
-    const t = x + d, p = t + RONG;
+    const w = rongHang(m), t = x + d, p = t + w;
     for (const kh of ct.dsNguoi) {
       if (cum.has(kh)) continue;
       if (ct.muc.get(kh) !== m) continue;
       const xk = viTriX.get(kh);
       if (xk === undefined) continue;
-      if (t < xk + RONG + LAYOUT.hGap && xk < p + LAYOUT.hGap) return true;
+      if (t < xk + w + LAYOUT.hGap && xk < p + LAYOUT.hGap) return true;
     }
   }
   return false;
@@ -916,8 +961,9 @@ function themVien(vien, m, lo, hi) {
 }
 
 function themO(ct, k, id, x) {
-  k.items.push({ id, x });
-  themVien(k.vien, ct.muc.get(id), x, x + RONG);
+  const w = rongId(ct, id);
+  k.items.push({ id, x, w });
+  themVien(k.vien, ct.muc.get(id), x, x + w);
 }
 
 function dich(k, d) {
@@ -958,17 +1004,17 @@ function mepCua(k, phai) {
  */
 function xepKhit(ds, khe) {
   const acc = khoiRong();
-  let tamTruoc = -Infinity;
+  let tamTruoc = -Infinity, wTruoc = 0;
   for (const k of ds) {
     let d = 0;
     if (acc.items.length) {
       d = canhPhai(acc.vien, k.vien, khe);
       if (!Number.isFinite(d)) d = mepCua(acc, true) + khe - mepCua(k, false);
-      if (typeof k.neoX === 'number') d = Math.max(d, tamTruoc + RONG + khe - k.neoX);
+      if (typeof k.neoX === 'number') d = Math.max(d, tamTruoc + (wTruoc + k.neoW) / 2 + khe - k.neoX);
     }
     dich(k, d);
     gop(acc, k);
-    if (typeof k.neoX === 'number') tamTruoc = k.neoX;
+    if (typeof k.neoX === 'number') { tamTruoc = k.neoX; wTruoc = k.neoW; }
   }
   if (!canVaoKhoangTrong(ds, khe)) return acc;
   const moi = khoiRong();                 // viền của `acc` là bản sao — dựng lại
@@ -996,8 +1042,8 @@ function canVaoKhoangTrong(ds, khe) {
     let d = (tien - lui) / 2;
     if (typeof k.neoX === 'number') {
       const neoTrai = ds[i - 1].neoX, neoPhai = ds[i + 1].neoX;
-      if (typeof neoTrai === 'number') d = Math.max(d, neoTrai + RONG + khe - k.neoX);
-      if (typeof neoPhai === 'number') d = Math.min(d, neoPhai - RONG - khe - k.neoX);
+      if (typeof neoTrai === 'number') d = Math.max(d, neoTrai + (ds[i - 1].neoW + k.neoW) / 2 + khe - k.neoX);
+      if (typeof neoPhai === 'number') d = Math.min(d, neoPhai - (ds[i + 1].neoW + k.neoW) / 2 - khe - k.neoX);
     }
     if (Math.abs(d) > 0.5) { dich(k, d); coDoi = true; }
   }
@@ -1038,9 +1084,10 @@ function khoiDuoi(ct, neoId) {
       viTriKhe.set(uid, { o: oX.indexOf(id) });
     }
   }
+  const w = rongId(ct, neoId);
   const kheTu = (p, uid) => {
     const v = viTriKhe.get(uid);
-    return v.khe !== undefined ? (p[v.khe] + RONG + p[v.khe + 1]) / 2 : p[v.o] + RONG / 2;
+    return v.khe !== undefined ? (p[v.khe] + w + p[v.khe + 1]) / 2 : p[v.o] + w / 2;
   };
 
   const chum = [];
@@ -1058,7 +1105,8 @@ function khoiDuoi(ct, neoId) {
   const kq = khoiRong();
   if (chum.length === 0) {
     oX.forEach((id, j) => themO(ct, kq, id, p0[j]));
-    kq.neoX = dai.dxP + RONG / 2;
+    kq.neoX = dai.dxP + w / 2;
+    kq.neoW = w;
     return kq;
   }
 
@@ -1088,7 +1136,8 @@ function khoiDuoi(ct, neoId) {
     p = xepDai(p0, chum, viTriKhe, kheTu, lMuon);
   }
   oX.forEach((id, j) => themO(ct, kq, id, p[j]));
-  kq.neoX = p[oX.indexOf(neoId)] + RONG / 2;
+  kq.neoX = p[oX.indexOf(neoId)] + w / 2;
+  kq.neoW = w;
 
   // Nét thả từ khe xuống thanh ngang gom con thuộc về khối này: tính vào viền
   // hàng con, để khối bên cạnh không ghé vào làm hai thanh ngang bắc chéo.
@@ -1105,7 +1154,7 @@ function khoiDuoi(ct, neoId) {
     const dx = new Map(), khe = new Map();
     oX.forEach((id, j) => dx.set(id, p[j] - p[0]));
     for (const uid of dai.thuTuUnion) khe.set(uid, kheTu(p, uid) - p[0]);
-    ct.dai.set(neoId, { ...dai, dx, khe, dxP: dx.get(neoId), rong: p[p.length - 1] - p[0] + RONG });
+    ct.dai.set(neoId, { ...dai, dx, khe, dxP: dx.get(neoId), rong: p[p.length - 1] - p[0] + w });
   }
   return kq;
 }
@@ -1160,7 +1209,7 @@ function neoDai(ct, id) {
 
 /** Tâm ô của `id` trong khối `k`, hoặc `undefined`. */
 function tamTrong(k, id) {
-  for (const it of k.items) if (it.id === id) return it.x + RONG / 2;
+  for (const it of k.items) if (it.id === id) return it.x + it.w / 2;
   return undefined;
 }
 
@@ -1175,7 +1224,7 @@ function noiCua(ct, k, uid) {
     if (!ht || ht.unionId !== uid) continue;
     const dai = ct.dai.get(ht.neoId);
     const x = tamTrong(k, ht.neoId);
-    if (dai && x !== undefined) return x - RONG / 2 - dai.dxP + dai.khe.get(uid);
+    if (dai && x !== undefined) return x - rongId(ct, ht.neoId) / 2 - dai.dxP + dai.khe.get(uid);
   }
   const xs = u.partners.map((p) => tamTrong(k, p)).filter((x) => x !== undefined);
   return xs.length ? (Math.min(...xs) + Math.max(...xs)) / 2 : undefined;
@@ -1206,13 +1255,14 @@ function khoiTren(ct, X) {
     const dai = layDai(ct, n);
     const k = khoiRong();
     for (const [id, dx] of dai.dx) { ct.daDat.add(id); themO(ct, k, id, dx); }
-    k.neoX = dai.dxP + RONG / 2;
+    k.neoW = rongId(ct, n);
+    k.neoX = dai.dxP + k.neoW / 2;
     return k;
   });
   const hang = xepKhit(dsDai, LAYOUT.hGap);
   hang.noi = noiCua(ct, hang, uid);
 
-  const xs = hang.items.map((it) => it.x + RONG / 2);
+  const xs = hang.items.map((it) => it.x + it.w / 2);
   hang.mepTrai = Math.min(...xs);
   hang.mepPhai = Math.max(...xs);
 
@@ -1345,7 +1395,7 @@ function mocLuoi(ct, viTri, k, goc) {
   const uid = ct.unionSoHuu.get(goc);
   if (uid) {
     const xs = ct.unionHT.get(uid).partners.map((p) => viTri.get(p)).filter((x) => x !== undefined);
-    if (xs.length) return (Math.min(...xs) + Math.max(...xs)) / 2 + RONG / 2 - k.neoX;
+    if (xs.length) return (Math.min(...xs) + Math.max(...xs)) / 2 + rongId(ct, ct.unionHT.get(uid).partners[0]) / 2 - k.neoX;
   }
   for (const it of k.items) {
     for (const u2 of ct.unionLamVo.get(it.id) || []) {
@@ -1359,7 +1409,7 @@ function mocLuoi(ct, viTri, k, goc) {
     }
   }
   let phai = -Infinity;
-  for (const x of viTri.values()) phai = Math.max(phai, x + RONG);
+  for (const [id, x] of viTri) phai = Math.max(phai, x + rongId(ct, id));
   return Number.isFinite(phai) ? phai + LAYOUT.blockGap - mepCua(k, false) : 0;
 }
 
@@ -1371,7 +1421,7 @@ function datGanNhat(ct, viTri, k, x0) {
     }
   }
   let phai = -Infinity;
-  for (const x of viTri.values()) phai = Math.max(phai, x + RONG);
+  for (const [id, x] of viTri) phai = Math.max(phai, x + rongId(ct, id));
   dich(k, phai + LAYOUT.blockGap - mepCua(k, false));
   return k;
 }
@@ -1482,12 +1532,13 @@ function unionCoNotNeXuong(ct, stubPoints) {
  *          `x` = toạ độ ngang của nốt. `null` khi cặp chưa vẽ được con nào.
  */
 function nhipNotCut(ct, u, xTreo, huong) {
-  let lo = xTreo, hi = xTreo, coCon = false;
+  let lo = xTreo, hi = xTreo, coCon = false, wCon = RONG;
   for (const c of u.children) {
     const con = ct.nodeById.get(c.personId);
     if (!con) continue;
     coCon = true;
-    const cx = con.x + RONG / 2;
+    wCon = con.w;
+    const cx = con.x + con.w / 2;
     if (cx < lo) lo = cx;
     if (cx > hi) hi = cx;
   }
@@ -1498,7 +1549,7 @@ function nhipNotCut(ct, u, xTreo, huong) {
   else if (xTreo <= lo + 0.5) { ra = -1; goc = lo; }
   else                        { ra = huong; goc = huong > 0 ? hi : lo; }
 
-  return { goc, x: goc + ra * (RONG / 2 + LAYOUT.hGap) };
+  return { goc, x: goc + ra * (wCon / 2 + LAYOUT.hGap) };
 }
 
 function nhipThanhNgang(ct, t, neXuong) {
@@ -1510,7 +1561,7 @@ function nhipThanhNgang(ct, t, neXuong) {
     const con = ct.nodeById.get(c.personId);
     if (!con) continue;
     if (ct.unionSoHuu.get(c.personId) !== t.id) continue;   // netDai → mức khác
-    const cx = con.x + RONG / 2;
+    const cx = con.x + con.w / 2;
     if (Math.abs(t.x - cx) <= 0.5) continue;                // nét thả thẳng
     a = Math.min(a, cx);
     b = Math.max(b, cx);
@@ -1611,27 +1662,27 @@ function dungDiemTreo(ct, stubPoints) {
       const dai = ct.dai.get(neoId);
       const nut = ct.nodeById.get(neoId);
       x    = nut.x - dai.dxP + dai.khe.get(uid);
-      y    = nut.y + MUC_NET - (dai.mucNet.get(uid) || 0) * dai.buocNet;
-      busY = nut.y + CAO + LAYOUT.khoangSatChu;
+      y    = nut.y + netNut(nut) - (dai.mucNet.get(uid) || 0) * dai.buocNet;
+      busY = nut.y + nut.h + LAYOUT.khoangSatChu;
       kieu = dai.n > 0 ? 'khe' : 'don';
     } else if (u.partners.length === 1) {
       const nut = ct.nodeById.get(u.partners[0]);
-      x    = nut.x + RONG / 2;
-      y    = nut.y + MUC_NET;
-      busY = nut.y + CAO + LAYOUT.khoangSatChu;
+      x    = nut.x + nut.w / 2;
+      y    = nut.y + netNut(nut);
+      busY = nut.y + nut.h + LAYOUT.khoangSatChu;
       kieu = 'don';
       neoId = u.partners[0];
     } else {
       const a = ct.nodeById.get(u.partners[0]);
       const b = ct.nodeById.get(u.partners[1]);
-      x    = (a.x + b.x) / 2 + RONG / 2;
+      x    = (a.x + b.x) / 2 + a.w / 2;
       // Hai người RỜI NHAU mà CÙNG HÀNG thì nét vợ chồng không đi tâm → tâm,
       // nó VÕNG xuống dưới hai ô (xem themNetVoChong). Điểm treo chùm con phải
       // nằm đúng trên cái võng ấy, chứ không phải ở tâm hàng: tại trung điểm
       // giữa hai ô không có ô nào che, nên đoạn kẻ từ tâm hàng xuống sẽ thò
       // hẳn ra ngoài và treo lơ lửng phía trên nét vợ chồng.
-      y    = a.y === b.y ? mucVong(a, b) : (a.y + b.y) / 2 + MUC_NET;
-      busY = Math.max(a.y, b.y) + CAO + LAYOUT.khoangSatChu;
+      y    = a.y === b.y ? mucVong(a, b) : (a.y + b.y) / 2 + netNut(a);
+      busY = Math.max(a.y + a.h, b.y + b.h) + LAYOUT.khoangSatChu;
       kieu = 'cheo';
       neoId = u.partners[0];
     }
@@ -1675,8 +1726,8 @@ function dungDuongNoi(ct, unions) {
       // trên nóc ô nên nét không hụt ra ngoài, mà mắt nhìn ra ngay là hai
       // đường khác nhau.
       const netDai = ct.unionSoHuu.get(c.personId) !== uid;
-      const cxGiua = con.x + RONG / 2;
-      const cx   = netDai ? (treo.x > cxGiua ? con.x + RONG * 0.75 : con.x + RONG * 0.25)
+      const cxGiua = con.x + con.w / 2;
+      const cx   = netDai ? (treo.x > cxGiua ? con.x + con.w * 0.75 : con.x + con.w * 0.25)
                           : cxGiua;
       const busY = netDai
         ? Math.min(treo.busY - LAYOUT.lechNetDai, con.y - 1)
@@ -1729,6 +1780,7 @@ function dungDuongNoi(ct, unions) {
  * ngay, và lúc ấy không có gì báo.
  */
 function chamVongAnh(dx) {
+  if (KHONG_ANH) return 0;                 // ô chữ: nét chạm thẳng nóc ô
   const R = PHOTO.banKinhTrenO;
   const d = Math.min(Math.abs(dx), R);
   return PHOTO.leTrenO + R - Math.sqrt(R * R - d * d);
@@ -1766,7 +1818,7 @@ function themNetVoChong(ct, links, uid, aId, bId) {
     const dai   = ct.dai.get(neoId);
     const neo   = ct.nodeById.get(neoId);
     const kia   = neoId === aId ? b : a;
-    const y     = neo.y + MUC_NET - (dai.mucNet.get(uid) || 0) * dai.buocNet;
+    const y     = neo.y + netNut(neo) - (dai.mucNet.get(uid) || 0) * dai.buocNet;
     // Nét chạy từ MÉP VÒNG ẢNH sang mép vòng ảnh, không từ mép ô sang mép ô.
     //
     // ⚠ Trước bước 28 hai thứ ấy là một, vì mép ô có viền và đó là chỗ mắt
@@ -1774,15 +1826,15 @@ function themNetVoChong(ct, links, uid, aId, bId) {
     // mỗi bên, và nét vợ chồng thành một đoạn 16px trôi lơ lửng ở khoảng giữa,
     // không chạm vào ai. Ảnh chụp phóng to bắt được; ở cỡ thật thì nó chỉ
     // trông như sơ đồ hơi rời rạc.
-    const x1    = dai.huong > 0 ? neo.x + RONG - LE_ANH : neo.x + LE_ANH;
-    const x2    = dai.huong > 0 ? kia.x + LE_ANH        : kia.x + RONG - LE_ANH;
+    const x1    = dai.huong > 0 ? neo.x + neo.w - leAnh(neo) : neo.x + leAnh(neo);
+    const x2    = dai.huong > 0 ? kia.x + leAnh(kia)     : kia.x + kia.w - leAnh(kia);
     links.push({ kind: 'spouse', relation: null, unionId: uid, from: neoId, to: kia.id,
                  points: [[x1, y], [x2, y]], netDai: false, cheo: false });
     return;
   }
 
-  const ax = a.x + RONG / 2, ay = a.y + MUC_NET;
-  const bx = b.x + RONG / 2, by = b.y + MUC_NET;
+  const ax = a.x + a.w / 2, ay = a.y + netNut(a);
+  const bx = b.x + b.w / 2, by = b.y + netNut(b);
 
   if (a.gen !== b.gen) {
     links.push({ kind: 'spouse', relation: null, unionId: uid, from: aId, to: bId,
@@ -1827,7 +1879,7 @@ function themNetVoChong(ct, links, uid, aId, bId) {
  * cạnh bạn đời. Xem `dungNguCanh()`.
  */
 function mucVong(a, b) {
-  return Math.max(a.y, b.y) + CAO + LAYOUT.khoangNetVong;
+  return Math.max(a.y + a.h, b.y + b.h) + LAYOUT.khoangNetVong;
 }
 
 // ============================================================
@@ -1906,7 +1958,7 @@ function viTriNotCut(ct, treoCua, sp, nut) {
   const L = LAYOUT.stubLength;
 
   if (sp.direction === 'up') {
-    const x = nut.x + RONG / 2;
+    const x = nut.x + nut.w / 2;
     return { x, y: nut.y - L, x1: x, y1: nut.y, angle: -90 };
   }
 
@@ -1925,12 +1977,13 @@ function viTriNotCut(ct, treoCua, sp, nut) {
   // Có nét ngang chạy qua chỗ ấy (nét bộ cha mẹ thứ hai chạy ngay dưới đáy ô,
   // ca P0007 tâm P0010) thì lùi về đáy khe như trước.
   if (!u && !thieuBanDoi) {
-    const x = nut.x + RONG / 2;
-    const dayTen = PHOTO.leTrenO + 2 * PHOTO.banKinhTrenO - VE.deLenAnh +
-                   VE.leTrongBang * 2 + VE.buocDongTen;
-    let yNot = Math.min(nut.y + CAO + LAYOUT.stubRadius - 3,
-                        nut.y + CAO + LAYOUT.khoangSatChu - LAYOUT.stubRadius - 2);
-    if (netNgangCat(ct, x, yNot)) yNot = nut.y + CAO + LAYOUT.vGap - LAYOUT.stubRadius - 2;
+    const x = nut.x + nut.w / 2;
+    const dayTen = KHONG_ANH ? nut.h
+      : PHOTO.leTrenO + 2 * PHOTO.banKinhTrenO - VE.deLenAnh +
+        VE.leTrongBang * 2 + VE.buocDongTen;
+    let yNot = Math.min(nut.y + nut.h + LAYOUT.stubRadius - 3,
+                        nut.y + nut.h + LAYOUT.khoangSatChu - LAYOUT.stubRadius - 2);
+    if (netNgangCat(ct, x, yNot)) yNot = nut.y + nut.h + LAYOUT.vGap - LAYOUT.stubRadius - 2;
     return { x, y: yNot, x1: x, y1: nut.y + dayTen, angle: 90 };
   }
 
@@ -1956,10 +2009,10 @@ function viTriNotCut(ct, treoCua, sp, nut) {
     const huong = daiNg ? daiNg.huong : (gioiTinh(ct, sp.personId) === 'F' ? -1 : 1);
     const mepDai = (daiNg && nutNeo)
       ? (huong > 0 ? nutNeo.x - daiNg.dxP + daiNg.rong : nutNeo.x - daiNg.dxP)
-      : (huong > 0 ? nut.x + RONG : nut.x);
+      : (huong > 0 ? nut.x + nut.w : nut.x);
     const y = dai
-      ? nut.y + MUC_NET - (dai.mucNet.get(sp.unionId) || 0) * dai.buocNet
-      : nut.y + MUC_NET;
+      ? nut.y + netNut(nut) - (dai.mucNet.get(sp.unionId) || 0) * dai.buocNet
+      : nut.y + netNut(nut);
     // Mọc từ MÉP VÒNG ẢNH, không từ mép ô — ô rộng hơn vòng ảnh `LE_ANH` mỗi
     // bên, nét bắt đầu ở mép ô thì hở một khoảng (chủ dự án 25/09/2026).
     // Chỉ khi người đứng NGOÀI CÙNG dải là chính chủ nốt: sát vòng ảnh bạn đời
@@ -1971,10 +2024,10 @@ function viTriNotCut(ct, treoCua, sp, nut) {
         if (dxMep === null || (huong > 0 ? d > dxMep : d < dxMep)) { dxMep = d; ngoaiCung = id; }
       }
     }
-    const R  = PHOTO.banKinhTrenO;
-    const dy = Math.min(Math.abs(y - nut.y - MUC_NET), R);
+    const R  = KHONG_ANH ? 0 : PHOTO.banKinhTrenO;
+    const dy = Math.min(Math.abs(y - nut.y - netNut(nut)), R);
     let x1 = ngoaiCung === sp.personId
-      ? mepDai - huong * (LE_ANH + R - Math.sqrt(R * R - dy * dy))
+      ? mepDai - huong * (leAnh(nut) + R - Math.sqrt(R * R - dy * dy))
       : mepDai;
     if (x1 !== mepDai && netNgangCat(ct, x1 + huong * LN, y)) x1 = mepDai;
     return { x: x1 + huong * LN, y, x1, y1: y, angle: huong > 0 ? 0 : 180 };
@@ -2011,9 +2064,9 @@ function viTriNotCut(ct, treoCua, sp, nut) {
   // khi ấy hình ra đúng như bản vẽ tay: nét ngang chạy quá điểm treo một đoạn
   // rồi mới có nét dọc cụt.
   const huong = dai ? dai.huong : 1;
-  const xTreo = treo ? treo.x : nut.x + RONG / 2;
-  const y1    = treo ? treo.y : nut.y + MUC_NET;
-  const busY  = treo ? treo.busY : nut.y + MUC_NET;
+  const xTreo = treo ? treo.x : nut.x + nut.w / 2;
+  const y1    = treo ? treo.y : nut.y + netNut(nut);
+  const busY  = treo ? treo.busY : nut.y + netNut(nut);
 
   // ⚠ **NỐT PHẢI NẰM GỌN TRONG KHE GIỮA HAI ĐỜI.** Công thức cũ là
   // `CAO + vGap/2 + L` và nó đúng suốt từ chat 1.4 — nhưng chỉ đúng khi
@@ -2041,7 +2094,7 @@ function viTriNotCut(ct, treoCua, sp, nut) {
   // thì ở hàng dưới. Bám sàn thì mọi thứ trong khe giữ nguyên khoảng cách tới
   // hàng dưới dù `vGap` có nới bao nhiêu, và nốt tự tránh được mọi mức thanh
   // ngang — mức sâu nhất còn cách mép trên nốt 8px.
-  const tranY = nut.y + CAO + LAYOUT.vGap - LAYOUT.stubRadius - 2;
+  const tranY = nut.y + nut.h + LAYOUT.vGap - LAYOUT.stubRadius - 2;
   const yDay  = tranY;
 
   // Mọi phép đo đoạn ngang của nốt cụt đều đi qua `nhipNotCut()` — xem ghi chú
