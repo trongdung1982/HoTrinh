@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 30/09/2026 · Hai mươi bảy điểm dừng chưa bấm thử · SQL đã dán tới `62`, `63` chờ dán.*
+*Cập nhật 30/09/2026 · Hai mươi bảy điểm dừng chưa bấm thử · SQL đã dán hết tới `63`.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -69,10 +69,8 @@ dán lại* — đọc TRƯỚC khi dán lại bất cứ file nào.
 Màn hình SQL Editor báo *"relation public does not exist"* dù file đã vào —
 lỗi giả, `so-tay/phan-quyen.md` Luật chung.
 
-**`63` — CHƯA DÁN. Dán SAU `62`** (b162b — xoá cột `tree_members.person_id`;
-dán trước `62` thì file tự DỪNG, không đổi gì). ⚠ Mọi bản sao lưu chụp trước
-`63` thôi khôi phục được — chủ dự án chốt bỏ (30/09). Đo: `do-b162b.mjs`
-20/20 · khôi phục bản khuôn mới 34/34.
+**`63` — ĐÃ DÁN** 30/09/2026 (tự kiểm 2/2; REST: cột đã mất). ⚠ Mọi bản
+sao lưu chụp trước `63` thôi khôi phục được — chủ dự án chốt bỏ.
 
 ⚠ Bản cuối mới: `xoa_cay()` · `tra_lai_cay()` ở `60` (tên cũ đã xoá); `don_mo_coi_he_thong()`
 · `ds_nguoi_mo_coi()` · luật `xoa_anh` ở `61`; luật `xem_anh` + kho kín ở `59`.
