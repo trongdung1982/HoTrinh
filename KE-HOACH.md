@@ -63,11 +63,10 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 Không còn việc mã nào đã chốt; việc
 ở *Còn treo* đều cần chủ dự án quyết trước. ⚠ Đặt cây mặc định cần cờ Quản
 trị hệ thống — hai tài khoản thử không có, phải bấm tay bằng tài khoản của bạn.
-⚠ Sau b165 (sửa `layout.js`) bộ `../kiem-thu/chay-supabase.mjs` mới chạy 54
-bài (đều ĐẠT) thì bị dừng vì máy thiếu bộ nhớ — chạy TRỌN lại đầu phiên sau.
-Lần hai (30/09, chạy nền, `--max-old-space-size=8192`) dừng sớm hơn, ở bài
-24 — Claude Code tắt lệnh nền khi máy cạn RAM. Đừng nâng trần bộ nhớ; đóng
-bớt ứng dụng rồi chạy tiền cảnh: `! node kiem-thu/chay-supabase.mjs`.
+⚠ Bộ `chay-supabase.mjs` nằm ở `Claude_Code/kiem-thu/` (KHÔNG phải trong
+`supabase/`): `node kiem-thu/chay-supabase.mjs`. Chạy TRỌN 30/09/2026 sau b165:
+59/59 ĐẠT. Nếu lần sau dừng giữa chừng vì thiếu RAM: đóng bớt ứng dụng, chạy
+tiền cảnh, đừng nâng trần bộ nhớ.
 
 ⚠ **b152 — ba điều Claude Code tự chốt thay (chủ dự án ngủ), chờ chủ dự án
 xem lại**: ① vai `xem` thấy = nhóm NGƯỜI bật, KHÔNG giao với nhóm của CÂY (tab
