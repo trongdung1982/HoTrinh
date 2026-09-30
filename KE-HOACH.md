@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 30/09/2026 · Năm điểm dừng chưa bấm thử · SQL đã dán hết tới `64`.*
+*Cập nhật 30/09/2026 · Sáu điểm dừng chưa bấm thử · SQL đã dán hết tới `64`.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -30,6 +30,7 @@ thành). Gọn bằng KỶ LUẬT, không bằng con số — ba luật dưới 
 | **b161a** Kho ảnh KÍN *(sau khi dán `59`)* | Ctrl+F5. Mở cây có ảnh (Nguyễn Phúc Giáo hoặc `TH957`): ảnh trên sơ đồ, thẻ chi tiết, bản lớn khi bấm ảnh vẫn hiện như cũ. Bấm phải một ảnh → *Mở ảnh trong thẻ mới* → địa chỉ có đoạn `token=` → xoá hết từ dấu `?` trở đi rồi Enter: trang báo lỗi, KHÔNG ra ảnh (đó là kho đã kín). ⚙ Cài đặt → *Xuất ảnh* PNG: ảnh người vẫn có trong file. *Quản trị hệ thống → Dữ liệu mồ côi → Quét*: cột ảnh xem trước hiện được |
 | **b161e** Dọn thùng rác bởi người sửa thường | Ctrl+F5. Tài khoản thử `thu-h9@…` (vai *sửa*, không tự duyệt) mở cây thử `TH957` → xoá một người CÓ ẢNH trong trực hệ của mình → *Danh sách người* → *Thùng rác* → tích người ấy → *Xoá vĩnh viễn*: hộp báo "Đã gửi xoá vĩnh viễn…" + dòng "đang chờ người quản lý duyệt". Đăng nhập tài khoản của bạn → *Kiểm duyệt* → *Từ chối* dòng ấy → người về lại thùng rác, ảnh VẪN hiện |
 | **b161d** Dọn cặp mồ côi *(sau khi dán `61`)* | Ctrl+F5 → *Quản trị hệ thống → Dữ liệu mồ côi → Quét*. Bảng *Người không thuộc cây nào*: người có vợ/chồng cũng ngoài mọi cây nay tích được (trước bị khoá); người có vợ/chồng còn trong một cây vẫn khoá, di chuột lên ô tích đọc lý do. Tích vài người → *Xoá vĩnh viễn*: hộp báo "Đã xoá n cặp không còn ai thuộc cây nào"; file thừa không còn báo "không xoá được". *Nhật ký* có dòng "… người · … cặp · … ảnh" |
+| **1c** Chế độ vẽ CHỈ CHỮ | Ctrl+F5 → nút mờ **Ảnh** dưới 🔍 → bấm, nút đổi thành **Chữ**, sơ đồ vẽ lại: không ảnh, không nốt cụt, ô có khung viền mờ; hàng đông người nhất chữ dọc (đọc từ trên xuống), hàng thưa chữ ngang; chữ căn giữa. Bấm một ô vẫn mở như cũ. ⚙ bật *Ngày giỗ* → ô có giỗ thêm dòng "Giỗ: …", ô không có giỗ vẫn căn giữa. Bấm **Chữ** → về **Ảnh** như trước; tải lại trang vẫn nhớ chế độ đã chọn |
 | **Cột Nội dung thao tác** (Kiểm duyệt) | Ctrl+F5 → *Quản trị → Kiểm duyệt*: cột *Nội dung thao tác* đọc thành câu, không còn một chữ mỗi dòng. Tab *Đã từ chối & hoàn tác*: cột *Lý do từ chối* cũng vậy |
 
 ---
@@ -63,7 +64,7 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-Bấm thử năm điểm dừng ở trên (b161a · b161d · b161e · b162a — `59`/`61`/`62`
+Bấm thử sáu điểm dừng ở trên (1c · b161a · b161d · b161e · b162a — `59`/`61`/`62`
 đã dán 30/09). Việc mã còn lại
 ở *Còn treo* đều cần chủ dự án quyết trước. ⚠ Đặt cây mặc định cần cờ Quản
 trị hệ thống — hai tài khoản thử không có, phải bấm tay bằng tài khoản của bạn.
@@ -81,10 +82,8 @@ thấy đủ (như b148). Muốn khác thì một chỗ ở `53`.
    năm sinh–năm mất, không ảnh. **Hàng đông người nhất chữ QUAY DỌC**; hàng
    khác đủ rộng thì chữ ngang, không đủ thì dọc. Cao mỗi hàng tính theo chữ
    thật để bớt khoảng trắng. Dùng lại kỹ thuật BA KHỐI, không viết cách xếp
-   thứ hai. Luật đã chốt (1a, 1b): `so-tay/ve-so-do.md` mục *Chế độ CHỈ
-   CHỮ*. Hai mặc định tự chọn, chủ dự án chưa bác: ẩn hàng ngày giỗ · giữ màu
-   giới/sống-mất bằng gạch màu mép ô. Bộ xếp XONG (`so-do-chu.js`), chưa nối.
-   - **1c** `render.js` vẽ ô chữ; nút Ảnh/Chữ. Điểm dừng: chụp hình.
+   thứ hai. Luật đã chốt: `so-tay/ve-so-do.md` mục *Chế độ CHỈ CHỮ*. Bộ
+   xếp + vẽ + nút Ảnh/Chữ đã có (1c, chờ bấm thử — bảng trên). Còn:
    - **1d** Xuất ảnh/PDF + thẻ chi tiết ở chế độ Chữ.
 2. **Sau cùng mọi việc:** đưa hai bảng nhật ký vào sao lưu (xem *Còn treo*).
 

@@ -3,7 +3,7 @@
 // Vai trò  : Hằng số hiển thị phía trình duyệt.
 // Lớp      : config — không gọi file nào khác
 // Phụ thuộc: (không)
-// Phiên bản: 0.25.0 · Cập nhật: 30/09/2026 17:15
+// Phiên bản: 0.26.0 · Cập nhật: 30/09/2026 18:07
 // ============================================================
 //
 // LƯU Ý: file này KHÔNG phải nơi bạn điền cấu hình. Mọi thứ cần điền nằm ở
@@ -414,15 +414,17 @@ export const LAYOUT = {
   blockGap:    56,
 };
 
-// Ô của chế độ CHỈ CHỮ (việc 1, 30/09/2026) — tên + năm sinh–năm mất, không
-// ảnh. Chữ NGANG: hai dòng chồng nhau. Chữ DỌC (quay 90°): hai dòng ấy thành
-// hai CỘT đứng cạnh nhau, nên `dongTen`/`dongNam` vừa là cao một dòng ngang
-// vừa là rộng một cột dọc. Ai chọn ngang/dọc: `domains/so-do-chu.js`.
+// Ô của chế độ CHỈ CHỮ (việc 1, 30/09/2026) — tên + năm sinh–năm mất (+ giỗ
+// khi bật công tắc), không ảnh. Chữ NGANG: các dòng chồng nhau. Chữ DỌC (quay
+// 90°): các dòng ấy thành CỘT đứng cạnh nhau, nên `cao` vừa là cao một dòng
+// ngang vừa là rộng một cột dọc. Dòng nào có: `utils/text.dongOChu()`. Ai chọn
+// ngang/dọc: `domains/so-do-chu.js`. Cỡ chữ bằng ô có ảnh (`VE` ở render.js).
 export const O_CHU = {
-  chuTen:  11,     // cỡ chữ tên — bằng `VE.chuTen` của ô có ảnh
-  chuNam:  9.5,    // cỡ chữ năm — bằng `VE.chuNam`
-  dongTen: 13,
-  dongNam: 11,
+  dong: {
+    ten: { co: 11,  cao: 13 },
+    nam: { co: 9.5, cao: 11 },
+    gio: { co: 9.5, cao: 11 },
+  },
   le:       4,     // lề trong ô, bốn phía
 
   // Khe riêng chế độ chữ (chủ dự án 30/09/2026) — chế độ ảnh vẫn 28 · 16 · 38.

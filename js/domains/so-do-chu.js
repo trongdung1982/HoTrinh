@@ -4,7 +4,7 @@
 //            và kích thước ô từng hàng; xếp chỗ vẫn là `computeLayout()`.
 // Lớp      : domains — được gọi bởi: pages · được phép gọi: utils, config
 // Phụ thuộc: domains/layout.js · utils/text.js · config (O_CHU)
-// Phiên bản: 0.3.0 · Cập nhật: 30/09/2026 17:15
+// Phiên bản: 0.4.0 · Cập nhật: 30/09/2026 18:07
 // Sổ tay   : so-tay/ve-so-do.md
 // ============================================================
 //
@@ -21,21 +21,23 @@
 // (`beRong()` ở render.js), bài kiểm đo bằng bảng Chrome chụp sẵn. Hàm thuần.
 
 import { O_CHU } from '../config.js';
-import { fullName, doiSongNguoi } from '../utils/text.js';
+import { dongOChu } from '../utils/text.js';
 import { computeLayout } from './layout.js';
 
 /**
+ * @param {function} doRong   `(chuoi, coChu) → px`
+ * @param {boolean} hienGio   công tắc ngày giỗ — thêm dòng "Giỗ: …" cho ai có
  * @returns {{layout:object, hang:Map<number,{ngang:boolean,w:number,h:number,net:number,soNguoi:number}>,
  *            soLanXep:number}}
  */
-export function xepCheDoChu(index, focus, visible, scope, doRong) {
-  const chu = new Map();                   // id → {ten, nam, dai}
+export function xepCheDoChu(index, focus, visible, scope, doRong, hienGio) {
+  const chu = new Map();                   // id → {loai:Set, dai}
   const doChu = (id) => {
     if (chu.has(id)) return chu.get(id);
-    const p = index.personById.get(id);
-    const ten = fullName(p) || id;
-    const nam = doiSongNguoi(p);
-    const v = { ten, nam, dai: Math.max(doRong(ten, O_CHU.chuTen), nam ? doRong(nam, O_CHU.chuNam) : 0) };
+    const dong = dongOChu(index.personById.get(id), id, hienGio);
+    let dai = 0;
+    for (const d of dong) dai = Math.max(dai, doRong(d.chu, O_CHU.dong[d.loai].co));
+    const v = { loai: dong.map((d) => d.loai), dai };
     chu.set(id, v);
     return v;
   };
@@ -43,14 +45,18 @@ export function xepCheDoChu(index, focus, visible, scope, doRong) {
   const ngang = new Set();
   let hang = new Map();
   const oHang = (m, ids) => {
-    let dai = 0, coNam = false;
+    // Bề DÀY hàng = đủ chỗ cho mọi loại dòng CÓ ở ít nhất một ô; từng ô tự
+    // căn giữa số dòng thật của nó trong bề dày ấy (render.js).
+    let dai = 0;
+    const loai = new Set();
     for (const id of ids) {
       const v = doChu(id);
       if (v.dai > dai) dai = v.dai;
-      if (v.nam) coNam = true;
+      for (const l of v.loai) loai.add(l);
     }
-    const beDay = O_CHU.dongTen + (coNam ? O_CHU.dongNam : 0) + 2 * O_CHU.le;   // bề dày hai dòng
-    const beDai = Math.ceil(dai) + 2 * O_CHU.le;                                // bề dài chữ
+    let beDay = 2 * O_CHU.le;
+    for (const l of loai) beDay += O_CHU.dong[l].cao;
+    const beDai = Math.ceil(dai) + 2 * O_CHU.le;
     const o = ngang.has(m)
       ? { ngang: true,  w: beDai, h: beDay }
       : { ngang: false, w: beDay, h: beDai };
@@ -59,6 +65,7 @@ export function xepCheDoChu(index, focus, visible, scope, doRong) {
     hang.set(m, o);
     return o;
   };
+
 
   let soLanXep = 0;
   const xep = () => {

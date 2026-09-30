@@ -6,7 +6,7 @@
 //            utils/{text,glyph,graph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
 //            chon-gia-pha,import-export,export-image,quan-tri/xuat-excel}
-// Phiên bản: 1.48.0 · Cập nhật: 30/09/2026 16:06 — gỡ nút Cũ/Mới
+// Phiên bản: 1.49.0 · Cập nhật: 30/09/2026 18:07 — nút Ảnh/Chữ
 // Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (dâu/rể)
 // ============================================================
 //
@@ -20,7 +20,8 @@
 import { state, notify } from '../state.js';
 import { computeVisibleSet, findStubPoints } from '../domains/bloodline.js';
 import { computeLayout } from '../domains/layout.js';
-import { renderTree } from '../domains/render.js';
+import { xepCheDoChu } from '../domains/so-do-chu.js';
+import { renderTree, beRong } from '../domains/render.js';
 import { getSpouses, getParents, getChildren, getSiblings } from '../domains/union.js';
 import { fullName, doiSongNguoi } from '../utils/text.js';
 import { chiMucVe, tapHuyetThong, themDauRe } from '../utils/graph.js';
@@ -268,9 +269,17 @@ export function refresh() {
     return;
   }
 
-  const stubs  = findStubPoints(index, visible, state.scope);
   const hienGio = { hienNgayGio: state.hienNgayGio === true };
-  const layout = computeLayout(index, focus, visible, state.scope, stubs, hienGio);
+  let layout;
+  if (docCheDoChu()) {
+    // Chế độ CHỈ CHỮ: không nốt cụt, kích thước ô theo hàng — `so-do-chu.js`.
+    const kq = xepCheDoChu(index, focus, visible, state.scope, beRong, hienGio.hienNgayGio);
+    layout = kq.layout;
+    hienGio.hangChu = kq.hang;
+  } else {
+    const stubs = findStubPoints(index, visible, state.scope);
+    layout = computeLayout(index, focus, visible, state.scope, stubs, hienGio);
+  }
   layoutHT = layout;
 
   renderTree(svgEl, layout, index, {
@@ -913,8 +922,38 @@ function veHopNutTrenPhai() {
       onCoSoDo: () => docCoSoDo(svgEl),
     })),
     nutTron('🔍', 'Tìm người trong gia phả', () => moDanhSachNguoi()),
+    veNutCheDo(),
   );
   return hop;
+}
+
+/**
+ * Nút mờ ẢNH ↔ CHỮ dưới 🔍 (việc 1, 30/09/2026 — chỗ nút Cũ/Mới cũ). Chữ =
+ * chỉ tên + năm, không ảnh, không nốt cụt: `domains/so-do-chu.js`. Nhớ ở
+ * `localStorage` của máy này; mặc định ẢNH. Nhãn nút là chế độ ĐANG VẼ.
+ */
+const KHOA_CHE_DO = 'giapha.cheDoChu';
+function docCheDoChu() {
+  try { return localStorage.getItem(KHOA_CHE_DO) === '1'; } catch (e) { return false; }
+}
+function veNutCheDo() {
+  const nut = nutTron('', '', () => {
+    const chuMoi = !docCheDoChu();
+    try { localStorage.setItem(KHOA_CHE_DO, chuMoi ? '1' : '0'); } catch (e) { /* không nhớ được thì thôi */ }
+    ghiNhan();
+    refresh();
+  });
+  nut.style.opacity = '0.5';
+  nut.style.fontSize = '11px';
+  nut.style.fontWeight = '600';
+  const ghiNhan = () => {
+    const chu = docCheDoChu();
+    nut.textContent = chu ? 'Chữ' : 'Ảnh';
+    nut.title = (chu ? 'Đang vẽ CHỈ CHỮ (tên, năm)' : 'Đang vẽ có ẢNH') + ' — bấm để đổi';
+    nut.setAttribute('aria-label', nut.title);
+  };
+  ghiNhan();
+  return nut;
 }
 
 /**

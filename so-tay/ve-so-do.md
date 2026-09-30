@@ -20,6 +20,12 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
   hướng phải → dòng tên là cột PHẢI, năm cột trái). ⚠ Khe hẹp làm sơ đồ
   "mọi hàng dọc" hẹp hơn nên luật chặt nhận ít hàng ngang hơn — sơ đồ nhỏ có
   khi CAO lên (tâm P0012: 380×458 → 300×508); trung bình vẫn thấp đi.
+  VẼ (1c, `render.js renderOChu()`): khung viền MỜ (chủ dự án GIỮ — "đây là
+  chế độ chữ") · ngày giỗ theo công tắc · căn giữa: ngang = giữa cả hai
+  chiều, dọc = các cột giữa theo bề ngang, chữ bám đỉnh · căn theo SỐ DÒNG
+  THẬT: dòng trống không chừa chỗ. ⚠ Dòng nào có chỉ ở `utils/text.dongOChu()`
+  — nơi ĐO (`so-do-chu.js`) và nơi VẼ cùng gọi; tự ghép chuỗi ở một bên là
+  chữ tràn ô. Chụp bằng mã app thật: `../kiem-thu/xem-che-do-chu.mjs`.
 - ⚠ **Không gãy chữ Z** (chủ dự án bác §9b/b85e, 25/09/2026): điểm thả của MỌI
   chùm nằm TRONG khoảng các con — chùm một con thì thẳng trên đầu con, cả ở
   khối con cháu (`khoiDuoi`, `xepDai`) lẫn khối tổ tiên (`treoToTien`). Đo:

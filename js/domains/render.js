@@ -2,8 +2,8 @@
 // giapha · js/domains/render.js
 // Vai trò  : Vẽ SVG từ kết quả layout. Chỉ vẽ, không tính toạ độ sơ đồ.
 // Lớp      : domains — được gọi bởi: pages · được phép gọi: utils, config
-// Phụ thuộc: config (LAYOUT, PHOTO), utils/text, utils/image, utils/avatar
-// Phiên bản: 1.9.1 · Cập nhật: 10/09/2026 18:45 (bỏ làm mờ/trong suốt cho ảnh đại diện nút biên vợ/chồng)
+// Phụ thuộc: config (LAYOUT, PHOTO, O_CHU), utils/text, utils/image, utils/avatar
+// Phiên bản: 1.10.0 · Cập nhật: 30/09/2026 18:07 — ô chế độ CHỈ CHỮ (renderOChu)
 // ============================================================
 //
 // Đây là file sẽ sửa nhiều nhất khi chỉnh giao diện. Giữ nó chỉ chứa việc vẽ,
@@ -77,8 +77,8 @@
 //    kiểm `if (p.birth.iso)` ở đây. Ca kiểm sống: P0005 Lê Thị Thái.
 //    Chiều cao ô vẫn CỐ ĐỊNH — ô co theo nội dung thì các ô cùng một đời so le.
 
-import { LAYOUT, PHOTO } from '../config.js';
-import { fullName, doiSongTuoi, ngayGio } from '../utils/text.js';
+import { LAYOUT, PHOTO, O_CHU } from '../config.js';
+import { fullName, doiSongTuoi, ngayGio, dongOChu } from '../utils/text.js';
 import { driveThumbUrl } from '../utils/image.js';
 import { anhMacDinhUri } from '../utils/avatar.js';
 
@@ -196,6 +196,7 @@ export const VE = {
   // Nét đứt của nút biên (dâu/rể). Từ bước 28 nó nằm ở VÀNH ẢNH, không còn ở
   // viền ô — viền ô đã bỏ. Giữ nguyên khuôn nét để người dùng không phải học lại.
   motNetOBien: '4 3',
+  vienOChuBien: '#c4b8a8',  // khung NÉT ĐỨT của ô chữ nút biên — đậm hơn viền mờ thường
 
   moNetDai:    0.5,        // nét dẫn tới chỗ xa vẽ nhạt hơn
   bo:          8,          // bo góc ô
@@ -208,11 +209,13 @@ export const VE = {
  * @param {object} layout   kết quả computeLayout()
  * @param {object} index    chỉ mục từ utils/graph.buildIndex — để tra tên
  * @param {{onChonNguoi?:function, onChonNotCut?:function}} [handlers]
- * @param {{hienNgayGio?:boolean}} [tuyChon]
+ * @param {{hienNgayGio?:boolean, hangChu?:Map}} [tuyChon]
  *        `hienNgayGio` — công tắc của sơ đồ, xem `pages/tree-view.js`. Phải
  *        khớp với cờ cùng tên đưa vào `computeLayout()`: chỗ kia CHỪA CHỖ cho
  *        hàng giỗ, chỗ này VẼ nó. Lệch nhau thì hàng giỗ hoặc tràn ra ngoài ô,
  *        hoặc để lại một khoảng trống không ai giải thích được.
+ *        `hangChu` — chế độ CHỈ CHỮ: `hang` do `xepCheDoChu()` trả (đời →
+ *        ngang/dọc). Có nó thì ô vẽ bằng `renderOChu()`, không ảnh.
  */
 export function renderTree(svgEl, layout, index, handlers, tuyChon) {
   if (!svgEl) return;
@@ -254,7 +257,10 @@ export function renderTree(svgEl, layout, index, handlers, tuyChon) {
   // --- LƯỢT 2 — toàn bộ ô người, nền ĐẶC ----------------------------------
   for (const node of layout.nodes) {
     const person = index && index.personById ? index.personById.get(node.id) : null;
-    const el = renderPersonNode(node, person, node.kind, hienGio);
+    const hangChu = tuyChon && tuyChon.hangChu;
+    const el = hangChu
+      ? renderOChu(node, person, node.kind, hangChu.get(node.gen), hienGio)
+      : renderPersonNode(node, person, node.kind, hienGio);
     if (!el) continue;
     if (xuLy.onChonNguoi) {
       el.style.cursor = 'pointer';
@@ -372,6 +378,79 @@ function renderPersonNode(node, person, kind, hienGio) {
                      (laBien ? '  —  nhánh của người này không được vẽ tiếp' : '');
   g.append(nhan);
 
+  return g;
+}
+
+/**
+ * Ô của chế độ CHỈ CHỮ (việc 1, chủ dự án chốt 30/09/2026) — không ảnh.
+ *
+ *   NGANG  ┃ Nguyễn Văn A ┃     khung viền MỜ (chủ dự án giữ: đây là chế độ
+ *          ┃  1927 – 2001 ┃     chữ), gạch màu giới tính ở mép TRÁI; các dòng
+ *                               căn giữa CẢ HAI chiều.
+ *   DỌC    chữ quay +90°, đọc TỪ TRÊN XUỐNG, bám ĐỈNH ô; các cột căn giữa
+ *          theo bề NGANG ô; gạch màu ở mép DƯỚI. Đầu chữ hướng sang phải nên
+ *          dòng 1 (tên) là cột PHẢI nhất.
+ *
+ * Căn giữa theo SỐ DÒNG THẬT của ô (`dongOChu()` đã bỏ dòng trống): ô không
+ * có năm, không có giỗ thì tên đứng giữa, không chừa chỗ trống cho dòng thiếu.
+ * Khung = nền trắng ĐẶC, che nét chạy phía sau (luật 2 đầu file).
+ *
+ * @param {{ngang:boolean}} o   hàng của ô, từ `xepCheDoChu()`
+ */
+function renderOChu(node, person, kind, o, hienGio) {
+  const g = tao('g', { 'data-id': node.id });
+  const laBien = kind === 'edge';
+  const { x, y, w, h } = node;
+
+  g.append(tao('rect', {
+    x, y, width: w, height: h, rx: 3,
+    fill: VE.nenBangTen,
+    stroke: node.laTrungTam ? VE.quangTrungTam : (laBien ? VE.vienOChuBien : VE.vienBangTen),
+    'stroke-width': node.laTrungTam ? 2 : 1,
+    'stroke-dasharray': laBien && !node.laTrungTam ? VE.motNetOBien : null,
+  }));
+  const ngang = !o || o.ngang;
+  g.append(tao('rect', ngang
+    ? { x, y, width: 3, height: h, fill: mauVien(person) }
+    : { x, y: y + h - 3, width: w, height: 3, fill: mauVien(person) }));
+
+  const dong = dongOChu(person, node.id, hienGio);
+  const mau = { ten: laBien ? VE.chuPhu : VE.chuChinh, nam: VE.chuPhu, gio: VE.chuGioMau };
+  let tong = 0;
+  for (const d of dong) tong += O_CHU.dong[d.loai].cao;
+
+  let da = 0;
+  for (const d of dong) {
+    const { co, cao } = O_CHU.dong[d.loai];
+    const tam = da + cao / 2;                       // tâm dòng, đo từ mép khối chữ
+    da += cao;
+    if (ngang) {
+      const cy = y + (h - tong) / 2 + tam;
+      g.append(chu(d.chu, x + w / 2, cy + co * 0.35, co, mau[d.loai], w - 2 * O_CHU.le));
+      continue;
+    }
+    // Quay +90°: "xuống dưới" của dòng chữ là sang TRÁI → chân chữ ở tâm − 0,35 cỡ.
+    const cx = x + (w + tong) / 2 - tam;
+    const t = tao('text', {
+      transform: 'translate(' + (cx - co * 0.35) + ',' + (y + O_CHU.le) + ') rotate(90)',
+      'font-size': co,
+      fill: mau[d.loai],
+    });
+    const dai = h - 2 * O_CHU.le;
+    if (beRong(d.chu, co) > dai) {
+      t.setAttribute('textLength', String(dai));
+      t.setAttribute('lengthAdjust', 'spacingAndGlyphs');
+    }
+    t.textContent = d.chu;
+    g.append(t);
+  }
+
+  const ten = dong[0].chu;
+  const nhan = tao('title');
+  nhan.textContent = dong.map((d) => d.chu).join('  ·  ') +
+                     (laBien ? '  —  nhánh của người này không được vẽ tiếp' : '');
+  g.append(nhan);
+  g.setAttribute('aria-label', ten);
   return g;
 }
 
@@ -602,7 +681,7 @@ function xepTen(ten, rongChuan, rongMax) {
 const nhoRong = new Map();
 let doChu; // undefined = chưa thử dựng · null = dựng hỏng, thôi thử lại
 
-function beRong(s, coChu) {
+export function beRong(s, coChu) {
   const khoa = coChu + '|' + s;
   if (nhoRong.has(khoa)) return nhoRong.get(khoa);
 

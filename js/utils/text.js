@@ -4,7 +4,7 @@
 //            và quy tắc hiển thị trường thiếu dùng chung cho mọi màn hình
 // Lớp      : utils — được gọi bởi: domains, pages · được phép gọi: config
 // Phụ thuộc: utils/date (calcAge)
-// Phiên bản: 1.1.0 · Cập nhật: 20/08/2026 16:20
+// Phiên bản: 1.2.0 · Cập nhật: 30/09/2026 18:07
 // ============================================================
 //
 // MỌI HÀM Ở ĐÂY LÀ HÀM THUẦN. Không chạm DOM, không đọc state.
@@ -156,6 +156,27 @@ export function doiSongTuoi(person) {
 export function ngayGio(person) {
   const gio = person && person.vn && person.vn.gio;
   return coGiaTri(gio) ? String(gio).trim() : '';
+}
+
+/**
+ * Các DÒNG CHỮ của một ô chế độ CHỈ CHỮ (việc 1, 30/09/2026), dòng TRỐNG đã
+ * bỏ — để căn giữa đúng số dòng thật có (chủ dự án: giỗ trống thì coi như
+ * không có dòng giỗ). Một hàm, HAI nơi dùng: `domains/so-do-chu.js` ĐO để
+ * tính kích thước ô, `domains/render.js` VẼ. Lệch nhau là chữ tràn ô.
+ *
+ *   loai 'ten' — tên đầy đủ (thiếu thì mã người) · luôn có
+ *   loai 'nam' — năm sinh – năm mất, KHÔNG kèm tuổi (chủ dự án: "năm sinh năm mất")
+ *   loai 'gio' — "Giỗ: …", chỉ khi công tắc ngày giỗ bật
+ *
+ * @returns {Array<{loai:'ten'|'nam'|'gio', chu:string}>}
+ */
+export function dongOChu(person, id, hienGio) {
+  const ra = [{ loai: 'ten', chu: fullName(person) || String(id || '') }];
+  const nam = doiSongNguoi(person);
+  if (nam) ra.push({ loai: 'nam', chu: nam });
+  const gio = hienGio ? ngayGio(person) : '';
+  if (gio) ra.push({ loai: 'gio', chu: 'Giỗ: ' + gio });
+  return ra;
 }
 
 /**
