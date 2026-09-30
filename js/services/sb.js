@@ -5,7 +5,7 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.55.0 · Cập nhật: 30/09/2026 06:50 (b162a) — duyệt/mời không gửi mã người
+// Phiên bản: 0.55.1 · Cập nhật: 30/09/2026 13:30 (b145c) — mở cây mặc định khi đã có chân cây khác
 //            (luoc-do/61); b161c xoaCay/traLaiCay (60); b161a kyAnh (59).
 //            Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/mo-app.md (layPhien — HAI đường phải đồng bộ)
@@ -450,7 +450,11 @@ export async function layPhien({ docCayLuon = false } = {}) {
 
   // Gói đã chọn cây theo cùng luật (`55` khối "Chọn cây").
   const treeId = goi ? goi.treeId : cayDangChon(ds, caiDat);
-  const vaiTro = (ds.find((m) => m.tree_id === treeId) || ds[0]).role;
+  // ⚠ b145c — gói có thể mở CÂY MẶC ĐỊNH cho người có chân ở cây khác
+  //   (`55` 0.2.0, nhờ `64`). Không có chân ở cây ấy thì vai là `xem`, đúng
+  //   như nhánh "không chân nào" dưới — đừng mượn vai của `ds[0]`.
+  const chan = ds.find((m) => m.tree_id === treeId);
+  const vaiTro = chan ? chan.role : 'xem';
 
   // b110 — cây đang mở vừa bị xoá. `docDuoc` ở nhánh này vốn là hằng `true`
   // vì "có dòng tree_members" từng đủ để kết luận đọc được; từ b110 thì không

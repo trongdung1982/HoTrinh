@@ -9,7 +9,7 @@
 --            về đường cũ (từng câu), không hỏng gì.
 -- Sổ tay   : so-tay/mo-app.md
 -- Đo       : ../kiem-thu/ban-thu-sql/do-b157b.mjs
--- Phiên bản: 0.1.0 · Cập nhật: 29/09/2026 (b157b)
+-- Phiên bản: 0.2.0 · Cập nhật: 30/09/2026 (b145c)
 -- ============================================================
 --
 -- ⚠⚠ `security INVOKER` — CỐ Ý, và là cả điểm an toàn của file này. Hàm chạy
@@ -24,6 +24,9 @@
 --   `dang_mo`, không có thì cây vào sớm nhất · Quản trị hệ thống không chân →
 --   cây đầu tiên theo tên · còn lại → cây mặc định (`cay_mac_dinh()`), không
 --   có thì `null` (trình duyệt tự hỏi `trang_thai_cua_toi()` như cũ).
+--   ĐỨNG TRƯỚC cả chuỗi ấy (0.2.0, b145c): cờ `dang_mo` trỏ vào cây không
+--   có chân mà `co_the_xem_cay()` vẫn gật → mở cây ấy. Ghi được cờ ấy là
+--   nhờ `64` — chưa dán `64` thì nhánh này không bao giờ trúng, vô hại.
 --
 -- `p_doc_cay` = true: kèm luôn dữ liệu cây (đúng năm thứ `layDong()` đọc:
 --   dòng `trees` · `doc_cay()` · `sources` · `imports` · mã nhật ký). Cây
@@ -95,8 +98,20 @@ begin
     return v_kq;
   end if;
 
-  -- Chọn cây — cùng luật `sb.js` bản trước.
-  if jsonb_array_length(v_ds) > 0 then
+  -- Chọn cây — cùng luật `sb.js` bản trước, cộng một nhánh (b145c): cờ
+  -- `dang_mo` trỏ vào cây KHÔNG có chân mà vẫn xem được (cây mặc định; với
+  -- QTHT là mọi cây) thì mở đúng cây ấy. Cờ trỏ vào cây nay không xem được
+  -- nữa (thôi là mặc định) thì bỏ qua, rơi xuống luật cũ.
+  select (s ->> 'tree_id')::uuid into v_cay
+    from jsonb_array_elements(v_cai_dat) s
+   where (s ->> 'dang_mo')::boolean
+     and not exists (select 1 from jsonb_array_elements(v_ds) e
+                      where e ->> 'tree_id' = s ->> 'tree_id')
+     and public.co_the_xem_cay((s ->> 'tree_id')::uuid)
+   limit 1;
+  if v_cay is not null then
+    v_nguon := case when v_qtht then 'qtht' else 'mac_dinh' end;
+  elsif jsonb_array_length(v_ds) > 0 then
     select (e ->> 'tree_id')::uuid into v_cay
       from jsonb_array_elements(v_ds) e
      where exists (select 1 from jsonb_array_elements(v_cai_dat) s

@@ -37,6 +37,14 @@ Liên quan: mọi trang (`layPhien()` chạy ở đầu cả sơ đồ lẫn Qu�
   `trees_thung_rac_hop_le` (`16`) đòi `xin_xoa_luc` có trước `da_xoa_luc`. Đặt
   một cột là `update` lỗi, cây KHÔNG vào thùng rác, và phép đo hỏng oan.
   Luôn kiểm `.ok` của câu dựng cảnh.
+- **Đọc được cây mà không ghi được "tôi đang mở cây này"** (b145c, 30/09) —
+  người có chân ở cây A mở cây mặc định B: `dat_cay_dang_mo()` báo "new row
+  violates row-level security policy for table user_settings", vì luật ghi
+  `user_settings` đòi `la_thanh_vien()` còn cửa đọc là `co_the_xem_cay()`. Vá
+  ở `64` (ghi được cây mình XEM được; tắt cờ ở cây vừa thôi là mặc định luôn
+  được) + `mo_phien` 0.2.0 nhận cờ ấy, vai `xem`. ⚠ Tài khoản thử
+  `khach@io.vn` · `thu-h9` đều CÓ chân ở `TH957` — thử cửa cây mặc định bằng
+  chúng là không thử gì; đo REST bằng tài khoản thật sự không chân.
 
 ## Vì sao làm thế này
 
