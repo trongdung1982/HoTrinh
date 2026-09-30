@@ -4,7 +4,7 @@
 //            và kích thước ô từng hàng; xếp chỗ vẫn là `computeLayout()`.
 // Lớp      : domains — được gọi bởi: pages · được phép gọi: utils, config
 // Phụ thuộc: domains/layout.js · utils/text.js · config (O_CHU)
-// Phiên bản: 0.1.0 · Cập nhật: 30/09/2026 16:38
+// Phiên bản: 0.3.0 · Cập nhật: 30/09/2026 17:15
 // Sổ tay   : so-tay/ve-so-do.md
 // ============================================================
 //
@@ -64,7 +64,7 @@ export function xepCheDoChu(index, focus, visible, scope, doRong) {
   const xep = () => {
     hang = new Map();
     soLanXep++;
-    return computeLayout(index, focus, visible, scope, [], { oHang });
+    return computeLayout(index, focus, visible, scope, [], { oHang, khe: O_CHU });
   };
   const beNgang = (l) => l.bounds.maxX - l.bounds.minX;
 

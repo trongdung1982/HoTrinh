@@ -3,7 +3,7 @@
 // Vai trò  : Tính TOẠ ĐỘ các ô người, đường nối và nốt cụt. Không vẽ gì cả.
 // Lớp      : domains — HÀM THUẦN. Không gọi services, không chạm DOM.
 // Phụ thuộc: config (LAYOUT, PHOTO) · domains/union.js · domains/render.js (VE)
-// Phiên bản: 2.1.0 · Cập nhật: 30/09/2026 16:38
+// Phiên bản: 2.2.0 · Cập nhật: 30/09/2026 17:15
 // ⚠ Chỉ còn MỘT cách xếp: BA KHỐI `datBaKhoi()` (mục 4b, b128b). Cách cũ
 //   `datMoiKhoi()` đã gỡ 30/09/2026. Ô rộng/cao THEO HÀNG khi có `tuyChon.oHang` (chế độ chữ).
 // Sổ tay   : so-tay/ve-so-do.md
@@ -145,6 +145,11 @@ const MUC_NET = PHOTO.leTrenO + PHOTO.banKinhTrenO;
  */
 let HANG = null;
 let KHONG_ANH = false;
+// Ba KHE — chế độ ảnh đọc `LAYOUT`, chế độ chữ đọc `tuyChon.khe` (O_CHU):
+// hết nốt cụt thì khe không còn bị nốt ngang/nốt dọc chặn, nên hẹp được.
+let KHE    = LAYOUT.hGap;        // giữa hai người không phải vợ chồng
+let KHE_VC = LAYOUT.spouseGap;   // giữa hai vợ chồng đứng kề nhau
+let KHE_DOC = LAYOUT.vGap;       // giữa hai hàng
 const rongHang = (m) => (HANG && HANG.has(m) ? HANG.get(m).w : RONG);
 const netHang  = (m) => (HANG && HANG.has(m) ? HANG.get(m).net : MUC_NET);
 const rongId   = (ct, id) => rongHang(ct.muc.get(id));
@@ -182,6 +187,7 @@ const leAnh    = (nut) => (KHONG_ANH ? 0 : nut.w / 2 - PHOTO.banKinhTrenO);
  *        hoặc để lại một khoảng trống không ai giải thích được.
  *        `oHang(đời, [personId]) → {w, h, net}` — chế độ CHỈ CHỮ: kích thước
  *        ô từng hàng, gọi SAU khi biết đời. Có nó thì bỏ vòng ảnh — xem `HANG`.
+ *        `khe: {hGap, spouseGap, vGap}` — chỉ đọc khi có `oHang`.
  * @returns {{nodes:Array, unions:Array, links:Array, stubs:Array,
  *            bounds:{minX:number,minY:number,maxX:number,maxY:number}}}
  */
@@ -192,6 +198,10 @@ export function computeLayout(index, focusPersonId, visibleSet, scope, stubPoint
     : LAYOUT.nodeHeight;
   HANG = null;
   KHONG_ANH = !!(tuyChon && typeof tuyChon.oHang === 'function');
+  const khe = (KHONG_ANH && tuyChon.khe) || {};
+  KHE     = khe.hGap      ?? LAYOUT.hGap;
+  KHE_VC  = khe.spouseGap ?? LAYOUT.spouseGap;
+  KHE_DOC = khe.vGap      ?? LAYOUT.vGap;
 
   const rong = {
     nodes: [], unions: [], links: [], stubs: [],
@@ -215,7 +225,7 @@ export function computeLayout(index, focusPersonId, visibleSet, scope, stubPoint
     const nut = {
       id,
       x: viTriX.has(id) ? viTriX.get(id) : 0,
-      y: yHang ? yHang.get(gen) : gen * (CAO + LAYOUT.vGap),
+      y: yHang ? yHang.get(gen) : gen * (CAO + KHE_DOC),
       w: rongHang(gen),
       h: HANG ? HANG.get(gen).h : CAO,
       kind: visibleSet.get(id) || 'full',
@@ -258,7 +268,7 @@ function dungHang(ct, oHang) {
   let y = 0;
   for (let m = ds[0]; m <= ds[ds.length - 1]; m++) {
     yHang.set(m, y);
-    y += (HANG.has(m) ? HANG.get(m).h : 0) + LAYOUT.vGap;
+    y += (HANG.has(m) ? HANG.get(m).h : 0) + KHE_DOC;
   }
   return yHang;
 }
@@ -768,7 +778,7 @@ function layDai(ct, neoId) {
   if (ct.dai.has(neoId)) return ct.dai.get(neoId);
 
   const w        = rongId(ct, neoId);
-  const buoc     = w + LAYOUT.spouseGap;
+  const buoc     = w + KHE_VC;
   const dsUnion  = (ct.unionLamVo.get(neoId) || []).filter((uid) => ct.unionHT.has(uid));
   const banDoi   = [];
   for (const uid of dsUnion) {
@@ -789,8 +799,8 @@ function layDai(ct, neoId) {
   banDoi.forEach((bd, i) => {
     dx.set(bd.spouseId, dxP + huong * (i + 1) * buoc);
     khe.set(bd.unionId, huong > 0
-      ? i * buoc + w + LAYOUT.spouseGap / 2
-      : dxP - LAYOUT.spouseGap / 2 - i * buoc);
+      ? i * buoc + w + KHE_VC / 2
+      : dxP - KHE_VC / 2 - i * buoc);
     mucNet.set(bd.unionId, i);
   });
   for (const uid of dsUnion) {
@@ -807,7 +817,7 @@ function layDai(ct, neoId) {
 
   const kq = {
     neoId, huong, n, dx, khe, mucNet, dxP, buocNet,
-    rong: (n + 1) * buoc - LAYOUT.spouseGap,
+    rong: (n + 1) * buoc - KHE_VC,
     thuTuUnion: dsUnion,
     banDoi,
   };
@@ -856,7 +866,7 @@ function deChoNay(ct, viTri, k, x) {
     const w = rongHang(m), t = it.x + x, p = t + w;
     for (const [kh, xk] of viTri) {
       if (ct.muc.get(kh) !== m) continue;
-      if (t < xk + w + LAYOUT.hGap && xk < p + LAYOUT.hGap) return true;
+      if (t < xk + w + KHE && xk < p + KHE) return true;
     }
   }
   return false;
@@ -927,7 +937,7 @@ function deLenNhau(ct, viTriX, cum, d) {
       if (ct.muc.get(kh) !== m) continue;
       const xk = viTriX.get(kh);
       if (xk === undefined) continue;
-      if (t < xk + w + LAYOUT.hGap && xk < p + LAYOUT.hGap) return true;
+      if (t < xk + w + KHE && xk < p + KHE) return true;
     }
   }
   return false;
@@ -1115,7 +1125,7 @@ function khoiDuoi(ct, neoId) {
   chum.sort((a, b) => (a.goc - b.goc) || (a.i - b.i));
   const dsKhoi = [];
   for (const c of chum) for (const k of c.khoi) dsKhoi.push(k);
-  gop(kq, xepKhit(dsKhoi, LAYOUT.hGap));
+  gop(kq, xepKhit(dsKhoi, KHE));
   for (const c of chum) {
     c.lo = c.khoi[0].neoX;
     c.hi = c.khoi[c.khoi.length - 1].neoX;
@@ -1259,7 +1269,7 @@ function khoiTren(ct, X) {
     k.neoX = dai.dxP + k.neoW / 2;
     return k;
   });
-  const hang = xepKhit(dsDai, LAYOUT.hGap);
+  const hang = xepKhit(dsDai, KHE);
   hang.noi = noiCua(ct, hang, uid);
 
   const xs = hang.items.map((it) => it.x + it.w / 2);
@@ -1299,8 +1309,8 @@ function treoToTien(ct, k, doiTac, noi) {
     const acc = khoiRong();
     for (const o of co) {
       if (acc.items.length) {
-        let d = canhPhai(acc.vien, o.t.vien, LAYOUT.hGap);
-        if (!Number.isFinite(d)) d = mepCua(acc, true) + LAYOUT.hGap - mepCua(o.t, false);
+        let d = canhPhai(acc.vien, o.t.vien, KHE);
+        if (!Number.isFinite(d)) d = mepCua(acc, true) + KHE - mepCua(o.t, false);
         dich(o.t, d);
       }
       gop(acc, o.t);
@@ -1313,8 +1323,8 @@ function treoToTien(ct, k, doiTac, noi) {
   let dTrai = 0, dPhai = 0;
   for (const o of co) {
     const benTrai = o.t.noi < noi || (co.length === 1 && o.j === 0 && doiTac.length > 1);
-    if (benTrai) dTrai = Math.max(dTrai, canhPhai(o.t.vien, k.vien, LAYOUT.hGap));
-    else         dPhai = Math.max(dPhai, canhPhai(k.vien, o.t.vien, LAYOUT.hGap));
+    if (benTrai) dTrai = Math.max(dTrai, canhPhai(o.t.vien, k.vien, KHE));
+    else         dPhai = Math.max(dPhai, canhPhai(k.vien, o.t.vien, KHE));
   }
   for (const o of co) {
     const benTrai = o.t.noi < noi || (co.length === 1 && o.j === 0 && doiTac.length > 1);
@@ -1549,7 +1559,7 @@ function nhipNotCut(ct, u, xTreo, huong) {
   else if (xTreo <= lo + 0.5) { ra = -1; goc = lo; }
   else                        { ra = huong; goc = huong > 0 ? hi : lo; }
 
-  return { goc, x: goc + ra * (wCon / 2 + LAYOUT.hGap) };
+  return { goc, x: goc + ra * (wCon / 2 + KHE) };
 }
 
 function nhipThanhNgang(ct, t, neXuong) {
@@ -1615,7 +1625,8 @@ function nhipThanhNgang(ct, t, neXuong) {
  */
 function xepMucThanhNgang(ct, unions, neXuong) {
   // Trần: mép TRÊN của nốt cụt hướng lên mọc từ hàng dưới, trừ 2px hở.
-  const tran = LAYOUT.vGap - LAYOUT.stubLength - LAYOUT.stubRadius - 2;
+  const tran = KHONG_ANH ? KHE_DOC - 4   // chế độ chữ không có nốt cụt
+    : KHE_DOC - LAYOUT.stubLength - LAYOUT.stubRadius - 2;
 
   const theoHang = new Map();              // busY gốc -> các thanh ngang cùng mức
   for (const t of unions) {
@@ -1983,7 +1994,7 @@ function viTriNotCut(ct, treoCua, sp, nut) {
         VE.leTrongBang * 2 + VE.buocDongTen;
     let yNot = Math.min(nut.y + nut.h + LAYOUT.stubRadius - 3,
                         nut.y + nut.h + LAYOUT.khoangSatChu - LAYOUT.stubRadius - 2);
-    if (netNgangCat(ct, x, yNot)) yNot = nut.y + nut.h + LAYOUT.vGap - LAYOUT.stubRadius - 2;
+    if (netNgangCat(ct, x, yNot)) yNot = nut.y + nut.h + KHE_DOC - LAYOUT.stubRadius - 2;
     return { x, y: yNot, x1: x, y1: nut.y + dayTen, angle: 90 };
   }
 
@@ -2094,7 +2105,7 @@ function viTriNotCut(ct, treoCua, sp, nut) {
   // thì ở hàng dưới. Bám sàn thì mọi thứ trong khe giữ nguyên khoảng cách tới
   // hàng dưới dù `vGap` có nới bao nhiêu, và nốt tự tránh được mọi mức thanh
   // ngang — mức sâu nhất còn cách mép trên nốt 8px.
-  const tranY = nut.y + nut.h + LAYOUT.vGap - LAYOUT.stubRadius - 2;
+  const tranY = nut.y + nut.h + KHE_DOC - LAYOUT.stubRadius - 2;
   const yDay  = tranY;
 
   // Mọi phép đo đoạn ngang của nốt cụt đều đi qua `nhipNotCut()` — xem ghi chú

@@ -3,7 +3,7 @@
 // Vai trò  : Hằng số hiển thị phía trình duyệt.
 // Lớp      : config — không gọi file nào khác
 // Phụ thuộc: (không)
-// Phiên bản: 0.24.0 · Cập nhật: 30/09/2026 16:38
+// Phiên bản: 0.25.0 · Cập nhật: 30/09/2026 17:15
 // ============================================================
 //
 // LƯU Ý: file này KHÔNG phải nơi bạn điền cấu hình. Mọi thứ cần điền nằm ở
@@ -424,6 +424,13 @@ export const O_CHU = {
   dongTen: 13,
   dongNam: 11,
   le:       4,     // lề trong ô, bốn phía
+
+  // Khe riêng chế độ chữ (chủ dự án 30/09/2026) — chế độ ảnh vẫn 28 · 16 · 38.
+  // Hẹp được vì chế độ chữ KHÔNG có nốt cụt: 28/38 cũ là chỗ cho nốt mọc ra.
+  // Vợ chồng sát hơn anh em (8 < 12), đúng tỷ lệ bên ảnh (16 < 28).
+  hGap:      12,
+  spouseGap:  8,
+  vGap:      28,
 };
 
 // Bốn con số điều khiển tập người được vẽ. Xem KE-HOACH_V08.

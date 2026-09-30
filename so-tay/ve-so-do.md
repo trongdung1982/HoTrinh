@@ -14,6 +14,12 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
   thì giữ nguyên HÌNH phép tính và chạy `chup-bo-cuc.mjs` trước/sau + `cmp`:
   chế độ ảnh phải giống từng byte. Đo: `../kiem-thu/do-che-do-chu.mjs` (bảng
   bề rộng chữ chụp từ Chrome) · nhìn: `../kiem-thu/xem-che-do-chu.mjs`.
+  Chủ dự án chốt 30/09: KHÔNG nốt cụt · luật "đủ rộng" CHẶT (bề ngang không
+  tăng chút nào) · khe riêng `O_CHU` 12/8/28 (layout đọc qua `KHE`/`KHE_VC`/
+  `KHE_DOC`) · chữ dọc đọc TỪ TRÊN XUỐNG, bám ĐỈNH ô (quay +90°: đầu chữ
+  hướng phải → dòng tên là cột PHẢI, năm cột trái). ⚠ Khe hẹp làm sơ đồ
+  "mọi hàng dọc" hẹp hơn nên luật chặt nhận ít hàng ngang hơn — sơ đồ nhỏ có
+  khi CAO lên (tâm P0012: 380×458 → 300×508); trung bình vẫn thấp đi.
 - ⚠ **Không gãy chữ Z** (chủ dự án bác §9b/b85e, 25/09/2026): điểm thả của MỌI
   chùm nằm TRONG khoảng các con — chùm một con thì thẳng trên đầu con, cả ở
   khối con cháu (`khoiDuoi`, `xepDai`) lẫn khối tổ tiên (`treoToTien`). Đo:
