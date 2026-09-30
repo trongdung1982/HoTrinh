@@ -44,7 +44,7 @@ lại từng cột.
 | Bảng | Vai | Ghi chú |
 |---|---|---|
 | `trees` | Một dòng một gia phả. Chứa `revision` — số chống ghi đè | Thay khối `"tree": {…}` đầu file JSON |
-| `tree_members` | **Ai được vào cây nào** — vai `quan_tri_he_thong`/`quan_tri`/`sua`/`xem`/`sao_luu`, cộng `person_id` + `approved` + `tin_cay` + `moi_boi`/`moi_luc`/`moi_vai` | Thay danh sách chia sẻ Drive · xem mục 2b. ⚠⚠ **BA trạng thái, không phải hai**: `approved`=true là thành viên · `moi_luc` trống + chưa duyệt là **đơn xin vào** · `moi_luc` CÓ + chưa duyệt là **lời mời chưa nhận**, và không cửa nào được ghi vào dòng ấy (`18-hai-chu-ky.sql`, `THIET-KE-NHIEU-CAY.md` mục 11.8) |
+| `tree_members` | **Ai được vào cây nào** — vai `quan_tri_he_thong`/`quan_tri`/`sua`/`xem`/`sao_luu`, cộng `approved` + `tin_cay` + `moi_boi`/`moi_luc`/`moi_vai` | Thay danh sách chia sẻ Drive · xem mục 2b. ⚠⚠ **BA trạng thái, không phải hai**: `approved`=true là thành viên · `moi_luc` trống + chưa duyệt là **đơn xin vào** · `moi_luc` CÓ + chưa duyệt là **lời mời chưa nhận**, và không cửa nào được ghi vào dòng ấy (`18-hai-chu-ky.sql`, `THIET-KE-NHIEU-CAY.md` mục 11.8) |
 | `branches` | Chi/nhánh | ⚠ **TỪ NAY KHÔNG DÙNG** — luật trực hệ thay chỗ, xem mục 2b |
 | `branch_access` | Ai được sửa nhánh nào | ⚠ **TỪ NAY KHÔNG DÙNG** — xem mục 2b |
 | `persons` | Một dòng một người | Khoá chính `(tree_id, id)` · ⚠ `26` (b121, chưa dán) đổi thành `id` toàn cục, ai-thuộc-cây-nào sang bảng `tree_persons` — `so-tay/luu-du-lieu.md` · `tree_persons.doi` = Đời theo cây, máy chủ tự tính (`40`, `so-tay/xuat-excel.md`) |
@@ -151,8 +151,8 @@ việc đổi phải dán lại năm file chứ không phải một. Gặp `chu`
 sử git thì đọc là `quan_tri_he_thong`.
 
 Tài khoản muốn sửa phải **gắn với một mã người** (`tai_khoan.person_id` — từ
-b126 gắn là chuyện của tài khoản; `tree_members.person_id` là cột chết, `62`
-cắt mọi hàm còn đụng nó) và
+b126 gắn là chuyện của tài khoản; cột cũ `tree_members.person_id` đã xoá ở
+`63`) và
 **được duyệt** (`approved`). Duyệt rồi thì sửa được **trực hệ** của người
 ấy: lên chỉ đường thẳng — bố mẹ, ông bà, cụ, **không** rẽ ngang sang bác/chú;
 xuống toàn bộ con cháu; cộng vợ/chồng của những người ấy. Chưa gắn → chỉ xem.

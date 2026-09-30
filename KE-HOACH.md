@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 30/09/2026 · Hai mươi bảy điểm dừng chưa bấm thử · SQL đã dán tới `61`, `62` chờ dán.*
+*Cập nhật 30/09/2026 · Hai mươi bảy điểm dừng chưa bấm thử · SQL đã dán tới `61`, `62` → `63` chờ dán.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -70,6 +70,11 @@ dán lại* — đọc TRƯỚC khi dán lại bất cứ file nào.
 chạy được với cả máy chủ trước lẫn sau `62`, không cần thứ tự. Đo:
 `do-b162a.mjs` 35/35.
 
+**`63` — CHƯA DÁN. Dán SAU `62`** (b162b — xoá cột `tree_members.person_id`;
+dán trước `62` thì file tự DỪNG, không đổi gì). ⚠ Mọi bản sao lưu chụp trước
+`63` thôi khôi phục được — chủ dự án chốt bỏ (30/09). Đo: `do-b162b.mjs`
+20/20 · khôi phục bản khuôn mới 34/34.
+
 ⚠ Bản cuối mới: `xoa_cay()` · `tra_lai_cay()` ở `60` (tên cũ đã xoá); `don_mo_coi_he_thong()`
 · `ds_nguoi_mo_coi()` · luật `xoa_anh` ở `61`; luật `xem_anh` + kho kín ở `59`.
 
@@ -95,11 +100,7 @@ thấy đủ (như b148). Muốn khác thì một chỗ ở `53`.
 
 ### Việc mã đã chốt (30/09/2026) — theo thứ tự
 
-1. **b162b — bỏ hẳn cột `tree_members.person_id`** (SAU khi `62` đã dán —
-   từ `62` không hàm nào đụng nó). Còn phải xem: sao lưu/khôi phục chép
-   `tree_members` theo cột (`05`/`44`/`45`/`54`), chỉ mục
-   `tree_members_person_uniq` (`06`), `sb-gia.mjs`. Opus.
-2. **Sau cùng mọi việc:** đưa hai bảng nhật ký vào sao lưu (xem *Còn treo*).
+1. **Sau cùng mọi việc:** đưa hai bảng nhật ký vào sao lưu (xem *Còn treo*).
 
 *(Chủ dự án bỏ 30/09: đổi tên `driveFileId`/`driveThumbUrl` · sửa `sinh-sql-di-doi.mjs` (cất vào `luu-tru/`) · xoá `branches`/`branch_access`
 — bảng trống vô hại, xoá phải sửa sao lưu + khôi phục + gộp người. Tạo tài

@@ -102,6 +102,14 @@ ghi — nên đầu file SQL đặt `timezone = 'UTC'`. Bỏ dòng ấy là báo
 
 ## Bẫy đã gặp
 
+- ⚠ **Xoá một cột = mọi bản sao lưu chụp TRƯỚC đó không khôi phục được**
+  (b162b, `63` xoá `tree_members.person_id`). Bước so từng dòng (3c ở
+  `khoi-phuc.mjs` và `54`) so theo khoá CỦA FILE; file cũ còn khoá đã mất
+  → mọi dòng "lệch" → huỷ gọn, dữ liệu không đổi. Chủ dự án chấp nhận bỏ
+  bản cũ (30/09/2026, app chưa chạy chính thức). Lần sau xoá cột mà cần giữ
+  bản cũ: 3c phải bỏ khoá file không còn là cột. Đo: `DEN_CUOI=1 node
+  do-b155a.mjs <bản chụp>` — khuôn mới 34/34, bản cũ bị huỷ đúng như trên.
+
 - psql trên Windows xuống dòng **CRLF**: tách kết quả bằng `/\r?\n/`, không
   thì `'ĐẠT\r' ≠ 'ĐẠT'` — bài đo báo HỎNG oan.
 - SQL nằm trong template literal của JS: **cấm backtick** trong ghi chú SQL

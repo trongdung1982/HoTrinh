@@ -43,7 +43,9 @@ Dán lại file bên trái thì phải dán tiếp các file bên phải, đúng
   và xoá `gan_nguoi_cho_thanh_vien()`. Quên `62` là hàm ấy đọc/ghi lại cột
   chết `tree_members.person_id` — ô tìm hiện người cũ, duyệt đơn "gắn" mà
   không gắn, gộp người vấp chỉ mục. Im lặng. (`52`→`62`: vá của `62` neo
-  trên bản đã có `contact`.)
+  trên bản đã có `contact`.) ⚠ Sau `63` (cột đã xoá): dán lại `06`/`15`/`27`
+  báo lỗi to tiếng; các file kia dựng lại hàm im lặng rồi hỏng lúc chạy —
+  vẫn dán `62` ngay sau.
 - `03`/`06`/`08`/`13`→`25`→`27`→`28`→**`32`** — `28` giữ bản cuối của
   `tu_choi_thay_doi()` (khác `27` chín chỗ: dán lại `27` sau `28` là mất cả
   chín, **không một lời báo**); ⚠ **`32` giữ bản cuối của `luu_cay()`** (rào
