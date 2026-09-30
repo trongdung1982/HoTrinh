@@ -321,21 +321,25 @@ declare
 begin
   for r in select * from (values
     ('public.tu_choi_thay_doi(uuid, bigint, text)'::regprocedure,
-     'select\s+tm\.email\s+into\s+v_ngoai\s+from\s+public\.tree_members\s+tm\s+where\s+[^;]*tm\.person_id\s*=\s*any\s*\(\s*v_xoa_p\s*\)',
-     'select coalesce(u.email::text, tk.user_id::text) into v_ngoai  -- b162a' || chr(10) ||
+     'select\s+tm\.email\s+into\s+v_ngoai\s+from\s+public\.tree_members\s+tm\s+where\s+[^;]*tm\.person_id\s*=\s*any\s*\(\s*v_xoa_p\s*\)\s+limit\s+1',
+     'v_ngoai := (select coalesce(u.email::text, tk.user_id::text) /* b162a */' || chr(10) ||
      '    from public.tai_khoan tk left join auth.users u on u.id = tk.user_id' || chr(10) ||
-     '   where tk.person_id = any(v_xoa_p)'),
+     '   where tk.person_id = any(v_xoa_p) limit 1)'),
     ('public.gop_hai_nguoi(text, text, uuid)'::regprocedure,
      'update\s+public\.tree_members\s+set\s+person_id\s*=\s*p_giu\s+where\s+person_id\s*=\s*p_thua\s*;',
-     '-- b162a: liên kết tài khoản ↔ người nằm ở tai_khoan, dời ở dưới.')
+     '/* b162a: liên kết tài khoản ↔ người nằm ở tai_khoan, dời ở dưới. */')
   ) as v(ham, neo, thay)
   loop
+    -- ⚠ Gán `:=`, KHÔNG `select … into`, cả trong chuỗi thay: SQL Editor của
+    --   Supabase rà văn bản SAU khi chạy, gặp `select … into x` ngoài thân hàm
+    --   thì tưởng tạo bảng `x` → báo "relation … does not exist" dù đã chạy xong
+    --   (lần dán 30/09: `62` vào đủ mà màn hình báo lỗi "relation public").
     v_def := pg_get_functiondef(r.ham);
     continue when v_def like '%b162a%';
-    select count(*) into v_so from regexp_matches(v_def, r.neo, 'g');
+    v_so := (select count(*) from regexp_matches(v_def, r.neo, 'g'));
     if v_so <> 1 then
-      select string_agg(m[1], E'\n  ··· ') into v_doan
-        from regexp_matches(v_def, '([^;]{0,160}tree_members[^;]{0,200})', 'g') m;
+      v_doan := (select string_agg(m[1], E'\n  ··· ')
+                   from regexp_matches(v_def, '([^;]{0,160}tree_members[^;]{0,200})', 'g') m);
       raise exception 'DỪNG: chỗ neo của % khớp % lần (phải đúng 1) — sửa luoc-do/62. Mã đang chạy quanh tree_members: %',
         r.ham, v_so, coalesce(v_doan, '(không có chữ tree_members)');
     end if;

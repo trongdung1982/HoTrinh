@@ -29,12 +29,15 @@ begin
     raise exception 'DỪNG: chưa dán 62-thoi-doc-tm-person.sql.';
   end if;
 
-  select string_agg(p.proname, ', ') into v_ham
-    from pg_proc p join pg_namespace n on n.oid = p.pronamespace
-   where n.nspname = 'public'
-     and (p.prosrc ~* 'tm\.person_id'
-          or p.prosrc ~* 'update public\.tree_members\s[^;]*person_id'
-          or p.prosrc ~* 'insert into public\.tree_members[^;]*person_id');
+  -- ⚠ Gán `:=`, KHÔNG `select … into`: SQL Editor của Supabase rà văn bản SAU
+  --   khi chạy, gặp `select … into x` ngoài thân hàm thì tưởng tạo bảng `x`,
+  --   đi hỏi RLS của nó → báo "relation … does not exist" dù file đã chạy xong.
+  v_ham := (select string_agg(p.proname, ', ')
+              from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+             where n.nspname = 'public'
+               and (p.prosrc ~* 'tm[.]person_id'
+                    or p.prosrc ~* 'update public[.]tree_members[[:space:]][^;]*person_id'
+                    or p.prosrc ~* 'insert into public[.]tree_members[^;]*person_id'));
   if v_ham is not null then
     raise exception 'DỪNG: còn hàm đụng tree_members.person_id: % — dán lại 62.', v_ham;
   end if;
