@@ -4,8 +4,8 @@
 //            báo lỗi rõ ràng nếu người dùng chưa đăng nhập hoặc chưa có quyền.
 // Lớp      : pages
 // Phụ thuộc: services/repo, services/sb, utils/date, pages/dang-nhap,
-//            pages/tree-view
-// Phiên bản: 0.13.2 · Cập nhật: 29/09/2026 (b153a) — màu viết `var(--sd-…,#mã-cũ)`, theo tông (so-do-mau.css)
+//            pages/tree-view, pages/settings, pages/chon-gia-pha
+// Phiên bản: 0.14.0 · Cập nhật: 30/09/2026 (b161f) — nút ⚙ Cài đặt ở mọi màn khởi động
 // ============================================================
 //
 // ⚠ **ĐỔI SO VỚI BẢN APPS SCRIPT: có thêm một kết cục thứ ba.**
@@ -37,6 +37,8 @@ import * as repo from '../services/repo.js';
 import { xinVaoCay, nhanLoiMoi, tuChoiLoiMoi } from '../services/sb.js';
 import { mountDangNhap } from './dang-nhap.js';
 import { mountTreeView } from './tree-view.js';
+import { openSettings, closeSettings } from './settings.js';
+import { openChonGiaPha } from './chon-gia-pha.js';
 import { rongHop, vaiTroBangChu } from '../config.js';
 import { stampNow } from '../utils/date.js';
 
@@ -85,6 +87,7 @@ export async function mountKhoiDong(containerEl) {
 
 function hienManHinhCho(el) {
   el.innerHTML = '';
+  el.append(nutCaiDat());
   // ⚠ Câu "Google có thể hỏi bạn cấp quyền" của bản Apps Script đã BỎ, và đó
   //   là một trong những thứ đáng giá nhất của cả lần chuyển nhà: màn hình
   //   *"Google chưa xác minh ứng dụng này"* — chỗ nhiều người trong họ dừng
@@ -103,6 +106,7 @@ function hienManHinhCho(el) {
  */
 function hienManHinhKhongCoQuyen(el, phien) {
   el.innerHTML = '';
+  el.append(nutCaiDat());
 
   // ⚠ ĐỨNG ĐẦU MỌI NHÁNH (b110). Người rơi vào đây **có đủ quyền** — họ có
   //   chân trong cây, có khi còn là Quản trị hệ thống. Cái thiếu không phải
@@ -332,6 +336,7 @@ function veKhoiXinVao(el, phien) {
 /** Lỗi mạng hoặc máy chủ — kèm nút Thử lại. */
 function hienManHinhLoi(el, loi) {
   el.innerHTML = '';
+  el.append(nutCaiDat());
   const nut = document.createElement('button');
   nut.textContent = 'Thử lại';
   nut.style.cssText = 'margin-top:16px;padding:10px 20px;font-size:16px;' +
@@ -350,6 +355,36 @@ function hienManHinhLoi(el, loi) {
 // ============================================================
 // Vài mẩu DOM dùng chung. Không thư viện, không bước build.
 // ============================================================
+
+/**
+ * Nút ⚙ Cài đặt góc trên phải — có mặt ở MỌI màn khởi động, kể cả lúc
+ * "Đang mở gia phả…" (b161f, chủ dự án 30/09/2026).
+ *
+ * ⚠ Vì sao: cây đang mở bị xoá thì màn "Không mở được gia phả" từng là NGÕ
+ *   CỤT — nút Cài đặt (đường duy nhất sang *Chọn gia phả*) chỉ mọc sau khi
+ *   sơ đồ tải xong. Chủ dự án chọn "nút tải trước" thay vì tự nhảy sang cây
+ *   khác. `mountTreeView` dọn `el` nên nút này tự biến, nhường nút của sơ đồ.
+ *   Chưa tải cây thì Cài đặt tự bớt khối cần cây (`settings.js` `coCay`).
+ */
+function nutCaiDat() {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.textContent = '⚙';
+  b.title = 'Cài đặt';
+  b.setAttribute('aria-label', 'Cài đặt');
+  b.dataset.viec = 'cai-dat-khoi-dong';
+  b.style.cssText =
+    'position:fixed;top:12px;right:12px;z-index:20;width:44px;height:44px;' +
+    'border-radius:50%;font-size:22px;line-height:1;cursor:pointer;' +
+    'touch-action:manipulation;background:var(--sd-giay,#fffdf9);' +
+    'color:var(--sd-chu,#2a2622);border:1px solid var(--sd-vien,#e6e0d8);' +
+    'box-shadow:0 2px 8px rgba(42,38,34,.15)';
+  b.addEventListener('click', () => openSettings({
+    // Cùng lối `tree-view.js`: đóng Cài đặt TRƯỚC — hai lớp phủ cùng z-index.
+    onMoChonGiaPha: () => { closeSettings(); openChonGiaPha(); },
+  }));
+  return b;
+}
 
 function khung(phanTu) {
   const d = document.createElement('div');

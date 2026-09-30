@@ -45,6 +45,14 @@ Liên quan: mọi trang (`layPhien()` chạy ở đầu cả sơ đồ lẫn Qu�
   được) + `mo_phien` 0.2.0 nhận cờ ấy, vai `xem`. ⚠ Tài khoản thử
   `khach@io.vn` · `thu-h9` đều CÓ chân ở `TH957` — thử cửa cây mặc định bằng
   chúng là không thử gì; đo REST bằng tài khoản thật sự không chân.
+- **Cây đang mở bị xoá → ngõ cụt** (b161f, 30/09) — màn ra KHÔNG phải màn
+  "Gia phả này đã bị xoá" (`daxoa`) mà là "Không mở được gia phả… Có thể bạn
+  đã bị gỡ" (`sb.js` `ghepDong`: đọc `trees` ra rỗng), và nút ⚙ chỉ mọc sau
+  khi sơ đồ tải xong. Chủ dự án chọn: **nút ⚙ tải TRƯỚC**, có ở mọi màn
+  khởi động (`khoi-dong.js` `nutCaiDat()`), KHÔNG tự nhảy sang cây khác. Cài
+  đặt khi chưa có cây (`state.tree` rỗng) tự bớt khối cần cây. Gốc — vì sao
+  `tin_thung_rac()` không báo `daXoa` cho cây xoá bằng `xoa_cay()` (`60`) —
+  CHƯA đo; màn đúng tên vẫn là việc treo.
 
 ## Vì sao làm thế này
 

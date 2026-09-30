@@ -4,7 +4,7 @@
 //            đường sang Chọn gia phả · Xuất dữ liệu (GEDCOM/Excel) · Nhập
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: state, services/sb, utils/text, pages/export-image
-// Phiên bản: 1.37.0 · Cập nhật: 30/09/2026 13:40 (b163) — Xuất dữ liệu ▾ ba khuôn; gỡ khối Sao lưu
+// Phiên bản: 1.38.0 · Cập nhật: 30/09/2026 (b161f) — mở được khi chưa tải cây (bớt khối cần cây)
 // ============================================================
 //
 // Màn hình này tồn tại vì MỘT việc: đặt và bỏ người trung tâm mặc định của
@@ -147,8 +147,12 @@ export function openSettings(xuLy = {}) {
   chuTieuDe.style.cssText = 'font-size:19px;font-weight:600';
   tieuDe.append(chuTieuDe);
 
-  const tenCayDangMo = state.phien && (state.phien.tenCay || state.phien.tenHo || state.phien.tenFileDuLieu);
-  const maCayDangMo = state.phien && state.phien.maCay;
+  // ⚠ b161f — Cài đặt mở được cả khi CHƯA TẢI CÂY (màn khởi động: cây đang
+  //   mở vào thùng rác, chưa có quyền…). Lúc ấy chỉ vẽ khối không cần cây —
+  //   Chọn gia phả + Phiên; `state.phien.tenCay` khi đó là cây KHÔNG mở được.
+  const coCay = Boolean(state.tree);
+  const tenCayDangMo = coCay && state.phien && (state.phien.tenCay || state.phien.tenHo || state.phien.tenFileDuLieu);
+  const maCayDangMo = coCay && state.phien && state.phien.maCay;
   if (tenCayDangMo || maCayDangMo) {
     const nhanCay = document.createElement('span');
     nhanCay.textContent = 'Cây đang hiển thị: ' + tenCayDangMo +
@@ -176,8 +180,10 @@ export function openSettings(xuLy = {}) {
   //   khu 1 chứ không thay thế nó — khu 1 còn làm được ba việc khối này không
   //   làm: thấy cây CHƯA có chân, bấm Xin quyền, bật công tắc chủ cây.
   veKhoiQuanLy(hop);
-  veKhoiMacDinh(hop);
-  veKhoiHienThi(hop);
+  if (coCay) {
+    veKhoiMacDinh(hop);
+    veKhoiHienThi(hop);
+  }
   veKhoiChonGiaPha(hop);
   veKhoiXuat(hop);
   veKhoiNhap(hop);
@@ -406,7 +412,7 @@ function veKhoiChonGiaPha(vao) {
   khoi.style.cssText = 'margin-top:20px';
   khoi.append(veNhanKhoi('Gia phả'));
 
-  const dangMo = state.phien && (state.phien.tenCay || state.phien.tenHo || state.phien.tenFileDuLieu);
+  const dangMo = state.tree && state.phien && (state.phien.tenCay || state.phien.tenHo || state.phien.tenFileDuLieu);
   const giaiThich = document.createElement('div');
   giaiThich.textContent =
     (dangMo ? 'Đang mở ' + dangMo + '. ' : '') +
