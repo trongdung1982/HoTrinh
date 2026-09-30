@@ -1,14 +1,13 @@
 # Sổ tay · vẽ sơ đồ (bố trí toạ độ)
 
-Gồm      : `js/domains/layout.js` — tính toạ độ ô, điểm thả, nét · `js/pages/tree-view.js` — nút Cũ/Mới chọn cách xếp
+Gồm      : `js/domains/layout.js` — tính toạ độ ô, điểm thả, nét
 Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` (vẽ) · `../tai-lieu/QUY-TAC-VE_V14.md` · bộ kiểm `../kiem-thu/`
 
 ## Luật chung
-- **Hai cách xếp nằm cạnh nhau** (b128b): cũ `datMoiKhoi()` + bốn lượt vá · mới
-  `datBaKhoi()` (mục 4b). App mặc định MỚI; nút mờ dưới 🔍 đổi qua lại, nhớ ở
-  `localStorage` (`giapha.xepBaKhoi`). ⚠ **Chỉ gỡ nút / cách cũ khi chủ dự án
-  yêu cầu** (chốt 25/09/2026). Bộ kiểm: `LAYOUT.xepBaKhoi` (config) — bật
-  bằng `--import ./ba-khoi.mjs`.
+- **Chỉ còn MỘT cách xếp: BA KHỐI** `datBaKhoi()` (mục 4b, b128b). Cách cũ
+  `datMoiKhoi()` + bốn lượt vá cùng nút Cũ/Mới đã gỡ 30/09/2026 theo yêu cầu
+  chủ dự án — đọc lại bằng `git log -p`. Gỡ xong, 2.220 sơ đồ (cây 59 + 681,
+  ba nấc đời) ra giống từng byte: `../kiem-thu/chup-bo-cuc.mjs`.
 - ⚠ **Không gãy chữ Z** (chủ dự án bác §9b/b85e, 25/09/2026): điểm thả của MỌI
   chùm nằm TRONG khoảng các con — chùm một con thì thẳng trên đầu con, cả ở
   khối con cháu (`khoiDuoi`, `xepDai`) lẫn khối tổ tiên (`treoToTien`). Đo:
@@ -66,8 +65,8 @@ Liên quan: `domains/bloodline.js` (tập người vẽ) · `domains/render.js` 
 - ⚠ Bộ kiểm ở `../kiem-thu/` nhắm thẳng `giapha/` ĐÓNG BĂNG. Đo nhánh này
   bằng **`node kiem-thu/chay-supabase.mjs`** (b158): móc `sang-supabase.mjs`
   đổi cả `import`, `fs` lẫn máy chủ giả của bài Chrome sang `supabase/js/`.
-  Trong đó `kiem-buoc-80.mjs` đo cách xếp CŨ, `kiem-buoc-80-sb.mjs moi` đo BA
-  KHỐI. Nhóm 9b (bắt khuỷu) tự tắt khi `LAYOUT.xepBaKhoi` — luật cũ.
+  Nhóm 9b (bắt khuỷu, luật chủ dự án đã bác) gỡ khỏi `kiem-buoc-80` cùng lúc
+  gỡ cách cũ. `ba-khoi.mjs` · `so-b128b.mjs` nay vô nghĩa (cờ không còn).
 
 ## Vì sao làm thế này
 - Khối tính TỪ DƯỚI LÊN, mỗi khối trả điểm nối cạnh dưới (`noi`) → khối trên

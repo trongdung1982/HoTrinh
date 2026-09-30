@@ -76,7 +76,21 @@ thấy đủ (như b148). Muốn khác thì một chỗ ở `53`.
 
 ### Việc mã đã chốt (30/09/2026) — theo thứ tự
 
-1. **Sau cùng mọi việc:** đưa hai bảng nhật ký vào sao lưu (xem *Còn treo*).
+1. **Chế độ vẽ CHỈ CHỮ** (chủ dự án yêu cầu 30/09, đồng ý chia bốn bước).
+   Nút mờ dưới 🔍 (chỗ nút Cũ/Mới cũ) đổi **Ảnh ↔ Chữ**. Ô chữ chỉ có tên +
+   năm sinh–năm mất, không ảnh. **Hàng đông người nhất chữ QUAY DỌC**; hàng
+   khác đủ rộng thì chữ ngang, không đủ thì dọc. Cao mỗi hàng tính theo chữ
+   thật để bớt khoảng trắng. Dùng lại kỹ thuật BA KHỐI, không viết cách xếp
+   thứ hai. Ba mặc định tự chọn, chủ dự án chưa bác: chữ dọc đọc từ dưới lên
+   (gáy sách) · ẩn hàng ngày giỗ · giữ màu giới/sống-mất bằng gạch màu mép ô.
+   - **1a** Phép thử: hàm đo chữ + xếp thử ô hẹp → bảng "hàng nào ngang/dọc,
+     cao bao nhiêu" cho cây 59 và 681. Điểm dừng: chủ dự án xem bảng.
+   - **1b** `layout.js`: ô rộng/cao riêng từng ô, hàng cao riêng từng hàng
+     (thay `RONG`/`CAO` cố định). Chế độ Ảnh phải ra giống từng byte —
+     `../kiem-thu/chup-bo-cuc.mjs` trước/sau rồi `cmp`.
+   - **1c** `render.js` vẽ ô chữ; nút Ảnh/Chữ. Điểm dừng: chụp hình.
+   - **1d** Xuất ảnh/PDF + thẻ chi tiết ở chế độ Chữ.
+2. **Sau cùng mọi việc:** đưa hai bảng nhật ký vào sao lưu (xem *Còn treo*).
 
 *(Chủ dự án bỏ 30/09: đổi tên `driveFileId`/`driveThumbUrl` · sửa `sinh-sql-di-doi.mjs` (cất vào `luu-tru/`) · xoá `branches`/`branch_access`
 — bảng trống vô hại, xoá phải sửa sao lưu + khôi phục + gộp người. Tạo tài
@@ -99,6 +113,5 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 | ⚠ **Ô gợi ý trên điện thoại thật chưa ai bấm lại** | `so-tay/o-goi-y.md` |
 | ⚠ **Dữ liệu cây 681 nghi ghi nhầm**: U0180 cho Hạt, Thu là con bà Hồi mà hai cô lấy con trai bà (U0108, U0109) — chờ chủ dự án xem | `so-tay/ve-so-do.md` |
 | Nợ ghi chú đầu file còn 14 khoản (nặng nhất `export-image.js` 140 dòng · `review.js` 99) — trả khi chạm tới file ấy, không đi rà riêng | `do-gon.mjs --tat-ca` · `QUY-TAC-GON.md` D1 |
-| Nút Cũ/Mới + `datMoiKhoi()` cũ: **CHỈ gỡ khi chủ dự án yêu cầu** | `so-tay/ve-so-do.md` |
 | Repo vệ tinh `LeVanTrac` · `NguyenQuang` kẹt Pages từ 28/09 08:12 (push dồn → deploy giẫm nhau). Chủ dự án bảo **treo** — app chưa xong; lần push sau thường tự gỡ | `.github/workflows/dong-bo-sang-levantrac.yml` |
 | **`branches` / `branch_access` dựng từ `01-bang.sql` nay KHÔNG dùng** — luật đi theo trực hệ, không chia chi *(chốt 04/09/2026)*. GIỮ, không xoá (chủ dự án 30/09): trống, vô hại; sao lưu · khôi phục · `gop_hai_nguoi` còn nhắc tới | `06-quyen-truc-he.sql` mục 2 |

@@ -6,8 +6,8 @@
 //            utils/{text,glyph,graph}, config,
 //            pages/{person-detail,person-edit,person-list,review,settings,
 //            chon-gia-pha,import-export,export-image,quan-tri/xuat-excel}
-// Phiên bản: 1.47.0 · Cập nhật: 30/09/2026 13:40 (b163) — Cài đặt: Xuất Excel hai khuôn; bỏ onMoSaoLuu
-// Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (nút Cũ/Mới · dâu/rể)
+// Phiên bản: 1.48.0 · Cập nhật: 30/09/2026 16:06 — gỡ nút Cũ/Mới
+// Sổ tay   : so-tay/nguoi-xuyen-cay.md (rào thép — hai chỉ mục) · so-tay/ve-so-do.md (dâu/rể)
 // ============================================================
 //
 // ⚠ HAI CHỈ MỤC: vẽ bằng `layChiMucVe()` (chỉ người trong cây); mở thẻ/form
@@ -270,8 +270,7 @@ export function refresh() {
 
   const stubs  = findStubPoints(index, visible, state.scope);
   const hienGio = { hienNgayGio: state.hienNgayGio === true };
-  const layout = computeLayout(index, focus, visible, state.scope, stubs,
-    { ...hienGio, baKhoi: docCachXep() });
+  const layout = computeLayout(index, focus, visible, state.scope, stubs, hienGio);
   layoutHT = layout;
 
   renderTree(svgEl, layout, index, {
@@ -914,39 +913,8 @@ function veHopNutTrenPhai() {
       onCoSoDo: () => docCoSoDo(svgEl),
     })),
     nutTron('🔍', 'Tìm người trong gia phả', () => moDanhSachNguoi()),
-    veNutCachXep(),
   );
   return hop;
-}
-
-/**
- * b128b-3 — NÚT TẠM chuyển qua lại cách vẽ CŨ và BA KHỐI (`datBaKhoi()`), để
- * chủ dự án so tận mắt trên dữ liệu thật. Mờ 50% cho khỏi lẫn với nút thật.
- * Nhớ lựa chọn ở `localStorage` của máy này. Mặc định MỚI (chủ dự án chốt
- * 25/09: bản mới đẹp hơn). ⚠ CHỈ GỠ KHI CHỦ DỰ ÁN YÊU CẦU.
- */
-const KHOA_CACH_XEP = 'giapha.xepBaKhoi';
-function docCachXep() {
-  try { return localStorage.getItem(KHOA_CACH_XEP) !== '0'; } catch (e) { return true; }
-}
-function veNutCachXep() {
-  const nut = nutTron('', '', () => {
-    const moi = !docCachXep();
-    try { localStorage.setItem(KHOA_CACH_XEP, moi ? '1' : '0'); } catch (e) { /* không nhớ được thì thôi */ }
-    ghiNhan();
-    refresh();
-  });
-  nut.style.opacity = '0.5';
-  nut.style.fontSize = '11px';
-  nut.style.fontWeight = '600';
-  const ghiNhan = () => {
-    const moi = docCachXep();
-    nut.textContent = moi ? 'Mới' : 'Cũ';
-    nut.title = (moi ? 'Đang vẽ cách MỚI (ba khối)' : 'Đang vẽ cách CŨ') + ' — bấm để đổi';
-    nut.setAttribute('aria-label', nut.title);
-  };
-  ghiNhan();
-  return nut;
 }
 
 /**
