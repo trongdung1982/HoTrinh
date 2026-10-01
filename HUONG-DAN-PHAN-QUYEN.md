@@ -124,6 +124,27 @@ Quản trị hệ thống **khác** duyệt.
   phải người quản trị hệ thống và không đổi được quyền thành viên khác.
 - **Chủ cây (`chu_so_huu`)** là người lập ra cây, nắm toàn quyền phân quyền trên cây đó.
 
+### Phân biệt "Quản trị gia phả được phong" và "Chủ cây"
+
+Cả hai đều mang cột `role = quan_tri` trong bảng `tree_members`, nhưng **chỉ
+người có `chu_so_huu = true` mới là chủ cây**. Đây là nguồn gốc của sự khác
+biệt thường gây nhầm lẫn:
+
+| Việc | Chủ cây (`chu_so_huu=true`) | Quản trị được phong (`chu_so_huu=false`) |
+|---|---|---|
+| Kiểm duyệt nội dung | ✓ | ✓ |
+| Gắn mã người cho thành viên | ✓ | ✗ |
+| Duyệt / từ chối đơn xin vào | ✓ | ✗ |
+| Đổi vai trò thành viên khác | ✓ | ✗ |
+| Bàn giao chủ sở hữu | ✓ | ✗ |
+
+⚠ **Tại sao `quan_tri` được phong bấm Duyệt đơn thì máy chủ từ chối?**
+Hàm máy chủ kiểm tra `chu_so_huu = true` (hoặc `quan_tri_he_thong`) trước
+khi cho phép duyệt đơn. Người được phong `quan_tri` nhưng không phải chủ cây
+sẽ thấy nút **Duyệt** mờ sẵn kèm ghi chú *"Chỉ chủ gia phả được duyệt"*. Nếu
+giao diện cũ còn hiện nút không mờ, bấm vào sẽ nhận lỗi từ máy chủ — đây là
+bảo vệ tầng dữ liệu, không phải lỗi giao diện.
+
 ---
 
 ## 4. Xem hiện ai đang có quyền gì
