@@ -93,10 +93,10 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   `style="grid-template-columns:repeat(3,1fr)…"`; CSS gốc có
   `.cards{grid-template-columns:1fr}` dưới 850px nhưng inline luôn thắng, ba
   cột kẹt cứng, chữ vỡ dòng (chủ dự án chụp ảnh báo 18/09/2026). Vá: bỏ đúng
-  `grid-template-columns` khỏi inline, giữ `gap`/`margin-bottom`. ⚠ **Còn hai
-  chỗ y hệt CHƯA vá** — `<div style="display:grid;grid-template-columns:1fr
-  1fr…">` dòng ~306/317, form *Tạo tài khoản* (khu Quản trị hệ thống, tab
-  chưa nối máy chủ thật nên chưa ai thấy trên điện thoại) — sửa khi chạm tới.
+  `grid-template-columns` khỏi inline, giữ `gap`/`margin-bottom`. Hai
+  chỗ tương tự ở form *Tạo tài khoản* (dòng ~370/381) đã vá 01/10/2026:
+  bỏ `grid-template-columns` khỏi inline, thay bằng `.qt-form-hai-cot` co về 1
+  cột dưới 600px.
 - **Mọi chuyện của Ô GỢI Ý nay ở `so-tay/o-goi-y.md`** — nó dùng chung cho
   cả form thêm người, không còn là việc riêng của trang này (b124a2).
 

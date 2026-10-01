@@ -39,7 +39,7 @@
   <!-- `?v=` = khớp Phiên bản đầu quan-tri.css — đổi CSS thì đổi cả số này,
        không thì trình duyệt/CDN có thể phục vụ bản cũ đã cache (b122d,
        chủ dự án báo "chưa thấy đổi gì" dù đã đẩy lên GitHub). -->
-  <link rel="stylesheet" href="quan-tri.css?v=1.2.1">
+  <link rel="stylesheet" href="quan-tri.css?v=1.2.2">
   <!-- Tông màu — KHÔNG có trong quantri3. Nạp SAU quan-tri.css để đè biến:
        tong-mau.css = mười khối biến (dùng chung với trang sơ đồ),
        phoi-mau.css = luật đè riêng trang này + nút chọn. -->
@@ -367,7 +367,7 @@
 <button class="btn" id="btn-back-to-so-tai-khoan" data-sys-goto="so-tai-khoan">← Quay lại Sổ tài khoản</button>
 </div>
 <form id="form-tao-tai-khoan" onsubmit="return false;" style="padding:20px">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+  <div class="qt-form-hai-cot" style="display:grid;gap:16px;margin-bottom:16px">
     <div>
       <label class="sub" style="font-weight:700;display:block;margin-bottom:6px">Họ và tên người dùng <span style="color:var(--danger)">*</span></label>
       <input type="text" id="new-acc-name" class="role-select" style="width:100%" placeholder="Ví dụ: Hoàng Văn Giang">
@@ -378,7 +378,7 @@
     </div>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+  <div class="qt-form-hai-cot" style="display:grid;gap:16px;margin-bottom:16px">
     <div>
       <label class="sub" style="font-weight:700;display:block;margin-bottom:6px">Mã tài khoản (Hệ thống luôn tự sinh)</label>
       <input type="text" id="new-acc-code" class="role-select" style="width:100%;background:var(--bg)" readonly>

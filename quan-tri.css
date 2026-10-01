@@ -2,7 +2,9 @@
    giapha-supabase · quan-tri.css
    Vai trò  : Giao diện trang Quản trị — CHÉP NGUYÊN VĂN CSS của prototype
               `quantri3.html` chủ dự án đã chốt 13/09/2026.
-   Phiên bản: 1.2.1 · Cập nhật: 29/09/2026 (b159c) — .mc-anh (tab Dữ liệu mồ côi).
+   Phiên bản: 1.2.2 · Cập nhật: 01/10/2026 (b170) — `.qt-form-hai-cot`: bỏ
+               `grid-template-columns:1fr 1fr` khỏi inline form Tạo tài khoản
+               (hai dòng), thay bằng class co về 1 cột dưới 600px. 1.2.1
               1.1.5 (26/09, b125c) ô nhập sửa tại chỗ +
               cột Ghi chú đổi từ `:last-child` sang `.col-ghi` ở bảng Danh
               sách người; nới ô "Họ và tên" (`o-sua-ten`) sau khi nhìn ảnh
@@ -108,10 +110,22 @@ td .link { text-align:left; }
   main{ padding-top:64px; }
 }
 
+/* ── Form hai cột (b170) — KHÔNG có trong quantri3 ─────────────────────────
+   Form "Tạo tài khoản mới" ban đầu dùng `style="grid-template-columns:1fr 1fr"`
+   inline — inline luôn thắng media query, nên điện thoại kẹt 2 cột hẹp.
+   Bỏ `grid-template-columns` khỏi inline, thay bằng class này: ≥600px thì
+   2 cột, <600px thì 1 cột (co theo điện thoại 390px). Giống mẫu đã vá khối
+   `.cards` tại commit cb737ac (18/09/2026). */
+.qt-form-hai-cot { grid-template-columns: 1fr 1fr; }
+@media(max-width:600px){
+  .qt-form-hai-cot { grid-template-columns: 1fr; }
+}
+
 /* ── Bảng Danh sách người (b125a) — KHÔNG có trong quantri3 ────────────────
    Bảng 14 cột: để nó co vào bề ngang khung thì chữ gãy ba dòng một ô và
    hàng cao gấp ba (ảnh 23/09). Trang tính thì cuộn ngang, không gãy chữ —
    bọc ngoài đã `overflow-x:auto`, ở đây chỉ nói "đừng co nữa". */
+
 #tp-bang{ min-width:1180px; }
 #tp-bang th, #tp-bang td{ white-space:nowrap; }
 #tp-bang th{ padding:8px 12px; }
