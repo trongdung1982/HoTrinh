@@ -97,6 +97,11 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
   chỗ tương tự ở form *Tạo tài khoản* (dòng ~370/381) đã vá 01/10/2026:
   bỏ `grid-template-columns` khỏi inline, thay bằng `.qt-form-hai-cot` co về 1
   cột dưới 600px.
+- **Bảng cuộn ngang êm ái trên di động (b171, 01/10/2026)** — `.panel` bổ sung
+  `-webkit-overflow-scrolling: touch` và `overscroll-behavior-x: contain` để vuốt
+  cảm ứng có quán tính và không bị kích hoạt nhầm cử chỉ "quay lại" của trình
+  duyệt; dưới 600px đặt `th { white-space:nowrap; padding:9px 12px }` và `td {
+  padding:11px 12px }` để tiêu đề cột không vỡ từ và bảng gọn gàng.
 - **Mọi chuyện của Ô GỢI Ý nay ở `so-tay/o-goi-y.md`** — nó dùng chung cho
   cả form thêm người, không còn là việc riêng của trang này (b124a2).
 

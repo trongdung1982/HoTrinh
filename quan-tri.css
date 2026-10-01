@@ -2,9 +2,9 @@
    giapha-supabase · quan-tri.css
    Vai trò  : Giao diện trang Quản trị — CHÉP NGUYÊN VĂN CSS của prototype
               `quantri3.html` chủ dự án đã chốt 13/09/2026.
-   Phiên bản: 1.2.2 · Cập nhật: 01/10/2026 (b170) — `.qt-form-hai-cot`: bỏ
-               `grid-template-columns:1fr 1fr` khỏi inline form Tạo tài khoản
-               (hai dòng), thay bằng class co về 1 cột dưới 600px. 1.2.1
+   Phiên bản: 1.2.3 · Cập nhật: 01/10/2026 (b171) — .panel cuộn cảm ứng êm
+               (touch, overscroll contain); th nowrap & padding gọn <600px.
+               1.2.2 (01/10) .qt-form-hai-cot. 1.2.1 (29/09) .mc-anh.
               1.1.5 (26/09, b125c) ô nhập sửa tại chỗ +
               cột Ghi chú đổi từ `:last-child` sang `.col-ghi` ở bảng Danh
               sách người; nới ô "Họ và tên" (`o-sua-ten`) sau khi nhìn ảnh
@@ -72,6 +72,10 @@ td .link { text-align:left; }
 /* Bảng đặt trong `.layout` (trang cây) phải cuộn TRONG `.panel`, không đẩy cột
    phải của lưới tràn khỏi mép — prototype không có bảng nào ở chỗ ấy. */
 .layout > div { min-width:0; }
+/* Cuộn cảm ứng êm ái cho bảng (b171) — KHÔNG có trong quantri3:
+   Thêm quán tính trượt trên màn hình chạm và chặn vuốt ngang mép bảng kích hoạt
+   cử chỉ back/forward của trình duyệt. */
+.panel { -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
 
 /* Khay điều hướng trên điện thoại — KHÔNG có trong quantri3. Trên di động,
    `.back` (Về trang sơ đồ) bị chính CSS gốc ẩn đi và không còn đường quay
@@ -119,6 +123,9 @@ td .link { text-align:left; }
 .qt-form-hai-cot { grid-template-columns: 1fr 1fr; }
 @media(max-width:600px){
   .qt-form-hai-cot { grid-template-columns: 1fr; }
+  /* Dưới 600px: tiêu đề cột không vỡ vụn từng từ, padding gọn gàng (b171) */
+  th { white-space: nowrap; padding: 9px 12px; }
+  td { padding: 11px 12px; }
 }
 
 /* ── Bảng Danh sách người (b125a) — KHÔNG có trong quantri3 ────────────────
