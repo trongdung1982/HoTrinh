@@ -31,7 +31,7 @@ import {
   dsTaiKhoanHeThong, dsThanhVien,
   duyetXoaCay, traLaiCay, phucHoiCay, donThungRac, xoaAnhThat,
   datQuanTriHeThong, datDuocTaoCay, xoaTaiKhoan, khoaTaiKhoan, moKhoaTaiKhoan,
-  coMaySaoLuu,
+  datLaiMatKhau, coMaySaoLuu,
 } from '../../services/sb.js';
 import { duongDan } from './trang-chi-tiet.js';
 import { hoi, bao } from './hop-thoai.js';
@@ -327,6 +327,13 @@ function dongTaiKhoan(t, ds, napLai) {
       cot.append(bKhoa);
     }
 
+    // QTHT khác: máy chủ từ chối đặt lại mật khẩu (như vậy là chiếm tài khoản) — nút mờ kèm lý do.
+    const bMk = t.laQuanTriHeThong
+      ? nutMo('Đặt lại mật khẩu', 'Không đặt lại được mật khẩu của một Quản trị hệ thống khác.')
+      : nutNho('Đặt lại mật khẩu');
+    if (!t.laQuanTriHeThong) bMk.addEventListener('click', () => hoiDatLaiMatKhau(t, napLai));
+    cot.append(bMk);
+
     const bXoa = t.khoaLuc ? nutNho('Xóa tài khoản', 'danger') : nutMo('Xóa tài khoản',
       'Khoá mềm trước — 60 ngày sau mới xoá hẳn được.', 'danger');
     if (t.khoaLuc) bXoa.addEventListener('click', () => hoiXoaTaiKhoan(t, ds, napLai));
@@ -407,6 +414,25 @@ async function hoiKhoaTaiKhoan(t, napLai) {
     lam: (v) => khoaTaiKhoan(t.userId, v.email.trim(), v.lyDo || ''),
   });
   if (kq) napLai();
+}
+
+/**
+ * Đặt lại mật khẩu — máy chủ sinh mật khẩu tạm, hiện MỘT lần. App không gửi thư
+ * nên người đặt lại phải chép đưa tận tay. Phiên đang mở của họ không bị ngắt.
+ */
+async function hoiDatLaiMatKhau(t, napLai) {
+  const kq = await hoi({
+    tua: 'Đặt lại mật khẩu',
+    chu: 'Đặt lại mật khẩu của ' + t.email + '? Máy chủ sinh một mật khẩu tạm mới, hiện MỘT lần ngay ' +
+      'sau đây — chép đưa tận tay họ (app không gửi thư). Mật khẩu cũ dùng không được nữa; họ nên ' +
+      'đổi lại ở khu Tài khoản → Đổi mật khẩu.',
+    nutOk: 'Đặt lại mật khẩu', nutHuy: 'Hủy', kieuOk: 'warm',
+    lam: () => datLaiMatKhau(t.userId),
+  });
+  if (!kq) return;
+  await bao('Đã đặt lại mật khẩu', 'Email: ' + kq.kq.email + '\nMật khẩu tạm mới: ' + kq.kq.matKhau +
+    '\n\nChép mật khẩu ngay — đóng hộp này là không xem lại được.');
+  napLai();
 }
 
 async function hoiMoKhoaTaiKhoan(t, napLai) {

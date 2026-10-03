@@ -2289,6 +2289,19 @@ export async function moKhoaTaiKhoan(userId) {
  *   trả 200 kèm { ok, loi } như các hàm SQL, khỏi bóc lỗi HTTP của thư viện.
  */
 export async function taoTaiKhoan(email) {
+  const kq = await goiHamTaiKhoan({ email: String(email || '').trim() });
+  return kq.ok ? { ...kq, maNgan: kq.maNgan || '' } : kq;
+}
+
+/**
+ * **Đặt lại mật khẩu** một tài khoản — cùng Edge Function, `viec: 'dat_lai_mat_khau'`.
+ * Trả { ok, loi, userId, email, matKhau }; `matKhau` hiện MỘT lần.
+ */
+export async function datLaiMatKhau(userId) {
+  return goiHamTaiKhoan({ viec: 'dat_lai_mat_khau', userId: String(userId || '') });
+}
+
+async function goiHamTaiKhoan(thanBody) {
   const k = layKhach();
   if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.' };
   const { data: { session } } = await k.auth.getSession();
@@ -2301,14 +2314,19 @@ export async function taoTaiKhoan(email) {
         Authorization: 'Bearer ' + session.access_token,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email: String(email || '').trim() }),
+      body: JSON.stringify(thanBody),
     });
     if (r.status === 404) {
       return { ok: false, loi: 'Máy chủ chưa có hàm tao-tai-khoan — chưa dán Edge Function.' };
     }
     const data = await r.json().catch(() => null);
     if (!data || data.ok !== true) {
-      return { ok: false, loi: noiTuChoi(data, 'Không tạo được tài khoản (HTTP ' + r.status + ').') };
+      // Hàm bản 0.1.0 (chưa biết `viec`) đọc thiếu email và báo sai — nói thẳng điều cần làm.
+      if (thanBody.viec && data && /email không đúng khuôn/.test(data.loi || '')) {
+        return { ok: false, loi: 'Hàm tao-tai-khoan trên Supabase còn bản cũ — dán lại bản mới ' +
+          '(hướng dẫn cài đặt, bước 9) rồi thử lại.' };
+      }
+      return { ok: false, loi: noiTuChoi(data, 'Không thực hiện được (HTTP ' + r.status + ').') };
     }
     return {
       ok: true, loi: null, userId: data.userId, email: data.email,

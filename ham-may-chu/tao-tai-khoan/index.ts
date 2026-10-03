@@ -1,10 +1,10 @@
 // ============================================================
 // giapha-supabase · ham-may-chu/tao-tai-khoan/index.ts
-// Vai trò  : Edge Function — Quản trị hệ thống tạo một tài khoản mới
-//            (email + mật khẩu tạm do máy chủ sinh, xác nhận email sẵn).
+// Vai trò  : Edge Function — Quản trị hệ thống (1) tạo tài khoản mới, (2) đặt lại
+//            mật khẩu một tài khoản. Cả hai: mật khẩu tạm do máy chủ sinh.
 // Lớp      : máy chủ (Supabase Edge Function) — được gọi bởi: services/sb.js
 // Phụ thuộc: không thư viện nào — chỉ `fetch` tới Auth + REST của chính dự án
-// Phiên bản: 0.1.0 · Cập nhật: 28/09/2026 (b143)
+// Phiên bản: 0.2.0 · Cập nhật: 03/10/2026 (b171)
 // Sổ tay   : so-tay/tao-tai-khoan.md
 // ============================================================
 //
@@ -21,6 +21,10 @@
 // ⚠ Cổng kiểm: gọi `la_quan_tri_he_thong()` BẰNG THẺ CỦA NGƯỜI GỌI. Thẻ giả
 //   hay hết hạn thì PostgREST từ chối → hàm từ chối. Vì thế tắt được
 //   "Enforce JWT verification" mà không hở.
+//
+// ⚠ Đặt lại mật khẩu (`viec: 'dat_lai_mat_khau'`): không đặt cho CHÍNH MÌNH (đã
+//   có Đổi mật khẩu) và không đặt cho một QTHT khác — như vậy là chiếm tài
+//   khoản có quyền cao nhất mà không qua "hai chữ ký".
 //
 // Luôn trả HTTP 200 kèm { ok, loi } — cùng khuôn với các hàm SQL.
 
@@ -65,6 +69,50 @@ async function laQuanTriHeThong(theNguoiGoi) {
   return (await r.json()) === true;
 }
 
+async function datLaiMatKhau(the, userId) {
+  const quan = { apikey: KHOA_BI_MAT, Authorization: 'Bearer ' + KHOA_BI_MAT };
+  if (!/^[0-9a-f-]{36}$/i.test(userId)) return { ok: false, loi: 'Mã tài khoản không đúng khuôn.' };
+
+  const ai = await fetch(URL_DU_AN + '/auth/v1/user', {
+    headers: { apikey: KHOA_CONG_KHAI, Authorization: the },
+  });
+  const nguoiGoi = ai.ok ? await ai.json().catch(() => ({})) : {};
+  if (!nguoiGoi.id) return { ok: false, loi: 'Chưa đăng nhập.' };
+  if (nguoiGoi.id === userId) {
+    return { ok: false, loi: 'Mật khẩu của chính bạn thì đổi ở khu Tài khoản → Đổi mật khẩu.' };
+  }
+
+  const t = await fetch(URL_DU_AN + '/rest/v1/tai_khoan?select=la_quan_tri_he_thong&user_id=eq.' + userId,
+    { headers: quan });
+  const hang = t.ok ? ((await t.json())[0] || null) : null;
+  if (!hang) return { ok: false, loi: 'Không có tài khoản này.' };
+  if (hang.la_quan_tri_he_thong) {
+    return { ok: false, loi: 'Không đặt lại mật khẩu của một Quản trị hệ thống khác được. ' +
+      'Nhờ chính họ đổi, hoặc vào Supabase → Authentication → Users.' };
+  }
+
+  const matKhau = sinhMatKhau();
+  const r = await fetch(URL_DU_AN + '/auth/v1/admin/users/' + userId, {
+    method: 'PUT',
+    headers: { ...quan, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password: matKhau }),
+  });
+  const u = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    return { ok: false, loi: 'Máy chủ Auth từ chối: ' + String(u.msg || u.message || u.error_description || r.status) };
+  }
+
+  // Nhật ký: người làm = người gọi (hàm này chỉ service_role gọi được).
+  await fetch(URL_DU_AN + '/rest/v1/rpc/ghi_nhat_ky', {
+    method: 'POST',
+    headers: { ...quan, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ p_loai: 'qtht', p_su_kien: 'dat_lai_mat_khau',
+      p_doi_tuong: String(u.email || userId), p_chi_tiet: {}, p_nguoi: nguoiGoi.id }),
+  }).catch(() => {});
+
+  return { ok: true, loi: null, userId, email: u.email || '', matKhau };
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return traLoi({ ok: false, loi: 'Chỉ nhận POST.' });
@@ -77,6 +125,9 @@ Deno.serve(async (req) => {
 
   let vao = {};
   try { vao = await req.json(); } catch (_) { /* để trống, kiểm ở dưới */ }
+  if (vao.viec === 'dat_lai_mat_khau') {
+    return traLoi(await datLaiMatKhau(the, String(vao.userId || '')));
+  }
   const email = String(vao.email || '').trim().toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return traLoi({ ok: false, loi: 'Địa chỉ email không đúng khuôn.' });

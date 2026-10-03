@@ -40,6 +40,7 @@ const TEN_LOAI = {
 const TEN_VIEC = {
   dang_nhap: ['Đăng nhập', ''],
   tao_tai_khoan: ['Tài khoản mới', ''],
+  dat_lai_mat_khau: ['Đặt lại mật khẩu', 'wait'],
   khoa_tai_khoan: ['Khoá tài khoản', 'red'],
   mo_khoa_tai_khoan: ['Mở khoá tài khoản', 'wait'],
   xoa_tai_khoan: ['Xoá hẳn tài khoản', 'red'],

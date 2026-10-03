@@ -36,6 +36,15 @@ bấm thử tạo tài khoản ĐẠT cùng ngày*
    điền tên + email thử → **+ Tạo tài khoản ngay**. Thấy hộp *Đã tạo tài
    khoản* kèm mật khẩu tạm là xong. Tài khoản thử xoá ở Sổ tài khoản.
 
+## Đặt lại mật khẩu (b171, 03/10/2026)
+
+Cùng hàm, `viec: 'dat_lai_mat_khau'` + `userId` (hàm bản 0.2.0). Nút ở Sổ tài khoản
+(`khu-quan-tri-he-thong.js` `hoiDatLaiMatKhau`). Từ chối: chính mình · một QTHT khác
+(chiếm tài khoản không qua hai chữ ký). Ghi `nhat_ky_he_thong` loại `qtht`, sự kiện
+`dat_lai_mat_khau`, người làm = người gọi. Phiên đang mở của người bị đặt lại KHÔNG bị ngắt.
+⚠ Hàm bản 0.1.0 không biết `viec` → app báo "còn bản cũ, dán lại". **Chưa chạy trên máy chủ
+thật** — dán hàm 0.2.0 rồi bấm thử một tài khoản thường.
+
 ## Chưa làm / bẫy đã biết
 
 - **Gửi liên kết qua email: mờ.** App chưa có màn hình đặt mật khẩu khi bấm
