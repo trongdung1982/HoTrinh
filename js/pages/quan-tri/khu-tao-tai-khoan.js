@@ -14,17 +14,13 @@
 //   Bước 1 xong thì tài khoản ĐÃ CÓ: bước sau hỏng cũng không trả lỗi cho
 //   hộp thoại (bấm lại sẽ vấp "email đã có") — báo ra ở hộp kết quả.
 //
-// ⚠ Lựa chọn *Gửi liên kết qua email* MỜ: app chưa có màn hình đặt mật khẩu
-//   khi bấm liên kết, và thư của Supabase mặc định chỉ gửi tới email thành
-//   viên dự án. Chỉ còn *Mật khẩu tạm* — máy chủ sinh, hiện MỘT lần.
+// ⚠ App KHÔNG gửi thư (không dùng dịch vụ email): lựa chọn *Gửi liên kết qua
+//   email* bị GỠ khỏi ô chọn. Chỉ còn *Mật khẩu tạm* — máy chủ sinh, hiện MỘT lần.
 
 import {
   taoTaiKhoan, datHoTenTaiKhoan, datDuocTaoCay, datQuanTriHeThong,
 } from '../../services/sb.js';
 import { hoi, bao } from './hop-thoai.js';
-
-const LY_MO_LIEN_KET = 'Chưa làm được: app chưa có màn hình đặt mật khẩu khi bấm liên kết trong thư, ' +
-  'và thư của Supabase mặc định chỉ gửi tới email thành viên dự án.';
 
 /**
  * @param {HTMLElement} sec  `section#quan-tri-he-thong`
@@ -42,11 +38,10 @@ export function veKhuTaoTaiKhoan(sec, napLai) {
   $('ttk-chua-co').textContent = 'Máy chủ sinh một mật khẩu tạm 10 ký tự, hiện MỘT lần sau khi tạo — ' +
     'chép lại và đưa tận tay người nhận. Họ đăng nhập được ngay, rồi tự đổi ở khu Tài khoản → Đổi mật khẩu.';
 
-  const lienKet = oKieu.querySelector('option[value="invite_link"]');
-  lienKet.disabled = true;
-  lienKet.title = LY_MO_LIEN_KET;
+  // Không gửi thư: bỏ hẳn lựa chọn liên kết qua email, chỉ còn mật khẩu tạm.
+  oKieu.querySelector('option[value="invite_link"]').remove();
   oKieu.value = 'temp_pass';
-  oKieu.title = LY_MO_LIEN_KET;
+  oKieu.disabled = true;
   oMa.placeholder = 'Máy chủ sinh sau khi tạo';
 
   const datLai = () => {

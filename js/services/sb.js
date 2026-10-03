@@ -2315,6 +2315,13 @@ export async function taoTaiKhoan(email) {
       maNgan: data.maNgan || '', matKhau: data.matKhau,
     };
   } catch (e) {
+    // Hàm chưa dán thì Supabase trả 404 KHÔNG kèm cho phép gọi chéo nguồn, trình
+    // duyệt chặn ngay từ lệnh hỏi trước và `fetch` chỉ ném TypeError — không
+    // phân biệt được với mất mạng. Nên nói cả hai khả năng, nêu khả năng hay gặp trước.
+    if (e instanceof TypeError) {
+      return { ok: false, loi: 'Không gọi được hàm tao-tai-khoan. Thường là chưa dán Edge Function ' +
+        'lên Supabase (xem hướng dẫn cài đặt, bước 9); nếu đã dán rồi thì kiểm tra mạng.' };
+    }
     return { ok: false, loi: cauLoi(e) };
   }
 }
