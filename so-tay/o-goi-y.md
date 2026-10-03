@@ -48,14 +48,13 @@ Và vì cú bấm là thứ dễ mất nhất trong cả cái ô này, mỗi dò
 ⚠ **Đừng bỏ `mousedown` để chỉ giữ `click`** — bẫy 3: `blur` xảy ra TRƯỚC
 `click`, và `blur` đóng danh sách.
 
-## ⚠ Trên điện thoại — nghi vấn CHƯA xác nhận
+## Trên điện thoại — ĐÃ XÁC NHẬN ĐẠT (03/10/2026)
 
 Bàn phím ảo mở ra **không** bắn `resize` của `window`, nên toạ độ
-`position:fixed` đo trước đó lệch và cú chạm rơi hụt dòng gợi ý. Vá bằng nghe
-thêm `window.visualViewport` (bẫy 4, b122d). **Chưa ai bấm lại trên điện
-thoại thật** — ảnh 390px đạt (`kq-gan-ma-390.png`) nhưng đó là trang giả trên
-máy tính. Hai nguyên nhân ở mục trên cũng có ở điện thoại, nên bấm lại trước
-khi kết luận còn lệch hay không.
+`position:fixed` đo trước đó lệch và cú chạm rơi hụt dòng gợi ý. Đã vá bằng nghe
+thêm `window.visualViewport` (bẫy 4, b122d). Chủ dự án đã bấm thử trên điện
+thoại thật ngày 03/10/2026: danh sách hiện đúng, chạm chọn nhạy và chuẩn xác,
+không còn lệch toạ độ hay rơi hụt.
 
 ## Ảnh chụp không phân giải được "đè" với "sát"
 
