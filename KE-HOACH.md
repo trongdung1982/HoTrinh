@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 03/10/2026 · DỰ ÁN ĐÃ ĐÓNG (bộ cài bàn giao xong, b171) · SQL đã dán hết tới `67` · còn chờ dán `68` (xem "Còn treo").*
+*Cập nhật 03/10/2026 · DỰ ÁN ĐÃ ĐÓNG (bộ cài bàn giao xong, b171) · SQL đã dán hết tới `68` · không còn việc kế tiếp.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -86,7 +86,4 @@ khoản qua email: HUỶ 29/09 — `so-tay/tao-tai-khoan.md`.)*
 *Việc đã đóng thì **xoá khỏi bảng**, đừng gạch ngang giữ lại — lời commit đã
 là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừng chép số lần trước.*
 
-| Việc | Ghi ở đâu |
-|---|---|
-| **Chủ dự án dán `68-thu-quyen-anon-duyet.sql`** lên Supabase thật (`anon` thôi gọi được `duyet_thanh_vien`). Bộ cài đã gộp sẵn. Dán xong: hai dòng tự kiểm ĐẠT, gọi REST bằng khoá `anon` phải báo `permission denied` → xoá dòng này | `so-tay/dong-goi.md` |
-| **`branches` / `branch_access` dựng từ `01-bang.sql` nay KHÔNG dùng** — luật đi theo trực hệ, không chia chi *(chốt 04/09/2026)*. GIỮ, không xoá (chủ dự án 30/09): trống, vô hại; sao lưu · khôi phục · `gop_hai_nguoi` còn nhắc tới | `06-quyen-truc-he.sql` mục 2 |
+*Không có việc nào.*
