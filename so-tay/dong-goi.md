@@ -16,10 +16,10 @@ node kiem-thu/ban-thu-sql/so-song-cai-dat.mjs   # chạy lại cả bộ do-*.mj
 ```
 
 Hai công cụ ở `kiem-thu/ban-thu-sql/` (ngoài repo), cùng `lot-ghi-chu-sql.mjs`.
-Sửa `CHUOI` trong `dong-goi-sql.mjs` và số `67` ở dòng đầu file cài khi thêm file.
+Thêm file thì đổi hằng `CUOI` ở **cả hai** công cụ (đang là `68`).
 
 **Đạt nghĩa là:** kết xuất lược đồ + quyền + trigger `auth.users` + luật kho ảnh
-của bản cài **trùng từng ký tự** với chuỗi `01→67` (sau khi lột ghi chú cả hai);
+của bản cài **trùng từng ký tự** với chuỗi `01→CUOI` (sau khi lột ghi chú cả hai);
 chuỗi trống trùng chuỗi có dữ liệu; mọi hàm dựng lại được khi BẬT kiểm thân
 hàm; cả bộ `do-*.mjs` ra **giống hệt từng dòng** trên hai nền cùng dữ liệu.
 
@@ -73,10 +73,11 @@ hỏng một hàm trong bản lột → bài Node và bài Chrome đều đỏ.
   hai mẫu đã ở trạng thái cuối, `luoc-do/*.sql` thay bằng câu rỗng.
   Bài cũ dựng trạng thái giữa chừng (cột `tree_members.person_id` đã bỏ ở `63`)
   dừng sớm ở **cả hai** bên — phép so vẫn đúng, chỉ phủ ít hơn.
-- ⚠ **Dòng tự kiểm cuối của `62` báo HỎNG** trên bản dựng từ chuỗi: `anon` gọi được
-  `duyet_thanh_vien` (`06` chỉ revoke `public`). Máy chủ thật **cũng thế** — đo
-  REST 03/10/2026: hàm chạy và tự từ chối, không lọt gì. Bản cài giữ đúng như
-  máy thật; vá thì làm file `68` (revoke `anon`) rồi đóng gói lại.
+- ⚠ **Dòng tự kiểm cuối của `62` vẫn báo HỎNG** khi đóng gói — đúng, không phải
+  lỗi: lúc `62` chạy thì `anon` còn gọi được `duyet_thanh_vien` (`06` chỉ revoke
+  `public`). `68` vá sau đó; tự kiểm của `68` mới là dòng phải ĐẠT.
+  Bài học: hàm mới phải `revoke … from public, anon` — Supabase cấp thẳng cho
+  `anon` qua quyền mặc định, revoke riêng `public` không đủ.
 
 ## Hai hướng dẫn cho người nhận — `ban-giao/HUONG-DAN-CAI-DAT.md` · `HUONG-DAN-SU-DUNG.md`
 
