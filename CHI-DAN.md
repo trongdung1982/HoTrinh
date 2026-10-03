@@ -33,8 +33,9 @@ file. ⚠ `KE-HOACH.md` **hết trần** (b131) — gọn bằng kỷ luật "xo
 | Thêm/nâng cấp thư viện | `js/vendor/DOC-VENDOR.md` — và **hỏi chủ dự án trước** |
 | **Gặp lỗi / điều đáng chú ý** · dọn rác · ghi chú đầu file · phép 10 báo LỖI | `QUY-TAC-GON.md` mục 4–5 · `so-tay/` · đo: `node kiem-thu/do-gon.mjs` |
 | Xuất/nhập GEDCOM, Excel | `so-tay/nhap-xuat.md` · `../tai-lieu/CAU-TRUC-DU-LIEU_V06.md` mục *Ánh xạ* · ⚠ Đời (lưu, `luoc-do/40`), xuất Excel: `so-tay/xuat-excel.md` |
+| Đóng gói; thêm `luoc-do/` | `so-tay/dong-goi.md` |
 | Hướng dẫn chủ dự án bấm gì | `HUONG-DAN-DUNG-BANG.md` |
-| Mở app tại chỗ, cài máy thứ hai, dùng `gh` | `../MAY-THU-HAI.md` *(ngoài repo)* |
+| Mở app tại chỗ, cài máy thứ hai, dùng `gh` | `../MAY-THU-HAI.md` |
 | Muốn biết vì sao chuyển nhà | `BAT-DAU.md` (chứng cứ gốc, không sửa) |
 
 **Đừng đọc cả thư mục.** Không mở mọi file `nhat-ky/` (lưu trữ) — tra bằng
@@ -45,7 +46,7 @@ file. ⚠ `KE-HOACH.md` **hết trần** (b131) — gọn bằng kỷ luật "xo
 1. **`domains/` không được sửa.** Cả mười file chép nguyên từ bản Apps Script.
    Thấy mình đang sửa `domains/` là dừng lại hỏi vì sao — `BAT-DAU.md` mục 1.
 2. **Chỉ `services/sb.js` được chạm `window.supabase`.** Không file nào khác.
-3. **Đã chạy thật, phân quyền đã đo bằng REST: 5/5 hàng rào đạt** (b94, b96).
+3. **Đã chạy thật, phân quyền đã đo bằng REST: 5/5 hàng rào đạt**.
    `KIEN-TRUC.md` mục 6: còn gì dở.
    ⚠ **File SQL nào đã dán, file nào chưa — hỏi `KE-HOACH.md`.** Không giữ
    bản thứ hai ở đây: nó đổi mỗi bước, và hai chỗ ghi là hai chỗ để lệch nhau.
