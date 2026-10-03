@@ -50,9 +50,9 @@ Liên quan: mọi trang (`layPhien()` chạy ở đầu cả sơ đồ lẫn Qu�
   đã bị gỡ" (`sb.js` `ghepDong`: đọc `trees` ra rỗng), và nút ⚙ chỉ mọc sau
   khi sơ đồ tải xong. Chủ dự án chọn: **nút ⚙ tải TRƯỚC**, có ở mọi màn
   khởi động (`khoi-dong.js` `nutCaiDat()`), KHÔNG tự nhảy sang cây khác. Cài
-  đặt khi chưa có cây (`state.tree` rỗng) tự bớt khối cần cây. Gốc — vì sao
-  `tin_thung_rac()` không báo `daXoa` cho cây xoá bằng `xoa_cay()` (`60`) —
-  CHƯA đo; màn đúng tên vẫn là việc treo.
+  đặt khi chưa có cây (`state.tree` rỗng) tự bớt khối cần cây.
+  *(Quyết định 03/10/2026: Chủ dự án chốt **BỎ QUA** việc đổi sang màn hình riêng
+  có tên cây — nút ⚙ ở màn khởi động đã là lối thoát an toàn, không cần làm thêm).*
 
 ## Vì sao làm thế này
 
