@@ -5,7 +5,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · quan-tri/hop-thoai
 // Sổ tay   : so-tay/tao-tai-khoan.md · so-tay/trang-quan-tri.md
-// Phiên bản: 0.1.0 · Cập nhật: 28/09/2026 (b143)
+// Phiên bản: 0.2.0 · Cập nhật: 03/10/2026 (b171) — bỏ lựa chọn gửi liên kết qua email
 // ============================================================
 //
 // ⚠ Chuỗi BỐN bước, chỉ bước 1 cần Edge Function: ① `taoTaiKhoan` (Edge

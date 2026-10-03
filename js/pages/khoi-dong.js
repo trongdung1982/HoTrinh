@@ -5,7 +5,7 @@
 // Lớp      : pages
 // Phụ thuộc: services/repo, services/sb, utils/date, pages/dang-nhap,
 //            pages/tree-view, pages/settings, pages/chon-gia-pha
-// Phiên bản: 0.14.0 · Cập nhật: 30/09/2026 (b161f) — nút ⚙ Cài đặt ở mọi màn khởi động
+// Phiên bản: 0.15.0 · Cập nhật: 03/10/2026 (b171) — màn "Hệ thống chưa có gia phả nào"
 // ============================================================
 //
 // ⚠ **ĐỔI SO VỚI BẢN APPS SCRIPT: có thêm một kết cục thứ ba.**

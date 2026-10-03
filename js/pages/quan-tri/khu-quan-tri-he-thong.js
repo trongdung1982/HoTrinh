@@ -6,8 +6,8 @@
 //            sửa quan hệ · Đơn Hồ sơ cá nhân · Dữ liệu mồ côi.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · quan-tri/trang-chi-tiet, hop-thoai, o-bang, khu-*
-// Phiên bản: 1.18.1 · Cập nhật: 30/09/2026 (b161c) — gọi traLaiCay (tên mới, luoc-do/60).
-// Sổ tay   : so-tay/trang-quan-tri.md
+// Phiên bản: 1.19.0 · Cập nhật: 03/10/2026 (b171) — nút Đặt lại mật khẩu ở Sổ tài khoản
+// Sổ tay   : so-tay/trang-quan-tri.md · so-tay/tao-tai-khoan.md
 // ============================================================
 //
 // ⚠ **Không gác trước bằng cờ `phien.laQuanTriHeThong`.** App không tự lọc,

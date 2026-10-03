@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 03/10/2026 · Không điểm dừng nào chưa bấm thử · SQL đã dán hết tới `67` · kế tiếp: đóng gói bộ cài — b171 hướng dẫn cài + sử dụng.*
+*Cập nhật 03/10/2026 · DỰ ÁN ĐÃ ĐÓNG (bộ cài bàn giao xong, b171) · SQL đã dán hết tới `67` · không còn việc kế tiếp.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -60,22 +60,11 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-**ĐÓNG GÓI BỘ CÀI ĐẶT để bàn giao** (chủ dự án chốt 03/10/2026): file trong bộ
-cài XOÁ hết ghi chú quá trình phát triển. ⚠ Bộ cài là thư mục/bản RA RIÊNG —
-repo `supabase/` giữ nguyên ghi chú để tiếp tục phát triển. Sổ tay:
-**`so-tay/dong-goi.md`** — SQL một file `ban-giao/cai-dat.sql` (b169) và mã
-web đã lột `ban-giao/web/` (b170) đều sinh bằng máy; sửa mã hay thêm
-`luoc-do/68…` thì chạy lại công cụ ghi ở đó.
-
-1. **b171 — hướng dẫn cài + hướng dẫn sử dụng cho người nhận** (giao AGY
-   được): tạo dự án Supabase, dán `cai-dat.sql` (kho ảnh đã nằm trong file),
-   sửa `cau-hinh.js`, bật Pages, tài khoản QTHT đầu tiên, máy sao lưu
-   (`SaoLuu.gs`). Claude rà lại bằng cách cài thử theo đúng chữ **trên một dự
-   án Supabase MỚI thật** — ba thứ bàn thử không đo được: `so-tay/dong-goi.md`
-   mục cuối.
-
-**Chốt 03/10/2026:** người nhận **TỰ CÀI** · giao bằng **file zip** kèm
-**hướng dẫn cài** VÀ **hướng dẫn sử dụng** (b171 thêm phần sử dụng).
+**Không còn việc nào trong hàng.** Chủ dự án **đóng dự án** 03/10/2026 sau khi
+bộ cài bàn giao xong (b169 SQL · b170 mã lột · b171 hai hướng dẫn + cài thử
+thật đạt). Bộ cài: `Claude_Code/ban-giao/` (ngoài repo) + `ban-giao.zip`; sửa mã
+hay thêm `luoc-do/68…` thì sinh lại theo **`so-tay/dong-goi.md`**. Mở lại dự
+án thì bắt đầu từ bảng *Còn treo* dưới đây.
 
 ⚠ Đặt cây mặc định cần cờ Quản
 trị hệ thống — hai tài khoản thử không có, phải bấm tay bằng tài khoản của bạn.

@@ -6,7 +6,7 @@
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb · quan-tri/hop-thoai · o-bang
 // Sổ tay   : so-tay/nhat-ky-he-thong.md · so-tay/trang-quan-tri.md
-// Phiên bản: 0.4.1 · Cập nhật: 28/09/2026 (b150b) — tên việc
+// Phiên bản: 0.4.2 · Cập nhật: 03/10/2026 (b171) — tên việc dat_lai_mat_khau
 //            `doi_cong_khai_ca_nhan` (`51`) · tên bốn nhóm mới (`52`)
 // ============================================================
 //

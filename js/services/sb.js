@@ -5,7 +5,7 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.55.1 · Cập nhật: 30/09/2026 13:30 (b145c) — mở cây mặc định khi đã có chân cây khác
+// Phiên bản: 0.56.0 · Cập nhật: 03/10/2026 (b171) — QTHT khi chưa có cây · đặt lại mật khẩu
 //            (luoc-do/61); b161c xoaCay/traLaiCay (60); b161a kyAnh (59).
 //            Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/mo-app.md (layPhien — HAI đường phải đồng bộ)

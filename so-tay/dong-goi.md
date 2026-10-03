@@ -78,7 +78,33 @@ hỏng một hàm trong bản lột → bài Node và bài Chrome đều đỏ.
   REST 03/10/2026: hàm chạy và tự từ chối, không lọt gì. Bản cài giữ đúng như
   máy thật; vá thì làm file `68` (revoke `anon`) rồi đóng gói lại.
 
-## Bàn thử KHÔNG đo được (phải cài thử trên Supabase thật — b171)
+## Hai hướng dẫn cho người nhận — `ban-giao/HUONG-DAN-CAI-DAT.md` · `HUONG-DAN-SU-DUNG.md`
 
-SQL Editor có nhận file ~360 KB một lượt không · tạo trigger trên `auth.users`
-và luật trên `storage.objects` ở dự án MỚI · dự án Postgres 15.
+Viết TAY (không sinh bằng máy), nằm cạnh `cai-dat.sql` + `web/`. Mười bước cài: dự án
+Supabase · dán SQL · `cau-hinh.js` · QTHT đầu tiên · Pages · URL Configuration · cây đầu
+tiên · sao lưu · hàm `tao-tai-khoan` · tên miền riêng. Đổi tính năng chạm vào bước nào
+thì sửa chữ ở đó.
+
+## Cài thử thật — 03/10/2026, ĐẠT hết mười bước (chủ dự án làm theo chữ)
+
+- SQL Editor **nhận** file 373 KB một lượt. Kết quả hiện ô **`set_config`** (kết quả dòng
+  đầu file) — không phải lỗi. Trigger `auth.users` + luật kho ảnh tạo được ở dự án mới.
+  Đo REST: đủ bảng · `anon` nhận `false` · `mo_phien` đúng.
+- ⚠ **QTHT đầu tiên không có sẵn**: trigger chỉ tạo dòng `tai_khoan`; hướng dẫn bước 4b
+  `update … la_quan_tri_he_thong = true`.
+- ⚠ **Máy sao lưu vào cây SAU khi có cây** — trigger `them_may_sao_luu` chép từ dòng
+  `sao_luu` đã có; hệ thống trống thì câu `insert` không thêm gì. Câu lệnh tra UID theo
+  email (người nhận từng dán email vào chỗ UID → lỗi `uuid`).
+- ⚠ Hai lỗi chỉ hiện ở bản cài MỚI, đã vá ở mã gốc: QTHT + chưa có cây → `napCay()` ném
+  *"Chưa biết đang mở gia phả nào"* dưới tiêu đề lỗi mạng (nay màn *"chưa có gia phả
+  nào"*) · hàm `tao-tai-khoan` chưa dán → 404 không kèm CORS → `fetch` ném TypeError, app
+  báo "không nối được máy chủ" (nay nói thẳng "chưa dán Edge Function").
+- ⚠ Bản cài thử là kho GitHub RIÊNG của người nhận — `git push` không tới; sửa mã thì
+  chạy lại `dong-goi-web.mjs` và tải lên tay đúng file đổi, **giữ `cau-hinh.js` của họ**.
+  Edge Function là bản chép riêng trên từng dự án Supabase — sửa `index.ts` thì dán lại
+  ở CẢ app thật lẫn bản cài.
+- ⚠ Hai công cụ chạy từ gốc `Claude_Code`: `node kiem-thu/dong-goi-web.mjs` (không phải
+  `supabase/kiem-thu/`). Dropbox khoá có lúc làm nó dừng giữa chừng không báo rõ → chạy lại
+  tới khi in `TỰ KIỂM ĐẠT`.
+
+Chưa đo: dự án Postgres 15 (dự án mới là bản Supabase hiện hành).
