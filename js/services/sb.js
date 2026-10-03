@@ -372,7 +372,16 @@ export async function layPhien({ docCayLuon = false } = {}) {
 
     // b110 — cây đang mở vừa vào thùng rác. Quản trị hệ thống cũng KHÔNG đọc
     // được nó (`16` mục 3, cố ý), nên đi tiếp là mở ra một sơ đồ trống.
-    const [tinRac, cd] = treeId ? await vongCay(treeId, false) : [{}, {}];
+    // Máy chủ mới cài, chưa có cây nào: không có gì để đọc — báo thẳng thay vì
+    // để `napCay()` ném lỗi "Chưa biết đang mở gia phả nào".
+    if (!treeId) {
+      return {
+        ...(await nenNguoi()), daDangNhap: true, email: nguoi.email || '',
+        vaiTro: 'quan_tri_he_thong', docDuoc: false, suaDuoc: false,
+        trangThai: 'khongcay', treeId: null,
+      };
+    }
+    const [tinRac, cd] = await vongCay(treeId, false);
     if (tinRac.daXoa) {
       docTruoc = null;
       return {
