@@ -6,7 +6,7 @@
 //            hộp hỏi đổi quyền dùng chung với trang một tài khoản.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-goi-y · o-bang
-// Phiên bản: 1.5.2 · Cập nhật: 30/09/2026 06:50 (b162a) — hộp Duyệt đơn bỏ ô mã người
+// Phiên bản: 1.5.3 · Cập nhật: 03/10/2026 (b168) — nút trong thẻ Tổng quan bấm được
 //            Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
@@ -157,9 +157,11 @@ function datNguCanh(sec, chu) {
 export function wireTabsTrangCay(sec, ctx, maDangMo = ctx.muc) {
   const oTabs = sec.querySelector('.tabs');
   if (!oTabs) return;
-  for (const b of oTabs.querySelectorAll('[data-td-muc]')) {
+  // Gắn MỌI nút `data-td-muc` của section, không chỉ thanh tab: nút *Mở danh
+  // sách* · *Xử lý đơn* trong thẻ Tổng quan cũng dẫn tới mục — sót là bấm không ăn.
+  for (const b of sec.querySelectorAll('[data-td-muc]')) {
     const ma = b.dataset.tdMuc;
-    b.classList.toggle('active', ma === maDangMo);
+    if (oTabs.contains(b)) b.classList.toggle('active', ma === maDangMo);
     b.onclick = () => {
       window.location.hash = ma === 'loi-moi'
         ? duongDan('gia-pha', 'moi', ctx.thamSo)
