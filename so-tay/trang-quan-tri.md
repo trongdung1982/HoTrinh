@@ -68,6 +68,10 @@ Liên quan: `js/services/sb.js` · `kiem-thu/kiem-trang-quan-tri.mjs` · ngoài 
 
 - **Chép lắt nhắt từng khu (b118c)** — luật ở *Luật chung* đầu file. Phép bắt:
   PHẦN O *"đủ 13 section"* · *"không còn ô vẽ tạm"*.
+- **Nút `data-td-muc` NGOÀI thanh tab bấm không ăn (b168)** — *Mở danh sách* ·
+  *Xử lý đơn* ở thẻ Tổng quan cây. `wireTabsTrangCay` nay gắn mọi nút
+  `data-td-muc` của section, chỉ tô đậm nút trong `.tabs`. Thêm nút dẫn tới
+  mục ở chỗ khác thì dùng lại thuộc tính ấy. Đo: `xem-khung-quan-tri.mjs tq-mo-ds`.
 - **Dữ liệu thật dài hơn chữ mẫu** — nút trong ô gãy dòng và chữ `button` căn
   giữa; bảng đặt trong `.layout` đẩy cột phải tràn mép. Vá bằng CSS phần app:
   `td .link{text-align:left}` · `.action-menu > .btn{white-space:nowrap}` ·

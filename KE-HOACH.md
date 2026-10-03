@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 30/09/2026 · Năm điểm dừng chưa bấm thử · SQL đã dán hết tới `67`.*
+*Cập nhật 03/10/2026 · Không điểm dừng nào chưa bấm thử · SQL đã dán hết tới `67` · kế tiếp: đóng gói bộ cài (b169).*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -60,13 +60,36 @@ Thứ tự theo **"đau nhất trước"**, cộng luật thứ hai: **việc n�
 `vai_tro()` thì đứng sau việc không đụng** — sai ở nền móng thì mọi thứ xây
 bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệu: `CHI-DAN.md`.)*
 
-Không còn việc mã nào đã chốt; việc
-ở *Còn treo* đều cần chủ dự án quyết trước. ⚠ Đặt cây mặc định cần cờ Quản
+**ĐÓNG GÓI BỘ CÀI ĐẶT để bàn giao** (chủ dự án chốt 03/10/2026): file trong bộ
+cài XOÁ hết ghi chú quá trình phát triển. ⚠ Bộ cài là thư mục/bản RA RIÊNG —
+repo `supabase/` giữ nguyên ghi chú để tiếp tục phát triển. Chia ba bước:
+
+1. **b169 — SQL một file cài từ trống** (Claude, Opus — nặng nhất): 67 file
+   `luoc-do/` là lịch sử vá (`62` sửa thân hàm bằng regex, file tự kiểm, bản
+   đứng cuối…), người nhận không dán lần lượt được. Dựng chuỗi trên bàn thử →
+   kết xuất lược đồ cuối (không ghi chú) → dựng lên CSDL TRỐNG → chạy lại các
+   `do-*.mjs` trên đó. ⚠ Bàn thử nói dối ở superuser · grant · dựng từ trống —
+   phải kiểm cả ba; còn kho ảnh (Storage), `SaoLuu.gs`.
+2. **b170 — lột ghi chú JS/HTML/CSS ra thư mục bàn giao** (Claude viết công
+   cụ; ⚠ phải hiểu chuỗi · regex · template literal, lột hỏng là app chết im
+   lặng) → chạy `chay-supabase.mjs` trỏ vào BẢN ĐÃ LỘT, phải ra như bản gốc.
+   Bỏ: `kiem-thu/` · `so-tay/` · `nhat-ky/` · `luu-tru/` · tài liệu dev · CNAME
+   · workflow vệ tinh · dữ liệu mẫu.
+3. **b171 — hướng dẫn cài cho người nhận** (giao AGY được): tạo dự án
+   Supabase, dán SQL, tạo kho ảnh, sửa `cau-hinh.js`, bật Pages, tài khoản
+   QTHT đầu tiên, máy sao lưu. Claude rà lại bằng cách cài thử theo đúng chữ.
+
+Chưa chốt (hỏi chủ dự án đầu b169, không chặn việc dựng SQL): người nhận tự
+cài hay chủ dự án cài hộ · giao bằng repo GitHub mới hay file zip.
+
+⚠ Đặt cây mặc định cần cờ Quản
 trị hệ thống — hai tài khoản thử không có, phải bấm tay bằng tài khoản của bạn.
 ⚠ Bộ `chay-supabase.mjs` nằm ở `Claude_Code/kiem-thu/` (KHÔNG phải trong
-`supabase/`): `node kiem-thu/chay-supabase.mjs`. Chạy TRỌN 30/09/2026 sau b165:
-59/59 ĐẠT. Nếu lần sau dừng giữa chừng vì thiếu RAM: đóng bớt ứng dụng, chạy
-tiền cảnh, đừng nâng trần bộ nhớ.
+`supabase/`): `node kiem-thu/chay-supabase.mjs`. Chạy TRỌN 03/10/2026 sau b168:
+58/59 — `kiem-xuat-anh-dpi` báo "chưa chạy", chạy riêng
+(`node --import ./kiem-thu/sang-supabase.mjs kiem-thu/kiem-xuat-anh-dpi.mjs`)
+thì ĐẠT trọn: máy quá tải giữa chuỗi bài Chrome. Đóng bớt ứng dụng, đừng nâng
+trần bộ nhớ.
 
 *(Chủ dự án bỏ 30/09: đổi tên `driveFileId`/`driveThumbUrl` · sửa `sinh-sql-di-doi.mjs` (cất vào `luu-tru/`) · xoá `branches`/`branch_access`
 — bảng trống vô hại, xoá phải sửa sao lưu + khôi phục + gộp người. Tạo tài
@@ -81,5 +104,4 @@ là chứng cứ. Đếm lại bằng số dòng mỗi lần `/ket-thuc`, đừn
 
 | Việc | Ghi ở đâu |
 |---|---|
-| Repo vệ tinh `LeVanTrac` · `NguyenQuang` kẹt Pages từ 28/09 08:12 (push dồn → deploy giẫm nhau). Chủ dự án bảo **treo** — app chưa xong; lần push sau thường tự gỡ | `.github/workflows/dong-bo-sang-levantrac.yml` |
 | **`branches` / `branch_access` dựng từ `01-bang.sql` nay KHÔNG dùng** — luật đi theo trực hệ, không chia chi *(chốt 04/09/2026)*. GIỮ, không xoá (chủ dự án 30/09): trống, vô hại; sao lưu · khôi phục · `gop_hai_nguoi` còn nhắc tới | `06-quyen-truc-he.sql` mục 2 |
