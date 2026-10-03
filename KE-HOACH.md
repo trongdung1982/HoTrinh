@@ -1,6 +1,6 @@
 # KẾ HOẠCH — nhánh Supabase
 
-*Cập nhật 03/10/2026 · Không điểm dừng nào chưa bấm thử · SQL đã dán hết tới `67` · kế tiếp: đóng gói bộ cài — b170 (SQL một file b169 đã xong).*
+*Cập nhật 03/10/2026 · Không điểm dừng nào chưa bấm thử · SQL đã dán hết tới `67` · kế tiếp: đóng gói bộ cài — b171 hướng dẫn cài + sử dụng.*
 
 ⚠ **Không còn trần cứng dòng/byte** (bỏ 27/09/2026, b131 — chủ dự án chỉ ra:
 trần buộc nén nội dung mỗi bước, làm phiên sau đọc thiếu chi tiết mà hiểu sai
@@ -63,15 +63,11 @@ bên trên sai theo, và không có gì báo lỗi. *(Định tuyến tài liệ
 **ĐÓNG GÓI BỘ CÀI ĐẶT để bàn giao** (chủ dự án chốt 03/10/2026): file trong bộ
 cài XOÁ hết ghi chú quá trình phát triển. ⚠ Bộ cài là thư mục/bản RA RIÊNG —
 repo `supabase/` giữ nguyên ghi chú để tiếp tục phát triển. Sổ tay:
-**`so-tay/dong-goi.md`** — SQL một file `ban-giao/cai-dat.sql` đã có (b169),
-sinh bằng máy; thêm `luoc-do/68…` thì chạy lại hai công cụ ghi ở đó.
+**`so-tay/dong-goi.md`** — SQL một file `ban-giao/cai-dat.sql` (b169) và mã
+web đã lột `ban-giao/web/` (b170) đều sinh bằng máy; sửa mã hay thêm
+`luoc-do/68…` thì chạy lại công cụ ghi ở đó.
 
-2. **b170 — lột ghi chú JS/HTML/CSS ra thư mục bàn giao** (Claude viết công
-   cụ; ⚠ phải hiểu chuỗi · regex · template literal, lột hỏng là app chết im
-   lặng) → chạy `chay-supabase.mjs` trỏ vào BẢN ĐÃ LỘT, phải ra như bản gốc.
-   Bỏ: `kiem-thu/` · `so-tay/` · `nhat-ky/` · `luu-tru/` · tài liệu dev · CNAME
-   · workflow vệ tinh · dữ liệu mẫu.
-3. **b171 — hướng dẫn cài + hướng dẫn sử dụng cho người nhận** (giao AGY
+1. **b171 — hướng dẫn cài + hướng dẫn sử dụng cho người nhận** (giao AGY
    được): tạo dự án Supabase, dán `cai-dat.sql` (kho ảnh đã nằm trong file),
    sửa `cau-hinh.js`, bật Pages, tài khoản QTHT đầu tiên, máy sao lưu
    (`SaoLuu.gs`). Claude rà lại bằng cách cài thử theo đúng chữ **trên một dự

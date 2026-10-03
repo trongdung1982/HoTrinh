@@ -23,6 +23,39 @@ của bản cài **trùng từng ký tự** với chuỗi `01→67` (sau khi l�
 chuỗi trống trùng chuỗi có dữ liệu; mọi hàm dựng lại được khi BẬT kiểm thân
 hàm; cả bộ `do-*.mjs` ra **giống hệt từng dòng** trên hai nền cùng dữ liệu.
 
+## Mã web đã lột — `ban-giao/web/`
+
+Sinh bằng máy, **đừng sửa tay**. Sửa mã trong `supabase/` xong thì chạy lại:
+
+```
+node kiem-thu/dong-goi-web.mjs     # lột ra ban-giao/web/ + tự kiểm (~1 phút)
+node kiem-thu/chay-ban-giao.mjs    # lột ra thư mục tạm, chạy cả bộ chay-supabase trên đó
+```
+
+Chỉ lấy file **git đang theo dõi**. Lột: `js/` · hai trang `.html` (cả
+`<script>`/`<style>` trong trang) · bốn `.css` · `ham-may-chu/…/index.ts` ·
+`sao-luu/SaoLuu.gs` · `sao-luu/khoi-phuc.mjs`. Chép nguyên: `js/vendor/` (giấy
+phép thư viện phải đi theo) · `robots.txt`. Bỏ hết phần còn lại, kể cả
+`DOC-VENDOR.md` và `HUONG-DAN-SAO-LUU.md` (viết cho chủ dự án — b171 viết lại
+cho người nhận). `js/cau-hinh.js` giao đi với bốn giá trị **để trống** và đầu
+file là hướng dẫn điền ngắn; `chay-ban-giao.mjs` giữ giá trị thật để chạy kiểm.
+
+**Đạt nghĩa là:** công cụ tự kiểm qua (lột hai lần như một · bỏ khoảng trắng
+của mã thì gốc trùng bản lột · `node --check`) VÀ `chay-ban-giao.mjs` ra
+**giống hệt từng dòng** `chay-supabase.mjs` (03/10/2026: 464/464 dòng, 59/59
+đạt; 2.382 KB → 1.250 KB). Đã chứng minh bộ kiểm đọc bản lột thật: cố ý làm
+hỏng một hàm trong bản lột → bài Node và bài Chrome đều đỏ.
+
+- ⚠ **Bộ kiểm không mở `index.html`/`QuanTri.html`** — hai trang chỉ được gác
+  bằng tự kiểm khung xương. Đổi luật lột HTML thì mở tay bản lột một lần.
+- ⚠ Ghi chú JS thay bằng cách (một dòng) / xuống dòng (nhiều dòng, giữ luật tự
+  chèn `;`). HTML/CSS thay bằng rỗng — ghi chú CSS kẹp giữa hai ký tự
+  (`0/*x*/auto`) thì công cụ báo, vì lột ra `0auto` là đổi nghĩa.
+- ⚠ Regex hay dấu chia đoán theo token đứng trước; `/` ngay sau `}` thì báo
+  "chỗ phải đoán" để xem tay (03/10/2026: không có chỗ nào).
+- ⚠ Dropbox khoá `ban-giao/web/` vừa ghi → `EPERM` khi xoá; công cụ thử lại 15 lần.
+- `sang-supabase.mjs` nhận `GIAPHA_JS_DICH` = thư mục `js/` khác để đo.
+
 ## Bẫy
 
 - ⚠ **Quyền mặc định Supabase.** Bàn thử `00` không có nó → kết xuất quyền mất
