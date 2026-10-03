@@ -15,7 +15,11 @@ Cột mới phải có tên ở **BỐN chỗ**. Thiếu chỗ nào thì hỏng 
 
 ⚠ **Cột (hay bảng) mới MANG MÃ NGƯỜI** thì thêm chỗ thứ năm: `gop_hai_nguoi()`
 mục 5 (`luoc-do/48`) — không thì gộp hai người để lại mã thua ở đó, im lặng
-(`so-tay/nguoi-xuyen-cay.md` mục *Báo trùng + gộp*).
+(`so-tay/nguoi-xuyen-cay.md` mục *Báo trùng + gộp*). **Máy canh việc này**:
+`node kiem-thu/ban-thu-sql/do-gop-quet.mjs` (ngoài repo) dựng chuỗi tới file
+số lớn nhất, báo HỎNG nếu cột tên có `person`/`nguoi` hoặc chứa mã `P####`
+chưa nằm trong danh sách gộp. Chạy nó sau mọi file SQL thêm cột. Hiện còn
+**12 chỗ** — danh sách 13 ở đầu `48` cũ: `tree_members.person_id` bỏ ở `63`.
 
 ⚠ Hai hàm máy chủ **liệt kê tên cột**, không `set *`. Bẫy thứ ba và thứ tư tìm ra
 ở b120, trước đó tài liệu chỉ ghi bẫy thứ nhất. Bản đứng cuối: `luu_cay()` ở
