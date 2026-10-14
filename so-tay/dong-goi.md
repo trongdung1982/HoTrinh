@@ -10,6 +10,10 @@ Người nhận **tự cài**, nhận **file zip** + hướng dẫn cài + hư�
 
 Sinh bằng máy, **đừng sửa tay**. Thêm file `luoc-do/68…` thì chạy lại:
 
+⚠ **`70-toan-quyen.sql` KHÔNG vào bộ cài** — nó ghi cứng email chủ dự án,
+riêng máy chủ này. `CUOI` của `dong-goi-sql.mjs` dừng ở `69`; có file 71+
+thì lọc `70` ra.
+
 ```
 node kiem-thu/ban-thu-sql/dong-goi-sql.mjs      # dựng · kết xuất · cài · so (~1 phút)
 node kiem-thu/ban-thu-sql/so-song-cai-dat.mjs   # chạy lại cả bộ do-*.mjs hai nền (~25 phút)

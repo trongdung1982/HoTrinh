@@ -49,6 +49,9 @@ sao lưu chụp trước `63` thôi khôi phục được — chủ dự án ch�
 **`65` · `66` · `67` + `SaoLuu.gs` 0.12.0 — ĐÃ DÁN/THAY** 30/09/2026 (chủ
 dự án báo tự kiểm đạt cả ba file). Bàn thử: `do-b166.mjs` 39/39.
 
+**`70` — CHƯA DÁN** (14/10/2026, toàn quyền cho `trongdung1982@gmail.com`;
+bàn thử `do-toan-quyen.mjs` 28/28). Dán SAU `69`, tự kiểm phải 7/7.
+
 ⚠ Bản cuối mới: `xoa_cay()` · `tra_lai_cay()` ở `60` (tên cũ đã xoá); `don_mo_coi_he_thong()`
 · `ds_nguoi_mo_coi()` · luật `xoa_anh` ở `61`; luật `xem_anh` + kho kín ở `59`.
 

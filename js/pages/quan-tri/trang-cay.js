@@ -6,7 +6,7 @@
 //            hộp hỏi đổi quyền dùng chung với trang một tài khoản.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/trang-chi-tiet · hop-thoai · o-goi-y · o-bang
-// Phiên bản: 1.5.3 · Cập nhật: 03/10/2026 (b168) — nút trong thẻ Tổng quan bấm được
+// Phiên bản: 1.5.4 · Cập nhật: 14/10/2026 — mờ nút tự đặt quyền theo `khoaTuDat`
 //            Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
@@ -355,7 +355,7 @@ function dongThanhVien(t, cay, duocDoiQuyen, napLai, xin) {
   // — Quyền: `button.link` của quantri3, bấm là đổi vai —
   const saoLuu = t.vai === 'sao_luu'
     ? 'Tài khoản sao lưu tự động — đổi vai hay gỡ nó là bản sao lưu đêm ra file rỗng.' : '';
-  const cuaMinh = t.laChinhToi
+  const cuaMinh = t.khoaTuDat
     ? 'Dòng của chính bạn — không ai đặt quyền cho chính mình được, kể cả Quản trị hệ thống.' : '';
   const khongQuyen = duocDoiQuyen ? '' : 'Chỉ chủ gia phả và Quản trị hệ thống đổi được quyền.';
 

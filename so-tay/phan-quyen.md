@@ -82,6 +82,9 @@ Dán lại file bên trái thì phải dán tiếp các file bên phải, đúng
   sau `26`) là mở lại `change_log` cho người chỉ xem.
 - **Sau `26` KHÔNG dán lại `02`/`11`** — luật đọc trên bảng người của chúng hỏi
   `tree_id` đã bỏ; bản đứng cuối của bốn luật ấy ở `26` mục 5.
+- ⚠ **`11`/`13`/`16`/`23` → `70`**: `70` giữ bản cuối `la_quan_tri_he_thong()`
+  · `bi_khoa()` · `co_the_xem_cay()` · `co_the_sua()` · `la_chinh_minh()`.
+  Dán lại một trong bốn mà quên `70` là tài khoản toàn quyền mất quyền — im lặng.
 - `34`→`35`→`36`→`37`→`38`→`39`. `36` giữ bản cuối của
   `gan_nguoi_tai_khoan()`; ⚠ `39` giữ bản cuối của `duyet_de_xuat_gan()` ·
   `ds_de_xuat_gan()` · `de_xuat_gan_cua_toi()` — dán lại `35`/`36` là PHẢI dán `39`.
@@ -192,6 +195,28 @@ thấy. Khách thấy = nhóm cây bật (`47`) ∩ nhóm người bật. Chỉ 
   `TH957`). Hai bẫy khi tự viết phép đo: tắt `gioi_tinh` cho `sex='U'`, KHÔNG
   rỗng · `dat_cong_khai_tai_khoan(p_truong null)` = TẮT HẾT, không phải "về
   chưa đặt" — hoàn tác thì gửi đủ mười nhóm.
+
+## Toàn quyền — `70` (14/10/2026)
+
+Chủ dự án chốt: `trongdung1982@gmail.com` *"đủ mọi quyền, không có hàng rào
+nào"*. Đè luật *"không ai đặt quyền cho chính mình"* (08/09) — RIÊNG tài
+khoản ấy; mọi người khác, kể cả QTHT khác, giữ nguyên hàng rào cũ.
+
+- Cột `tai_khoan.toan_quyen`, **không hàm nào ghi** — chỉ SQL Editor bật/tắt.
+  Năm hàm gác cửa hỏi nó ở nhánh đầu: là QTHT dù bị hạ cờ/khoá · không bao giờ
+  bị khoá mềm · đọc + sửa cây đang đóng và trong thùng rác · `la_chinh_minh()`
+  trả `false` → tự đổi vai, tự duyệt đơn, tự gắn mã người cho mình.
+- Trigger `giu_toan_quyen` trên `tai_khoan`: không khoá, không hạ cờ QTHT,
+  không xoá được dòng mang cờ. Đặt ở BẢNG, không vá ba hàm quản trị.
+- Trình duyệt: `sb.js` trả `khoaTuDat` (= `laChinhToi` trừ toàn quyền);
+  `trang-cay.js` · `trang-tai-khoan.js` mờ nút tự đặt quyền theo nó. Khu QTHT
+  vẫn ẩn nút tự khoá/xoá/hạ cờ trên dòng của mình — trigger cũng từ chối.
+- ⚠ Khôi phục bản sao lưu chụp TRƯỚC `70`: file không có cột → cờ về `false`.
+  Dán lại `70` sau khi khôi phục.
+- ⚠ Không vào bộ cài bàn giao — `so-tay/dong-goi.md`.
+- ⚠ Bẫy khi đo: câu con `(select id from trees …)` chạy dưới vai người đo bị
+  RLS giấu cây trong thùng rác → `null`, và `co_the_xem_cay(null)` của QTHT ra
+  `true`. Lấy mã cây bằng `postgres` rồi viết thẳng. Đo: `do-toan-quyen.mjs` 28/28.
 
 ## Bài học
 

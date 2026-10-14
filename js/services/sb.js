@@ -5,7 +5,7 @@
 // Lớp      : services — được gọi bởi: services/repo, pages/dang-nhap,
 //            pages/settings, pages/form-anh, pages/quan-tri · gọi: cau-hinh
 // Phụ thuộc: cau-hinh.js, utils/text.js, vendor/supabase.js (nạp bằng thẻ <script>)
-// Phiên bản: 0.56.0 · Cập nhật: 03/10/2026 (b171) — QTHT khi chưa có cây · đặt lại mật khẩu
+// Phiên bản: 0.57.0 · Cập nhật: 14/10/2026 — `khoaTuDat` (toàn quyền, `70`)
 //            (luoc-do/61); b161c xoaCay/traLaiCay (60); b161a kyAnh (59).
 //            Lịch sử: `git log -p`.
 // Sổ tay   : so-tay/luu-du-lieu.md · so-tay/mo-app.md (layPhien — HAI đường phải đồng bộ)
@@ -165,6 +165,15 @@ export async function doiMatKhau(matKhauCu, matKhauMoi) {
 
   const { error } = await k.auth.updateUser({ password: String(matKhauMoi || '') });
   return error ? { ok: false, loi: cauLoi(error) } : { ok: true, loi: null };
+}
+
+/**
+ * Tài khoản đang đăng nhập có cờ toàn quyền không (`luoc-do/70`). Chưa dán
+ * `70` thì hàm không có trên máy chủ → `false`, màn hình như cũ.
+ */
+async function laToanQuyen(k) {
+  const { data, error } = await k.rpc('la_toan_quyen');
+  return !error && data === true;
 }
 
 /**
@@ -1859,9 +1868,10 @@ export async function dsThanhVien(treeId) {
   const k = layKhach();
   if (!k || !treeId) return { ok: false, loi: 'Chưa nối được máy chủ.', ds: [] };
 
-  const [{ data, error }, nguoi] = await Promise.all([
+  const [{ data, error }, nguoi, toanQuyen] = await Promise.all([
     k.rpc('ds_thanh_vien', { p_tree: treeId }),
     nguoiDangNhap(),
+    laToanQuyen(k),
   ]);
   if (error) return { ok: false, loi: cauLoi(error), ds: [] };
 
@@ -1877,6 +1887,8 @@ export async function dsThanhVien(treeId) {
     tinCay: Boolean(r.tin_cay),
     laChuCay: Boolean(r.la_chu_cay),
     laChinhToi: Boolean(toi && r.user_id === toi),
+    // Mờ nút "không tự đặt quyền" — trừ tài khoản toàn quyền (`70`).
+    khoaTuDat: Boolean(toi && r.user_id === toi) && !toanQuyen,
     xinLuc: r.xin_luc || null,
     loiNhan: r.loi_nhan || '',
     thamGia: r.added_at || null,
@@ -1996,9 +2008,10 @@ export async function dsTaiKhoanHeThong() {
   const k = layKhach();
   if (!k) return { ok: false, loi: 'Chưa nối được máy chủ.', ds: [] };
 
-  const [{ data, error }, nguoi] = await Promise.all([
+  const [{ data, error }, nguoi, toanQuyen] = await Promise.all([
     k.rpc('ds_tai_khoan_he_thong'),
     nguoiDangNhap(),
+    laToanQuyen(k),
   ]);
   if (error) return { ok: false, loi: cauLoi(error), ds: [] };
 
@@ -2042,6 +2055,7 @@ export async function dsTaiKhoanHeThong() {
     qthtMoiLuc: r.qtht_moi_luc || null,
     emailQthtMoiBoi: r.email_qtht_moi_boi || '',
     laChinhToi: Boolean(toi && r.user_id === toi),
+    khoaTuDat: Boolean(toi && r.user_id === toi) && !toanQuyen,
   }));
   return { ok: true, loi: null, ds };
 }

@@ -6,7 +6,7 @@
 //            tin cậy · gỡ · duyệt đơn, cộng mời vào cây khác và đổi họ tên.
 // Lớp      : pages — được phép gọi mọi lớp dưới
 // Phụ thuộc: services/sb, quan-tri/hop-thoai · trang-cay · khu-quan-tri-he-thong · o-bang
-// Phiên bản: 1.2.1 · Cập nhật: 30/09/2026 06:50 (b162a) — moiVaoCay bỏ đối số mã người
+// Phiên bản: 1.2.2 · Cập nhật: 14/10/2026 — mờ nút tự đặt quyền theo `khoaTuDat`
 // Sổ tay   : so-tay/trang-quan-tri.md
 // ============================================================
 //
@@ -131,8 +131,8 @@ export async function mountTrangTaiKhoan(sec, ctx) {
     });
     if (r) napLai();
   };
-  bThem.disabled = tk.laChinhToi || !dsCay.length;
-  bThem.title = tk.laChinhToi ? 'Không ai tự mời mình vào cây được.' : '';
+  bThem.disabled = tk.khoaTuDat || !dsCay.length;
+  bThem.title = tk.khoaTuDat ?'Không ai tự mời mình vào cây được.' : '';
   bThem.onclick = moiVao;
 
   const kqDs = await dsCayCuaTaiKhoan(tk.userId);
@@ -187,7 +187,7 @@ function dongCay(c, tk, phien, napLai, huaCK) {
       tt === 'thanhvien' ? '' : 'wait'),
     c.thamGia ? span('sub', ngay(c.thamGia)) : '');
 
-  const cuaMinh = tk.laChinhToi
+  const cuaMinh = tk.khoaTuDat
     ? 'Tài khoản của chính bạn — không ai đặt quyền cho chính mình được.' : '';
   const saoLuu = c.vai === 'sao_luu'
     ? 'Tài khoản sao lưu tự động — đổi vai hay gỡ nó là bản sao lưu đêm ra file rỗng.' : '';
